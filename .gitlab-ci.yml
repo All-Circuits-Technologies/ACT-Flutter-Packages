@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+reuse:
+  stage: test
+  image:
+    name: fsfe/reuse:latest
+    entrypoint: [""]
+  script:
+    - reuse lint
+
+shellcheck:
+  stage: test
+  image: koalaman/shellcheck-alpine:v0.9.0
+  script: tools/shellcheck_all.sh
