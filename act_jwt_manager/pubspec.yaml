@@ -1,0 +1,38 @@
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_jwt_manager
+description: Useful to manage JWT in mobile app
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: '>=3.0.2 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  dart_jsonwebtoken: ^2.8.0
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.5
+
+  # Easily create managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.1

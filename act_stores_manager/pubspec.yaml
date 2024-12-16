@@ -1,0 +1,54 @@
+# SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_stores_manager
+description: This package contains two managers to store properties and secrets
+
+version: 1.0.0
+
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Store/Load data in secure storage
+  flutter_secure_storage: ^8.0.0
+
+  # Wrap platform-specific persistent storage for simple data
+  shared_preferences: ^2.1.1
+
+  # Flutter AC Technologies dependencies
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Extend Dart functionalities
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_env_manager:
+    path: ../act_env_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^2.0.1

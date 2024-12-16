@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_intl
+description: This package contains useful classes and widgets which are linked to translations.
+
+# Project configuration
+version: 1.0.1
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Widget rendering static HTML and CSS as Flutter widgets
+  flutter_html: ^3.0.0-beta.2
+
+  # Code to deal with internationalized/localized messages
+  intl: ^0.18.0
+
+  # Global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+# Dependencies used by developer
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^2.0.1

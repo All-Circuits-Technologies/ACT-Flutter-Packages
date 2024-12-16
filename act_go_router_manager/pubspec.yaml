@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2023 Nicolas Butet <nicolas.butet@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_go_router_manager
+description: This package contains a Go router manager.
+
+# Project configuration
+version: 1.0.1
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Easily create managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.5
+
+  # Implements the Router API
+  go_router: ^7.1.1
+
+# Dependencies used by developer
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^2.0.1

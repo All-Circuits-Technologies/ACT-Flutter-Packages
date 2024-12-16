@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_logger_manager
+description: This package contains a logger manager for your app
+
+# Project configuration
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.5
+
+  # Small, easy to use and extensible logger
+  logger: ^1.3.0
+
+  # Easily create managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+# Dependencies used by developer
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^2.0.1
