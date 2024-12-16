@@ -1,0 +1,46 @@
+' SPDX-FileCopyrightText: 2024 Théo Magne <theo.magne@allcircuits.com>
+
+' SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+@startuml class_diagram
+
+class AbsStorageManager {
+    ' protected cuz the derived class should implement it
+    # getStorageService() : MixinStorageService = 0
+    # getStorageConfig() : CacheStorageConfig = 0
+    + getFile(useCache: bool, fileId: String) : (RequestResult, File?)
+    + listFiles() => MixinStorageService.listFiles
+}
+
+class CacheStorageConfig <<model>> {
+    - cacheKey: String
+    - stalePeriod: Duration
+    - maxCachedFiles: Int
+}
+
+class CacheService {}
+
+class CacheManager <<library>> {}
+
+class MixinStorageService <<mixin>> {
+    # getDownloadUrl(fileId: String) : String = 0
+    # getFile(fileId: String) : (RequestResult, File?) = 0
+    # listFiles(searchPath: String) : (RequestResult, StoragePage?) = 0
+}
+
+class StorageHttpFileService <<extends HttpFileService>> {
+    - _storageService : MixinStorageService
+    + get(fileId: String) => super.get(_storageService.getDownloadUrl(fileId))
+}
+
+
+AbsStorageManager o-- "1" MixinStorageService
+AbsStorageManager *-- "0..1" CacheService
+AbsStorageManager -> CacheStorageConfig
+
+CacheService *-- "1" CacheManager
+CacheService *-- "1" StorageHttpFileService
+
+StorageHttpFileService --|> HttpFileService
+
+@enduml
