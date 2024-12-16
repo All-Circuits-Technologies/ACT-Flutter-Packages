@@ -1,0 +1,75 @@
+# SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_permissions_manager
+description: Useful classes to manager permissions
+
+# Project configuration
+version: 0.1.0
+publish_to: none
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.5
+
+  # Implement the BLoC (Business Logic Component) design pattern
+  flutter_bloc: ^8.1.5
+
+  mutex: ^3.1.0
+
+  # To request permissions (eg. SMS, GPS...)
+  permission_handler: ^11.3.1
+
+  # Extend the capabilities of Dart Streams and StreamControllers
+  rxdart: ^0.27.7
+
+  # Easily create managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  act_contextual_views_manager:
+    path: ../act_contextual_views_manager
+
+  # Extend Dart functionalities
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_flutter_utility:
+    path: ../act_flutter_utility
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Life cycle manager
+  act_life_cycle_manager:
+    path: ../act_life_cycle_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Platform manager
+  act_platform_manager:
+    path: ../act_platform_manager
+
+# Dependencies used by developer
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^4.0.0
