@@ -1,0 +1,117 @@
+' SPDX-FileCopyrightText: 2024 Théo Magne <theo.magne@allcircuits.com>
+'
+' SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+@startuml Consent Package
+
+
+enum ConsentStateEnum {
+    accepted
+    notAccepted
+    unknown
+
+    + isAccepted() : bool
+    + isNotAccepted() : bool
+}
+
+class MixinConsentOptions <<Mixin on enum>> {
+    bool isOptional
+}
+
+class ConsentOptionsModel <<T with Mixin MixinConsentOptions>> {
+    - Map<T, ConsentStateEnum> _optionMap
+    + isAccepted() : bool
+    + getOptionState(option : T) : ConsentStateEnum
+    + setOptionState(option : T, ConsentStateEnum state)
+}
+
+class ConsentDataModel <<T with Mixin MixinConsentOptions>> {
+    + ConsentOptionsModel<T> options
+    + String version
+}
+
+' https://pub.dev/packages/flutter_markdown
+' Library to convert markdown to flutter widgets
+class MarkdownToWidget <<external library>> #LightGrey {
+    + Markdown(markdown : String) : Widget
+}
+
+class AbstractConsentService <<T with Mixin MixinConsentOptions>> <<AbsService>> {
+    ' _consentDataModel: device or user consent data, null when doesnt exist (first time)
+    - ConsentDataModel<T>? _consentData
+    '
+    ' _latestVersion: latest version of the consent, retrieved during init, nullable when fetching during fails
+    - String? _latestVersion
+    '
+    - bool _isInternetRequired
+    ' _internetSubscription: subscription to the internet connectivity stream, null when internet is not required
+    '
+    - StreamSubscription? _internetSub
+    '
+    - InternetConnectivityManager _internet
+    '
+    '  widget to display the text, null when setAccepted is called or when not loaded cuz no newer version has to be accepted
+    - Widget? _textWidget
+    '
+    - ConsentStateEnum _consentState
+    '
+    ' stream that streams the isAccepted value
+    - StreamController<ConsentStateEnum> _consentStateStream
+    '
+    # loadConsentData(): ConsentDataModel<T>? = 0
+    '
+    ' loadLatestVersion: fetch the latest version of the consent text from the server
+    # loadLatestVersion() = 0
+    '
+    ' loadText: fetch the text from the server
+    # loadText() = 0
+    '
+    ' saveConsentData: save the consent data (either locally or on the server)
+    # saveConsentData() = 0
+    '
+    + AbstractConsentService(isInternetRequired: bool)
+    '
+    ' init: load (device)/fetch (server) the version accepted by the user/ fetch latest version from server, download text and prepare widget if needed
+    + init()
+    '
+    + dispose()
+    '
+    ' getConsentState: get the consent state
+    + getConsentState() => _consentState
+    '
+    ' consent: register (server or locally) the accepted version of the consent
+    + consent(version: String)
+    '
+    ' getTextWidget: return the flutter widget to display the text
+    + getTextWidget() => _textWidget
+    '
+    ' getConsentStateStream: return the stream that streams the isAccepted value
+    + getConsentStateStream() => _consentStateStream.stream
+}
+
+enum ConsentTypeEnum {
+    gdpr
+    gcu
+}
+
+class AbstractConsentManager <<AbsManager>> {
+    - Map<ConsentTypeEnum, AbstractConsentService> _consentServices
+    + getConsentService(ConsentTypeEnum type) : AbstractConsentService
+}
+
+class InternetConnectivityManager {}
+
+class LoggerManager {}
+
+AbstractConsentManager "1" *-- "1..n " AbstractConsentService
+
+AbstractConsentService *-- ConsentDataModel
+AbstractConsentService --> MarkdownToWidget
+AbstractConsentService --> InternetConnectivityManager
+AbstractConsentService --> LoggerManager
+AbstractConsentService -> ConsentStateEnum
+ConsentTypeEnum <- AbstractConsentService
+ConsentDataModel *-- "1" ConsentOptionsModel
+ConsentOptionsModel --> MixinConsentOptions
+
+@enduml
