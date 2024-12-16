@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Undefined $VAR should generate SC2154 as for $var
+enable=check-unassigned-uppercase
+
+# Suggest "$var" instead of $var even when var appears to not contain spaces (SC2248)
+enable=quote-safe-variables
+
+# Suggest ${var} instead of $var even when no conflict is found (SC2250)
+enable=require-variable-braces
+
+# Ignore windows CRLF
+disable=SC1017
