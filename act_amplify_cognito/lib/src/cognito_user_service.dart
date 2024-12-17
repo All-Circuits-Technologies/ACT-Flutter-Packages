@@ -52,7 +52,7 @@ class CognitoUserService extends AbstractService {
     String userId;
     try {
       final amplifyResult = await Amplify.Auth.fetchAuthSession() as CognitoAuthSession;
-      userId = amplifyResult.identityIdResult.value;
+      userId = amplifyResult.userPoolTokensResult.value.userId;
     } on AuthException catch (e) {
       logsHelper.d("Error retrieving auth session: ${e.message}");
       return null;
