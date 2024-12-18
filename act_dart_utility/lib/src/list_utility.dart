@@ -175,4 +175,31 @@ class ListUtility {
     }
     list.insert(tmpTargetedIdx, item);
   }
+
+  /// {@template ListUtility.addOrReplace}
+  /// Append or replace the [listToAdd] into the [globalList].
+  ///
+  /// The method returns a new list with the result.
+  ///
+  /// If [start] is null, the method will append [listToAdd] to [globalList].
+  /// If [start] is between 0 and [globalList] length, the method will replace [globalList] elements
+  /// by [listToAdd]. If [listToAdd] length is greater than the elements to replace, the last
+  /// elements of [listToAdd] will be appended to the list.
+  /// If [start] is greater than the [globalList] length, the method will return an empty list.
+  /// {@endtemplate}
+  static List<T> appendOrReplace<T>(List<T> globalList, List<T> listToAdd, [int? start]) {
+    if (start != null && start > globalList.length) {
+      return const [];
+    }
+
+    List<T> tmpList;
+    if (start == null || start == globalList.length) {
+      tmpList = List<T>.from(globalList);
+    } else {
+      tmpList = ListUtility.safeSublistFromLength(globalList, start);
+    }
+
+    tmpList.addAll(listToAdd);
+    return tmpList;
+  }
 }
