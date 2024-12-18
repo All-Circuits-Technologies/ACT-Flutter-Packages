@@ -73,10 +73,7 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
       return;
     }
 
-    await routerManager.push(
-      _signInRoute,
-      extra: SignInPageExtra<T>(),
-    );
+    unawaited(routerManager.pushAndRemoveUntilFirstRoute(_signInRoute));
   }
 
   /// This method is called when we want to go to a specific view and ask if it's ok or if we want
