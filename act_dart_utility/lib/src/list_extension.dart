@@ -89,4 +89,11 @@ extension ActListGen<T> on List<T> {
         currentIdx,
         targetedIdx,
       );
+
+  /// {@macro ListUtility.addOrReplace}
+  List<T> appendOrReplace(List<T> listToAdd, [int? start]) => ListUtility.appendOrReplace(
+        this,
+        listToAdd,
+        start,
+      );
 }
