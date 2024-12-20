@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/types/aws_iot_mqtt_sub_event.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/widgets.dart';
 
 /// This class is responsible for subscribing to a topic and forwarding the messages / events to
@@ -41,12 +42,6 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   /// Get the [Stream] of the [_onSubscriptionEventController].
   Stream<AwsIotMqttSubEvent> get onEventStream => _onSubscriptionEventController.stream;
 
-  /// Get the subscription completer or false if the subscription is not ongoing.
-  Future<bool> get isSubscribed => _subCompleter.future;
-
-  /// Get the unsubscription completer or false if the unsubscription is not ongoing.
-  Future<bool> get isUnsubscribed => _unsubCompleter.future;
-
   /// Class contrusctor
   AwsIotMqttSubWatcher({
     required String topic,
@@ -57,6 +52,34 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
         _onSubscriptionEventController = StreamController.broadcast(),
         _subCompleter = Completer(),
         _unsubCompleter = Completer();
+
+  /// Get the subscription completer
+  ///
+  /// If the completer is not completed and [defaultValue] is not null, this will return the
+  /// [defaultValue] instead of waiting the completion.
+  Future<bool> isSubscribed({
+    bool? defaultValue,
+  }) async {
+    if (_subCompleter.isCompleted || defaultValue == null) {
+      return _subCompleter.future;
+    }
+
+    return defaultValue;
+  }
+
+  /// Get the unsubscription completer or false if the unsubscription is not ongoing.
+  ///
+  /// If the completer is not completed and [defaultValue] is not null, this will return the
+  /// [defaultValue] instead of waiting the completion.
+  Future<bool> isUnsubscribed({
+    bool? defaultValue,
+  }) async {
+    if (_unsubCompleter.isCompleted || defaultValue == null) {
+      return _unsubCompleter.future;
+    }
+
+    return defaultValue;
+  }
 
   /// DO NOT CALL THIS METHOD DIRECTLY. Use [getHandler] instead.
   @Deprecated("Use getHandler instead, this method won't work as expected.")

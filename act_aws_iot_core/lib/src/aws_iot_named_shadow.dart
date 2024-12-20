@@ -262,6 +262,11 @@ class AwsIotNamedShadow {
       return;
     }
 
+    if (newState == _state) {
+      // Nothing to do
+      return;
+    }
+
     _logsHelper.d('Accepted new shadow state');
     _updateState(newState);
   }
@@ -307,7 +312,7 @@ class AwsIotNamedShadow {
   /// This method waits for the shadow to be subscribed to a given [topic]
   Future<bool> _waitSubscribed(ShadowTopicsEnum topic) async {
     final watcher = _topicWatchers[topic]!;
-    return watcher.isSubscribed.timeout(
+    return watcher.isSubscribed().timeout(
       _subscriptionTimeout,
       onTimeout: () {
         _logsHelper.e('Timed out waiting to subscribe to the $topic topic');

@@ -8,6 +8,7 @@ import 'package:act_aws_iot_core/src/aws_iot_mqtt_sub_watcher.dart';
 import 'package:act_aws_iot_core/src/services/abs_aws_iot_service.dart';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/types/aws_iot_mqtt_sub_event.dart';
+import 'package:act_dart_utility/act_dart_utility.dart';
 
 /// This class is the service that manages the MQTT subscriptions.
 class AwsIotMqttSubcriptionService extends AbsAwsIotService {
@@ -49,6 +50,12 @@ class AwsIotMqttSubcriptionService extends AbsAwsIotService {
   /// Initialize the service but there is nothing to do here.
   @override
   Future<void> initService() async {}
+
+  /// Test if we are subscribed to all the current topic.
+  ///
+  /// This doesn't wait if a subscription is processing.
+  Future<bool> isAllSubscribed() => FutureUtility.waitGlobalBooleanSuccess(
+      _watchers.values.map((value) => value.isSubscribed(defaultValue: false)));
 
   /// Get a subscription watcher for a given topic.
   AwsIotMqttSubWatcher getWatcher(String topic) {
