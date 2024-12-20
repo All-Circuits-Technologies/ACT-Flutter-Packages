@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/types/aws_iot_mqtt_sub_event.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/widgets.dart';
 
 /// This class is responsible for subscribing to a topic and forwarding the messages / events to
@@ -108,7 +109,9 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   /// Unsubscribe from the topic when the watcher goes to sleep.
   @override
   Future<void> whenNoMoreHandler() async {
+    appLogger().d("================ Unsubscribe before $_topic");
     await _unsubscribe();
+    appLogger().d("================ Unsubscribe after $_topic");
   }
 
   /// This method is called whenever an event related to the subscription is received.

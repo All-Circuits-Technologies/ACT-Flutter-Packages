@@ -11,6 +11,7 @@ import 'package:act_aws_iot_core/src/models/aws_iot_mqtt_config_model.dart';
 import 'package:act_aws_iot_core/src/models/aws_iot_shadows_config_model.dart';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/services/aws_iot_shadows_service.dart';
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_internet_connectivity_manager/act_internet_connectivity_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -88,10 +89,13 @@ abstract class AwsIotManager<
 
     final shadowConfig = AwsIotShadowsConfigModel(shadowsList: shadowTypesList);
 
+    final observers = await getExtraMqttObserversForConnection();
+
     // Create the services
     mqttService = AwsIotMqttService<AuthManager, AmplifyManager>(
       iotManagerLogsHelper: logsHelper,
       config: mqttConfig,
+      extraStreamObservers: observers,
     );
     shadowsService = AwsIotShadowsService(
       iotManagerLogsHelper: logsHelper,
@@ -103,6 +107,11 @@ abstract class AwsIotManager<
     await mqttService.initService();
     await shadowsService.initService();
   }
+
+  /// This can be used by the derived class to add extra stream observers for managing the
+  /// connection
+  @protected
+  Future<List<StreamObserver>> getExtraMqttObserversForConnection() async => const [];
 
   /// Dispose the aws iot services.
   @override

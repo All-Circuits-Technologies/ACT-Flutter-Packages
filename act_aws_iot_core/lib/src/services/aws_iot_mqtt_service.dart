@@ -135,11 +135,13 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   AwsIotMqttService({
     required LogsHelper iotManagerLogsHelper,
     required this.config,
+    List<StreamObserver> extraStreamObservers = const [],
     bool autoReconnect = true,
   })  : _observerSubscriptions = <StreamSubscription>[],
         _observerUtilities = [
           InternetStreamObserver(),
           AuthStreamObserver<AuthManager>(),
+          ...extraStreamObservers,
         ],
         _autoReconnect = autoReconnect,
         _connectionStatusController = StreamController.broadcast(),
@@ -175,13 +177,22 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
 
     // Listen to the observer utilities
     for (final obs in _observerUtilities) {
-      final obsSub = obs.stream.listen(_onObserverValidityChanged);
-      _observerSubscriptions.add(obsSub);
+      _subToStreamObserver(obs);
     }
 
     // Try to connect to the mqtt server. Since the connect method might take some time, we don't
     // await it here.
     unawaited(_connect());
+  }
+
+  void addStreamObserver(StreamObserver observer) {
+    _observerUtilities.add(observer);
+    _subToStreamObserver(observer);
+  }
+
+  void _subToStreamObserver(StreamObserver observer) {
+    final obsSub = observer.stream.listen(_onObserverValidityChanged);
+    _observerSubscriptions.add(obsSub);
   }
 
   /// Ask the server to subscribe to a topic

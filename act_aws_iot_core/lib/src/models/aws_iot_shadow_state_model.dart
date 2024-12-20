@@ -70,16 +70,21 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
     }
 
     // Check if the version is above the current one
-    if (version <= this.version) {
+    if (version < this.version) {
       appLogger().d(
         'Received version ($version) of shadow document is '
-        'not above the current one (${this.version}), we do nothing',
+        'not above the current one (${this.version}), we do nothing.',
       );
       return this;
     }
 
     final desired = MixinAwsIotShadowDoc.getDesiredState(state);
     final reported = MixinAwsIotShadowDoc.getReportedState(state);
+
+    if (version == this.version) {
+      desired?.addAll(desiredState);
+      reported?.addAll(reportedState);
+    }
 
     return copyWith(
       version: version,
