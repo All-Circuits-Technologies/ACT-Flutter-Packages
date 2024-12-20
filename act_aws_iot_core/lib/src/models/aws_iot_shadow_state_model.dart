@@ -48,8 +48,8 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
   /// accepted update request
   ///
   /// [jsonStr] is the json string received from the AWS IoT Device Shadow service
-  /// Null will be returned if the json string is invalid or if the version is not above the current
-  /// one.
+  /// Null will be returned if the json string is invalid
+  /// The current state is returned if the version is not above the current one.
   AwsIotShadowStateModel? copyAfterAcceptedGetUpdate(String jsonStr) {
     final json = MixinAwsIotShadowDoc.getJsonFromString(jsonStr);
 
@@ -71,11 +71,11 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
 
     // Check if the version is above the current one
     if (version <= this.version) {
-      appLogger().w(
+      appLogger().d(
         'Received version ($version) of shadow document is '
-        'not above the current one (${this.version})',
+        'not above the current one (${this.version}), we do nothing',
       );
-      return null;
+      return this;
     }
 
     final desired = MixinAwsIotShadowDoc.getDesiredState(state);

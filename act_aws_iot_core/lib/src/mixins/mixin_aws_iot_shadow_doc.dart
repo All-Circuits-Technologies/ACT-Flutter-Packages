@@ -72,9 +72,17 @@ mixin MixinAwsIotShadowDoc on Equatable {
   static int? getTimestamp(Map<String, dynamic> json) => _getInt(json, timestampTag);
 
   /// Get the desired state of the document
+  ///
+  /// The desired state got from shadow can be null
   @protected
-  static Map<String, dynamic>? getDesiredState(Map<String, dynamic> json) =>
-      _getJsonObject(json, desiredTag);
+  static Map<String, dynamic>? getDesiredState(Map<String, dynamic> json) {
+    final (result, desiredJson) = _getNullableJsonObject(json, desiredTag);
+    if (!result) {
+      return null;
+    }
+
+    return desiredJson ?? {};
+  }
 
   /// Get the reported state of the document
   @protected
@@ -137,6 +145,17 @@ mixin MixinAwsIotShadowDoc on Equatable {
       JsonUtility.getNotNullJsonObject(
         json: json,
         key: key,
+        loggerManager: appLogger(),
+      );
+
+  /// Get a nullabel json object from a json
+  @protected
+  static (bool, Map<String, dynamic>?) _getNullableJsonObject(
+          Map<String, dynamic> json, String key) =>
+      JsonUtility.getJsonObject(
+        json: json,
+        key: key,
+        canBeUndefined: true,
         loggerManager: appLogger(),
       );
 }

@@ -35,7 +35,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   static const _awsIotService = AWSService('iotdevicegateway');
 
   /// This is the base period for the reconnect timer.
-  static const _reconnectTimerBasePeriod = Duration(seconds: 10);
+  static const _reconnectTimerBasePeriod = Duration(seconds: 1);
 
   /// This is the maximum period for the reconnect timer.
   static const _reconnectTimerMaxPeriod = Duration(minutes: 5);
@@ -153,7 +153,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
         ) {
     // Create the reconnect timer. We can't create it before because it needs to call the _connect
     // method which is not available before the object is fully created.
-    _reconnectTimer = ProgressingRestartableTimer.simpleFactor(
+    _reconnectTimer = ProgressingRestartableTimer.expFactor(
       _reconnectTimerBasePeriod,
       _connect,
       maxDuration: _reconnectTimerMaxPeriod,
@@ -264,28 +264,28 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
       return true;
     }
 
-    // Check if we didnt connect too recently
-    if (_isConnectAfterDelayEnabled != null) {
-      logsHelper.w('Connection attempt canceled, tryed to connect too recently');
-      _isConnectAfterDelayEnabled = true;
-      return false;
-    }
-
-    // Delay the connection attempt to avoid flooding the server
-    logsHelper.d('Enable the connection attempt delay for $_minConnectPeriod');
-    _isConnectAfterDelayEnabled = false;
-    Future.delayed(
-      _minConnectPeriod,
-      () async {
-        logsHelper.d('Min connect period timer elapsed');
-        final tryToConnect = _isConnectAfterDelayEnabled;
-        _isConnectAfterDelayEnabled = null;
-        if (tryToConnect == true) {
-          logsHelper.d('reconnect asked during the min connect period timer, reconnecting...');
-          await _unsafeConnect();
-        }
-      },
-    );
+    // // Check if we didnt connect too recently
+    // if (_isConnectAfterDelayEnabled != null) {
+    //   logsHelper.w('Connection attempt canceled, tryed to connect too recently');
+    //   _isConnectAfterDelayEnabled = true;
+    //   return false;
+    // }
+    //
+    // // Delay the connection attempt to avoid flooding the server
+    // logsHelper.d('Enable the connection attempt delay for $_minConnectPeriod');
+    // _isConnectAfterDelayEnabled = false;
+    // Future.delayed(
+    //   _minConnectPeriod,
+    //   () async {
+    //     logsHelper.d('Min connect period timer elapsed');
+    //     final tryToConnect = _isConnectAfterDelayEnabled;
+    //     _isConnectAfterDelayEnabled = null;
+    //     if (tryToConnect == true) {
+    //       logsHelper.d('reconnect asked during the min connect period timer, reconnecting...');
+    //       await _unsafeConnect();
+    //     }
+    //   },
+    // );
 
     // Check the observer utilities
     for (final observerUtility in _observerUtilities) {
@@ -306,8 +306,8 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     // Connected! Save the mqtt client and listen to the messages
     _mqttClient = newClient;
     _mqttClientUpdatesSubscription = _mqttClient!.updates!.listen(_onMessageReceived);
-    // Reset the timer for future reconnection attempts
-    _reconnectTimer.reset();
+    // // Reset the timer for future reconnection attempts
+    // _reconnectTimer.reset();
 
     // Notify that we are connected
     await _onConnected();
@@ -389,6 +389,8 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     logsHelper.d('Disconnecting from the mqtt server');
     // Mark that we are disconnecting so we don't try to reconnect
     _isDisconnectingFlag = true;
+    // We reset the timer in that case, because we explicitly choose to disconnect from MQTT client.
+    _reconnectTimer.reset();
 
     try {
       _mqttClient!.disconnect();
@@ -429,10 +431,17 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
           // If the connection was lost abrutly and if we are allowed to auto reconnect, then we
           // should try to reconnect to the mqtt server.
           if (_autoReconnect) {
+            final isAllSubscribed = await _mqttSubcriptionService.isAllSubscribed();
+            if (isAllSubscribed) {
+              // If we were subscribed to all the topics, this means that the connection has
+              // correctly succeeded; therefore we can reset the restartableTimer
+              _reconnectTimer.reset();
+            }
+
             logsHelper.d(
               'Connection lost abruptly. Auto reconnect is enabled, trying to reconnect...',
             );
-            await _unsafeConnect();
+            _reconnectTimer.restart();
           }
         },
       );
