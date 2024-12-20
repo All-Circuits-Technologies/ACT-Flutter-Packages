@@ -185,11 +185,13 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     unawaited(_connect());
   }
 
+  /// Add a stream observer to the [_observerUtilities]
   void addStreamObserver(StreamObserver observer) {
     _observerUtilities.add(observer);
     _subToStreamObserver(observer);
   }
 
+  /// The method subscribes to the [observer]
   void _subToStreamObserver(StreamObserver observer) {
     final obsSub = observer.stream.listen(_onObserverValidityChanged);
     _observerSubscriptions.add(obsSub);
@@ -275,29 +277,6 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
       return true;
     }
 
-    // // Check if we didnt connect too recently
-    // if (_isConnectAfterDelayEnabled != null) {
-    //   logsHelper.w('Connection attempt canceled, tryed to connect too recently');
-    //   _isConnectAfterDelayEnabled = true;
-    //   return false;
-    // }
-    //
-    // // Delay the connection attempt to avoid flooding the server
-    // logsHelper.d('Enable the connection attempt delay for $_minConnectPeriod');
-    // _isConnectAfterDelayEnabled = false;
-    // Future.delayed(
-    //   _minConnectPeriod,
-    //   () async {
-    //     logsHelper.d('Min connect period timer elapsed');
-    //     final tryToConnect = _isConnectAfterDelayEnabled;
-    //     _isConnectAfterDelayEnabled = null;
-    //     if (tryToConnect == true) {
-    //       logsHelper.d('reconnect asked during the min connect period timer, reconnecting...');
-    //       await _unsafeConnect();
-    //     }
-    //   },
-    // );
-
     // Check the observer utilities
     for (final observerUtility in _observerUtilities) {
       if (!observerUtility.isValid) {
@@ -317,8 +296,6 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     // Connected! Save the mqtt client and listen to the messages
     _mqttClient = newClient;
     _mqttClientUpdatesSubscription = _mqttClient!.updates!.listen(_onMessageReceived);
-    // // Reset the timer for future reconnection attempts
-    // _reconnectTimer.reset();
 
     // Notify that we are connected
     await _onConnected();

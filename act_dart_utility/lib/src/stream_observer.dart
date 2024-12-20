@@ -47,8 +47,10 @@ abstract class StreamObserver<T> {
     _streamController.add(_isValid);
   }
 
+  /// {@template StreamObserver.isNewValueValid}
   /// Implement this method in the derived class to check if the value received on the stream is
   /// valid or not.
+  /// {@endtemplate}
   @protected
   bool isNewValueValid(T value);
 

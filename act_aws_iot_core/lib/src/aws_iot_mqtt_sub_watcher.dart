@@ -109,9 +109,7 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   /// Unsubscribe from the topic when the watcher goes to sleep.
   @override
   Future<void> whenNoMoreHandler() async {
-    appLogger().d("================ Unsubscribe before $_topic");
     await _unsubscribe();
-    appLogger().d("================ Unsubscribe after $_topic");
   }
 
   /// This method is called whenever an event related to the subscription is received.
