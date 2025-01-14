@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:act_dart_utility/src/interface_restartable_timer.dart';
+import 'package:act_dart_utility/src/timers/interface_restartable_timer.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
