@@ -21,7 +21,8 @@ class NumBoundaries<T extends num> extends Equatable {
   const NumBoundaries({
     this.min,
     this.max,
-  }) : assert(min != null && max != null && min <= max, "The $min value is greather then $max");
+  }) : assert(min == null || max == null || min <= max,
+            "The $min value shouldn't be greather then $max");
 
   /// Test if the given [value] is in the [min] and [max] boundaries.
   ///
