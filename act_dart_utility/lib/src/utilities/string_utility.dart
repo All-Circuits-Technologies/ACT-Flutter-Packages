@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/src/bool_helper.dart';
+import 'package:act_dart_utility/src/utilities/bool_helper.dart';
 
 /// This class provides a set of [String] helpers, not provided by Dart.
 ///

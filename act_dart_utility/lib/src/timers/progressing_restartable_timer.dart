@@ -6,8 +6,8 @@
 
 import 'dart:math';
 
-import 'package:act_dart_utility/src/interface_restartable_timer.dart';
-import 'package:act_dart_utility/src/restartable_timer.dart';
+import 'package:act_dart_utility/src/timers/interface_restartable_timer.dart';
+import 'package:act_dart_utility/src/timers/restartable_timer.dart';
 
 /// Defines a callback which returns a factor to apply to the duration depending
 /// of the current occurrence of reset

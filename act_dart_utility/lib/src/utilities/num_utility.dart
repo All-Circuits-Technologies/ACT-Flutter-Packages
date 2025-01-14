@@ -4,7 +4,7 @@
 
 import 'dart:math' as math;
 
-import 'package:act_dart_utility/src/byte_utility.dart';
+import 'package:act_dart_utility/src/utilities/byte_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 
 /// Contains useful methods to extend the management of numbers
@@ -195,8 +195,7 @@ sealed class NumUtility {
     final newValue = value * math.pow(10, powerOfTenCoeff);
 
     if (!newValue.isFinite || newValue > ByteUtility.maxInt64) {
-      loggerManager.w(
-          "We can't convert a double which is greater than the max value of an int64; "
+      loggerManager.w("We can't convert a double which is greater than the max value of an int64; "
           "the given value: $value, the power of ten: $powerOfTenCoeff");
       return null;
     }
@@ -204,12 +203,41 @@ sealed class NumUtility {
     final intValue = newValue.toInt();
 
     if (!ByteUtility.testNumberLimits(intValue, bytesNb, isSigned)) {
-      loggerManager.w(
-          "The double given: $value (with power of ten: $powerOfTenCoeff), can't be "
+      loggerManager.w("The double given: $value (with power of ten: $powerOfTenCoeff), can't be "
           "set into an integer with bytes number: $bytesNb, and which is signed: $isSigned");
       return null;
     }
 
     return intValue;
+  }
+
+  /// Compares the given num values to know if [base] value is strictly lesser than [toCompareWith]
+  /// value (in that case, the method returns true).
+  ///
+  /// If [testEquality] is equals to true, it also returns true if values are equals.
+  ///
+  /// Uses [compareTo] method.
+  static bool isBaseLesserOrEqualTo<T extends num>({
+    required T base,
+    required T toCompareWith,
+    bool testEquality = true,
+  }) {
+    final comparison = base.compareTo(toCompareWith);
+    return comparison < 0 || testEquality && comparison == 0;
+  }
+
+  /// Compares the given num values to know if [base] value is strictly greather than
+  /// [toCompareWith] value (in that case, the method returns true).
+  ///
+  /// If [testEquality] is equals to true, it also returns true if values are equals.
+  ///
+  /// Uses [compareTo] method.
+  static bool isBaseGreatherOrEqualTo<T extends num>({
+    required T base,
+    required T toCompareWith,
+    bool testEquality = true,
+  }) {
+    final comparison = base.compareTo(toCompareWith);
+    return comparison > 0 || testEquality && comparison == 0;
   }
 }

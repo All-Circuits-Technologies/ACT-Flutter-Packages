@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <borlnov.obsessio@gmail.com>
+
+# SPDX-License-Identifier: MIT
+
+name: Markdown Lint
+
+on: [push, pull_request]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: DavidAnson/markdownlint-cli2-action@v18
+      with:
+        globs: |
+          *.md
+          !test/*.md
+          !**/.git
+          !**/node_modules

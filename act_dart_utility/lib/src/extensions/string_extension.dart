@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/src/string_utility.dart';
+import 'package:act_dart_utility/src/utilities/string_utility.dart';
 
 // Note to developers:
 // Do not implement smart stuff here. Implement them as static methods within [StringUtility]
