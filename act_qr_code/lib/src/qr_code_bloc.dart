@@ -16,7 +16,7 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
   static final _lockUtility = LockUtility();
 
   QrCodeBloc() : super(const QrCodeState.init()) {
-    on(_onQrCodePermissionGotEvent);
+    on(_onQrCodePermissionRetrievedEvent);
     on(_onQrCodeFoundEvent);
 
     unawaited(_getPermissions());
@@ -29,7 +29,7 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
 
     var status = await Permission.camera.status;
 
-    add(QrCodePermissionGotEvent(permissionStatus: status));
+    add(QrCodePermissionRetrievedEvent(permissionStatus: status));
 
     if (status == PermissionStatus.permanentlyDenied) {
       appLogger().w("Can't use the camera, the permission has been "
@@ -46,20 +46,19 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
 
     status = await Permission.camera.request();
 
-    add(QrCodePermissionGotEvent(permissionStatus: status));
+    add(QrCodePermissionRetrievedEvent(permissionStatus: status));
     lock.freeLock();
   }
 
-  Future<void> _onQrCodePermissionGotEvent(
-      QrCodePermissionGotEvent event, Emitter<QrCodeState> emitter) async {
+  Future<void> _onQrCodePermissionRetrievedEvent(
+      QrCodePermissionRetrievedEvent event, Emitter<QrCodeState> emitter) async {
     emitter.call(PermissionResultState(
       previousState: state,
       permissionStatus: event.permissionStatus,
     ));
   }
 
-  Future<void> _onQrCodeFoundEvent(
-      QrCodeFoundEvent event, Emitter<QrCodeState> emitter) async {
+  Future<void> _onQrCodeFoundEvent(QrCodeFoundEvent event, Emitter<QrCodeState> emitter) async {
     emitter.call(QrCodeFoundState(
       previousState: state,
       found: event.found,

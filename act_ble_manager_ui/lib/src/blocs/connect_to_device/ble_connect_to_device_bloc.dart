@@ -86,8 +86,8 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
           return;
         }
 
-        // If the connection succeeds, there is nothing more to do: the connected state will be gotten
-        // by the device connection state listening
+        // If the connection succeeds, there is nothing more to do: the connected state will be
+        // retrieved by the device connection state listening
         // We at least set loading to false
         emitter(LoadingConnectState(
           previousState: state,

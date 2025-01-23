@@ -47,8 +47,7 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// In those two case, all defined properties are lost.
 abstract class AbstractPropertiesManager extends AbstractManager {
   /// Tell if it's the first start of the app after install
-  final SharedPreferencesItem<bool> _isFirstStart =
-      SharedPreferencesItem<bool>("isFirstStart");
+  final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");
 
   /// True if it's the first start of the application
   bool isFirstStart;
@@ -67,8 +66,7 @@ abstract class AbstractPropertiesManager extends AbstractManager {
     try {
       isFirstStart = await _isFirstStart.load() ?? isFirstStart;
     } catch (error) {
-      appLogger().e(
-          "An error occurred when trying to get isFirstStart properties : $error");
+      appLogger().e("An error occurred when trying to get isFirstStart properties : $error");
     }
 
     // Check if app has already been run
@@ -80,8 +78,7 @@ abstract class AbstractPropertiesManager extends AbstractManager {
   }
 
   /// Delete all stored properties.
-  Future<void> deleteAll() async =>
-      SharedPreferences.getInstance().then((prefs) => prefs.clear());
+  Future<void> deleteAll() async => SharedPreferences.getInstance().then((prefs) => prefs.clear());
 }
 
 /// [SharedPreferencesItem] wraps a single property of type T,
@@ -102,8 +99,7 @@ class SharedPreferencesItem<T> {
   ///
   /// Only [PropertiesManager] creates instances of this helper class.
   /// Other actors uses them.
-  SharedPreferencesItem(this.key)
-      : _updateStreamController = StreamController.broadcast();
+  SharedPreferencesItem(this.key) : _updateStreamController = StreamController.broadcast();
 
   /// Load value from storage.
   ///
@@ -123,8 +119,7 @@ class SharedPreferencesItem<T> {
       case const (DateTime):
         return _getElement<DateTime, int>(
             key: key,
-            castMethod: (value) =>
-                DateTime.fromMillisecondsSinceEpoch(value, isUtc: true)) as T;
+            castMethod: (value) => DateTime.fromMillisecondsSinceEpoch(value, isUtc: true)) as T;
 
       default:
         // An unsupported T item was added to PropertiesManager.
@@ -136,11 +131,11 @@ class SharedPreferencesItem<T> {
 
   /// Useful method to get an element from memory
   ///
-  /// If the [castMethod] param is set, this allows to cast a value from the one got from memory to
-  /// the expected type
-  static Future<ResultType?> _getElement<ResultType, GotFromPrefsType>({
+  /// If the [castMethod] param is set, this allows to cast a value from the one retrieved from
+  /// memory to the expected type
+  static Future<ResultType?> _getElement<ResultType, RetrievedFromPrefsType>({
     required String key,
-    ResultType Function(GotFromPrefsType)? castMethod,
+    ResultType Function(RetrievedFromPrefsType)? castMethod,
   }) async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -155,18 +150,15 @@ class SharedPreferencesItem<T> {
     if (castMethod == null) {
       if (value is! ResultType) {
         appLogger().e("Key $key loaded as $value instead of type $ResultType");
-        return Future.error(
-            "Key $key loaded as $value instead of type $ResultType");
+        return Future.error("Key $key loaded as $value instead of type $ResultType");
       }
 
       return value;
     }
 
-    if (value is! GotFromPrefsType) {
-      appLogger()
-          .e("Key $key loaded as $value instead of type $GotFromPrefsType");
-      return Future.error(
-          "Key $key loaded as $value instead of type $GotFromPrefsType");
+    if (value is! RetrievedFromPrefsType) {
+      appLogger().e("Key $key loaded as $value instead of type $RetrievedFromPrefsType");
+      return Future.error("Key $key loaded as $value instead of type $RetrievedFromPrefsType");
     }
 
     return castMethod(value);
@@ -191,8 +183,7 @@ class SharedPreferencesItem<T> {
         success = await prefs.setString(key, value as String);
         break;
       case const (DateTime):
-        success =
-            await prefs.setInt(key, (value as DateTime).millisecondsSinceEpoch);
+        success = await prefs.setInt(key, (value as DateTime).millisecondsSinceEpoch);
         break;
       default:
         // An unsupported T item was added to PropertiesManager.
@@ -215,6 +206,5 @@ class SharedPreferencesItem<T> {
   /// Remove value from storage.
   ///
   /// This is actually equivalent to storing a null value.
-  Future<void> delete() async =>
-      SharedPreferences.getInstance().then((prefs) => prefs.remove(key));
+  Future<void> delete() async => SharedPreferences.getInstance().then((prefs) => prefs.remove(key));
 }

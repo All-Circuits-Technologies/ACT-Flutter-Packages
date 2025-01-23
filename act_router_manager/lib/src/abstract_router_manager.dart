@@ -545,7 +545,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
       stack.add(route);
     }
 
-    appLogger().d("Nav stack got: $stack");
+    appLogger().d("Nav stack retrieved: $stack");
     return stack;
   }
 

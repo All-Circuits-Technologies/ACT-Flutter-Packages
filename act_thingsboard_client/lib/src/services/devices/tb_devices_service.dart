@@ -69,8 +69,7 @@ class TbDevicesService extends AbstractService {
     final customerId = authUser.customerId;
 
     if (customerId == null) {
-      _logsHelper.w(
-          "We aren't logged with a customer user account; therefore we can't get its "
+      _logsHelper.w("We aren't logged with a customer user account; therefore we can't get its "
           "customer id");
       return null;
     }
@@ -87,21 +86,19 @@ class TbDevicesService extends AbstractService {
     final customerId = await getCurrentCustomerId();
 
     if (customerId == null) {
-      _logsHelper.w(
-          "There is a problem with user customer id; we can't get the current customer "
+      _logsHelper.w("There is a problem with user customer id; we can't get the current customer "
           "devices");
       return null;
     }
 
-    final result = await _requestService.safeRequest(
-        (tbClient) async => tbClient.getDeviceService().getCustomerDevices(
+    final result = await _requestService
+        .safeRequest((tbClient) async => tbClient.getDeviceService().getCustomerDevices(
               customerId,
               pageLink ?? PageLink(_devicesNumberByPage),
             ));
 
     if (!result.isOk) {
-      _logsHelper.w(
-          "A problem occurred when tried to request the customer devices from the "
+      _logsHelper.w("A problem occurred when tried to request the customer devices from the "
           "server");
       return null;
     }
@@ -114,7 +111,7 @@ class TbDevicesService extends AbstractService {
   /// The current user has to be linked to a customer.
   ///
   /// The first returned element is equal to false, if a problem occurred in the process. The
-  /// second element is the device got.
+  /// second element is the device retrieved.
   /// You can get the result: (true, null), in the case where the device is unknown for the current
   /// user
   Future<(bool, DeviceInfo?)> getCustomerDeviceByName({
@@ -123,8 +120,7 @@ class TbDevicesService extends AbstractService {
     final customerId = await getCurrentCustomerId();
 
     if (customerId == null) {
-      _logsHelper.w(
-          "There is a problem with user customer id; we can't get the device by name");
+      _logsHelper.w("There is a problem with user customer id; we can't get the device by name");
       return const (false, null);
     }
 
@@ -133,8 +129,8 @@ class TbDevicesService extends AbstractService {
     var hasNext = true;
 
     while (deviceFound == null && hasNext) {
-      final result = await _requestService.safeRequest((tbClient) async =>
-          tbClient.getDeviceService().getCustomerDeviceInfos(
+      final result = await _requestService
+          .safeRequest((tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
                 customerId,
                 pageLink,
               ));
@@ -142,8 +138,7 @@ class TbDevicesService extends AbstractService {
       final pageData = result.requestResponse;
 
       if (!result.isOk || pageData == null) {
-        _logsHelper.w(
-            "A problem occurred when tried to request the customer devices from the "
+        _logsHelper.w("A problem occurred when tried to request the customer devices from the "
             "server");
         return const (false, null);
       }
@@ -157,8 +152,7 @@ class TbDevicesService extends AbstractService {
       hasNext = pageData.hasNext;
 
       if (hasNext) {
-        pageLink =
-            PageLink(_devicesNumberByPage, pageLink.page + 1, deviceName);
+        pageLink = PageLink(_devicesNumberByPage, pageLink.page + 1, deviceName);
       }
     }
 

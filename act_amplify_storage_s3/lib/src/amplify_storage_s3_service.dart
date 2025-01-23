@@ -38,7 +38,7 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
 
   /// List all files in a given path
   @override
-  Future<(StorageRequestResult, StoragePage?)> listFiles(
+  Future<({StorageRequestResult result, StoragePage? page})> listFiles(
     String searchPath, {
     int? pageSize,
     String? nextToken,
@@ -61,7 +61,7 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
       ).result;
     } on Exception catch (e) {
       _logsHelper.e('Error while listing files in path $searchPath: $e');
-      return (_parseException(e), null);
+      return (result: _parseException(e), page: null);
     }
 
     // Create a list of StorageFile from the list of StorageItem
@@ -80,14 +80,14 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
       hasNextPage: listResult.hasNextPage,
     );
 
-    return (StorageRequestResult.success, storagePage);
+    return (result: StorageRequestResult.success, page: storagePage);
   }
 
   /// Download a file from a given path and save it in the specified directory.
   /// The [path] of the file must be given from the root of the bucket and the [onProgress] callback
   /// can be passed to track the download progress.
   @override
-  Future<(StorageRequestResult, File?)> getFile(
+  Future<({StorageRequestResult result, File? file})> getFile(
     String path, {
     Directory? directory,
     void Function(TransferProgress)? onProgress,
@@ -127,18 +127,18 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
       ).result;
     } on Exception catch (e) {
       _logsHelper.e('Error while downloading file $path to directory $directory: $e');
-      return (_parseException(e), null);
+      return (result: _parseException(e), file: null);
     }
 
     _logsHelper.d('Download file $path to directory $directory: $dlResult');
 
-    return (StorageRequestResult.success, File(dlResult.localFile.path!));
+    return (result: StorageRequestResult.success, file: File(dlResult.localFile.path!));
   }
 
   /// Get a download URL for a file. The path of the file must be given from the root
   /// of the bucket.
   @override
-  Future<(StorageRequestResult, String?)> getDownloadUrl(
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
     String fileId,
   ) async {
     StorageGetUrlResult urlResult;
@@ -154,14 +154,14 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
           )).result;
     } on Exception catch (e) {
       _logsHelper.e('Error while getting a download URL for file $fileId: $e');
-      return (_parseException(e), null);
+      return (result: _parseException(e), downloadUrl: null);
     }
 
     _logsHelper.d('Get a download URL for file $fileId: $urlResult');
 
     final downloadUrl = urlResult.url.toString();
 
-    return (StorageRequestResult.success, downloadUrl);
+    return (result: StorageRequestResult.success, downloadUrl: downloadUrl);
   }
 
   /// Adapt an amplify [StorageTransferState] to an act storage [TransferStatus]
