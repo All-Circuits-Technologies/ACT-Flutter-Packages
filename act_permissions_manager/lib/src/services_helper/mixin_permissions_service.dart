@@ -23,7 +23,7 @@ class PermissionConfig extends Equatable {
   final bool whenAskingCheckRationale;
 
   /// Say if we need to go to settings page when asking for permission
-  final bool whenAskingForceRetrievedToSettings;
+  final bool whenAskingForceGoToSettings;
 
   /// The permissions list, this permission depends on
   final List<PermissionElement> whenAskingDependsOn;
@@ -32,7 +32,7 @@ class PermissionConfig extends Equatable {
   const PermissionConfig({
     required this.element,
     this.whenAskingCheckRationale = false,
-    this.whenAskingForceRetrievedToSettings = false,
+    this.whenAskingForceGoToSettings = false,
     this.whenAskingDependsOn = const [],
   });
 
@@ -40,7 +40,7 @@ class PermissionConfig extends Equatable {
   List<Object?> get props => [
         element,
         whenAskingCheckRationale,
-        whenAskingForceRetrievedToSettings,
+        whenAskingForceGoToSettings,
         whenAskingDependsOn,
       ];
 }
@@ -98,7 +98,7 @@ mixin MPermissionsService on AbstractManager {
         updatePermission: updatePermission,
         whenAskingCheckRationale: config.whenAskingCheckRationale,
         whenAskingDependsOn: [],
-        whenAskingForceGoToSettings: config.whenAskingForceRetrievedToSettings,
+        whenAskingForceGoToSettings: config.whenAskingForceGoToSettings,
       );
 
       dependsOn[config.element] = config.whenAskingDependsOn;

@@ -46,7 +46,7 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
     this.devicePixelRatio,
   })  : _storageManager = globalGetIt().get<S>(),
         assert(maxWidth == null && maxHeight == null || devicePixelRatio != null,
-            "When using maxWidth and maxHeight, the devicePixelRatio must be given");
+            "When using maxWidth or maxHeight, the devicePixelRatio must be given");
 
   /// This method returns the key to load the image thanks to the given [configuration]
   @override

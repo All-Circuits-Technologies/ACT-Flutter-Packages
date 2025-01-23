@@ -84,7 +84,7 @@ class LocationManager extends AbstractPeriphManager {
         if (_initConfig.isLocationUsageAlways)
           PermissionConfig(
             element: PermissionElement.locationAlways,
-            whenAskingForceRetrievedToSettings: globalGetIt().get<PlatformManager>().isIos,
+            whenAskingForceGoToSettings: globalGetIt().get<PlatformManager>().isIos,
             whenAskingDependsOn: const [PermissionElement.locationWhenInUse],
           ),
         const PermissionConfig(
