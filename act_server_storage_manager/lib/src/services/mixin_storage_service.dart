@@ -28,19 +28,19 @@ mixin MixinStorageService on AbstractService {
   static Future<Directory> getDownloadsDirectory() async => getApplicationCacheDirectory();
 
   /// Get the download url of a file based on a [fileId].
-  Future<(StorageRequestResult result, String? downloadUrl)> getDownloadUrl(
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
     String fileId,
   );
 
   /// Donwload a file based on a [fileId] in a [directory].
-  Future<(StorageRequestResult result, File? file)> getFile(
+  Future<({StorageRequestResult result, File? file})> getFile(
     String fileId, {
     Directory? directory,
     OnProgressCallback? onProgress,
   });
 
   /// Get a [StoragePage] of files in a [searchPath] with a [pageSize] and a [nextToken].
-  Future<(StorageRequestResult result, StoragePage? page)> listFiles(
+  Future<({StorageRequestResult result, StoragePage? page})> listFiles(
     String searchPath, {
     int? pageSize,
     String? nextToken,

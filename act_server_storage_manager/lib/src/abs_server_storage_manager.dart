@@ -44,11 +44,20 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// use it.
   late final MixinStorageService _storageService;
 
+  @protected
+  MixinStorageService get storageService => _storageService;
+
   /// Instance of the [CacheService] to use a cache mechanism. Null when no cache is used.
   late final CacheService? _cacheService;
 
-  /// Logs helper
+  @protected
+  CacheService? get cacheService => _cacheService;
+
+  /// Manager logs helper
   late final LogsHelper _logsHelper;
+
+  @protected
+  LogsHelper get logsHelper => _logsHelper;
 
   /// Constructor for [AbsServerStorageManager].
   AbsServerStorageManager() : super();
@@ -72,8 +81,8 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     // Create a cache service if needed.
     final useCacheService = configManager.storageCacheUseConf.load();
     if (useCacheService) {
-      _logsHelper.i('Using cache service.');
       _cacheService = CacheService(
+        parentLogger: _logsHelper,
         storageService: _storageService,
         cacheConfig: CacheStorageConfig(
           key: configManager.storageCacheKeyConf.load(),
@@ -87,7 +96,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   }
 
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.
-  Future<(StorageRequestResult result, File? file)> getFile(
+  Future<({StorageRequestResult result, File? file})> getFile(
     String fileId, {
     bool useCache = true,
   }) async {
@@ -102,8 +111,15 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     return _storageService.getFile(fileId);
   }
 
+  /// {@template act_server_storage_manager.AbsServerStorageManager.clearFileFromCache}
+  /// Clear a file from cache
+  ///
+  /// This is only relevant if you use the cache service (if not, nothing is done).
+  /// {@endtemplate}
+  Future<void> clearFileFromCache(String fileId) async => _cacheService?.clearFileFromCache(fileId);
+
   /// List all the files in a given [directory].
-  Future<(StorageRequestResult result, StoragePage? page)> listFiles(
+  Future<({StorageRequestResult result, StoragePage? page})> listFiles(
     String searchPath, {
     int? pageSize,
     String? nextToken,
@@ -134,7 +150,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   ///
   /// [matchUntil] and [matchUntilWithAll] can be both not null, in that case, [matchUntil] is
   /// called first.
-  Future<(StorageRequestResult result, StoragePage? page)> listFilesUntil(
+  Future<({StorageRequestResult result, StoragePage? page})> listFilesUntil(
     String searchPath, {
     bool Function(List<StorageFile> lastItemsGot)? matchUntil,
     bool Function(List<StorageFile> items)? matchUntilWithAll,
@@ -146,7 +162,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     StoragePage? page;
     do {
       // Get the list of files in the directory
-      final (result, tmpPage) = await _storageService.listFiles(
+      final filesResult = await _storageService.listFiles(
         searchPath,
         pageSize: pageSize,
         nextToken: page?.nextPageToken,
@@ -154,27 +170,27 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
       );
 
       // Check if the result is valid and if the page is not null
-      if (result != StorageRequestResult.success || tmpPage == null) {
-        return (result, null);
+      if (filesResult.result != StorageRequestResult.success || filesResult.page == null) {
+        return (result: filesResult.result, page: null);
       }
 
-      page = tmpPage.prependPreviousPage(page);
+      page = filesResult.page!.prependPreviousPage(page);
 
-      if (matchUntil != null && matchUntil(tmpPage.items)) {
+      if (matchUntil != null && matchUntil(filesResult.page!.items)) {
         // We have match what we wanted, we can return
-        return (StorageRequestResult.success, page);
+        return (result: StorageRequestResult.success, page: page);
       }
 
       if (matchUntilWithAll != null && matchUntilWithAll(page.items)) {
         // We have match what we wanted, we can return
-        return (StorageRequestResult.success, page);
+        return (result: StorageRequestResult.success, page: page);
       }
 
       // Check if there are more files to get
     } while (page.hasNextPage);
 
     // Return the list of files in the directory
-    return (StorageRequestResult.success, page);
+    return (result: StorageRequestResult.success, page: page);
   }
 
   /// This method is used by the [AbsServerStorageManager] to get the [CacheService] instance to use. It

@@ -2,17 +2,20 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
+import 'package:act_server_storage_ui/src/mixins/mixin_image_cache_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/painting.dart';
 
 /// This is an [ImageProvider] to load an image from the [AbsServerStorageManager]
 ///
 /// The image is loaded from the [fileId] given.
-class StorageManagerImageProvider<S extends AbsServerStorageManager> extends ImageProvider<String> {
+class StorageManagerImageProvider<S extends MixinImageCacheService> extends ImageProvider<String> {
   /// The server storage manager
   final S _storageManager;
 
@@ -22,15 +25,31 @@ class StorageManagerImageProvider<S extends AbsServerStorageManager> extends Ima
   /// True to use the server storage cache
   final bool useCache;
 
+  final double? maxWidth;
+
+  final double? maxHeight;
+
+  final double? devicePixelRatio;
+
   /// Class constructor
   StorageManagerImageProvider({
     required this.fileId,
     this.useCache = true,
-  }) : _storageManager = globalGetIt().get<S>();
+    this.maxWidth,
+    this.maxHeight,
+    this.devicePixelRatio,
+  })  : _storageManager = globalGetIt().get<S>(),
+        assert(maxWidth == null && maxHeight == null || devicePixelRatio != null,
+            "When using maxWidth and maxHeight, the devicePixelRatio must be given");
 
   /// This method returns the key to load the image thanks to the given [configuration]
   @override
-  Future<String> obtainKey(ImageConfiguration configuration) async => fileId;
+  Future<String> obtainKey(ImageConfiguration configuration) async =>
+      MixinImageCacheService.createKey(
+        fileId: fileId,
+        maxWidth: _getSize(maxWidth),
+        maxHeight: _getSize(maxHeight),
+      );
 
   /// This load an image thanks to the given key
   @override
@@ -44,30 +63,62 @@ class StorageManagerImageProvider<S extends AbsServerStorageManager> extends Ima
                 DiagnosticsProperty<String>('fileId', fileId),
               ]);
 
+  int? _getSize(double? size) {
+    if (size == null || !size.isFinite) {
+      return null;
+    }
+
+    var tmpSize = size;
+    if (devicePixelRatio != null) {
+      tmpSize *= devicePixelRatio!;
+    }
+
+    return tmpSize.ceil();
+  }
+
   /// This get the image from the [_storageManager]
   ///
   /// If an error occurred, this returns a [Future.error].
   Future<ImageInfo> _getImage(String key, ImageDecoderCallback decode) async {
-    final (result, file) = await _storageManager.getFile(
+    final tmpHeight = _getSize(maxHeight);
+    final tmpWidth = _getSize(maxWidth);
+    final fileResult = await _storageManager.getImageFile(
       fileId,
+      maxHeight: tmpHeight,
+      maxWidth: tmpWidth,
       useCache: useCache,
     );
 
-    if (result != StorageRequestResult.success || file == null) {
-      return Future.error("A problem occurred when tried to load the image from file: $file");
+    if (fileResult.result != StorageRequestResult.success || fileResult.file == null) {
+      return Future.error("A problem occurred when tried to load the image from file: $fileId");
     }
 
-    ui.FrameInfo frameInfo;
-    try {
-      final buffer = await ui.ImmutableBuffer.fromUint8List(file.readAsBytesSync());
-      final codec = await decode(buffer);
-      frameInfo = await codec.getNextFrame();
-    } catch (error) {
-      return Future.error("The following file: $file, isn't an image");
-    }
-
-    return ImageInfo(
-      image: frameInfo.image,
-    );
+    final fileImage = FileImage(fileResult.file!);
+    final tmpImage = _isImageHasToBeResized(
+      file: fileResult.file!,
+      width: tmpWidth,
+      height: tmpHeight,
+    )
+        ? ResizeImage(
+            fileImage,
+            width: tmpWidth,
+            height: tmpHeight,
+            policy: ResizeImagePolicy.fit,
+          )
+        : fileImage as ImageProvider;
+    final completer = Completer<ui.Image>();
+    tmpImage.resolve(ImageConfiguration.empty).addListener(ImageStreamListener((info, _) {
+      completer.complete(info.image);
+      tmpImage.evict();
+    }));
+    final image = await completer.future;
+    return ImageInfo(image: image);
   }
+
+  bool _isImageHasToBeResized({
+    required File file,
+    required int? width,
+    required int? height,
+  }) =>
+      (width != null || height != null);
 }
