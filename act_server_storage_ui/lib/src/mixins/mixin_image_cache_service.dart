@@ -9,9 +9,29 @@ import 'package:flutter/widgets.dart';
 
 /// This mixin is used to add more features linked to the image cache service to the
 /// [AbsServerStorageManager]
+///
+/// Flutter has a cache of images to not get them from network, assets, etc. each time we want to
+/// display them.
+/// Therefore, even if the image is updated in the cache manager it couldn't be updated in the
+/// views. To do it, we register the image keys and clear the flutter cache when calling
+/// [clearImageFileFromCache] method. The right image will be displayed at the next view reload.
+///
+/// It keeps a list [_paintingImagesKeys] of all the images got with different size.
+/// This list is used to clear, if needed, the flutter painting image cache [ImageCache].
 mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageManager<C> {
+  /// Keeps the flutter painting image cache [ImageCache] keys for each file retrieved. This is
+  /// useful when you call [getImageFile] with different size.
   final Map<String, List<Object>> _paintingImagesKeys = {};
 
+  /// {@macro act_server_storage_manager.MixinImageCacheService._getImageFileProcess}
+  ///
+  /// If no problem occurred, the image file key is stored in [_paintingImagesKeys].
+  ///
+  /// If [flutterPaintingImageKey] is not null, it will be used as key to fill
+  /// [_paintingImagesKeys].
+  /// If [flutterPaintingImageKey] is null, the method [createKey] is used to generate the key.
+  ///
+  /// {@macro act_server_storage_manager.CacheService.getImageFile.size}
   Future<({File? file, StorageRequestResult result})> getImageFile(
     String fileId, {
     int? maxWidth,
@@ -43,12 +63,17 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
     return imageResult;
   }
 
-  /// {@template act_server_storage_manager.AbsServerStorageManager.clearImageFileFromCache}
-  /// Clear an image file from cache
+  /// {@template act_server_storage_manager.MixinImageCacheService.clearImageFileFromCache}
+  /// Clear an image file from cache but also from the flutter painting cache [ImageCache].
+  /// It uses [_paintingImagesKeys] to know what keys to evict from the [ImageCache].
   ///
-  /// This method adds the cleaning of the image in the flutter painting cache
+  /// This is relevant to call even if you don't use the cache service because it will evict the
+  /// images from [ImageCache].
   ///
-  /// This is only relevant if you use the cache service (if not, nothing is done).
+  /// This clears [ImageCache] elements but doesn't reload the view. Try to call this method before
+  /// reloading the views.
+  ///
+  /// If [clearPaintingCache] is equals to false, it's like calling [clearFileFromCache].
   /// {@endtemplate}
   Future<void> clearImageFileFromCache(
     String fileId, {
@@ -74,7 +99,10 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
     _paintingImagesKeys.remove(fileId);
   }
 
+  /// {@template act_server_storage_manager.MixinImageCacheService._getImageFileProcess}
   /// Get an image file based on a [fileId]. Set [useCache] to true to use the cache if available.
+  /// If the [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// {@endtemplate}
   ///
   /// {@macro act_server_storage_manager.CacheService.getImageFile.size}
   Future<({StorageRequestResult result, File? file})> _getImageFileProcess(
@@ -104,6 +132,7 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
     return storageService.getFile(fileId);
   }
 
+  /// Register the [paintingImageFileKey] linked to the given [fileId] in the [_paintingImagesKeys].
   void _registerPaintingImagePath({
     required String fileId,
     required Object paintingImageFileKey,
@@ -114,6 +143,9 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
     }
   }
 
+  /// {@macro act_server_storage_manager.MixinImageCacheService.createKey}
+  ///
+  /// If [maxWidth] or [maxHeight] aren't finite, their values are not added in the key.
   static String createKeyFromDouble({
     required String fileId,
     required double? maxWidth,
@@ -125,6 +157,12 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
         maxHeight: maxHeight != null && maxHeight.isFinite ? maxHeight.ceil() : null,
       );
 
+  /// {@template act_server_storage_manager.MixinImageCacheService.createKey}
+  /// Create an image key with the [maxWidth] and [maxHeight] in the key. This is useful, to have an
+  /// image key which differentiates the images by their size.
+  ///
+  /// If [maxWidth] or [maxHeight] are null, their values are not added in the key.
+  /// {@endtemplate}
   static String createKey({
     required String fileId,
     required int? maxWidth,

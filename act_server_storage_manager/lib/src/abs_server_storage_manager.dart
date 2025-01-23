@@ -44,18 +44,21 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// use it.
   late final MixinStorageService _storageService;
 
+  /// This is an access to [_storageService] for the derived classes
   @protected
   MixinStorageService get storageService => _storageService;
 
   /// Instance of the [CacheService] to use a cache mechanism. Null when no cache is used.
   late final CacheService? _cacheService;
 
+  /// This is an access to [_cacheService] for the derived classes
   @protected
   CacheService? get cacheService => _cacheService;
 
   /// Manager logs helper
   late final LogsHelper _logsHelper;
 
+  /// This is an access to [_logsHelper] for the derived classes
   @protected
   LogsHelper get logsHelper => _logsHelper;
 
@@ -193,8 +196,8 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     return (result: StorageRequestResult.success, page: page);
   }
 
-  /// This method is used by the [AbsServerStorageManager] to get the [CacheService] instance to use. It
-  /// must be implemented by the concrete class.
+  /// This method is used by the [AbsServerStorageManager] to get the [CacheService] instance to
+  /// use. It must be implemented by the concrete class.
   @protected
   Future<MixinStorageService> getStorageService();
 

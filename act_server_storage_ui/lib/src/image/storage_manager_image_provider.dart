@@ -15,6 +15,9 @@ import 'package:flutter/painting.dart';
 /// This is an [ImageProvider] to load an image from the [AbsServerStorageManager]
 ///
 /// The image is loaded from the [fileId] given.
+///
+/// If [devicePixelRatio] and [maxWidth] or [maxHeight] are given, the image provider will be
+/// resized at the right size.
 class StorageManagerImageProvider<S extends MixinImageCacheService> extends ImageProvider<String> {
   /// The server storage manager
   final S _storageManager;
@@ -25,10 +28,13 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
   /// True to use the server storage cache
   final bool useCache;
 
+  /// This is the max width to use for displaying the image.
   final double? maxWidth;
 
+  /// This is the max height to use for displaying the image.
   final double? maxHeight;
 
+  /// This is the current device pixel ratio
   final double? devicePixelRatio;
 
   /// Class constructor
@@ -47,8 +53,10 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
   Future<String> obtainKey(ImageConfiguration configuration) async =>
       MixinImageCacheService.createKey(
         fileId: fileId,
-        maxWidth: _getSize(maxWidth),
-        maxHeight: _getSize(maxHeight),
+        // We use the pixel size because the images keys are stored in the cache manager with their
+        // pixel size.
+        maxWidth: _getDevicePixelSize(maxWidth),
+        maxHeight: _getDevicePixelSize(maxHeight),
       );
 
   /// This load an image thanks to the given key
@@ -63,7 +71,8 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
                 DiagnosticsProperty<String>('fileId', fileId),
               ]);
 
-  int? _getSize(double? size) {
+  /// Get the right device pixel size
+  int? _getDevicePixelSize(double? size) {
     if (size == null || !size.isFinite) {
       return null;
     }
@@ -80,8 +89,8 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
   ///
   /// If an error occurred, this returns a [Future.error].
   Future<ImageInfo> _getImage(String key, ImageDecoderCallback decode) async {
-    final tmpHeight = _getSize(maxHeight);
-    final tmpWidth = _getSize(maxWidth);
+    final tmpHeight = _getDevicePixelSize(maxHeight);
+    final tmpWidth = _getDevicePixelSize(maxWidth);
     final fileResult = await _storageManager.getImageFile(
       fileId,
       maxHeight: tmpHeight,
@@ -94,11 +103,7 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
     }
 
     final fileImage = FileImage(fileResult.file!);
-    final tmpImage = _isImageHasToBeResized(
-      file: fileResult.file!,
-      width: tmpWidth,
-      height: tmpHeight,
-    )
+    final tmpImage = (tmpWidth != null || tmpHeight != null)
         ? ResizeImage(
             fileImage,
             width: tmpWidth,
@@ -114,11 +119,4 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
     final image = await completer.future;
     return ImageInfo(image: image);
   }
-
-  bool _isImageHasToBeResized({
-    required File file,
-    required int? width,
-    required int? height,
-  }) =>
-      (width != null || height != null);
 }

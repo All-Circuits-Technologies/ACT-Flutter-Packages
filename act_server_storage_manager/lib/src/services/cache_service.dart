@@ -7,21 +7,25 @@ import 'dart:io';
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_storage_manager/src/models/cache_storage_config.dart';
-import 'package:act_server_storage_manager/src/services/act_cache_manager.dart';
+import 'package:act_server_storage_manager/src/services/cache_with_images_manager.dart';
 import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/services/storage_http_file_service.dart';
+
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
-/// Cache service to handle the caching of files. It uses the [ActCacheManager] to handle the logic of
-/// caching files. The [CacheService] is a wrapper around the [ActCacheManager] to provide an
-/// httpFileService that will use the method implemented in our storageService.
+/// Cache service to handle the caching of files. It uses the [CacheWithImagesManager] to handle the
+/// logic of caching files. The [CacheService] is a wrapper around the [CacheWithImagesManager] to
+/// provide an httpFileService that will use the method implemented in our storageService.
+///
+/// The [CacheWithImagesManager] only adds methods and no properties. Therefore, its ok to add it,
+/// even if we don't use the cache service for images.
 class CacheService extends AbstractService {
   /// This is the log category linked to the cache service
   static const _logsCategory = "cache";
 
-  /// Instance of [ActCacheManager] to handle the logic of caching files.
-  final ActCacheManager _cacheManager;
+  /// Instance of [CacheWithImagesManager] to handle the logic of caching files.
+  final CacheWithImagesManager _cacheManager;
 
   /// This is the logs helper linked to the cache service
   final LogsHelper _logsHelper;
@@ -40,7 +44,7 @@ class CacheService extends AbstractService {
     );
 
     // Create the actual cache manager with the provided parameters and the httpFileService.
-    final cacheManager = ActCacheManager(
+    final cacheManager = CacheWithImagesManager(
       Config(
         cacheConfig.key,
         stalePeriod: cacheConfig.stalePeriod,
@@ -57,7 +61,7 @@ class CacheService extends AbstractService {
 
   /// Constructor for [CacheService].
   CacheService._({
-    required ActCacheManager cacheManager,
+    required CacheWithImagesManager cacheManager,
     required LogsHelper logsHelper,
   })  : _cacheManager = cacheManager,
         _logsHelper = logsHelper,
