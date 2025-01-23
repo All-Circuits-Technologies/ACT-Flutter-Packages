@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_server_req_jwt_logins/src/abs_jwt_login.dart';
-import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart'
-    as jwt_login_constants;
+import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart' as jwt_login_constants;
 import 'package:act_server_req_jwt_logins/src/models/refresh_token_answer.dart';
 import 'package:act_server_req_jwt_logins/src/models/token_info.dart';
 import 'package:act_server_req_manager/act_server_req_manager.dart';
@@ -41,12 +40,11 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
   /// refresh token.
   @protected
   @override
-  Future<bool> manageLoginResponseForInterProcess(
-      RefreshTokenAnswer jwtResponse) async {
+  Future<bool> manageLoginResponseForInterProcess(RefreshTokenAnswer jwtResponse) async {
     // No need to update token info, it's already done in the caller method
     _updateRefreshTokenInfo(jwtResponse);
 
-    logsHelper.d("New refresh token got from server and login request");
+    logsHelper.d("New refresh token retrieved from server and login request");
     return true;
   }
 
@@ -66,8 +64,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
       return false;
     }
 
-    final response =
-        await serverRequester.executeRequestWithoutAuth(loginRequest);
+    final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
 
     if (response.result != RequestResult.success) {
       logsHelper.w("A problem occurred when tried to get the refresh token");
@@ -77,8 +74,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
     final jwtResponse = await parseRefreshResponse(response);
 
     if (jwtResponse == null) {
-      logsHelper.w(
-          "A problem occurred when parsed the refresh response received to get the JWT "
+      logsHelper.w("A problem occurred when parsed the refresh response received to get the JWT "
           "login token");
       return false;
     }
@@ -87,7 +83,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
 
     _updateRefreshTokenInfo(jwtResponse);
 
-    logsHelper.d("New tokens got from server and refresh request");
+    logsHelper.d("New tokens retrieved from server and refresh request");
     return true;
   }
 

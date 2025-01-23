@@ -8,8 +8,8 @@ import 'package:act_config_manager/src/data/config_constants.dart' as config_con
 /// This singleton is used to load and get the config variables.
 ///
 /// We prefer to use a singleton here instead of using the [AbstractConfigManager], because the
-/// [AbstractConfigManager] has to be gotten through the GlobalManager and we don't know its derived
-/// type.
+/// [AbstractConfigManager] has to be retrieved through the GlobalManager and we don't know its
+/// derived type.
 ///
 /// Therefore, it won't be easy to get this instance in all the [AbsConfigVar] derived classes.
 ///

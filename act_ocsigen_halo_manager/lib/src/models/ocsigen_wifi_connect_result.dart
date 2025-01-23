@@ -12,8 +12,8 @@ class OcsigenWiFiConnectResult extends Equatable {
   /// The status of the OCSIGEN WiFi connect method
   final OcsigenWiFiConnectStatus status;
 
-  /// Contains the real error value got from the device (useful when the error isn't known by the
-  /// API)
+  /// Contains the real error value retrieved from the device (useful when the error isn't known by
+  /// the API)
   final int errorValue;
 
   /// The private constructor
@@ -29,8 +29,7 @@ class OcsigenWiFiConnectResult extends Equatable {
     final length = packet.elementsNb;
 
     if (length != 1) {
-      appLogger().w(
-          "The result received after trying to connect to the WiFi isn't well formatted, "
+      appLogger().w("The result received after trying to connect to the WiFi isn't well formatted, "
           "we haven't received one element has expected");
       return null;
     }
@@ -38,8 +37,7 @@ class OcsigenWiFiConnectResult extends Equatable {
     final tmpErrorResult = packet.getUInt(0);
 
     if (tmpErrorResult == null) {
-      appLogger().w(
-          "The first element isn't an unsigned integer, we can't parse the Ocsigen WiFi "
+      appLogger().w("The first element isn't an unsigned integer, we can't parse the Ocsigen WiFi "
           "connect result");
       return null;
     }
@@ -48,8 +46,7 @@ class OcsigenWiFiConnectResult extends Equatable {
 
     final tmpStatus = OcsigenWiFiConnectStatus.parseValue(tmpErrorValue);
 
-    return OcsigenWiFiConnectResult._(
-        status: tmpStatus, errorValue: tmpErrorValue);
+    return OcsigenWiFiConnectResult._(status: tmpStatus, errorValue: tmpErrorValue);
   }
 
   @override

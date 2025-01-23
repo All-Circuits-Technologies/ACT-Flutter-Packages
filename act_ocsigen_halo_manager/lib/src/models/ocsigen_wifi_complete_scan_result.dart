@@ -7,7 +7,7 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_ocsigen_halo_manager/src/types/ocsigen_wifi_auth_mode.dart';
 import 'package:equatable/equatable.dart';
 
-/// Represents the result of the WiFi complete scan got from Device
+/// Represents the result of the WiFi complete scan retrieved from Device
 class OcsigenWiFiCompleteScanResult extends Equatable {
   /// The number of elements contained in the result received from device
   static const elementsNb = 4;

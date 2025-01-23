@@ -137,7 +137,7 @@ Those are the env variables set when the app is built (through the command argum
 
 ###### 4.2.3. Env variables of the OS
 
-Those are the env variables got from the OS.
+Those are the env variables retrieved from the OS.
 
 ##### 4.3. Use `.env` file
 

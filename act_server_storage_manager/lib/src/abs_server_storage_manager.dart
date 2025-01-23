@@ -138,16 +138,16 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// List all the files in a given [directory].
   ///
   /// The method tried to get the files until it matches the expected conditions.
-  /// The [page] returned contains all the files got.
+  /// The [page] returned contains all the files retrieved.
   ///
   /// If [matchUntil] and [matchUntilWithAll] are null, the method tries to get all.
   ///
-  /// [matchUntil] is called with what the method has last gotten (not all the elements already
+  /// [matchUntil] is called with what the method has last retrieved (not all the elements already
   /// retrieved).
   /// If [matchUntil] is not null and returned true, the method stops here and returned all the
   /// elements already retrieved.
   ///
-  /// [matchUntilWithAll] is called with all the elements already gotten.
+  /// [matchUntilWithAll] is called with all the elements already retrieved.
   /// If [matchUntilWithAll] is not null and it returned true, the method stops here and returned all
   /// the elements already retrieved.
   ///
@@ -155,7 +155,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// called first.
   Future<({StorageRequestResult result, StoragePage? page})> listFilesUntil(
     String searchPath, {
-    bool Function(List<StorageFile> lastItemsGot)? matchUntil,
+    bool Function(List<StorageFile> lastItemsRetrieved)? matchUntil,
     bool Function(List<StorageFile> items)? matchUntilWithAll,
     int? pageSize,
     String? nextToken,

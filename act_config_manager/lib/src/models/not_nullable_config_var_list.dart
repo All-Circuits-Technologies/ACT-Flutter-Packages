@@ -11,11 +11,12 @@ import 'package:act_config_manager/src/models/abs_config_var.dart';
 ///
 /// If the config variable isn't defined in the environment, [load] method returns [defaultValue]
 class NotNullableConfigVarList<T> extends AbsConfigVar<T> {
-  /// The default value to use when nothing is got from the config files.
+  /// The default value to use when nothing is retrieved from the config files.
   final List<T> defaultValues;
 
   /// Class constructor
-  /// If [defaultValues] isn't null, this value will be returned when null is got from config files.
+  /// If [defaultValues] isn't null, this value will be returned when null is retrieved from config
+  /// files.
   const NotNullableConfigVarList(
     super.key, {
     required this.defaultValues,

@@ -84,7 +84,7 @@ class LocationManager extends AbstractPeriphManager {
         if (_initConfig.isLocationUsageAlways)
           PermissionConfig(
             element: PermissionElement.locationAlways,
-            whenAskingForceGoToSettings: globalGetIt().get<PlatformManager>().isIos,
+            whenAskingForceRetrievedToSettings: globalGetIt().get<PlatformManager>().isIos,
             whenAskingDependsOn: const [PermissionElement.locationWhenInUse],
           ),
         const PermissionConfig(
@@ -197,8 +197,8 @@ class LocationManager extends AbstractPeriphManager {
 
   /// Get the last known position of the phone
   ///
-  /// If the location is disabled in the phone, this will return null (even if you got positions
-  /// before)
+  /// If the location is disabled in the phone, this will return null (even if you retrieved
+  /// positions before)
   Future<Position?> getLastKnownPosition({
     bool askPermissionToUser = true,
   }) async {

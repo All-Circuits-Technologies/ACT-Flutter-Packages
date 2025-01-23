@@ -23,10 +23,10 @@ class QrCodeFoundEvent extends QrCodeEvent {
 }
 
 /// Emitted when a new permission status is raised
-class QrCodePermissionGotEvent extends QrCodeEvent {
+class QrCodePermissionRetrievedEvent extends QrCodeEvent {
   final PermissionStatus permissionStatus;
 
-  const QrCodePermissionGotEvent({
+  const QrCodePermissionRetrievedEvent({
     required this.permissionStatus,
   }) : super();
 

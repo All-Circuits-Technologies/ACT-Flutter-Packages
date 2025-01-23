@@ -23,7 +23,7 @@ class PermissionConfig extends Equatable {
   final bool whenAskingCheckRationale;
 
   /// Say if we need to go to settings page when asking for permission
-  final bool whenAskingForceGoToSettings;
+  final bool whenAskingForceRetrievedToSettings;
 
   /// The permissions list, this permission depends on
   final List<PermissionElement> whenAskingDependsOn;
@@ -32,7 +32,7 @@ class PermissionConfig extends Equatable {
   const PermissionConfig({
     required this.element,
     this.whenAskingCheckRationale = false,
-    this.whenAskingForceGoToSettings = false,
+    this.whenAskingForceRetrievedToSettings = false,
     this.whenAskingDependsOn = const [],
   });
 
@@ -40,7 +40,7 @@ class PermissionConfig extends Equatable {
   List<Object?> get props => [
         element,
         whenAskingCheckRationale,
-        whenAskingForceGoToSettings,
+        whenAskingForceRetrievedToSettings,
         whenAskingDependsOn,
       ];
 }
@@ -56,8 +56,7 @@ class NotKnownDependencyException implements Exception {
 
 /// This contains the dependencies needed by the [MPermissionsService] when using the mixin on
 /// AbstractManager
-mixin MPermissionsServiceBuilder<T extends AbstractManager>
-    on ManagerBuilder<T> {
+mixin MPermissionsServiceBuilder<T extends AbstractManager> on ManagerBuilder<T> {
   @override
   Iterable<Type> dependsOn() => [PermissionsManager];
 }
@@ -70,8 +69,7 @@ mixin MPermissionsService on AbstractManager {
   final Map<PermissionElement, _PermissionContainer> _permissionContainer = {};
 
   /// The stream controller for the permissions state
-  final StreamController<bool> _permissionsCtrl =
-      StreamController<bool>.broadcast();
+  final StreamController<bool> _permissionsCtrl = StreamController<bool>.broadcast();
 
   /// Returns a stream to watch the permissions state, linked to the [hasPermissions] value
   Stream<bool> get permissionsStream => _permissionsCtrl.stream;
@@ -100,7 +98,7 @@ mixin MPermissionsService on AbstractManager {
         updatePermission: updatePermission,
         whenAskingCheckRationale: config.whenAskingCheckRationale,
         whenAskingDependsOn: [],
-        whenAskingForceGoToSettings: config.whenAskingForceGoToSettings,
+        whenAskingForceGoToSettings: config.whenAskingForceRetrievedToSettings,
       );
 
       dependsOn[config.element] = config.whenAskingDependsOn;
@@ -212,8 +210,7 @@ mixin MPermissionsService on AbstractManager {
   /// value
   /// Returns true if [hasPermissions] has been updated in this method call
   @protected
-  Future<bool> updatePermission(
-      PermissionElement element, bool newValue) async {
+  Future<bool> updatePermission(PermissionElement element, bool newValue) async {
     final previousGranted = hasPermissions;
 
     _permissionContainer[element]!.hasPermission = newValue;
@@ -287,10 +284,8 @@ class _PermissionContainer {
       permissionElement: element,
     );
 
-    _permissionSub = permissionManager
-        .getAHandler(element)
-        .statusStream
-        .listen(_onPermissionStatusUpdated);
+    _permissionSub =
+        permissionManager.getAHandler(element).statusStream.listen(_onPermissionStatusUpdated);
   }
 
   /// Check and ask for permission
@@ -316,8 +311,7 @@ class _PermissionContainer {
     }
 
     if (dependsOnPermission && !tmpHasPermission) {
-      tmpHasPermission =
-          await _permissionMonitorService.verifyAndAskBeforeAction(
+      tmpHasPermission = await _permissionMonitorService.verifyAndAskBeforeAction(
         displayContextualIfNeeded: displayContextualIfNeeded,
         checkRationale: whenAskingCheckRationale,
         forceGoToSettings: whenAskingForceGoToSettings,

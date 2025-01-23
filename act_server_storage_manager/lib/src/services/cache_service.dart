@@ -88,12 +88,13 @@ class CacheService extends AbstractService {
   /// If the [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
   ///
   /// {@template act_server_storage_manager.CacheService.getImageFile.size}
-  /// In case we use the cache and [maxWidth] and [maxHeight] are not null, the image file is got
-  /// from the distant server and stored with its default size and the size asked. Therefore:
+  /// In case we use the cache and [maxWidth] and [maxHeight] are not null, the image file is
+  /// retrieved from the distant server and stored with its default size and the size asked.
+  /// Therefore:
   ///
   /// - if you ask again the same size, it will return the image with the right size
-  /// - if you ask a new size, because you already got the default size, it will use it and store in
-  ///   cache the new size before returning it.
+  /// - if you ask a new size, because you already retrieved the default size, it will use it and
+  ///   store in cache the new size before returning it.
   ///
   /// The [maxWidth] and [maxHeight] values given must have been multiplied with the device pixel
   /// ratio or you will get blurry images.
@@ -117,7 +118,7 @@ class CacheService extends AbstractService {
     }
 
     if (fileResponse is! FileInfo) {
-      _logsHelper.w("The image file response got for: $fileId, is not a FileInfo");
+      _logsHelper.w("The image file response retrieved for: $fileId, is not a FileInfo");
       return (result: StorageRequestResult.genericError, file: null);
     }
 

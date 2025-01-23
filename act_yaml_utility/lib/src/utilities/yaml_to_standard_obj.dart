@@ -86,7 +86,7 @@ sealed class YamlToStandardObj {
   /// This loses specific YAML elements like comments.
   ///
   /// This method is recursive with [fromYamlList], [fromYamlMap] and [_fromYamlNode] methods.
-  // We manipulate yaml value, so the value got is dynamic
+  // We manipulate yaml value, so the value retrieved is dynamic
   // ignore: avoid_annotating_with_dynamic
   static dynamic fromYamlValue(dynamic value) {
     // YamlList and YamlMap inherits from YamlNode

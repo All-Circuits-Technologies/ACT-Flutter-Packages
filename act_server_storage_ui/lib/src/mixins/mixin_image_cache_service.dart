@@ -16,7 +16,7 @@ import 'package:flutter/widgets.dart';
 /// views. To do it, we register the image keys and clear the flutter cache when calling
 /// [clearImageFileFromCache] method. The right image will be displayed at the next view reload.
 ///
-/// It keeps a list [_paintingImagesKeys] of all the images got with different size.
+/// It keeps a list [_paintingImagesKeys] of all the images retrieved with different size.
 /// This list is used to clear, if needed, the flutter painting image cache [ImageCache].
 mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageManager<C> {
   /// Keeps the flutter painting image cache [ImageCache] keys for each file retrieved. This is
