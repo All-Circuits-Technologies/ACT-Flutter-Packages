@@ -592,7 +592,12 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
 
   /// Get current location
   String _getCurrentLocation() {
-    final lastMatch = _router.routerDelegate.currentConfiguration.last;
+    final configuration = _router.routerDelegate.currentConfiguration;
+    if (configuration.isEmpty) {
+      _logsHelper.w("We can't get the current location: the current configuration is empty");
+      return "";
+    }
+    final lastMatch = configuration.last;
     final matchList = lastMatch is ImperativeRouteMatch
         ? lastMatch.matches
         : _router.routerDelegate.currentConfiguration;
