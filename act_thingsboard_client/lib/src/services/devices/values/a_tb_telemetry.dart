@@ -74,8 +74,7 @@ abstract class ATbTelemetry<T> {
   /// Subscribe to elements thanks to their [keys]
   ///
   /// Returns true if no problem occurred
-  Future<bool> subscribeElements({required List<String> keys}) =>
-      _manageElementsSub(() async {
+  Future<bool> subscribeElements({required List<String> keys}) => _manageElementsSub(() async {
         for (final key in keys) {
           if (!_values.containsKey(key)) {
             _values[key] = _TelemetryInfo<T>();
@@ -92,8 +91,7 @@ abstract class ATbTelemetry<T> {
 
   /// Unsubscribe from elements thanks to their [keys], if on of the elements isn't subscribed,
   /// nothing is done with it
-  Future<bool> unSubscribeElements({required List<String> keys}) =>
-      _manageElementsSub(() async {
+  Future<bool> unSubscribeElements({required List<String> keys}) => _manageElementsSub(() async {
         for (final key in keys) {
           final element = _values[key];
 
@@ -107,8 +105,7 @@ abstract class ATbTelemetry<T> {
           }
 
           if (element.nbHandler == 0) {
-            element.noMoreNeededTs =
-                DateTime.now().toUtc().add(_thresholdTimeout);
+            element.noMoreNeededTs = DateTime.now().toUtc().add(_thresholdTimeout);
           }
         }
 
@@ -152,8 +149,7 @@ abstract class ATbTelemetry<T> {
     final now = DateTime.now().toUtc();
 
     // Remove the values which are no more needed
-    _values.removeWhere(
-        (key, value) => value.noMoreNeededTs?.isBefore(now) ?? false);
+    _values.removeWhere((key, value) => value.noMoreNeededTs?.isBefore(now) ?? false);
 
     final elementsToSub = _getSortedElementsToSubscribe();
 
@@ -163,11 +159,9 @@ abstract class ATbTelemetry<T> {
     }
 
     if (_subscriber != null) {
-      if (!(await _requestService
-              .safeRequest((tbClient) async => _subscriber?.unsubscribe()))
+      if (!(await _requestService.safeRequest((tbClient) async => _subscriber?.unsubscribe()))
           .isOk) {
-        _logsHelper.w(
-            "A problem occurred when tried to unsubscribe from the telemetry");
+        _logsHelper.w("A problem occurred when tried to unsubscribe from the telemetry");
         return false;
       }
 
@@ -193,9 +187,7 @@ abstract class ATbTelemetry<T> {
 
     final subscription = subscriber.dataStream.listen(_onUpdateValues);
 
-    if (!(await _requestService
-            .safeRequest((tbClient) async => subscriber.subscribe()))
-        .isOk) {
+    if (!(await _requestService.safeRequest((tbClient) async => subscriber.subscribe())).isOk) {
       _logsHelper.w("A problem occurred when tried to subscribe to telemetry");
       await subscription.cancel();
       return false;
@@ -226,8 +218,7 @@ abstract class ATbTelemetry<T> {
   /// Called when new values linked to the subscribed telemetry elements are received
   Future<void> _onUpdateValues(SubscriptionUpdate subUpdate) async {
     if (subUpdate.errorCode != 0) {
-      _logsHelper.d(
-          "A problem occurred when receiving telemetries from thingsboard, error "
+      _logsHelper.d("A problem occurred when receiving telemetries from thingsboard, error "
           "message: ${subUpdate.errorMsg}");
       return;
     }
@@ -286,9 +277,9 @@ abstract class ATbTelemetry<T> {
 
 /// This class contains the information linked to telemetry
 class _TelemetryInfo<T> {
-  /// The current value got from server
-  /// When null, it means either the value hasn't been got from server yet, the value is null in the
-  /// server or the telemetry element doesn't exist in the server
+  /// The current value retrieved from server
+  /// When null, it means either the value hasn't been retrieved from server yet, the value is null
+  /// in the server or the telemetry element doesn't exist in the server
   T? value;
 
   /// This is different of null when no more class instances need to get values from this telemetry

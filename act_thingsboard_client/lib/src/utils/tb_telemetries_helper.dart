@@ -10,7 +10,7 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 sealed class TbTelemetriesHelper {
   /// Get the attribute value from a given [TbExtAttributeData]
   ///
-  /// Returns null if the value is null or if we fail to parse the value got
+  /// Returns null if the value is null or if we fail to parse the value retrieved
   ///
   /// The method raises an exception if the wanted type is unknown
   static T? getAttributeValue<T>(TbExtAttributeData? extAttr) =>
@@ -18,23 +18,20 @@ sealed class TbTelemetriesHelper {
 
   /// Get the time series value from a given [TsValue]
   ///
-  /// Returns null if the value is null or if we fail to parse the value got
+  /// Returns null if the value is null or if we fail to parse the value retrieved
   ///
   /// The method raises an exception if the wanted type is unknown
-  static T? getTsValue<T>(TsValue? tsValue) =>
-      StringUtility.parseStrValue<T>(tsValue?.value);
+  static T? getTsValue<T>(TsValue? tsValue) => StringUtility.parseStrValue<T>(tsValue?.value);
 
   /// Parse the lastTs of the given [TsValue] and returns a [DateTime]
   ///
   /// Returns null if the value or timestamp is null
-  static DateTime? getTsLastUtcReceptionTime(TsValue? tsValue) =>
-      _parseUtcDateTime(tsValue?.ts);
+  static DateTime? getTsLastUtcReceptionTime(TsValue? tsValue) => _parseUtcDateTime(tsValue?.ts);
 
   /// Parse the lastTs of the given [TbExtAttributeData] and returns a [DateTime]
   ///
   /// Returns null if the value or timestamp is null
-  static DateTime? getAttributeLastUtcReceptionTime(
-          TbExtAttributeData? extAttr) =>
+  static DateTime? getAttributeLastUtcReceptionTime(TbExtAttributeData? extAttr) =>
       _parseUtcDateTime(extAttr?.data.lastUpdateTs);
 
   /// Useful method to parse an UTC millisecond timestamp to [DateTime]

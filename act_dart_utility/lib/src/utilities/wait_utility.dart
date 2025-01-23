@@ -12,7 +12,8 @@ sealed class WaitUtility {
   ///
   /// If you want to call a method while the status is listened, you can give a [doAction] method.
   /// If [doAction] returns false, it means that a problem occurred and we do no more need to wait
-  /// for a status. In that case, the method returns the current value (got with [valueGetter]).
+  /// for a status. In that case, the method returns the current value (retrieved with
+  /// [valueGetter]).
   ///
   /// The timeout (if given) is not operational while [doAction] is called.
   static Future<T> waitForStatus<T>({
@@ -40,7 +41,8 @@ sealed class WaitUtility {
   ///
   /// If you want to call a method while the status is listened, you can give a [doAction] method.
   /// If [doAction] returns false, it means that a problem occurred and we do no more need to wait
-  /// for a status. In that case, the method returns the current value (got with [valueGetter]).
+  /// for a status. In that case, the method returns the current value (retrieved with
+  /// [valueGetter]).
   ///
   /// The timeout (if given) is not operational while [doAction] is called.
   ///

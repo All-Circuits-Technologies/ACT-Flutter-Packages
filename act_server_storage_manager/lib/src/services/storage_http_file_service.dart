@@ -27,12 +27,12 @@ class StorageHttpFileService extends HttpFileService {
     Map<String, String>? headers,
   }) async {
     /// Get the download url
-    final (result, downloadUrl) = await _storageService.getDownloadUrl(url);
+    final urlResult = await _storageService.getDownloadUrl(url);
 
-    if (result != StorageRequestResult.success) {
-      throw Exception('Error while getting download url for $url: $result');
+    if (urlResult.result != StorageRequestResult.success) {
+      throw Exception('Error while getting download url for $url: $urlResult');
     }
 
-    return super.get(downloadUrl!);
+    return super.get(urlResult.downloadUrl!);
   }
 }

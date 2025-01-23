@@ -148,8 +148,8 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> {
     required bool isNullable,
   }) {
     final extra = state.extra;
-    final textIfError = "The ${state.name} page can't be created because we haven't got the right "
-        "argument";
+    final textIfError = "The ${state.name} page can't be created because we didn't retrieve the "
+        "right argument";
     final testIsOk = ((isNullable && extra == null) || (extra != null && extra is ExtraType));
     assert(testIsOk, textIfError);
 

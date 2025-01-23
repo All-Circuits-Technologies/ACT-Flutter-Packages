@@ -46,7 +46,7 @@ class TranslatedHtmlText extends StatefulWidget {
 }
 
 class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
-  /// The text got from file and already translated
+  /// The text retrieved from file and already translated
   late ScrollController _scrollController;
   late bool _first;
 

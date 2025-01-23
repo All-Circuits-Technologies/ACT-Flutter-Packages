@@ -2,8 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart'
-    as jwt_login_constants;
+import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart' as jwt_login_constants;
 import 'package:act_server_req_jwt_logins/src/models/token_answer.dart';
 import 'package:act_server_req_jwt_logins/src/models/token_info.dart';
 import 'package:act_server_req_manager/act_server_req_manager.dart';
@@ -55,8 +54,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     // I redo the test to avoid to have a warning with the next lines (and because the content
     // of the method may change in future and we may forget to apply the modifications here)
     if (_tokenInfo == null || !verifyTokenInfo(_tokenInfo)) {
-      logsHelper.e(
-          "The token info aren't correct but we succeeded all the login process, that "
+      logsHelper.e("The token info aren't correct but we succeeded all the login process, that "
           "can't happen but it happened...");
       return RequestResult.globalError;
     }
@@ -110,13 +108,12 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     }
   }
 
-  /// This method verifies the token information got from the server.
+  /// This method verifies the token information retrieved from the server.
   ///
   /// If no expiration date is set in the token, we consider that there is no problem, but the
   /// token may fails at any time.
   @protected
-  static bool verifyTokenInfo(TokenInfo? tokenInfo) =>
-      tokenInfo != null && tokenInfo.isValid;
+  static bool verifyTokenInfo(TokenInfo? tokenInfo) => tokenInfo != null && tokenInfo.isValid;
 
   /// This manages the logIn into the server via the [getLoginRequest] executed
   Future<RequestResult> _manageLogInToServer() async {
@@ -127,8 +124,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
       return RequestResult.globalError;
     }
 
-    final response =
-        await serverRequester.executeRequestWithoutAuth(loginRequest);
+    final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
 
     if (response.result != RequestResult.success) {
       logsHelper.w("A problem occurred when tried to login to the app");
@@ -138,29 +134,26 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     final jwtResponse = await parseLoginResponse(response);
 
     if (jwtResponse == null) {
-      logsHelper.w(
-          "A problem occurred when parsed the response received to get the JWT login "
+      logsHelper.w("A problem occurred when parsed the response received to get the JWT login "
           "token");
       return RequestResult.globalError;
     }
 
     if (!(await manageLoginResponseForInterProcess(jwtResponse))) {
-      logsHelper.w(
-          "A problem occurred when parsed the response received by the intermediate "
+      logsHelper.w("A problem occurred when parsed the response received by the intermediate "
           "process");
       return RequestResult.globalError;
     }
 
     updateTokenInfo(jwtResponse);
 
-    logsHelper.d("New token got from server");
+    logsHelper.d("New token retrieved from server");
     return RequestResult.success;
   }
 
   /// This method adds the token into the headers of the future request
   void _formatHeaderWithToken(RequestParam futureRequestParam, String token) {
-    futureRequestParam.headers[headerAuthKey] =
-        headerAuthValueFormatted.replaceAll(
+    futureRequestParam.headers[headerAuthKey] = headerAuthValueFormatted.replaceAll(
       jwt_login_constants.tokenBearerKey,
       token,
     );

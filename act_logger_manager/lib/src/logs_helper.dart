@@ -19,7 +19,7 @@ class LogsHelper {
   /// The log level to used when displaying messages from external packages
   final Level _defaultLogLevel;
 
-  /// True if the logs from the module are to be gotten
+  /// True if the logs from the module are to be retrieved
   final bool enableLog;
 
   /// Class constructor

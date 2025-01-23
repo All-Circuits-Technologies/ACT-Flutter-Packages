@@ -139,8 +139,8 @@ class ResponseWaiter {
           return;
         }
 
-        appLogger().w("The timeout raised before we got the expected value from characteristic: "
-            "${_parentToRegister.name} (uuid: ${_parentToRegister.uuid}),");
+        appLogger().w("The timeout raised before we retrieved the expected value from "
+            "characteristic: ${_parentToRegister.name} (uuid: ${_parentToRegister.uuid}),");
         await cancel();
       });
     }

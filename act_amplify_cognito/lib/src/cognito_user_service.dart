@@ -42,7 +42,7 @@ class CognitoUserService extends AbstractService {
   /// {@template CognitoUserService.getCurrentUserId}
   /// Get the identity id of the current user
   ///
-  /// If [includeRegion] is equals to true, the id got will look like this:
+  /// If [includeRegion] is equals to true, the id retrieved will look like this:
   /// us-west-2:d2cf2506-40fc-c9e7-2bb5-d09d109fbe16
   /// If [includeRegion] is equals to false, only the UUID part will be returned
   /// {@endtemplate}

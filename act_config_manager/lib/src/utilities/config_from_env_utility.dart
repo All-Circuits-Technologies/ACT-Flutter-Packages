@@ -17,7 +17,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 /// This class contains useful methods to parse environment variables and returns a structured
 /// config from them.
 ///
-/// The env variables are gotten from the build and runtime env variables but also the .env file.
+/// The env variables are retrieved from the build and runtime env variables but also the .env file.
 ///
 /// The config structure is built thanks to the env config mapping file.
 sealed class ConfigFromEnvUtility {
@@ -161,7 +161,7 @@ sealed class ConfigFromEnvUtility {
   /// The method fills the config map thanks to the [model.path] and the given value.
   ///
   /// The method builds the config structure.
-  // We manipulate json value, so the value got is dynamic
+  // We manipulate json value, so the value retrieved is dynamic
   // ignore: avoid_annotating_with_dynamic
   static void _fillMap(Map<String, dynamic> mapToFill, EnvConfigMappingModel model, dynamic value) {
     final lastIdx = model.path.length - 1;

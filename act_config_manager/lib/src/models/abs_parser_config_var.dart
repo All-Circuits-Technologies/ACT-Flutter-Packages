@@ -15,7 +15,8 @@ import 'package:flutter/foundation.dart';
 /// - List<dynamic>
 typedef ParserFunc<ParsedType, StoredType> = ParsedType? Function(StoredType value);
 
-/// This class allows to access a config variable value which needs to be parsed before being got.
+/// This class allows to access a config variable value which needs to be parsed before being
+/// retrieved.
 /// This class has to be used, when you want to get enum, class or other complex objects from the
 /// conf variables.
 abstract class AbsParserConfigVar<ParsedType, StoredType> extends AbsConfigVar<StoredType> {

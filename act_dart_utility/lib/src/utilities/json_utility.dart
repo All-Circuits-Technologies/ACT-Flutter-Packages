@@ -14,7 +14,8 @@ abstract class JsonUtility {
   /// Find the element thanks to the [key] given. If the element can be not present in the JSON set
   /// [canBeUndefined] to true.
   ///
-  /// A cast function can be given: [castValueFunc] to transform the value got to the expected type
+  /// A cast function can be given: [castValueFunc] to transform the value retrieved to the expected
+  /// type
   ///
   /// Returns true in first item if no problem occurred
   static (bool, T?) getOneElement<T, Y>({
@@ -52,7 +53,8 @@ abstract class JsonUtility {
   /// Find the element thanks to the [key] given. We expect to find the element, if it's not
   /// present we return null.
   ///
-  /// A cast function can be given: [castValueFunc] to transform the value got to the expected type
+  /// A cast function can be given: [castValueFunc] to transform the value retrieved to the expected
+  /// type
   ///
   /// Returns null if the element hasn't been found or it hasn't the right type
   static T? getNotNullOneElement<T, Y>({
@@ -80,7 +82,7 @@ abstract class JsonUtility {
   /// Find the list thanks to the [key] given. If the element can be not present in the JSON set
   /// [canBeUndefined] to true.
   ///
-  /// A cast function can be given: [castElemValueFunc] to transform the elements list gotten to
+  /// A cast function can be given: [castElemValueFunc] to transform the elements list retrieved to
   /// the expected type.
   ///
   /// Returns true in first item if no problem occurred
@@ -121,7 +123,7 @@ abstract class JsonUtility {
   /// Find the list thanks to the [key] given. We expect to find the element, if it's not present
   /// we return null.
   ///
-  /// A cast function can be given: [castElemValueFunc] to transform the elements list gotten to
+  /// A cast function can be given: [castElemValueFunc] to transform the elements list retrieved to
   /// the expected type.
   ///
   /// Returns null if the element hasn't been found or it hasn't the right type
