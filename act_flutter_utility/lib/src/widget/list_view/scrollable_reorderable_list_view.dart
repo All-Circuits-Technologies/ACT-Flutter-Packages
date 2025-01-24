@@ -90,7 +90,11 @@ class ScrollableReorderableListView extends StatelessWidget {
     Timer? timer,
     double dy,
   ) {
-    final screenHeight = MediaQuery.of(context).size.height;
+    final screenHeight = MediaQuery.maybeOf(context)?.size.height;
+    if (screenHeight == null) {
+      // We can't start auto scroll: we can't get the media query
+      return null;
+    }
 
     if (dy < _scrollThreshold) {
       return _startScrolling(scrollController, timer, -_scrollStep);
