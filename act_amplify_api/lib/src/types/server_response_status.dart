@@ -11,6 +11,8 @@ enum ServerResponseStatus {
   paymentRequired(HttpStatus.paymentRequired, genericClientError),
   forbidden(HttpStatus.forbidden, genericClientError),
   notFound(HttpStatus.notFound, genericClientError),
+  // Too early doesn't exist in the HttpStatus values
+  tooEarly(425, genericClientError),
   internalServerError(HttpStatus.internalServerError, genericServerError),
   genericSuccess.generic(isOk: true),
   genericClientError.generic(),
