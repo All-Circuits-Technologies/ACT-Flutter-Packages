@@ -369,6 +369,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   /// An app may want to show user a sign in page when it catches one of those exceptions somewhere.
   Set<Type> getNonTransientAuthFailureTypes() => {
         UserNotFoundException,
+        SignedOutException,
       };
 
   @override
