@@ -41,6 +41,6 @@ enum Environment {
       }
     }
 
-    return Environment.development;
+    return Environment.production;
   }
 }

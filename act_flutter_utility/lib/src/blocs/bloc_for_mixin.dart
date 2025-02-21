@@ -14,9 +14,11 @@ abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEve
     registerMixinEvents();
   }
 
+  /// {@template BlocForMixin.registerMixinEvents}
   /// Override this method in your mixin to register the events (on<EventX>(_onEventX)) in the bloc.
   /// We provide an empty definition to allow the "@mustCallSuper" annotation and make sure
   /// the method can be called in the constructor.
+  /// {@endtemplate}
   @mustCallSuper
   void registerMixinEvents() {}
 }
