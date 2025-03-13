@@ -21,7 +21,7 @@ dependencies:
   flutter_cache_manager: ^3.4.1
 
   # Used to get the application directory (cache, documents, etc.)
-  path_provider: ^2.1.4
+  path_provider: ^2.1.5
 
   # Easily create managers
   act_abstract_manager:
