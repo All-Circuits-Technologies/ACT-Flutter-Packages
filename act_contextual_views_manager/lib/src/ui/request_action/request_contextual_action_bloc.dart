@@ -5,13 +5,13 @@
 import 'dart:async';
 
 import 'package:act_contextual_views_manager/act_contextual_views_manager.dart';
-
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mutex/mutex.dart';
 
 /// This bloc is used to request the user and waits for the associated status update
 class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
-    extends Bloc<RequestContextualActionEvent, RequestContextualActionState> {
+    extends BlocForMixin<RequestContextualActionState> {
   /// Subscription to the isOk stream
   late final StreamSubscription _isOkSub;
 
@@ -33,7 +33,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     required Stream<bool> isOkStream,
   })  : _whenEndedCalled = false,
         _whenEndedMutex = Mutex(),
-        super(RequestContextualActionInitState(
+        super(RequestContextualActionState.init(
           isOk: isOkCallback(),
         )) {
     on<RequestContextualActionInitEvent>(_onInitCallback);
@@ -57,8 +57,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
       return;
     }
 
-    emitter.call(RequestContextualActionLoadingState(
-      previousState: state,
+    emitter.call(state.copyWithLoadingState(
       loading: false,
     ));
   }
@@ -73,8 +72,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     RequestContextualActionNewStateEvent event,
     Emitter<RequestContextualActionState> emitter,
   ) async {
-    emitter.call(RequestContextualActionUpdateState(
-      previousState: state,
+    emitter.call(state.copyWithResultState(
       isOk: event.isOk,
     ));
 
@@ -91,8 +89,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     RequestContextualActionRefusedEvent event,
     Emitter<RequestContextualActionState> emitter,
   ) async {
-    emitter.call(RequestContextualActionLoadingState(
-      previousState: state,
+    emitter.call(state.copyWithLoadingState(
       loading: true,
     ));
 
@@ -105,8 +102,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     Emitter<RequestContextualActionState> emitter,
   ) =>
       _whenEndedMutex.protect(() async {
-        emitter.call(RequestContextualActionLoadingState(
-          previousState: state,
+        emitter.call(state.copyWithLoadingState(
           loading: true,
         ));
 
@@ -116,8 +112,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
           isOk = await config.requestExtraAction!();
         }
 
-        emitter.call(RequestContextualActionUpdateState(
-          previousState: state,
+        emitter.call(state.copyWithResultState(
           isOk: isOk,
           loading: false,
         ));

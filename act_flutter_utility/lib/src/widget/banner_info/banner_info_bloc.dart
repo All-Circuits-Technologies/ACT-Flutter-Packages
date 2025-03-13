@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_flutter_utility/src/widget/banner_info/banner_info_event.dart';
 import 'package:act_flutter_utility/src/widget/banner_info/banner_info_state.dart';
 import 'package:act_global_manager/act_global_manager.dart';
@@ -11,12 +12,12 @@ import 'package:act_internet_connectivity_manager/act_internet_connectivity_mana
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// This is the bloc of the banner information widget
-class BannerInfoBloc extends Bloc<BannerInfoEvent, BannerInfoState> {
+class BannerInfoBloc extends BlocForMixin<BannerInfoState> {
   /// Stream subscription of the no more internet stream
   late final StreamSubscription _internetSub;
 
   /// Class constructor
-  BannerInfoBloc() : super(const BannerInfoInitState()) {
+  BannerInfoBloc() : super(const BannerInfoState.init()) {
     on<BannerInfoInternetUpdateEvent>(_onInternetStateUpdated);
 
     _internetSub = globalGetIt()
@@ -32,8 +33,7 @@ class BannerInfoBloc extends Bloc<BannerInfoEvent, BannerInfoState> {
     BannerInfoInternetUpdateEvent event,
     Emitter<BannerInfoState> emit,
   ) async {
-    emit(BannerInfoInternetState(
-      previousState: state,
+    emit(state.copyWithInternetState(
       isInternetOk: event.isInternetOk,
     ));
   }
@@ -48,6 +48,7 @@ class BannerInfoBloc extends Bloc<BannerInfoEvent, BannerInfoState> {
     }
   }
 
+  /// Close the bloc
   @override
   Future<void> close() async {
     await _internetSub.cancel();

@@ -19,7 +19,7 @@ dependencies:
   equatable: ^2.0.5
 
   # Implement the BLoC (Business Logic Component) design pattern
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.0.0
 
   # Mutual exclusion with implementation of normal and read-write mutex
   mutex: ^3.1.0
@@ -27,7 +27,7 @@ dependencies:
   thingsboard_client:
     git:
       url: https://github.com/benoit-rolandeau-act/dart_thingsboard_client.git
-      ref: based-on-v1.4.0
+      ref: fix-tb-storage-interface
 
   act_flutter_utility:
     path: ../act_flutter_utility
