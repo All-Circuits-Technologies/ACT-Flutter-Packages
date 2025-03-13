@@ -22,7 +22,7 @@ dependencies:
     sdk: flutter
 
   # Get current device information from within the Flutter application.
-  device_info_plus: ^11.3.0
+  device_info_plus: ^10.0.1
 
   # Easily create managers
   act_abstract_manager:

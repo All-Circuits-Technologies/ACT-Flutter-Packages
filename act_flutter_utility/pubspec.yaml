@@ -25,7 +25,7 @@ dependencies:
   equatable: ^2.0.5
 
   # Implement the BLoC (Business Logic Component) design pattern
-  flutter_bloc: ^9.0.0
+  flutter_bloc: ^9.1.0
 
   # SVG image widget
   flutter_svg: ^2.0.10+1
