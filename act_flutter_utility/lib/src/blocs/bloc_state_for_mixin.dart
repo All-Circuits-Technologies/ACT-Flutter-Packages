@@ -11,9 +11,11 @@ abstract class BlocStateForMixin<S extends BlocStateForMixin<S>> extends Equatab
   /// Mark the class as a const class.
   const BlocStateForMixin();
 
+  /// {@template act_flutter_utility.BlocStateForMixin.copyWith}
   /// copyWith method.
-  /// The derived mxin can force parameters to be required in the copyWith method of
+  /// The derived mixin can force parameters to be required in the copyWith method of
   /// the derived state.
+  /// {@endtemplate}
   @protected
   S copyWith();
 

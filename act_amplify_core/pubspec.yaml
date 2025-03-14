@@ -15,7 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  amplify_flutter: ^2.5.0
+  amplify_flutter: ^2.6.1
 
   equatable: ^2.0.5
 

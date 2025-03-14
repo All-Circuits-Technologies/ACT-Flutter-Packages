@@ -21,9 +21,9 @@ dependencies:
   # Help to implement value based equality without explicit override
   equatable: ^2.0.5
 
-  flutter_bloc: ^8.1.6
+  flutter_bloc: ^9.1.0
 
-  permission_handler: ^11.3.1
+  permission_handler: ^11.4.0
 
   qr_code_scanner: ^1.0.1
 

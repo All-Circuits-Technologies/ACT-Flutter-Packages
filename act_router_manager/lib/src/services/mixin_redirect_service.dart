@@ -22,14 +22,18 @@ mixin MixinRedirectService<T extends MixinRoute> {
   @protected
   AbstractRouterManager<T> get routerManager => _routerManager;
 
+  /// {@template act_router_manager.MixinRedirectService.getRouterManagerFromGlobal}
   /// This method has to be overridden by the derived class to given the router manager of the
   /// project
+  /// {@endtemplate}
   @protected
   AbstractRouterManager<T> getRouterManagerFromGlobal();
 
+  /// {@template act_router_manager.MixinRedirectService.initRedirectService}
   /// This method has to be called to initialize the redirect service. It will register the router
   /// redirection.
   /// When the class is no more used don't forget to call [closeRedirectService] method.
+  /// {@endtemplate}
   @protected
   @mustCallSuper
   Future<bool> initRedirectService() async {
@@ -42,6 +46,7 @@ mixin MixinRedirectService<T extends MixinRoute> {
     return true;
   }
 
+  /// {@template act_router_manager.MixinRedirectService.onRedirect}
   /// This method is called when we want to go to a specific view and ask if it's ok or if we want
   /// to redirect.
   /// If the function returns null, it means that there is nothing to do
@@ -51,12 +56,15 @@ mixin MixinRedirectService<T extends MixinRoute> {
   ///     built and displayed),
   ///   - this method will be recalled with the new view we ask (so be careful to not create
   ///     infinite redirection)
+  /// {@endtemplate}
   @protected
   @mustCallSuper
   Future<T?> onRedirect(BuildContext context, T route, GoRouterState state) async => null;
 
+  /// {@template act_router_manager.MixinRedirectService.closeRedirectService}
   /// This method has to be called to close the redirect service. It will unregister the router
   /// redirection.
+  /// {@endtemplate}
   @protected
   @mustCallSuper
   Future<void> closeRedirectService() async => _routerManager.unregisterRedirect(onRedirect);
