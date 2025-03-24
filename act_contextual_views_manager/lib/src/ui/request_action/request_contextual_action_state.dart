@@ -24,6 +24,7 @@ class RequestContextualActionState extends BlocStateForMixin<RequestContextualAc
   })  : loading = true,
         super();
 
+  /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
   RequestContextualActionState copyWith({
     bool? isOk,
@@ -34,6 +35,7 @@ class RequestContextualActionState extends BlocStateForMixin<RequestContextualAc
         loading: loading ?? this.loading,
       );
 
+  /// Copy the current state and update the loading value
   RequestContextualActionState copyWithLoadingState({
     required bool loading,
   }) =>
@@ -41,6 +43,7 @@ class RequestContextualActionState extends BlocStateForMixin<RequestContextualAc
         loading: loading,
       );
 
+  /// Copy the current state and update the result value
   RequestContextualActionState copyWithResultState({
     required bool isOk,
     bool? loading,
@@ -50,6 +53,7 @@ class RequestContextualActionState extends BlocStateForMixin<RequestContextualAc
         loading: loading,
       );
 
+  /// This is the state properties
   @override
   List<Object?> get props => [...super.props, isOk, loading];
 }

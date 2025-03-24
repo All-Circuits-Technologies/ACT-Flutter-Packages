@@ -14,6 +14,7 @@ class BannerInfoInternetUpdateEvent extends BlocEventForMixin {
     required this.isInternetOk,
   });
 
+  /// This is the event properties
   @override
   List<Object?> get props => [...super.props, isInternetOk];
 }

@@ -54,6 +54,7 @@ class BannerInfoState extends BlocStateForMixin<BannerInfoState> {
     return toDisplayBanners;
   }
 
+  /// This is the state properties
   @override
   List<Object?> get props => [...super.props, isInternetOk];
 }

@@ -25,12 +25,15 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   @override
   Future<void> deleteItem(String key) async => _getSecretItem(key).delete();
 
+  /// Called to get the content of an item
   @override
   Future<String?> getItem(String key, {String? defaultValue}) async => _getSecretItem(key).load();
 
+  /// Called to set the content of an item
   @override
   Future<void> setItem(String key, String value) => _getSecretItem(key).store(value);
 
+  /// Test if the [key] exists in the storage
   @override
   bool containsKey(String key) {
     final secretItem = _tryToGetSecretItem(key);
