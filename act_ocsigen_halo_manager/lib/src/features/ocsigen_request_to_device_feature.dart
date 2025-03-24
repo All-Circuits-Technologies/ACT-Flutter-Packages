@@ -10,6 +10,9 @@ import 'package:act_ocsigen_halo_manager/act_ocsigen_halo_manager.dart';
 /// This is the feature for calling requests on OCSIGEN device
 /// It contains predefined methods known by every part
 class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFeature<HardwareType> {
+  /// This is the default authentication mode for the WiFi connection
+  static const defaultAuthMode = OcsigenWiFiAuthMode.wiFiAuthAuto;
+
   /// Class constructor
   OcsigenRequestToDeviceFeature({
     required super.haloManagerConfig,
@@ -96,23 +99,40 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }
 
   /// Try to connect to the WiFi thanks to the ids given
+  ///
+  /// For supporting backwards compatibility on old boards, when [supportAuthMode] is equals to
+  /// false and [authMode] is equals to the [defaultAuthMode], we don't add the parameters.
+  ///
   /// Returns true if the request succeeds in the device or false if not in the device.
   /// Returns null if a problem occurred in the process
   Future<OcsigenWiFiConnectResult?> wiFiConnect({
     required HardwareType hardwareType,
     required String ssid,
     required String password,
-    OcsigenWiFiAuthMode authMode = OcsigenWiFiAuthMode.wiFiAuthAuto,
+    OcsigenWiFiAuthMode authMode = defaultAuthMode,
+    bool supportAuthMode = true,
     Duration? executionTimeout,
   }) async {
+    if (authMode != defaultAuthMode && !supportAuthMode) {
+      appLogger().w("We don't support the auth mode but the calling method has set an auth mode, "
+          "different to the default mode: $defaultAuthMode");
+      return null;
+    }
+
     final payload = HaloPayloadPacket();
     payload.addString(ssid);
     payload.addString(password);
-    payload.addUInt8(authMode.rawValue);
+    if (supportAuthMode) {
+      payload.addUInt8(authMode.rawValue);
+    }
 
     final packet = HaloRequestParamsPacket(
       requestId: OcsigenRequestId.wiFiConnect,
-      nbValues: const [1, 1, 1],
+      nbValues: [
+        1,
+        1,
+        if (supportAuthMode) 1,
+      ],
       parameters: payload,
     );
 

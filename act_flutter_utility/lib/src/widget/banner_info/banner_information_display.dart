@@ -43,6 +43,9 @@ class BannerInformationDisplay extends StatelessWidget {
   /// This is separator height between the banner elements
   final double separatorHeight;
 
+  /// This is the separator between the elements in the banners
+  final double bannerElementsSeparator;
+
   /// This is the font size
   final double fontSize;
 
@@ -59,6 +62,7 @@ class BannerInformationDisplay extends StatelessWidget {
     ),
     this.minHeight = 48,
     this.separatorHeight = 6,
+    this.bannerElementsSeparator = 0,
     this.fontSize = 11,
     required this.child,
   }) : assert(bannerNbToDisplay >= 1, "The banner display number can't be lower than 1");
@@ -134,7 +138,12 @@ class BannerInformationDisplay extends StatelessWidget {
     return Row(
       children: [
         if (model.icon != null) model.icon!,
-        Expanded(child: text),
+        Expanded(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: bannerElementsSeparator),
+            child: text,
+          ),
+        ),
         if (model.action != null) model.action!,
       ],
     );
