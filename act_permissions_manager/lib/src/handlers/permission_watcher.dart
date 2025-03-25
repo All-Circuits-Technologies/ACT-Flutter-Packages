@@ -187,9 +187,7 @@ class PermissionWatcher extends SharedWatcher<PermissionHandler> {
   /// Call this method to close the listening of the Permission watcher
   @override
   Future<void> close() async {
-    final futures = <Future<void>>[
-      _permissionsManager.dispose(),
-    ];
+    final futures = <Future<void>>[];
 
     if (_lifeCycleSub != null) {
       futures.add(_lifeCycleSub!.cancel());

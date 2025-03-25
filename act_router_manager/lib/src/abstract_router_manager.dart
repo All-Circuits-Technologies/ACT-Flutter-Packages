@@ -28,7 +28,7 @@ typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
     BuildContext context, T route, GoRouterState state);
 
 /// Builder for creating the AbstractGorouterManager
-class AbstractRouterBuilder<M extends AbstractRouterManager> extends ManagerBuilder<M> {
+class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsManagerBuilder<M> {
   /// Class constructor with the class construction
   AbstractRouterBuilder({
     required ClassFactory<M> factory,
@@ -43,7 +43,7 @@ class AbstractRouterBuilder<M extends AbstractRouterManager> extends ManagerBuil
 
 /// The [AbstractRouterManager] simplifies [GoRouter]
 /// It's recommended to use this class as a singleton with a global manager
-abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManager {
+abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCycle {
   /// The logs category linked to the router manager
   static const _logsCategory = "router";
 
@@ -77,7 +77,8 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
   /// The [init] method has to be called to initialize the class
   /// The method will generate the router for GoRouter
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory);
 
     // RoutesHelper build
@@ -629,11 +630,5 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
     }
 
     return route.path;
-  }
-
-  /// After calling  [dispose}, you have to call the [init] method if you want to reuse the class.
-  @override
-  Future<void> dispose() async {
-    await super.dispose();
   }
 }

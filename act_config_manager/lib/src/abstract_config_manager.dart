@@ -15,7 +15,7 @@ import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builder for creating the ConfigManager
-abstract class AbstractConfigBuilder<T extends AbstractConfigManager> extends ManagerBuilder<T> {
+abstract class AbstractConfigBuilder<T extends AbstractConfigManager> extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
   AbstractConfigBuilder(super.factory);
 
@@ -32,7 +32,7 @@ abstract class AbstractConfigBuilder<T extends AbstractConfigManager> extends Ma
 /// To choose the config environment in flutter run/build, use the parameter "--dart-define"
 /// Example : flutter run --dart-define="ENV=PROD".
 /// Possible values are : DEV, QUALIF and PROD.
-abstract class AbstractConfigManager extends AbstractManager {
+abstract class AbstractConfigManager extends AbsWithLifeCycle {
   /// The environment used
   late final Environment env;
 
@@ -53,7 +53,8 @@ abstract class AbstractConfigManager extends AbstractManager {
 
   /// Init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     WidgetsFlutterBinding.ensureInitialized();
 
     final configsValue = await ConfigFromYamlUtility.parseFromConfigFiles(configPath, env);
@@ -64,20 +65,20 @@ abstract class AbstractConfigManager extends AbstractManager {
     );
 
     final configs = ConfigSingleton.createInstance(finalValue);
-    await configs.initService();
+    await configs.initLifeCycle();
   }
 
   /// Called after the first view is built
   @override
   Future<void> initAfterView(BuildContext context) async {
     await super.initAfterView(context);
-    await ConfigSingleton.instance.initService();
+    await ConfigSingleton.instance.initLifeCycle();
   }
 
   /// Called when the manager is disposed
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-    await ConfigSingleton.instance.dispose();
+  Future<void> disposeLifeCycle() async {
+    await super.disposeLifeCycle();
+    await ConfigSingleton.instance.disposeLifeCycle();
   }
 }

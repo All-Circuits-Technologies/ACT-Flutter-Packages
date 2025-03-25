@@ -16,7 +16,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
 
 /// Manages all the features linked to characteristics in the BLE GATT part
-class BleGattCharacteristicService extends AbstractService {
+class BleGattCharacteristicService extends AbsWithLifeCycle {
   /// The flutter BLE lib instance
   final FlutterReactiveBle _flutterBle;
 
@@ -35,11 +35,9 @@ class BleGattCharacteristicService extends AbstractService {
         _flutterBle = flutterReactiveBle,
         _bleManager = bleManager;
 
-  /// Called at the service initialization
-  @override
-  Future<void> initService() async {}
-
+  /// {@template act_ble_manager.BleGattCharacteristicService.writeBleCharacteristic}
   /// Write [values] to characteristic from [uuid]
+  /// {@endtemplate}
   Future<CharacteristicsError> writeBleCharacteristic(
     BleDevice device,
     String uuid,
@@ -87,8 +85,10 @@ class BleGattCharacteristicService extends AbstractService {
         return success;
       });
 
+  /// {@template act_ble_manager.BleGattCharacteristicService.readBleCharacteristic}
   /// Read characteristic from [uuid]
   /// Return value read
+  /// {@endtemplate}
   Future<(CharacteristicsError, List<int>?)> readBleCharacteristic(
     BleDevice device,
     String uuid,
@@ -124,8 +124,10 @@ class BleGattCharacteristicService extends AbstractService {
         return (success, values);
       });
 
+  /// {@template act_ble_manager.BleGattCharacteristicService.subscribeBleNotification}
   /// Set notification on characteristic from [uuid]
   /// Return success
+  /// {@endtemplate}
   Future<(CharacteristicsError, Stream<List<int>>?)> subscribeBleNotification(
     BleDevice device,
     String uuid,

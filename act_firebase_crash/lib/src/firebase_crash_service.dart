@@ -47,10 +47,14 @@ class FirebaseCrashService extends AbsFirebaseService {
 
   /// Called at the service initialization
   @override
-  Future<void> initService({
-    required LogsHelper parentLogsHelper,
+  Future<void> initLifeCycle({
+    LogsHelper? parentLogsHelper,
   }) async {
-    _logsHelper = parentLogsHelper.createASubLogsHelper(_logsCategory);
+    await super.initLifeCycle();
+    _logsHelper = AbsFirebaseService.createLogsHelper(
+      logCategory: _logsCategory,
+      parentLogsHelper: parentLogsHelper,
+    );
 
     _enableDataCollection = _getConfValue(
       confVar: _confManager.firebaseCrashEnable,

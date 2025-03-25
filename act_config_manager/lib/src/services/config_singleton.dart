@@ -15,7 +15,7 @@ import 'package:act_config_manager/src/data/config_constants.dart' as config_con
 ///
 /// To use a singleton here simplifies all the process even if it doesn't match the manager design
 /// pattern.
-class ConfigSingleton extends AbstractService {
+class ConfigSingleton extends AbsWithLifeCycle {
   /// The final config values
   final Map<String, dynamic> _configs;
 
@@ -41,10 +41,6 @@ class ConfigSingleton extends AbstractService {
 
   /// Private class constructor
   ConfigSingleton._(this._configs);
-
-  /// Init service
-  @override
-  Future<void> initService() async {}
 
   /// Load value from config variable.
   ///

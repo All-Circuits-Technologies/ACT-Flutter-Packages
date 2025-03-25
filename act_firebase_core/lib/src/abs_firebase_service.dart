@@ -2,24 +2,30 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_abstract_manager/act_abstract_manager.dart';
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/widgets.dart';
 
 /// This is the abstract skeleton for the firebase services
-abstract class AbsFirebaseService {
+abstract class AbsFirebaseService extends AbsWithLifeCycle {
   /// Asynchronous initialization of the service
   @mustCallSuper
-  Future<void> initService({
-    required LogsHelper parentLogsHelper,
+  @override
+  Future<void> initLifeCycle({
+    LogsHelper? parentLogsHelper,
   });
 
-  /// Method called asynchronously after the view is initialised
-  ///
-  /// This [BuildContext] is above the Navigator (therefore it can't be used to access it)
-  @mustCallSuper
-  Future<void> initAfterView(BuildContext context) async {}
-
-  /// Default dispose for service
-  @mustCallSuper
-  Future<void> dispose() async {}
+  /// Create a logs helper from a parent logs helper if one is given or from start if
+  /// [parentLogsHelper] is null.
+  @protected
+  static LogsHelper createLogsHelper({
+    required String logCategory,
+    LogsHelper? parentLogsHelper,
+  }) =>
+      parentLogsHelper?.createASubLogsHelper(logCategory) ??
+      LogsHelper(
+        logsManager: globalGetIt().get<LoggerManager>(),
+        logsCategory: logCategory,
+      );
 }

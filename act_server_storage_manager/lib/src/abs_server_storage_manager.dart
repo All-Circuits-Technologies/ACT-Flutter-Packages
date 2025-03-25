@@ -19,7 +19,7 @@ import 'package:flutter/material.dart';
 /// Abstract class for a storage manager builder. It specifies the other managers that the storage
 /// manager depends on.
 abstract class AbsServerStorageBuilder<T extends AbsServerStorageManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsServerStorageBuilder(super.factory);
 
@@ -35,7 +35,7 @@ abstract class AbsServerStorageBuilder<T extends AbsServerStorageManager>
 
 /// Abstract class for a storage manager. It provides a set of methods to interact with a storage
 /// service and a cache service.
-abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends AbstractManager {
+abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends AbsWithLifeCycle {
   /// logs helper category
   static const String _storageManagerLogCategory = 'storage';
 
@@ -69,7 +69,8 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// needed.
   @override
   @mustCallSuper
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _storageManagerLogCategory,
@@ -95,7 +96,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
       );
     }
 
-    await _cacheService?.initService();
+    await _cacheService?.initLifeCycle();
   }
 
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.
@@ -203,8 +204,8 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
 
   /// Dispose the manager by disposing the [_storageService] and the [_cacheService] if needed.
   @override
-  Future<void> dispose() async {
-    await _cacheService?.dispose();
-    return super.dispose();
+  Future<void> disposeLifeCycle() async {
+    await _cacheService?.disposeLifeCycle();
+    return super.disposeLifeCycle();
   }
 }

@@ -17,7 +17,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
 
 /// Manages all the GATT features
-class BleGattService extends AbstractService {
+class BleGattService extends AbsWithLifeCycle {
   /// This service manages the connect part of the GATT features
   late final BleGattConnectService _connectService;
 
@@ -59,10 +59,10 @@ class BleGattService extends AbstractService {
 
   /// Called at the service initialization
   @override
-  Future<void> initService() async {
-    await _connectService.initService();
-    await _findDeviceService.initService();
-    await _characteristicService.initService();
+  Future<void> initLifeCycle() async {
+    await _connectService.initLifeCycle();
+    await _findDeviceService.initLifeCycle();
+    await _characteristicService.initLifeCycle();
   }
 
   /// Called when the views system is initialized
@@ -81,31 +81,26 @@ class BleGattService extends AbstractService {
     await _characteristicService.initAfterView(context);
   }
 
-  /// Connect to [device] and discovers its services and characteristics.
-  ///
-  /// A callback [onLowLevelConnect] can be given to the function, it is called
-  /// just after the low-level connection and before services discovery
+  /// {@macro act_ble_manager.BleGattConnectService.connect}
   Future<bool> connect(
     BleDevice device, {
     VoidCallback? onLowLevelConnect,
   }) =>
       _connectService.connect(device, onLowLevelConnect: onLowLevelConnect);
 
-  /// Disconnect from [connectedJacket].
+  /// {@macro act_ble_manager.BleGattConnectService.disconnect}
   Future<void> disconnect() => _connectService.disconnect();
 
-  /// Is jacket linked to [id] a scanned device
+  /// {@macro act_ble_manager.BleGattFindDeviceService.isScannedDevice}
   bool isScannedDevice(String id) => _findDeviceService.isScannedDevice(id);
 
-  /// Get [BleDevice] from [id], the method will search on scanned devices
-  ///
-  /// Return null if device has not been scanned
+  /// {@macro act_ble_manager.BleGattFindDeviceService.getBleDevice}
   BleDevice? getBleDevice(String? id) => _findDeviceService.getBleDevice(id);
 
-  /// Find device by [id]
+  /// {@macro act_ble_manager.BleGattFindDeviceService.findDeviceByMac}
   Future<BleDevice?> findDeviceByMac(String? id) => _findDeviceService.findDeviceByMac(id);
 
-  /// Write [values] to characteristic from [uuid]
+  /// {@macro act_ble_manager.BleGattCharacteristicService.writeBleCharacteristic}
   Future<CharacteristicsError> writeBleCharacteristic(
     BleDevice device,
     String uuid,
@@ -119,16 +114,14 @@ class BleGattService extends AbstractService {
         withoutResponse: withoutResponse,
       );
 
-  /// Read characteristic from [uuid]
-  /// Return value read
+  /// {@macro act_ble_manager.BleGattCharacteristicService.readBleCharacteristic}
   Future<(CharacteristicsError, List<int>?)> readBleCharacteristic(
     BleDevice device,
     String uuid,
   ) =>
       _characteristicService.readBleCharacteristic(device, uuid);
 
-  /// Set notification on characteristic from [uuid]
-  /// Return success
+  /// {@macro act_ble_manager.BleGattCharacteristicService.subscribeBleNotification}
   Future<(CharacteristicsError, Stream<List<int>>?)> subscribeBleNotification(
     BleDevice device,
     String uuid,
@@ -139,9 +132,9 @@ class BleGattService extends AbstractService {
   @override
   Future<void> dispose() async {
     final futuresList = <Future>[
-      _connectService.dispose(),
-      _findDeviceService.dispose(),
-      _characteristicService.dispose(),
+      _connectService.disposeLifeCycle(),
+      _findDeviceService.disposeLifeCycle(),
+      _characteristicService.disposeLifeCycle(),
     ];
 
     if (_bleMutex.isLocked) {
@@ -151,6 +144,6 @@ class BleGattService extends AbstractService {
 
     await Future.wait(futuresList);
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

@@ -11,10 +11,11 @@ abstract class AbstractHaloCharacteristic extends AbstractCharacteristicInfo {
   bool get hasNotification => false;
 
   /// Class constructor
-  AbstractHaloCharacteristic(
-      {required super.name,
-      required super.uuid,
-      required super.scope,
-      super.receiveType,
-      super.sendType});
+  AbstractHaloCharacteristic({
+    required super.name,
+    required super.uuid,
+    required super.scope,
+    super.receiveType,
+    super.sendType,
+  });
 }

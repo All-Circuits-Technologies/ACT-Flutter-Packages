@@ -16,7 +16,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
 
 /// Manages all the scan features of BLE (the GAP part)
-class BleGapService extends AbstractService {
+class BleGapService extends AbsWithLifeCycle {
   /// The scan fails in timeout if we haven't received scan element in this duration
   /// This allows to restart the scan
   ///
@@ -97,10 +97,6 @@ class BleGapService extends AbstractService {
     _permissionsSub = _bleManager.permissionsStream.listen(_onBleServiceAndPermissionsEnabled);
     _libReInitSub = _bleManager.libReInitStream.listen(_onLibReInit);
   }
-
-  /// Called at the service initialization
-  @override
-  Future<void> initService() async {}
 
   /// Allow to generate a scan handler useful to manage multiple scanning
   ///
@@ -244,8 +240,8 @@ class BleGapService extends AbstractService {
     }
   }
 
-  /// Update scanned list and remove device that have not advertise
-  /// since a a time [SCAN_MAX_TIME_DEVICE_DISAPPEARED] in seconds
+  /// Update scanned list and remove device that have not advertise since a
+  /// `time ble_scan_constants` (from [ble_scan_constants]) in seconds
   Future<void> _updateScannedDeviceList() async {
     final devicesToRemove = <BleScannedDevice>[];
     for (final discoveredDevice in _deviceMap.values) {
@@ -436,7 +432,7 @@ class BleGapService extends AbstractService {
 
   /// Dispose method for the manager
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
       _scannedDevices.close(),
       _enabledSub.cancel(),
@@ -461,7 +457,7 @@ class BleGapService extends AbstractService {
 
     await Future.wait(futuresList);
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }
 
@@ -514,9 +510,12 @@ class BleScanHandler {
         await _bleGapService._releaseOne(_scanModeAsked);
       });
 
-  /// Test if the Jacket given is currently detected
+  /// Test if the device given is currently detected
   bool isDetected(String id) => _bleGapService._deviceMap.containsKey(id);
 
+  /// Get the detected device from its [id]
+  ///
+  /// Returns null if the device isn't known
   BleScannedDevice? getDetectedDevice(String id) {
     if (!isDetected(id)) {
       // The device isn't detected

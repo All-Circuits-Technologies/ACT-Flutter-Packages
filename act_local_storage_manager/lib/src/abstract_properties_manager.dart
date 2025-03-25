@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Builder for creating the PropertiesManager
 abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
   AbstractPropertiesBuilder(super.factory);
 
@@ -45,7 +45,7 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// It is also removed when user clears application data.
 ///
 /// In those two case, all defined properties are lost.
-abstract class AbstractPropertiesManager extends AbstractManager {
+abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   /// Tell if it's the first start of the app after install
   final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");
 
@@ -62,7 +62,8 @@ abstract class AbstractPropertiesManager extends AbstractManager {
 
   /// Init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     try {
       isFirstStart = await _isFirstStart.load() ?? isFirstStart;
     } catch (error) {

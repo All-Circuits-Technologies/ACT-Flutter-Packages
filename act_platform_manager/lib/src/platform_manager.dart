@@ -9,7 +9,7 @@ import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 /// Builder for creating the PlatformManager
-class PlatformBuilder extends ManagerBuilder<PlatformManager> {
+class PlatformBuilder extends AbsManagerBuilder<PlatformManager> {
   /// Class constructor with the class construction
   PlatformBuilder() : super(PlatformManager.new);
 
@@ -20,15 +20,14 @@ class PlatformBuilder extends ManagerBuilder<PlatformManager> {
 
 /// Retrieve phone platform OS.
 /// This class can only be called from a UI build.
-class PlatformManager extends AbstractManager {
-  PlatformManager() : super();
-
+class PlatformManager extends AbsWithLifeCycle {
   /// Sdk version for Android
   /// OS version for iOS
   int? _sdkVersion;
 
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     // Set SDK/OS version
     if (isAndroid) {
       final androidInfo = await DeviceInfoPlugin().androidInfo;

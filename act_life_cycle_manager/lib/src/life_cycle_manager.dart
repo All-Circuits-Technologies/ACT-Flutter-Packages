@@ -10,7 +10,7 @@ import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builder for creating the LifeCycleManager
-class LifeCycleBuilder extends ManagerBuilder<LifeCycleManager> {
+class LifeCycleBuilder extends AbsManagerBuilder<LifeCycleManager> {
   /// Class constructor with the class construction
   LifeCycleBuilder() : super(LifeCycleManager.new);
 
@@ -20,7 +20,7 @@ class LifeCycleBuilder extends ManagerBuilder<LifeCycleManager> {
 }
 
 /// Useful manager to know the current application life cycle state
-class LifeCycleManager extends AbstractManager {
+class LifeCycleManager extends AbsWithLifeCycle {
   late _WidgetsObserver _widgetsObserver;
 
   /// Get current life cycle state
@@ -29,11 +29,10 @@ class LifeCycleManager extends AbstractManager {
   /// Get life cycle stream
   Stream<AppLifecycleState?> get lifeCycleStream => _widgetsObserver.lifeCycleStream;
 
-  LifeCycleManager() : super();
-
   /// Init manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _widgetsObserver = _WidgetsObserver();
 
     WidgetsBinding.instance.addObserver(_widgetsObserver);
@@ -68,12 +67,12 @@ class LifeCycleManager extends AbstractManager {
   }
 
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _widgetsObserver.dispose();
 
     WidgetsBinding.instance.removeObserver(_widgetsObserver);
 
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }
 

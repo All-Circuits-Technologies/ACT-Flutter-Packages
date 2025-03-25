@@ -68,22 +68,22 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
 
   /// Init manager
   @override
-  Future<void> initManager() async {
-    await super.initManager();
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
 
     logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _bleLogCategory,
     );
 
-    await bleGapService.initService();
+    await bleGapService.initLifeCycle();
 
     // We get the "display scanned device in logs" information from env manager and set it to the
     // GAP service
     bleGapService.displayScannedDeviceInLogs =
         globalGetIt().get<C>().displayScannedDeviceInLogs.load();
 
-    await bleGattService.initService();
+    await bleGattService.initLifeCycle();
   }
 
   /// Called after the view system is loaded
@@ -240,8 +240,8 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
   /// permissions or BLE service state
   ///
   /// Because the BLE service activation or permissions update may take some time to be acknowledged
-  /// by the lib, they advise to listen [_flutterBle.statusStream] and waits for events to have the
-  /// right status after an action.
+  /// by the lib, they advise to listen the statusStream property in [_flutterBle] and waits for
+  /// events to have the right status after an action.
   Future<BleStatus> _waitForStatus({
     required bool Function(BleStatus) isExpectedStatus,
   }) =>
@@ -305,10 +305,10 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
   }
 
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
-      bleGapService.dispose(),
-      bleGattService.dispose(),
+      bleGapService.disposeLifeCycle(),
+      bleGattService.disposeLifeCycle(),
       _bleReInitCtrl.close(),
     ];
 
@@ -318,6 +318,6 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
 
     await Future.wait(futuresList);
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

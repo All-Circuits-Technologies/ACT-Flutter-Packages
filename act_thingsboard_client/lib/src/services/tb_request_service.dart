@@ -19,7 +19,7 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Useful method to request Thingsboard in a protective way
 class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends AbstractService {
+    extends AbsWithLifeCycle {
   /// Mutex protecting the sign in and avoiding to signIn in parallel
   final Mutex _signInMutex;
 
@@ -51,7 +51,8 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
 
   /// Init the service
   @override
-  Future<void> initService() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final hostname = globalGetIt().get<E>().tbHostname.load();
     final port = globalGetIt().get<E>().tbPort.load();
 
@@ -303,9 +304,9 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
 
   /// Dispose the service
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     await tbClient.logout();
+
+    await super.disposeLifeCycle();
   }
 }

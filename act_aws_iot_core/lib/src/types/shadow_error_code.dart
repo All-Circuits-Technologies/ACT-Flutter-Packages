@@ -8,6 +8,7 @@ import 'dart:io';
 /// service. Check the documentation to understand the following error codes:
 /// https://docs.aws.amazon.com/iot/latest/developerguide/device-shadow-error-messages.html
 enum ShadowErrorCode {
+  /// This is a success code, when no error occurred
   ok(HttpStatus.ok),
 
   /// Possible reeaons for this error:

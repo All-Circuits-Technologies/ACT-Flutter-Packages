@@ -10,7 +10,7 @@ import 'package:act_thingsboard_client/src/services/tb_request_service.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This service manages the Thingsboard devices
-class TbDevicesService extends AbstractService {
+class TbDevicesService extends AbsWithLifeCycle {
   /// The logs category linked to devices
   static const _tbLogsCategory = "devices";
 
@@ -33,10 +33,6 @@ class TbDevicesService extends AbstractService {
   })  : _requestService = requestService,
         _deviceValues = {},
         _logsHelper = logsHelper.createASubLogsHelper(_tbLogsCategory);
-
-  /// Initialize the service
-  @override
-  Future<void> initService() async {}
 
   /// The method creates and returns a [TbTelemetryHandler] linked to the [deviceId] given
   TbTelemetryHandler createTelemetryHandler(String deviceId) {
@@ -161,11 +157,11 @@ class TbDevicesService extends AbstractService {
 
   /// Dispose the service
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     for (final watcher in _deviceValues.values) {
       await watcher.dispose();
     }
+
+    await super.disposeLifeCycle();
   }
 }

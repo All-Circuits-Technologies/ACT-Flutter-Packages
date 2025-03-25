@@ -8,8 +8,14 @@ library;
 /// Bonding error message
 const String bondingErrorMessage = "Bonding is in progress wait for bonding to be finished";
 
-/// iOS bonding error messages
+/// iOS bonding error message
+///
+/// This can be displayed the first time
 const String iosFirstBondingError = "Encryption is insufficient";
+
+/// iOS bonding error message
+///
+/// This can be displayed the second time
 const String iosSecondBondingError = "Authentication is insufficient";
 
 /// This error is raised when the bluetooth is disabled

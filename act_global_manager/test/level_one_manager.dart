@@ -6,8 +6,7 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 
-abstract class LevelOneBuilder<T extends LevelOneManager>
-    extends ManagerBuilder<T> {
+abstract class LevelOneBuilder<T extends LevelOneManager> extends AbsManagerBuilder<T> {
   final Type _depends;
 
   LevelOneBuilder(
@@ -19,13 +18,10 @@ abstract class LevelOneBuilder<T extends LevelOneManager>
   Iterable<Type> dependsOn() => [_depends];
 }
 
-abstract class LevelOneManager extends AbstractManager {
+abstract class LevelOneManager extends AbsWithLifeCycle {
   final int magicNumber;
 
   LevelOneManager({
     required this.magicNumber,
   }) : super();
-
-  @override
-  Future<void> initManager() async {}
 }

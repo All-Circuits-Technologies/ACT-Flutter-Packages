@@ -15,7 +15,7 @@ typedef OnProgressCallback = void Function(TransferProgress progress);
 
 /// Abstract class for a storage service. Note that in this file, a file is identified by a [fileId].
 /// The exact meaning depends on the implementation, it can be a path, an url, an id, etc.
-mixin MixinStorageService on AbstractService {
+mixin MixinStorageService on AbsWithLifeCycle {
   /// Default page size
   static const int defaultPageSize = 50;
 

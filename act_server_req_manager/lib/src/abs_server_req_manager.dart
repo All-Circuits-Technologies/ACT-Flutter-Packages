@@ -20,8 +20,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
 /// Builder of the [AbsServerReqManager] manager
-abstract class AbsServerReqBuilder<T extends AbsServerReqManager>
-    extends ManagerBuilder<T> {
+abstract class AbsServerReqBuilder<T extends AbsServerReqManager> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsServerReqBuilder(super.factory);
 
@@ -32,8 +31,7 @@ abstract class AbsServerReqBuilder<T extends AbsServerReqManager>
 /// This class defines a manager useful to request a third server.
 ///
 /// A login process may be added to it, if the third server needs a login to execute requests
-abstract class AbsServerReqManager<T extends AbsServerLogin?>
-    extends AbstractManager {
+abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLifeCycle {
   /// This contains the base of all URL to request the server: the default one and the overrided
   /// URLs depending of the relative routes
   /// The server URLs are formatted liked that: http(s)://{hostname}:{port}/{baseUrl}
@@ -54,7 +52,8 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
 
   /// Call this method to initialize the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final config = await getRequesterConfig();
 
     if (config.parentLogsHelper == null) {
@@ -64,22 +63,19 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
         enableLog: config.loggerEnabled,
       );
     } else {
-      _logsHelper =
-          config.parentLogsHelper!.createASubLogsHelper(config.loggerCategory);
+      _logsHelper = config.parentLogsHelper!.createASubLogsHelper(config.loggerCategory);
     }
 
     final urlsByRelRoute = <String, Uri>{};
 
     if (config.serverInfoByUrl != null) {
       for (final infoByUrl in config.serverInfoByUrl!.entries) {
-        urlsByRelRoute[infoByUrl.key] =
-            UrlFormatUtility.createServerBaseUrls(infoByUrl.value);
+        urlsByRelRoute[infoByUrl.key] = UrlFormatUtility.createServerBaseUrls(infoByUrl.value);
       }
     }
 
     _serverUrls = ServerUrls(
-      defaultUrl:
-          UrlFormatUtility.createServerBaseUrls(config.defaultServerInfo),
+      defaultUrl: UrlFormatUtility.createServerBaseUrls(config.defaultServerInfo),
       byRelRoute: urlsByRelRoute,
     );
 
@@ -89,13 +85,12 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
       defaultTimeout: config.defaultTimeout,
     );
 
-    await _serverRequester.initService();
+    await _serverRequester.initLifeCycle();
 
     _absServerLogin = await createServerLogin(_serverRequester);
 
     if (_absServerLogin != null && !(await _absServerLogin!.initLogin())) {
-      throw Exception(
-          "An error occurred when tried to init the abs server login");
+      throw Exception("An error occurred when tried to init the abs server login");
     }
   }
 
@@ -138,8 +133,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
     Response? response;
     RespBody? castedBody;
 
-    while (globalResult != RequestResult.success &&
-        retryRequestNb <= retryRequestIfErrorNb) {
+    while (globalResult != RequestResult.success && retryRequestNb <= retryRequestIfErrorNb) {
       // We reset the previous specific error
       globalResult = RequestResult.globalError;
 
@@ -154,25 +148,21 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
           await localAbsServerLogin.clearLogins();
 
           if (loginResult == RequestResult.loginError) {
-            _logsHelper.e(
-                "There is a problem when tried to log-in, may be the logins aren't "
+            _logsHelper.e("There is a problem when tried to log-in, may be the logins aren't "
                 "right?");
             return RequestResponse(result: globalResult);
           }
 
-          _logsHelper
-              .w("An error occurred when managing the login of a request");
+          _logsHelper.w("An error occurred when managing the login of a request");
         }
       }
 
       if (loginResult == RequestResult.success) {
-        (globalResult, response, castedBody) = (await _serverRequester
-                .executeRequestWithoutAuth<RespBody>(requestParam))
-            .toPatterns();
+        (globalResult, response, castedBody) =
+            (await _serverRequester.executeRequestWithoutAuth<RespBody>(requestParam)).toPatterns();
 
         if (localAbsServerLogin != null &&
-            localAbsServerLogin.loginFailPolicy ==
-                LoginFailPolicy.retryOnceIfLoginFails &&
+            localAbsServerLogin.loginFailPolicy == LoginFailPolicy.retryOnceIfLoginFails &&
             globalResult == RequestResult.loginError &&
             loginRetryNb == 0) {
           // We clear the login info
@@ -187,8 +177,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
       }
     }
 
-    return RequestResponse(
-        result: globalResult, response: response, castedBody: castedBody);
+    return RequestResponse(result: globalResult, response: response, castedBody: castedBody);
   }
 
   /// The method returns the requester configuration to apply
@@ -201,9 +190,8 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?>
 
   /// The dispose method
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
-    await _serverRequester.dispose();
+  Future<void> disposeLifeCycle() async {
+    await _serverRequester.disposeLifeCycle();
+    await super.disposeLifeCycle();
   }
 }

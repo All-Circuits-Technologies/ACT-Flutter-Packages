@@ -52,7 +52,7 @@ class LocationManager extends AbstractPeriphManager {
 
   /// Initialize the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
     // Get init config before calling super init manager
     _initConfig = await getInitConfig();
 
@@ -61,7 +61,7 @@ class LocationManager extends AbstractPeriphManager {
       logsCategory: logsCategory,
     );
 
-    await super.initManager();
+    await super.initLifeCycle();
 
     // Initialize location service enabled status
     _enabledSub = Geolocator.getServiceStatusStream().listen(
@@ -226,13 +226,13 @@ class LocationManager extends AbstractPeriphManager {
 
   /// Dispose method of the manager
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
       _enabledSub.cancel(),
     ];
 
     await Future.wait(futuresList);
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

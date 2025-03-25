@@ -15,7 +15,7 @@ import 'package:flutter/widgets.dart';
 
 /// This is the abstract builder for the AbsAmplifyManager manager
 abstract class AbsAmplifyBuilder<T extends AbsAmplifyManager, C extends AbstractConfigManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsAmplifyBuilder(super.factory);
 
@@ -24,7 +24,7 @@ abstract class AbsAmplifyBuilder<T extends AbsAmplifyManager, C extends Abstract
 }
 
 /// This is the abstract manager for Amplify features
-abstract class AbsAmplifyManager extends AbstractManager {
+abstract class AbsAmplifyManager extends AbsWithLifeCycle {
   /// This is the category for the amplify logs helper
   static const _amplifyLogsCategory = "amplify";
 
@@ -41,7 +41,8 @@ abstract class AbsAmplifyManager extends AbstractManager {
 
   /// Init manager method
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final config = await getAmplifyConfig();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
@@ -75,7 +76,7 @@ abstract class AbsAmplifyManager extends AbstractManager {
     }
 
     for (final service in _services) {
-      await service.initService(parentLogsHelper: _logsHelper);
+      await service.initLifeCycle(parentLogsHelper: _logsHelper);
     }
   }
 
@@ -123,11 +124,11 @@ abstract class AbsAmplifyManager extends AbstractManager {
 
   /// Default dispose for manager
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     for (final service in _services) {
-      await service.dispose();
+      await service.disposeLifeCycle();
     }
+
+    await super.disposeLifeCycle();
   }
 }

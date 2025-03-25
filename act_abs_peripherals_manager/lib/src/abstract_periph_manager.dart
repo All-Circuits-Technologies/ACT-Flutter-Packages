@@ -7,7 +7,7 @@ import 'package:act_enable_service_utility/act_enable_service_utility.dart';
 import 'package:act_permissions_manager/act_permissions_manager.dart';
 
 /// Builder of the [AbstractPeriphManager] manager
-abstract class AbstractPeriphBuilder<M extends AbstractPeriphManager> extends ManagerBuilder<M>
+abstract class AbstractPeriphBuilder<M extends AbstractPeriphManager> extends AbsManagerBuilder<M>
     with MPermissionsServiceBuilder {
   /// Class constructor
   AbstractPeriphBuilder(super.factory);
@@ -15,7 +15,7 @@ abstract class AbstractPeriphBuilder<M extends AbstractPeriphManager> extends Ma
 
 /// This is the abstract manager for the managers linked to peripherals component such as WiFi, BLE,
 /// background, location, etc.
-abstract class AbstractPeriphManager extends AbstractManager
+abstract class AbstractPeriphManager extends AbsWithLifeCycle
     with MPermissionsService, MEnableService {
   /// Is peripheral fully enabled
   bool isFullyEnabled() => isEnabled && hasPermissions;

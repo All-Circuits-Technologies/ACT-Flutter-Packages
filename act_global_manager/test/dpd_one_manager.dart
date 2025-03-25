@@ -6,17 +6,13 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 
-abstract class DpdOneBuilder<T extends DpdOneManager>
-    extends ManagerBuilder<T> {
+abstract class DpdOneBuilder<T extends DpdOneManager> extends AbsManagerBuilder<T> {
   DpdOneBuilder(super.factory);
 
   @override
   Iterable<Type> dependsOn() => [];
 }
 
-abstract class DpdOneManager extends AbstractManager {
+abstract class DpdOneManager extends AbsWithLifeCycle {
   DpdOneManager() : super();
-
-  @override
-  Future<void> initManager() async {}
 }

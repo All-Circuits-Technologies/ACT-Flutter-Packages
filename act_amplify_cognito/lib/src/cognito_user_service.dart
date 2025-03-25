@@ -10,7 +10,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// This service manages the interaction with the user currently log in
-class CognitoUserService extends AbstractService {
+class CognitoUserService extends AbsWithLifeCycle {
   /// This is the separator in the identity id between the region and the user uuid
   static const _identityIdRegionSeparator = ":";
 
@@ -21,10 +21,6 @@ class CognitoUserService extends AbstractService {
   CognitoUserService({
     required this.logsHelper,
   }) : super();
-
-  /// Service init method
-  @override
-  Future<void> initService() async {}
 
   /// Test if an user is signed to the app (or not)
   Future<bool> isUserSigned() async {

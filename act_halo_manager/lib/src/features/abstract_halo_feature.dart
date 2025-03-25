@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_halo_manager/src/abstract_halo_manager.dart';
+import 'package:act_halo_manager/src/models/halo_manager_config.dart';
 
 /// Defines the abstract for all HALO features
 abstract class AbstractHaloFeature<HardwareType> {

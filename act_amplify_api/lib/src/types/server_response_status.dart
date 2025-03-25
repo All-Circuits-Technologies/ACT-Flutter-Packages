@@ -5,18 +5,47 @@
 import 'dart:io';
 
 /// The response status after a server request
+///
+/// The enum contains two kinds of values:
+///
+/// - Some HTTP statuses,
+/// - Groups of HTTP statuses (generic).
+///
+/// The first elements are linked to one of the generic or group statuses.
 enum ServerResponseStatus {
+  /// This is a `OK` status with code: 200
   ok(HttpStatus.ok, genericSuccess),
-  incorrectParams(HttpStatus.badRequest, genericClientError),
+
+  /// This is a `Bad Request` status with code: 400
+  badRequest(HttpStatus.badRequest, genericClientError),
+
+  /// This is a `Payment Required` status with code: 402
   paymentRequired(HttpStatus.paymentRequired, genericClientError),
+
+  /// This is a `Forbidden` status with code: 403
   forbidden(HttpStatus.forbidden, genericClientError),
+
+  /// This is a `Not Found` status with code: 404
   notFound(HttpStatus.notFound, genericClientError),
-  // Too early doesn't exist in the HttpStatus values
+
+  /// This is a `Too Early` status with code: 425
+  ///
+  /// Too early doesn't exist in the [HttpStatus] values
   tooEarly(425, genericClientError),
+
+  /// This is a `Internal Server Error` status with code: 500
   internalServerError(HttpStatus.internalServerError, genericServerError),
+
+  /// This enum represents all the 2xx statuses for success
   genericSuccess.generic(isOk: true),
+
+  /// This enum represents all the 4xx statuses for the client errors
   genericClientError.generic(),
+
+  /// This enum represents all the 5xx status for the server errors
   genericServerError.generic(),
+
+  /// This enum represents all the other errors which are not linked to the previous generics
   genericError.generic();
 
   /// List all the values linked to a http status code

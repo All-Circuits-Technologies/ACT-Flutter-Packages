@@ -35,7 +35,7 @@ class AwsIotShadowsService extends AbsAwsIotService {
 
   /// This method will add the shadows of a given [deviceName] to the service if they don't
   /// exist yet and return them
-  /// [ShadowEnum] must be the type of the values in [config.shadowsList] list
+  /// [ShadowEnum] must be the type of the values in shadowsList of [config]
   Future<Map<ShadowEnum, AwsIotNamedShadow>>
       addAndGetShadowsForDevice<ShadowEnum extends MixinAwsIotShadowEnum>(String deviceName) async {
     // Return the shadows if they already exist

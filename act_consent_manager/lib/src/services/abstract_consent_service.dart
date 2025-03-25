@@ -15,7 +15,7 @@ import 'package:mutex/mutex.dart';
 /// Abstract class to manage the consent of the user. Create a class in your
 /// application that inherits from this class to create a service that manages
 /// a specific type of consent.
-abstract class AbstractConsentService<T extends MixinConsentOptions> extends AbstractService {
+abstract class AbstractConsentService<T extends MixinConsentOptions> extends AbsWithLifeCycle {
   /// Delay before retrying the load operation when it failed
   static const Duration _retryLoadLaterDelay = Duration(seconds: 30);
 
@@ -78,10 +78,6 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
         _observers = observers,
         _observersSubs = [],
         super();
-
-  /// Nothing to initialize for the service
-  @override
-  Future<void> initService() async {}
 
   /// Try to load the consent data of the user once the view has been created.
   @override
@@ -355,8 +351,8 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
 
   /// Cancel the stream subscription of the [StreamObserver]
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _cancelSubs();
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }

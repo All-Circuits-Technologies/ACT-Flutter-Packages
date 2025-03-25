@@ -12,8 +12,10 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Builder for creating the SecretsManager
-abstract class AbstractSecretsBuilder<P extends AbstractPropertiesManager,
-    E extends MixinStoresConf, T extends AbstractSecretsManager<P, E>> extends ManagerBuilder<T> {
+abstract class AbstractSecretsBuilder<
+    P extends AbstractPropertiesManager,
+    E extends MixinStoresConf,
+    T extends AbstractSecretsManager<P, E>> extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
   AbstractSecretsBuilder(super.factory);
 
@@ -37,7 +39,7 @@ abstract class AbstractSecretsBuilder<P extends AbstractPropertiesManager,
 /// until device is unlocked once. A [PlatformException] will be thrown
 /// if an access is attempted in this case.
 abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
-    E extends MixinStoresConf> extends AbstractManager {
+    E extends MixinStoresConf> extends AbsWithLifeCycle {
   /// This is the secure storage instance to use for the items
   late final FlutterSecureStorage _secureStorage;
 
@@ -54,7 +56,8 @@ abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
 
   /// Init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _secureStorage = const FlutterSecureStorage(
       aOptions: AndroidOptions(
         encryptedSharedPreferences: true,

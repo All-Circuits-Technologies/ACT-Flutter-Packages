@@ -16,7 +16,7 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/widgets.dart';
 
 /// This mixin contains the management of service activation for Managers
-mixin MEnableService on AbstractManager {
+mixin MEnableService on AbsWithLifeCycle {
   /// This is the timeout to wait for the service status after having open the phone settings
   static const defaultWaitForStatusAfterOpenSetting = Duration(seconds: 5);
 
@@ -33,7 +33,10 @@ mixin MEnableService on AbstractManager {
   Stream<bool> get enabledStream => _enabledCtrl.stream;
 
   /// To call in order to update the service state
+  /// We use a method instead of a setter because we may want to override the method.
   @protected
+  // The method is used like a setter; therefore the parameter can be positional
+  // ignore: avoid_positional_boolean_parameters
   void setEnabled(bool isEnabled) {
     if (_isEnabled != isEnabled) {
       _isEnabled = isEnabled;
@@ -164,8 +167,8 @@ mixin MEnableService on AbstractManager {
   EnableServiceElement getElement();
 
   @override
-  Future<void> dispose() async {
-    await super.dispose();
+  Future<void> disposeLifeCycle() async {
     await _enabledCtrl.close();
+    await super.disposeLifeCycle();
   }
 }

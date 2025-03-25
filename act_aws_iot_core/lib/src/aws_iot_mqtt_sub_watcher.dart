@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/types/aws_iot_mqtt_sub_event.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/widgets.dart';
 
 /// This class is responsible for subscribing to a topic and forwarding the messages / events to
@@ -46,7 +45,8 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   AwsIotMqttSubWatcher({
     required String topic,
     required AwsIotMqttService awsIotMqttService,
-  })  : _topic = topic,
+  })
+      : _topic = topic,
         _awsIotMqttService = awsIotMqttService,
         _onMsgController = StreamController.broadcast(),
         _onSubscriptionEventController = StreamController.broadcast(),
@@ -84,7 +84,8 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   /// DO NOT CALL THIS METHOD DIRECTLY. Use [getHandler] instead.
   @Deprecated("Use getHandler instead, this method won't work as expected.")
   @override
-  AwsIotMqttSubHandler generateHandler() => AwsIotMqttSubHandler(
+  AwsIotMqttSubHandler generateHandler() =>
+      AwsIotMqttSubHandler(
         onMsgCb: (_) => {},
         sharedWatcher: this,
       );
@@ -212,9 +213,10 @@ class AwsIotMqttSubHandler extends SharedHandler {
     required AwsIotMqttSubWatcher sharedWatcher,
     required Function(String) onMsgCb,
     Function(AwsIotMqttSubEvent)? onEventCb,
-  })  : _onMsgStreamSub = sharedWatcher.onMsgStream.listen(onMsgCb),
+  })
+      : _onMsgStreamSub = sharedWatcher.onMsgStream.listen(onMsgCb),
         _onEventStreamSub =
-            onEventCb == null ? null : sharedWatcher.onEventStream.listen(onEventCb),
+        onEventCb == null ? null : sharedWatcher.onEventStream.listen(onEventCb),
         super(sharedWatcher);
 
   /// Call this method to close the handler.

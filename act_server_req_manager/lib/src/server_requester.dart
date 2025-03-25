@@ -17,7 +17,7 @@ import 'package:http/http.dart';
 
 /// We can request the server through this requester. This doesn't manage the login (it's done by
 /// the manager)
-class ServerRequester extends AbstractService {
+class ServerRequester extends AbsWithLifeCycle {
   /// The logs helper linked to the requester
   final LogsHelper logsHelper;
 
@@ -40,17 +40,12 @@ class ServerRequester extends AbstractService {
     required this.defaultTimeout,
   }) : _serverUrls = serverUrls;
 
-  /// Initialize the service
-  @override
-  Future<void> initService() async {}
-
   /// Get the current opened client or create a new one
   Client _createOrGetClient() {
     _closeClientTimer?.cancel();
 
     _client ??= Client();
-    _closeClientTimer =
-        Timer(ServerReqConstants.clientSessionDuration, _closeClient);
+    _closeClientTimer = Timer(ServerReqConstants.clientSessionDuration, _closeClient);
     return _client!;
   }
 
@@ -72,8 +67,7 @@ class ServerRequester extends AbstractService {
       return const RequestResponse(result: RequestResult.globalError);
     }
 
-    logsHelper.d(
-        "Request the server: ${requestParam.httpMethod.str} - $urlToRequest");
+    logsHelper.d("Request the server: ${requestParam.httpMethod.str} - $urlToRequest");
 
     var timeout = defaultTimeout;
 
@@ -89,8 +83,7 @@ class ServerRequester extends AbstractService {
       response = await Response.fromStream(streamedResponse);
     } catch (error) {
       _closeClient();
-      logsHelper.e(
-          "An error occurred when requesting a server on uri: $urlToRequest, "
+      logsHelper.e("An error occurred when requesting a server on uri: $urlToRequest, "
           "error: $error");
     }
 
@@ -115,9 +108,9 @@ class ServerRequester extends AbstractService {
 
   /// Call to dispose the requester
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     _closeClient();
+
+    await super.disposeLifeCycle();
   }
 }

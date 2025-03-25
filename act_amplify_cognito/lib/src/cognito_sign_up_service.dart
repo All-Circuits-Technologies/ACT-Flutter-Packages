@@ -12,7 +12,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// This service manages the Cognito Sign-up methods
-class CognitoSignUpService extends AbstractService {
+class CognitoSignUpService extends AbsWithLifeCycle {
   /// This is the Cognito service logs helper
   final LogsHelper logsHelper;
 
@@ -20,10 +20,6 @@ class CognitoSignUpService extends AbstractService {
   CognitoSignUpService({
     required this.logsHelper,
   }) : super();
-
-  /// Service init method
-  @override
-  Future<void> initService() async {}
 
   /// User self-registration entry-point
   ///
@@ -127,7 +123,7 @@ class CognitoSignUpService extends AbstractService {
   /// Confirmation code sent by [signUp] may not have reached its destination.
   /// This method can cope with a transient delivery failure by resending a code.
   ///
-  /// [accountId] identifies account to confirm. Some services may also accept user email or phone.  Future<AuthSignUpResult> resendSignUpCode({
+  /// [accountId] identifies account to confirm. Some services may also accept user email or phone.
   Future<AuthSignUpResult> resendSignUpCode({
     required String accountId,
   }) async {

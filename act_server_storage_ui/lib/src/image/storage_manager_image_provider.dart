@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
-import 'dart:io';
 import 'dart:ui' as ui;
 
 import 'package:act_global_manager/act_global_manager.dart';

@@ -13,15 +13,17 @@ import 'package:flutter/widgets.dart';
 
 /// Builder of the abstract firebase manager
 abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager, C extends AbstractConfigManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsFirebaseBuilder(super.factory);
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, C];
 }
 
-abstract class AbsFirebaseManager extends AbstractManager {
+/// This is the abstract firebase manager
+abstract class AbsFirebaseManager extends AbsWithLifeCycle {
   /// This is the category for the firebase logs helper
   static const _firebaseLogsCategory = "firebase";
 
@@ -36,9 +38,10 @@ abstract class AbsFirebaseManager extends AbstractManager {
   @protected
   Future<FirebaseManagerConfig> getFirebaseConfig();
 
-  /// Init manager method
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final config = await getFirebaseConfig();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
@@ -54,13 +57,13 @@ abstract class AbsFirebaseManager extends AbstractManager {
     _firebaseServices = config.firebaseServices;
 
     for (final service in _firebaseServices) {
-      await service.initService(
+      await service.initLifeCycle(
         parentLogsHelper: _logsHelper,
       );
     }
   }
 
-  /// Called after the first widget is built
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initAfterView}
   @override
   Future<void> initAfterView(BuildContext context) async {
     await super.initAfterView(context);
@@ -71,13 +74,13 @@ abstract class AbsFirebaseManager extends AbstractManager {
     }
   }
 
-  /// Default dispose for manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
-  Future<void> dispose() async {
-    await super.dispose();
+  Future<void> disposeLifeCycle() async {
+    await super.disposeLifeCycle();
 
     for (final service in _firebaseServices) {
-      await service.dispose();
+      await service.disposeLifeCycle();
     }
   }
 }

@@ -9,7 +9,7 @@ import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
 
 /// Builder for creating the TicManager
-class TicBuilder extends ManagerBuilder<TicManager> {
+class TicBuilder extends AbsManagerBuilder<TicManager> {
   /// A factory to create a manager instance
   TicBuilder() : super(TicManager.new);
 
@@ -23,7 +23,7 @@ class TicBuilder extends ManagerBuilder<TicManager> {
 /// This manager creates timer-based streams used by widgets to synchronize
 /// their animations. Those streams generates incremental numbers from 0 to
 /// [countersMaxValue] (wrapping to zero on overflow).
-class TicManager extends AbstractManager {
+class TicManager extends AbsWithLifeCycle {
   /// Tic counters wrap on signed 32bit values.
   ///
   /// Please keep it 2^x so we masks can be used easily.
@@ -61,10 +61,6 @@ class TicManager extends AbstractManager {
   TicManager() : super() {
     _ticGen1s = TicModulo(tic500ms, 2);
   }
-
-  /// Init the manager
-  @override
-  Future<void> initManager() async {}
 }
 
 /// This class generate a periodic rx value stream at wanted rate.

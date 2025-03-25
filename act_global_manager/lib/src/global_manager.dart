@@ -71,7 +71,7 @@ abstract class GlobalManager {
   /// If the manager you want to register is the Logger Manager, this registers the
   /// [_defaultLogger].
   @protected
-  void registerManagerAsync<T extends AbstractManager>(ManagerBuilder<T> builder) {
+  void registerManagerAsync<T extends AbsWithLifeCycle>(AbsManagerBuilder<T> builder) {
     var asyncFactory = builder.asyncFactory;
     if (T == LoggerManager) {
       asyncFactory = () async {

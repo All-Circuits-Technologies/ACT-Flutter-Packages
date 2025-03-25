@@ -18,7 +18,7 @@ import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
 
 /// Manages the connection to BLE device in the GATT part
-class BleGattConnectService extends AbstractService {
+class BleGattConnectService extends AbsWithLifeCycle {
   /// The flutter BLE lib instance
   final FlutterReactiveBle _flutterBle;
 
@@ -55,14 +55,14 @@ class BleGattConnectService extends AbstractService {
         _bleMutex = bleMutex,
         _lastConnectedStreamCtrl = StreamController.broadcast();
 
-  /// Called at the service initialization
-  @override
-  Future<void> initService() async {}
-
+  /// {@template act_ble_manager.BleGattConnectService.connect}
   /// Connect to [device] and discovers its services and characteristics.
   ///
   /// A callback [onLowLevelConnect] can be given to the function, it is called
   /// just after the low-level connection and before services discovery
+  ///
+  /// The call is protected by a mutex [_bleMutex].
+  /// {@endtemplate}
   Future<bool> connect(
     BleDevice device, {
     VoidCallback? onLowLevelConnect,
@@ -259,7 +259,11 @@ class BleGattConnectService extends AbstractService {
     }
   }
 
-  /// Disconnect from [connectedJacket].
+  /// {@template act_ble_manager.BleGattConnectService.disconnect}
+  /// Disconnect the current device
+  ///
+  /// The call is protected by a mutex [_bleMutex].
+  /// {@endtemplate}
   Future<void> disconnect() async => _bleMutex.protect(_disconnectWithoutMutex);
 
   /// This allow to disconnect without testing the BLE mutex
@@ -281,7 +285,7 @@ class BleGattConnectService extends AbstractService {
 
   /// Manage the disposing of the service
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
       _lastConnectedStreamCtrl.close(),
     ];
@@ -292,6 +296,6 @@ class BleGattConnectService extends AbstractService {
 
     await Future.wait(futuresList);
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }
