@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+SPDX-FileCopyrightText: 2023, 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
@@ -10,12 +10,27 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 - [Table of contents](#table-of-contents)
 - [Presentation](#presentation)
+- [mono\_repo](#mono_repo)
 - [Packages list](#packages-list)
 - [How to use the packages in your project](#how-to-use-the-packages-in-your-project)
+- [Add a new package](#add-a-new-package)
 
 ## Presentation
 
-Shared flutter packages for all the Flutter projects:
+Shared flutter packages for all the Flutter projects.
+
+## mono_repo
+
+[mono_repo](https://github.com/google/mono_repo.dart) is used to manage multiple flutter packages
+within a single repository.
+
+We are using it to generate github actions and the packages list.
+
+To install it globally, you have to call:
+
+```console
+> dart pub global activate mono_repo
+```
 
 ## Packages list
 
@@ -70,6 +85,14 @@ Shared flutter packages for all the Flutter projects:
 | [act_tic_manager](act_tic_manager/)                                     | This package contains a tic manager which helps to display HMI in pace                                         |         |
 | [act_yaml_utility](act_yaml_utility/)                                   | This contains utility classes to manage YAML                                                                   |         |
 
+To generate this list, you can call:
+
+```console
+> dart pub global run mono_repo readme --pad
+```
+
+This will print a markdown table to copy/paste here each time we add or remove a package.
+
 ## How to use the packages in your project
 
 To use the libraries in your project, we recommend you to bind this repo as a /actlibs git submodule
@@ -89,3 +112,26 @@ corrections from others.
 
 Because, this code isn't reviewed if no merge request is done to the master branch, it's recommended
 to oftenly create merge requests from the project branch to master.
+
+## Add a new package
+
+To add a new package to actlibs, at the root of `actlibs` folder you can call:
+
+```console
+> flutter create --template=package <your_package_name>
+```
+
+Then, in the `pubspec.yaml` you will have to set:
+
+```yaml
+publish_to: none
+```
+
+You will need to create a `mono_pkg.yaml` file with at least the stage: `analyze`.
+
+Then, you will have to call the next command to generate the github action linked to this
+package:
+
+```console
+> dart pub global run mono_repo generate
+```
