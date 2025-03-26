@@ -59,7 +59,7 @@ class _TextInterval {
 class TextUtility {
   /// This method allows to highlight some part of a text
   /// [text] this is the global text where we want to highlight the word
-  /// [wordToHighLight].
+  /// [wordToHighlight].
   /// [mainTextStyle] is applied to all text and [highLightTextStyle] is only
   /// applied (above [mainTextStyle]) to the word to highlight
   static TextSpan highlightText(
@@ -78,7 +78,7 @@ class TextUtility {
 
   /// This method allows to highlight some part of a text
   /// [text] this is the global text where we want to highlight the word
-  /// [wordToHighLight].
+  /// [wordToHighlight].
   /// [mainTextConfig] is used with the text and [highLightTextConfig] is only
   /// used (above [mainTextConfig]) with the word to highlight
   static TextSpan highlightTextWithConfig(

@@ -14,3 +14,4 @@ export 'package:act_thingsboard_client/src/services/devices/values/tb_device_val
 export 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
 export 'package:act_thingsboard_client/src/thingsboard_manager.dart';
 export 'package:act_thingsboard_client/src/utils/tb_telemetries_helper.dart';
+export 'package:thingsboard_client/thingsboard_client.dart' show AttributeScope;

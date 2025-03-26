@@ -5,7 +5,7 @@
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:flutter/cupertino.dart';
 
-/// This mixin can be used on derived classes of [AbstractManager] or [BLoC].
+/// This mixin can be used on derived classes of AbsWithLifeCycle or BLoC.
 ///
 /// It allows to add a router redirection management on a manager or a global bloc.
 /// Multiple classes may use this mixin in your project, but in that case you have to be sure that

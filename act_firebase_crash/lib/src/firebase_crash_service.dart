@@ -86,6 +86,8 @@ class FirebaseCrashService extends AbsFirebaseService {
   /// If true, the data collection is enabled and all the crash will be stored in the app.
   /// If false, no data collection will be stored if there are some elements left, there will be
   /// deleted.
+  // Because this method could be a setter we use positional parameter and it's ok
+  // ignore: avoid_positional_boolean_parameters
   Future<void> setEnableDataCollection(bool value) async {
     if (value == _enableDataCollection) {
       // Nothing to do
@@ -124,6 +126,8 @@ class FirebaseCrashService extends AbsFirebaseService {
   ///
   /// If true, the collected logs will be sent automatically.
   /// If false, the collected logs have to be sent manually.
+  // Because this method could be a setter we use positional parameter and it's ok
+  // ignore: avoid_positional_boolean_parameters
   Future<void> setEnableAutoDataCollection(bool value) async {
     if (value == _enableAutoDataCollection) {
       // Nothing to do

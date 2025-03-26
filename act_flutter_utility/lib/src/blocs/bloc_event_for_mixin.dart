@@ -5,7 +5,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This event is used by the [BlocForMixin]. When you want to create a mixin for a blox, use this
+/// This event is used by the `BlocForMixin`. When you want to create a mixin for a blox, use this
 /// event as the base class for your events.
 abstract class BlocEventForMixin extends Equatable {
   /// Class constructor.

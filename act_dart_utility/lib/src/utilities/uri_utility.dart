@@ -36,7 +36,7 @@ sealed class UriUtility {
   /// Format a relative url from the given path segments. The path segment shouldn't contain
   /// [pathSeparator] chars (except if it's really wanted).
   ///
-  /// This method is useful when you want to replace parameters in the given [path]. The method
+  /// This method is useful when you want to replace parameters in the given [segments]. The method
   /// searches the keys of [parameters] and replace them by its values.
   ///
   /// The method joins the path segments with [pathSeparator] before replacing the parameters.

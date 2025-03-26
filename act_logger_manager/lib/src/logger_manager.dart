@@ -44,8 +44,6 @@ abstract class LoggerManager extends AbsWithLifeCycle {
   final Set<ActLogsErrorCallback> _platformErrorCallback;
 
   /// Constructor
-  ///
-  /// The [logLevel] given allows to customize the level of logs to display
   LoggerManager()
       : _flutterExceptionHandler = {},
         _platformErrorCallback = {};

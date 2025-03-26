@@ -6,11 +6,9 @@
 import 'dart:async';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
-import 'package:act_ble_manager/src/ble_manager.dart';
+import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_ble_manager/src/data/error_messages.dart' as error_messages;
 import 'package:act_ble_manager/src/data/scan_constants.dart' as ble_scan_constants;
-import 'package:act_ble_manager/src/models/ble_scan_update_status.dart';
-import 'package:act_ble_manager/src/models/ble_scanned_device.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';

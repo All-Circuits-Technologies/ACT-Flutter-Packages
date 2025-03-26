@@ -67,7 +67,7 @@ class TicManager extends AbsWithLifeCycle {
 ///
 /// Value is always positive or zero and wraps at [TicManager.countersMaxValue].
 class TicGenerator {
-  /// Current value is incremented and announced each time [timer] fires.
+  /// Current value is incremented and announced each time timer fires.
   ///
   /// This value is always positive and wraps at [TicManager.countersMaxValue].
   int _counter = 0;

@@ -8,7 +8,10 @@ import 'package:equatable/equatable.dart';
 
 /// Defines the packet which contains data linked to the record data
 class HaloRecordPacket extends Equatable {
+  /// This is the key of the record packet
   final HaloRecordKey recordKey;
+
+  /// This is the payload of the record packet
   final HaloPayloadPacket payload;
 
   /// Class constructor
@@ -17,6 +20,7 @@ class HaloRecordPacket extends Equatable {
     required this.payload,
   }) : super();
 
+  /// Class properties
   @override
   List<Object?> get props => [recordKey, payload];
 }

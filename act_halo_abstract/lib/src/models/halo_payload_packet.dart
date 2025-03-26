@@ -140,6 +140,8 @@ class HaloPayloadPacket {
   /// Helpful method to add a boolean in the list of packet element, you may also prepend the value
   /// with a [ts] timestamp
   void addBoolean(
+    // We keep this parameter as positional to match the other methods of this kind
+    // ignore: avoid_positional_boolean_parameters
     bool toSend, {
     DateTime? ts,
   }) {
@@ -443,14 +445,14 @@ class HaloPayloadPacket {
   /// If a problem occurred (because the element has not the type you expect or the index overflows
   /// the list length) the method returns null
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getUInt(int elemIdx) => getNumber(elemIdx, false);
+  (int, DateTime?)? getUInt(int elemIdx) => getNumber(elemIdx, isSigned: false);
 
   /// Helpful method to get a signed integer from the packet elements list thanks to the
   /// [elemIdx] idx given.
   /// If a problem occurred (because the element has not the type you expect or the index overflows
   /// the list length) the method returns null
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getInt(int elemIdx) => getNumber(elemIdx, true);
+  (int, DateTime?)? getInt(int elemIdx) => getNumber(elemIdx, isSigned: true);
 
   /// Helpful method to get an integer from the packet elements list thanks to the
   /// [elemIdx] idx given.
@@ -458,14 +460,17 @@ class HaloPayloadPacket {
   /// If a problem occurred (because the element has not the type you expect or the index overflows
   /// the list length) the method returns null
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getNumber(int elemIdx, bool isSigned) {
+  (int, DateTime?)? getNumber(
+    int elemIdx, {
+    required bool isSigned,
+  }) {
     if (elemIdx >= elementsNb) {
       appLogger().w("We can't a number where the idx: $elemIdx, overflows the payload packet "
           "element list size: $elementsNb");
       return null;
     }
 
-    return HaloPacketUtility.getNumber(_elements[elemIdx], isSigned);
+    return HaloPacketUtility.getNumber(_elements[elemIdx], isSigned: isSigned);
   }
 
   /// This method tests if the packet given has the endByte as last byte

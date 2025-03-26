@@ -45,7 +45,7 @@ class NumBoundaries<T extends num> extends Equatable {
     }
 
     if (max != null) {
-      if (!NumUtility.isBaseGreatherOrEqualTo<T>(
+      if (!NumUtility.isBaseGreaterOrEqualTo<T>(
         base: max!,
         toCompareWith: value,
         testEquality: !strictCompare,

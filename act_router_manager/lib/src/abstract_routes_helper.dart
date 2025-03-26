@@ -17,7 +17,7 @@ typedef CreatePageCallback<T extends MixinRoute> = RoutePageDetails Function(
   GoRouterState state,
 );
 
-/// Utility methods to manage [ActGoRoute] enum
+/// Utility methods to manage [MixinRoute] enum
 abstract class AbstractRoutesHelper<T extends MixinRoute> {
   /// This is the logs helper linked to the route manager
   final LogsHelper logsHelper;
@@ -106,9 +106,9 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> {
 
   /// Get the route from state.
   ///
-  /// If the [state.name] is not null, we search the route by name.
-  /// If the [state.name] is null, we search the route by path (using [state.fullPath] or
-  /// [state.path]).
+  /// If the [state] name is not null, we search the route by name.
+  /// If the [state] name is null, we search the route by path (using [state] fullPath or
+  /// [state] path).
   ///
   /// If the route isn't found, this returns null
   T? getRouteFromState(GoRouterState state) {
@@ -128,19 +128,19 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> {
     return result;
   }
 
-  /// Check the type of [state.extra] object and return the object casted.
+  /// Check the type of [state] extra object and return the object casted.
   /// The object can't be null.
   @protected
   ExtraType checkAndCastExtra<ExtraType>(GoRouterState state) =>
       _checkAndCastExtraProcess<ExtraType>(state, isNullable: false);
 
-  /// Check the type of [state.extra] object and return the object casted.
+  /// Check the type of [state] extra object and return the object casted.
   /// The object can be null.
   @protected
   ExtraType? checkAndCastNullableExtra<ExtraType>(GoRouterState state) =>
       _checkAndCastExtraProcess<ExtraType?>(state, isNullable: true);
 
-  /// The method checks the type of [state.extra] object and return the object casted.
+  /// The method checks the type of [state] extra object and return the object casted.
   ///
   /// This is the implementation of [checkAndCastExtra] and [checkAndCastNullableExtra].
   ExtraType _checkAndCastExtraProcess<ExtraType>(

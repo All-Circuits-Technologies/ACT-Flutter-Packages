@@ -17,5 +17,6 @@ export 'src/models/ble_device.dart';
 export 'src/models/ble_scan_update_status.dart';
 export 'src/models/ble_scanned_device.dart';
 export 'src/models/mix_char_info_notification.dart';
+export 'src/types/ble_scan_update_type.dart';
 export 'src/types/bond_state.dart';
 export 'src/types/characteristics_error.dart';

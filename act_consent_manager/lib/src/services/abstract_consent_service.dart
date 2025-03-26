@@ -28,7 +28,7 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   /// Mutex to protect the [_textWidget] from being loaded in parallel
   final Mutex _loadTextWidgetMutex;
 
-  /// Mutex to protect the [_state] from being updated in parallel
+  /// Mutex to protect the [_consentData] from being updated in parallel
   final Mutex _stateMutex;
 
   /// List of the options of the consent. Provide it with the T.values list.

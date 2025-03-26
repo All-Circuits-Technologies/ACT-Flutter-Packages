@@ -28,15 +28,19 @@ class MusicPlayerBuilder<T> extends AbsManagerBuilder<MusicPlayerManager> {
   Iterable<Type> dependsOn() => [LoggerManager];
 }
 
-/// The [MusicPlayerManager] is a wrapper of the [audioplayers] plugin and simplifies
+/// The [MusicPlayerManager] is a wrapper of the `audioplayers` plugin and simplifies
 /// how it works
 ///
 /// The [MusicPlayerManager] can only play known sounds.
 /// It's recommended to use this class as a singleton with a global manager
 class MusicPlayerManager<T> extends AbsWithLifeCycle {
+  /// This is the path inside the assets folder where your files lie.
   final String audioFilePrefix;
+
+  /// This is the music sounds helper used to manage the musics
   final AbstractMusicSoundHelper<T> _musicSoundsHelper;
 
+  /// This is the audio players used in the manager
   final Map<String, AudioPlayerHelper> _audioPlayers;
 
   /// Class constructor
@@ -47,7 +51,7 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
         _audioPlayers = {},
         super();
 
-  /// The [init] method has to be called to initialize the class
+  /// The [initLifeCycle] method has to be called to initialize the class
   /// The method will load all sounds in cache
   @override
   Future<void> initLifeCycle() async {
@@ -211,7 +215,7 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
 
   /// Private method to stop the music wanted
   ///
-  /// Stop all the music in the [musicSoundFilter] list
+  /// Stop all the music in the [musicFilesPath] list
   Future<void> _stopAllElements({
     required List<String> musicFilesPath,
   }) async {
@@ -262,7 +266,7 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
 
   /// To call in order to stop all sounds played and free the cache memory
   ///
-  /// After calling  [dispose], you have to call the [init] method if you want
+  /// After calling  [disposeLifeCycle], you have to call the [initLifeCycle] method if you want
   /// to reuse the class.
   @override
   Future<void> disposeLifeCycle() async {
@@ -296,7 +300,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
 
 /// Helper which contains all the needed elements for extending the AudioPlayer
 class AudioPlayerHelper {
+  /// The used audio player
   AudioPlayer audioPlayer;
+
+  /// This is used to get the time elapsed since the last `start`
   Stopwatch elapsedTimer;
 
   /// Class constructor

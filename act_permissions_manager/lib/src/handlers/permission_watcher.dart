@@ -25,9 +25,16 @@ import 'package:rxdart/rxdart.dart';
 /// The watcher doesn't observe the permission modification if no one uses the
 /// watcher.
 class PermissionWatcher extends SharedWatcher<PermissionHandler> {
+  /// This is the [PermissionElement] watched by the class
   final PermissionElement element;
+
+  /// This is the controller used to stream the current status
   final StreamController<permission_handler.PermissionStatus> _currentStatusCtrl;
+
+  /// This is the permission manager
   final PermissionsManager _permissionsManager;
+
+  /// This is the permission mutex
   final ReadWriteMutex _permissionMutex;
 
   /// [BehaviorSubject] of is lifecycle currently inside the application

@@ -4,13 +4,10 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/features/halo_request_to_device_feature.dart';
 import 'package:act_halo_manager/src/models/halo_manager_config.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mutex/mutex.dart';
 
 /// The HALO manager builder
 abstract class AbstractHaloBuilder<T extends AbstractHaloManager> extends AbsManagerBuilder<T> {

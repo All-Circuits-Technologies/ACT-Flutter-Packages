@@ -99,7 +99,7 @@ sealed class ConfigFromEnvUtility {
     return _parseEnv(model, value);
   }
 
-  /// The method parses the string value from the [model.type]
+  /// The method parses the string value from the [model] type
   ///
   /// The method raises an exception if the parsing failed.
   static dynamic _parseEnv(EnvConfigMappingModel model, String value) {
@@ -121,7 +121,7 @@ sealed class ConfigFromEnvUtility {
     }
   }
 
-  /// The method loads and parses the dot env file and get the Map<String, String> values.
+  /// The method loads and parses the dot env file and get the Map\<String, String\> values.
   ///
   /// The method returns null if the file doesn't exist or if a problem occurred.
   static Future<Map<String, String>?> _loadDotEnvFromAsset(String configPath) async {
@@ -158,7 +158,7 @@ sealed class ConfigFromEnvUtility {
     return dotenv.env;
   }
 
-  /// The method fills the config map thanks to the [model.path] and the given value.
+  /// The method fills the config map thanks to the [model] path and the given value.
   ///
   /// The method builds the config structure.
   // We manipulate json value, so the value retrieved is dynamic

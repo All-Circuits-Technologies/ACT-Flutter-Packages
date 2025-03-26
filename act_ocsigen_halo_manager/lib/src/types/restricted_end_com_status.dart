@@ -12,7 +12,10 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 /// If you want to define other statuses (outside the defined raw values) you can do it on your own
 /// enum, but don't forget to include the restricted elements.
 enum RestrictedEndComStatus with MixinHaloType {
+  /// Means that everything is ok and ask to quit the com without problems
   endComOk(rawValue: 0x00),
+
+  /// Means that a problem occurred in the process
   endComGenericError(rawValue: 0xFF);
 
   /// The raw value linked to the enum

@@ -7,9 +7,18 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 
 /// The message category type
 enum HaloCategoryType with MixinHaloType {
+  /// This means that the message is linked to the attribute data
   data(rawValue: 0x00),
+
+  /// This means that the message is related to the notification FLAGS
   notifFlags(rawValue: _notifFlagsKeysValue),
+
+  /// This means that the message is related to the archive keys of the historical data
   keys(rawValue: _notifFlagsKeysValue),
+
+  /// This means that the category is unknown.
+  ///
+  /// This value can't be sent to/by the Firmware
   unknown(rawValue: ByteUtility.maxInt64);
 
   /// This defines the notification flags and keys raw value

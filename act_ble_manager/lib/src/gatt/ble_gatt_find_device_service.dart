@@ -10,8 +10,8 @@ import 'package:act_ble_manager/src/ble_manager.dart';
 import 'package:act_ble_manager/src/data/constants.dart' as ble_constants;
 import 'package:act_ble_manager/src/gap/ble_gap_service.dart';
 import 'package:act_ble_manager/src/models/ble_device.dart';
-import 'package:act_ble_manager/src/models/ble_scan_update_status.dart';
 import 'package:act_ble_manager/src/models/ble_scanned_device.dart';
+import 'package:act_ble_manager/src/types/ble_scan_update_type.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
@@ -31,6 +31,7 @@ class BleGattFindDeviceService extends AbsWithLifeCycle {
   /// Called at the service initialization
   @override
   Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _scanHandler = _bleManager.bleGapService.toGenerateScanHandler();
   }
 

@@ -4,11 +4,15 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
+/// Contains useful methods to work with widgets
 class WidgetUtils {
   /// Add an '*' to the label, if needed
-  static String formatInputLabelText(String? labelText, bool inputRequired) {
+  static String formatInputLabelText({
+    required String? labelText,
+    required bool inputRequired,
+  }) {
     if (labelText == null) {
       return '*';
     }

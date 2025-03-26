@@ -38,9 +38,10 @@ class PlatformManager extends AbsWithLifeCycle {
     }
   }
 
-  /// Getters of [Platform]
+  /// True if the current platform is Android
   bool get isAndroid => Platform.isAndroid;
 
+  /// True if the current platform is iOS
   bool get isIos => Platform.isIOS;
 
   /// Getter of Platform version

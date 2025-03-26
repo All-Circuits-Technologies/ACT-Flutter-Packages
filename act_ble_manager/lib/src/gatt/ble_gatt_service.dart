@@ -60,6 +60,7 @@ class BleGattService extends AbsWithLifeCycle {
   /// Called at the service initialization
   @override
   Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     await _connectService.initLifeCycle();
     await _findDeviceService.initLifeCycle();
     await _characteristicService.initLifeCycle();
@@ -130,7 +131,7 @@ class BleGattService extends AbsWithLifeCycle {
 
   /// Manage the disposing of the service
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
       _connectService.disposeLifeCycle(),
       _findDeviceService.disposeLifeCycle(),

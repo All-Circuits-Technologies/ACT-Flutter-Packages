@@ -7,17 +7,48 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 
 /// The HALO cmd id
 enum HaloCmdId with MixinHaloType {
+  /// This command allows the client to read data stored on the device
   read(rawValue: _readPullValue),
+
+  /// This command allows the client to ask the device to send the stored data
   pull(rawValue: _readPullValue),
+
+  /// This command allows the client to inform the device that it wishes to receive a packet from
+  /// the exchange area
   readReady(rawValue: 0x01),
+
+  /// This command allows the client to write data to the device
   write(rawValue: _writePushCallValue),
+
+  /// This command allows the client to write data to the device or the device to send the data to
+  /// the client
   push(rawValue: _writePushCallValue),
+
+  /// This command allows you to call queries
   call(rawValue: _writePushCallValue),
+
+  /// This command allows the client to inform the device that it wishes to restart exchanges from
+  /// scratch, regardless of the current state.
   reset(rawValue: 0x03),
+
+  /// This command allows the client to inform the device that it wishes to be notified when data is
+  /// updated on the device
   sub(rawValue: 0x04),
+
+  /// This command allows the client to inform the device that it no longer wishes to be notified
+  /// when data is updated on the device
   unSub(rawValue: 0x05),
+
+  /// This command allows the client to specifically acknowledge certain IDs to validate that they
+  /// have been processed correctly.
   ack(rawValue: 0x06),
+
+  /// This command returns a result to the requester.
   result(rawValue: 0x07),
+
+  /// This means that the command is unknown.
+  ///
+  /// This value can't be sent to/by the Firmware
   unknown(rawValue: ByteUtility.maxInt64);
 
   /// This defines the read pull cmd raw value

@@ -77,8 +77,4 @@ class AwsIotShadowsService extends AbsAwsIotService {
 
     _shadowsMap.remove(deviceName);
   }
-
-  /// Nothing to init but implementation required by the abstract class
-  @override
-  Future<void> initService() async {}
 }

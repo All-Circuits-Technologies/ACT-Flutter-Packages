@@ -6,7 +6,7 @@ import 'package:yaml/yaml.dart';
 
 /// This class contains useful methods to transform YAML objects of the yaml package to JSON
 /// objects.
-/// The object returned are like the objects the [jsonDecode] method can return.
+/// The object returned are like the objects the `jsonDecode` method can return.
 ///
 /// This loses specific YAML elements like comments.
 sealed class YamlToStandardObj {
@@ -31,7 +31,7 @@ sealed class YamlToStandardObj {
   }
 
   /// Convert a [YamlMap] object to a JSON map. The method returns the same kind of objects, the
-  /// [jsonDecode] method returns.
+  /// `jsonDecode` method returns.
   ///
   /// This loses specific YAML elements like comments.
   ///
@@ -47,7 +47,7 @@ sealed class YamlToStandardObj {
   }
 
   /// Convert a [YamlList] object to a JSON objects list. The method returns the same kind of
-  /// objects, the [jsonDecode] method returns.
+  /// objects, the `jsonDecode` method returns.
   ///
   /// This loses specific YAML elements like comments.
   ///
@@ -63,7 +63,7 @@ sealed class YamlToStandardObj {
   }
 
   /// Convert a [YamlNode] object to a JSON object. The method returns the same kind of
-  /// objects, the [jsonDecode] method returns.
+  /// objects, the `jsonDecode` method returns.
   ///
   /// This loses specific YAML elements like comments.
   ///
@@ -81,7 +81,7 @@ sealed class YamlToStandardObj {
   }
 
   /// Convert a yaml dynamic object to a JSON object. The method returns the same kind of
-  /// objects, the [jsonDecode] method returns.
+  /// objects, the `jsonDecode` method returns.
   ///
   /// This loses specific YAML elements like comments.
   ///

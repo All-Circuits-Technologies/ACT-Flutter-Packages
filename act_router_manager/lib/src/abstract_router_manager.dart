@@ -34,7 +34,7 @@ class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsManagerB
     required ClassFactory<M> factory,
   }) : super(factory);
 
-  /// List of manager dependence
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [
         LoggerManager,
@@ -74,7 +74,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   /// Class constructor
   AbstractRouterManager() : super();
 
-  /// The [init] method has to be called to initialize the class
+  /// The [initLifeCycle] method has to be called to initialize the class
   /// The method will generate the router for GoRouter
   @override
   Future<void> initLifeCycle() async {
@@ -445,7 +445,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   ///
   /// If the [route] exists in the route tree, we pop all the views until we arrive to it.
   /// When we are in this view we try to pop it.
-  /// If we can't pop or no [routes] are in the route tree (and so we have popped all the tree), we:
+  /// If we can't pop or [route] isn't in the route tree (and so we have popped all the tree), we:
   /// - if [replaceWithIfCannotPop] is not null, we replace the initial page with the
   ///   [replaceWithIfCannotPop] page.
   /// - if [replaceWithIfCannotPop] is null, we do nothing

@@ -7,7 +7,7 @@ import 'package:act_config_manager/src/models/abs_config_var.dart';
 /// [NotNullableConfigVar] wraps a single config variable of type T, providing strongly-typed
 /// read helper.
 ///
-/// To load a List<T> use the class [NotNullableConfigVarList].
+/// To load a List\<T\> use the class `NotNullableConfigVarList`.
 ///
 /// If the config variable isn't defined in the environment, [load] method returns [defaultValue]
 class NotNullableConfigVar<T> extends AbsConfigVar<T> {

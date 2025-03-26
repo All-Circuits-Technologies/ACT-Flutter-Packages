@@ -167,6 +167,8 @@ abstract class HaloPacketUtility {
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
   /// the [toSend] boolean given and the optional [ts] DateTime
   static PayloadPacketElem formatBoolean(
+    // We keep the parameter as positional to match the way we manager the other format method
+    // ignore: avoid_positional_boolean_parameters
     bool toSend, {
     DateTime? ts,
   }) {
@@ -303,7 +305,10 @@ abstract class HaloPacketUtility {
 
   /// Parse the [element] given to extract an integer, and the optional DateTime if it's present
   /// [isSigned] is useful to know if the number you want to get is signed or not
-  static (int, DateTime?)? getNumber(PayloadPacketElem element, bool isSigned) {
+  static (int, DateTime?)? getNumber(
+    PayloadPacketElem element, {
+    required bool isSigned,
+  }) {
     final tmp = _extractDataFromPacketElem(element);
 
     if (tmp == null) {
@@ -324,7 +329,7 @@ abstract class HaloPacketUtility {
     return (value, ts);
   }
 
-  /// Format and escape bytes list to create a [PayloadPacketElement], the method also prepend the
+  /// Format and escape bytes list to create a [PayloadPacketElem], the method also prepend the
   /// [timestamp] if not null
   static PayloadPacketElem _formatAndEscapePacketElem(Uint8List element, DateTime? timestamp) {
     var tmp = Uint8List.fromList(element);

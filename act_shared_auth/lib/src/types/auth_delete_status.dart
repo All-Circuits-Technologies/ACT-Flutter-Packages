@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// This is the authentication delete status
 enum AuthDeleteStatus {
   /// Account is deleted
   done(isSuccess: true),

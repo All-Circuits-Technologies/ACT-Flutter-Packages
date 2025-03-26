@@ -10,12 +10,11 @@ import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
 /// The watcher state
-///
-/// [WatcherState.sleep] means that the watcher has no handler attached
-/// [WatcherState.awake] means that at least one handler is linked to the
-/// watcher
 enum WatcherState {
+  /// This means that the watcher has no handler attached
   sleep,
+
+  /// This means that at least one handler is linked to the watcher
   awake,
 }
 
@@ -47,8 +46,7 @@ abstract class SharedWatcher<T extends SharedHandler> {
 
   /// Returns the current state of the watcher
   @protected
-  WatcherState get state =>
-      (_handlerNb == 0) ? WatcherState.sleep : WatcherState.awake;
+  WatcherState get state => (_handlerNb == 0) ? WatcherState.sleep : WatcherState.awake;
 
   /// Generate a handler to use with the watcher
   T generateHandler();
@@ -111,6 +109,8 @@ abstract class SharedWatcher<T extends SharedHandler> {
 ///
 /// This class is like a token which allows to stop features if the last of its
 /// kind has been closed, or to start if at least one has been created.
+///
+/// When you do not more use the class instance, don't forget to call [close] method.
 abstract class SharedHandler {
   final SharedWatcher _watcher;
 
@@ -123,6 +123,7 @@ abstract class SharedHandler {
     unawaited(_watcher._takeOne());
   }
 
+  /// Call to close the [SharedHandler]
   @mustCallSuper
   Future<void> close() async {
     await _watcher._releaseOne();

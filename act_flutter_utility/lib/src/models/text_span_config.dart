@@ -7,7 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/painting.dart';
 
 /// Contains useful information to configure a [TextSpan]. This class is used with the some methods
-/// of the class [TextUtility]
+/// of the class `TextUtility`
 class TextSpanConfig extends Equatable {
   /// This is the [TextStyle] to use with the [TextSpan], if null, the default one is used
   final TextStyle? style;

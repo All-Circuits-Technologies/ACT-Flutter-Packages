@@ -6,7 +6,7 @@
 
 /// This library brings all helpers into scope, except extensions.
 ///
-/// See also [act_dart_utility_ext]
+/// See also `act_dart_utility_ext` file
 library;
 
 export 'src/mixins/mixin_result_status.dart';

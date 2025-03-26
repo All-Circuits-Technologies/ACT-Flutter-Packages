@@ -4,9 +4,16 @@
 
 /// This is the environment type which can be used in the config mapping file
 enum EnvType {
+  /// This represents a string env variable
   string(["string", "str"]),
+
+  /// This represents a boolean env variable
   bool(["bool", "boolean"]),
+
+  /// This represents a number env variable
   number(["num", "number", "int", "integer", "decimal", "float"]),
+
+  /// This represents a yaml env variable
   yaml(["yaml", "json", "yml"]);
 
   /// This is the value which can be used in `__format` attribute of the variable to describe the

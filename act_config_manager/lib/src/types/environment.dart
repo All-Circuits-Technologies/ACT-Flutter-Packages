@@ -6,10 +6,21 @@
 
 /// Possible environments to use
 enum Environment {
+  /// This represents the local environment
   local(fileName: "local"),
+
+  /// This represents the default environment.
+  ///
+  /// All the environments override this one.
   defaultEnv(fileName: "default"),
+
+  /// This represents the development environment
   development(fileName: "development", parsedString: "DEV"),
+
+  /// This represents the qualification environment
   qualification(fileName: "qualification", parsedString: "QUALIF"),
+
+  /// This represents the production environment
   production(fileName: "production", parsedString: "PROD");
 
   /// The env file name

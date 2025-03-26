@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// This is the result of storage request
 enum StorageRequestResult {
   /// The request was successful
   success,

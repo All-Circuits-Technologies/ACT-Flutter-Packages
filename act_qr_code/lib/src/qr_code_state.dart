@@ -13,6 +13,7 @@ class QrCodeState extends Equatable {
   /// Say if the QrCode has been found
   final bool found;
 
+  /// Class constructor
   QrCodeState({
     required QrCodeState previousState,
     required PermissionStatus? permissionStatus,
@@ -23,17 +24,20 @@ class QrCodeState extends Equatable {
         found = found ?? previousState.found,
         super();
 
+  /// Init class constructor
   const QrCodeState.init()
       : permStatus = null,
         found = false,
         super();
 
+  /// Class properties
   @override
   List<Object?> get props => [permStatus, found];
 }
 
 /// Represents the state when a right QrCode has been found
 class QrCodeFoundState extends QrCodeState {
+  /// Class constructor
   QrCodeFoundState({
     required super.previousState,
     required bool super.found,
@@ -42,6 +46,7 @@ class QrCodeFoundState extends QrCodeState {
 
 /// Represents the permission result state
 class PermissionResultState extends QrCodeState {
+  /// Class constructor
   PermissionResultState({
     required super.previousState,
     required PermissionStatus super.permissionStatus,

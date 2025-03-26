@@ -122,7 +122,7 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
   /// {@endtemplate}
   Future<void> clearFileFromCache(String fileId) async => _cacheService?.clearFileFromCache(fileId);
 
-  /// List all the files in a given [directory].
+  /// List all the files in a given [searchPath].
   Future<({StorageRequestResult result, StoragePage? page})> listFiles(
     String searchPath, {
     int? pageSize,
@@ -136,10 +136,10 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
         recursiveSearch: recursiveSearch,
       );
 
-  /// List all the files in a given [directory].
+  /// List all the files in a given [searchPath].
   ///
   /// The method tried to get the files until it matches the expected conditions.
-  /// The [page] returned contains all the files retrieved.
+  /// The `page` returned contains all the files retrieved.
   ///
   /// If [matchUntil] and [matchUntilWithAll] are null, the method tries to get all.
   ///

@@ -169,7 +169,7 @@ class HaloBleCompanion {
     return true;
   }
 
-  /// Unsubscribe to the HALO [bleDevice] characteristics notifications
+  /// Unsubscribe to the HALO [_bleDevice] characteristics notifications
   /// Returns false if a problem occurred in the process
   Future<bool> _unsubscribeToNotifs() async {
     final futures = <Future>[];

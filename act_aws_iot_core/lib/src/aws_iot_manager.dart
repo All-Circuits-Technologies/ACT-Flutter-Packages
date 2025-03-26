@@ -106,7 +106,7 @@ abstract class AwsIotManager<
 
     // Initialize the services
     await mqttService.initLifeCycle();
-    await shadowsService.initService();
+    await shadowsService.initLifeCycle();
   }
 
   /// This can be used by the derived class to add extra stream observers for managing the

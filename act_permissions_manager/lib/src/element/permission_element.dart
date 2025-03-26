@@ -8,11 +8,22 @@ import 'package:permission_handler/permission_handler.dart' as permission_handle
 
 /// The permissions managed in the application
 enum PermissionElement {
+  /// This groups all the permissions linked to the background service
   background,
+
+  /// This groups all the permissions linked to the Bluetooth service
   ble,
+
+  /// This groups all the permissions linked to the location getting when we want to always get it
   locationAlways,
+
+  /// This groups all the permissions linked to the location getting when the app is used
   locationWhenInUse,
+
+  /// This groups all the permissions linked to the tracking authorization service
   trackingAuthorization,
+
+  /// This groups all the permissions linked to the WiFi service
   wifi;
 
   /// This method returns true if the permission element needs a location permission

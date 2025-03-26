@@ -67,7 +67,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     add(RequestContextualActionNewStateEvent(isOk: isOk));
   }
 
-  /// Called to update the state with the new [event.isStatusOk] status
+  /// Called to update the state with the new [event] isStatusOk status
   Future<void> _onIsOkUpdated(
     RequestContextualActionNewStateEvent event,
     Emitter<RequestContextualActionState> emitter,
@@ -122,7 +122,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
         }
       });
 
-  /// This is the method used to notify the end of the view. It calls [config.callWhenEnded] method
+  /// This is the method used to notify the end of the view. It calls [config] callWhenEnded method
   /// if it hasn't already been done.
   ///
   /// This method isn't protected by the [_whenEndedMutex] mutex.

@@ -12,31 +12,31 @@ enum AuthPropertyStatus {
 
   /// The request is not complete, a verification code has been sent to user and must be inputted
   ///
-  /// This is likely the result of [MixinAuthService.setEmailAddress], requiring a subsequent call
-  /// to [MixinAuthService.confirmEmailAddressUpdate]
+  /// This is likely the result of `MixinAuthService.setEmailAddress`, requiring a subsequent call
+  /// to `MixinAuthService.confirmEmailAddressUpdate`
   confirmWithCode(isSuccess: true, userNeedsToAct: true),
 
   /// Another account already exists with same value for this property, configured as unique
   ///
-  /// This is likely the result of [MixinAuthService.setEmailAddress] or
-  /// [MixinAuthService.confirmEmailAddressUpdate]
+  /// This is likely the result of `MixinAuthService.setEmailAddress` or
+  /// `MixinAuthService.confirmEmailAddressUpdate`
   accountPropertyConflict(userNeedsToAct: true),
 
   /// The request is complete.
   ///
-  /// This is likely the result of [MixinAuthService.confirmEmailAddressUpdate], but may also be
-  /// the result of [MixinAuthService.setEmailAddress] if no confirmations are needed
+  /// This is likely the result of `MixinAuthService.confirmEmailAddressUpdate`, but may also be
+  /// the result of `MixinAuthService.setEmailAddress` if no confirmations are needed
   done(isSuccess: true),
 
   /// The session has expired, you likely need to resend a confirmation code
   ///
-  /// This can be the result of [MixinAuthService.confirmEmailAddressUpdate] if code has expired,
-  /// requiring a subsequent call to [MixinAuthService.confirmEmailAddressUpdate].
+  /// This can be the result of `MixinAuthService.confirmEmailAddressUpdate` if code has expired,
+  /// requiring a subsequent call to `MixinAuthService.confirmEmailAddressUpdate`.
   sessionExpired,
 
   /// Provided confirmation code is rejected
   ///
-  /// This can be the result of [MixinAuthService.confirmEmailAddressUpdate] if user made an error
+  /// This can be the result of `MixinAuthService.confirmEmailAddressUpdate` if user made an error
   wrongConfirmationCode(userNeedsToAct: true),
 
   /// This means that what we wanted is not yet supported by our packages and need more development

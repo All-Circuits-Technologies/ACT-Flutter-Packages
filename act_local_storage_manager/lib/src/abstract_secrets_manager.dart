@@ -24,9 +24,9 @@ abstract class AbstractSecretsBuilder<
   Iterable<Type> dependsOn() => [LoggerManager, P, E];
 }
 
-/// [SecretsManager] handles confidential data storage.
+/// [AbstractSecretsManager] handles confidential data storage.
 ///
-/// (for non-secret data, please see [PropertiesManager])
+/// (for non-secret data, please see [AbstractPropertiesManager])
 ///
 /// Each supported secret is accessible through a public member,
 /// which provides a getter and a setter to read from secure storage and
@@ -36,14 +36,14 @@ abstract class AbstractSecretsBuilder<
 /// -----------------------------
 ///
 /// iOS: Those secrets are not accessible after a restart of the device,
-/// until device is unlocked once. A [PlatformException] will be thrown
+/// until device is unlocked once. A `PlatformException` will be thrown
 /// if an access is attempted in this case.
 abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
     E extends MixinStoresConf> extends AbsWithLifeCycle {
   /// This is the secure storage instance to use for the items
   late final FlutterSecureStorage _secureStorage;
 
-  /// Builds an instance of [SecretsManager].
+  /// Builds an instance of [AbstractSecretsManager].
   ///
   /// You may want to use created instance as a singleton
   /// in order to save memory.
@@ -51,7 +51,7 @@ abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
 
   /// Delete all stored secrets.
   ///
-  /// Can throw a [PlatformException].
+  /// Can throw a `PlatformException`.
   Future<void> deleteAll() async => _secureStorage.deleteAll();
 
   /// Init the manager
@@ -103,7 +103,7 @@ class SecretItem<T, S extends AbstractSecretsManager> {
 
   /// Create a FlutterSecureStorage wrapper for key [key] of type T.
   ///
-  /// Only [PropertiesManager] creates instances of this helper class.
+  /// Only [AbstractPropertiesManager] creates instances of this helper class.
   /// Other actors uses them.
   SecretItem(
     this.key, {
@@ -113,10 +113,10 @@ class SecretItem<T, S extends AbstractSecretsManager> {
   /// Load value from secure storage.
   ///
   /// Never returns null (thanks to the async keyword),
-  /// but returns Future<T>(null) if value is not found or fails to be parsed.
+  /// but returns Future\<T\>(null) if value is not found or fails to be parsed.
   ///
   /// Can (unlikely) return a Future.error.
-  /// Can throw a [PlatformException] (see [SecretsManager] iOS note).
+  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
   Future<T?> load() async {
     final value = await secureStorage.read(key: key);
 
@@ -125,7 +125,7 @@ class SecretItem<T, S extends AbstractSecretsManager> {
 
   /// Store value to secure storage.
   ///
-  /// Can throw a [PlatformException] (see [SecretsManager] iOS note).
+  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
   Future<void> store(T value) async {
     if (value == null) {
       // Underlying storage can not store null values, no need to ge further.
@@ -167,6 +167,6 @@ class SecretItem<T, S extends AbstractSecretsManager> {
 
   /// Delete a value stored in secure storage.
   ///
-  /// Can throw a [PlatformException] (see [SecretsManager] iOS note).
+  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
   Future<void> delete() async => secureStorage.delete(key: key);
 }

@@ -10,7 +10,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 /// based on an "url".
 class StorageHttpFileService extends HttpFileService {
   /// [MixinStorageService] instance to use to get the download url of a file based on an "url".
-  /// Note that the [url] might just be a id or relative path as long as it matches the
+  /// Note that the `url` might just be a id or relative path as long as it matches the
   /// format expected by the [MixinStorageService].
   final MixinStorageService _storageService;
 

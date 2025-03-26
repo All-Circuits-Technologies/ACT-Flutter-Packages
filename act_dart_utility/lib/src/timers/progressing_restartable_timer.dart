@@ -40,7 +40,7 @@ class ProgressingRestartableTimer extends RestartableTimer {
   /// Class constructor
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   ProgressingRestartableTimer(
     this.initDuration,
@@ -58,7 +58,7 @@ class ProgressingRestartableTimer extends RestartableTimer {
   /// Class constructor to build a timer which uses the exponential static method
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   factory ProgressingRestartableTimer.expFactor(
     Duration initDuration,
@@ -79,7 +79,7 @@ class ProgressingRestartableTimer extends RestartableTimer {
   /// Class constructor to build a timer which uses the log static method
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   factory ProgressingRestartableTimer.logFactor(
     Duration initDuration,
@@ -100,7 +100,7 @@ class ProgressingRestartableTimer extends RestartableTimer {
   /// Class constructor to build a timer which uses the simple factor static method
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   factory ProgressingRestartableTimer.simpleFactor(
     Duration initDuration,
@@ -121,7 +121,7 @@ class ProgressingRestartableTimer extends RestartableTimer {
   /// Class constructor to build a timer which uses the none factor static method
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   factory ProgressingRestartableTimer.noneFactor(
     Duration initDuration,

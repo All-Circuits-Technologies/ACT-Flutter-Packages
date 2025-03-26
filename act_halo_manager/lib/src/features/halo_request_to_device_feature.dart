@@ -246,8 +246,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
   }
 
   /// Get the request execution timeout, the [forcedExecutionTimeout] value prevails on the
-  /// [requestIdHelper.overriddenExecutionTimeout] which prevails on the
-  /// [requestIdHelper.defaultRequestTimeout] which prevails on the default execution timeout
+  /// [haloManagerConfig] `requestIdHelper.overriddenExecutionTimeout` which prevails on the
+  /// [haloManagerConfig] `requestIdHelper.defaultRequestTimeout` which prevails on the default
+  /// execution timeout
   Duration _getExecutionTimeout(MixinHaloRequestId requestId, Duration? forcedExecutionTimeout) =>
       forcedExecutionTimeout ??
       haloManagerConfig.requestIdHelper.overriddenExecutionTimeout[requestId.uniqueId] ??

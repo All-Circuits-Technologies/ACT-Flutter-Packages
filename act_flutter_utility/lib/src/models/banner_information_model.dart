@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 /// Represents an info banner to display above pages
 class BannerInformationModel extends Equatable {
   /// This is the offset to apply to the priority weight, the offset is added to the
-  /// [type.basePriorityWeight] value
+  /// [type] basePriorityWeight value
   final int priorityWeightOffset;
 
   /// The type of the banner information

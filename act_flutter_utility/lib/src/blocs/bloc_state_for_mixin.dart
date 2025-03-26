@@ -5,7 +5,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This state is used by the [BlocForMixin]. When you want to create a mixin for a blox, use this
+/// This state is used by the `BlocForMixin`. When you want to create a mixin for a bloc, use this
 /// class as a base for your states.
 abstract class BlocStateForMixin<S extends BlocStateForMixin<S>> extends Equatable {
   /// Mark the class as a const class.

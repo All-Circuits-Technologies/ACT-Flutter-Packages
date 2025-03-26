@@ -14,7 +14,7 @@ class SignUpPageExtra<T extends MixinRoute> extends AbsAuthPageExtra<T, AuthSign
   /// Likely optional when joining self sign up procedure pages, in which case a non-null value can
   /// be used to pre-fill an input field.
   /// Likely mandatory for subsequent pages of the self sign-up process in order to track account
-  /// being created, see [ConfirmSignUpPageExtra] subclass.
+  /// being created, see `ConfirmSignUpPageExtra` subclass.
   final String? accountId;
 
   /// Account password

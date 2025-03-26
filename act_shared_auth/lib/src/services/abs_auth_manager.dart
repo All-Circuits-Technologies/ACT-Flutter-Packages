@@ -44,7 +44,7 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   Future<MixinAuthService> getAuthService();
 
   /// {@template AbsAuthManager.onAuthStatusUpdated }
-  /// Called when the current [AuthState] linked to [authService] is updated.
+  /// Called when the current [AuthStatus] linked to [authService] is updated.
   ///
   /// Can be overridden in the derived class, to have the updated information.
   /// {@endtemplate}

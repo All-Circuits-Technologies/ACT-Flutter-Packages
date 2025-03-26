@@ -19,8 +19,10 @@ typedef TbRequestToCall<T> = Future<T> Function(ThingsboardClient tbClient);
 /// Builder linked to the [ThingsboardManager]
 class ThingsboardBuilder<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
     extends AbsManagerBuilder<ThingsboardManager<E, S>> {
+  /// Builder constructor
   ThingsboardBuilder() : super(ThingsboardManager<E, S>.new);
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, E, S];
 }
@@ -56,7 +58,8 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
 
   /// Init manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _tbLogsCategory,

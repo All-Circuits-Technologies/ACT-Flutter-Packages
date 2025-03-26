@@ -6,8 +6,13 @@ import 'package:flutter/services.dart';
 
 /// This is the result of the load string method from assets bundle
 enum AssetsBundleResult {
+  /// Everything is ok
   ok,
+
+  /// The asset hasn't been found
   notFound,
+
+  /// A generic error occurred
   genericError;
 }
 

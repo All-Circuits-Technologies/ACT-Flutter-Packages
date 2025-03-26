@@ -20,7 +20,7 @@ enum PopUntilAction {
   });
 }
 
-/// This method is used with the [popUntil] method, to guess if we need to pop the current
+/// This method is used with the `popUntil` method, to guess if we need to pop the current
 /// view or not
 ///
 /// The [currentRoutePath] is the path of the current route

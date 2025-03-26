@@ -40,10 +40,13 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// This is the logs helper linked to the request manager
   late final LogsHelper _logsHelper;
 
+  /// {@template act_server_req_manager.AbsServerReqManager.absServerLogin}
   /// This is the server login to use in order to logIn into the server, if undefined, there is no
   /// authentication to the server
+  /// {@endtemplate}
   late final T _absServerLogin;
 
+  /// {@macro act_server_req_manager.AbsServerReqManager.absServerLogin}
   @protected
   T get absServerLogin => _absServerLogin;
 

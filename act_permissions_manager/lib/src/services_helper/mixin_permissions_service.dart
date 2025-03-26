@@ -211,6 +211,8 @@ mixin MPermissionsService on AbsWithLifeCycle {
   /// value
   /// Returns true if [hasPermissions] has been updated in this method call
   @protected
+  // There is no doubt here of what the boolean positional parameter does; therefore we keep it
+  // ignore: avoid_positional_boolean_parameters
   Future<bool> updatePermission(PermissionElement element, bool newValue) async {
     final previousGranted = hasPermissions;
 
@@ -265,6 +267,8 @@ class _PermissionContainer {
   late final PermissionMonitorService _permissionMonitorService;
 
   /// The callback to call when the permission has to be updated
+  // There is no doubt here of what the boolean positional parameter does; therefore we keep it
+  // ignore: avoid_positional_boolean_parameters
   final void Function(PermissionElement, bool) updatePermission;
 
   /// State of the linked permission

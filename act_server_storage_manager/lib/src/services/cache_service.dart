@@ -74,7 +74,7 @@ class CacheService extends AbsWithLifeCycle {
   }
 
   /// Get a file based on a [fileId] from the cache or download it if it is not present. If the
-  /// [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// `result` is [StorageRequestResult.success], the `file` will be the downloaded file.
   Future<({StorageRequestResult result, File? file})> getFile(String fileId) async {
     try {
       final file = await _cacheManager.getSingleFile(fileId);
@@ -85,7 +85,7 @@ class CacheService extends AbsWithLifeCycle {
   }
 
   /// Get an image file based on a [fileId] from the cache or download it if it is not present.
-  /// If the [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// If the `result` is [StorageRequestResult.success], the `file` will be the downloaded file.
   ///
   /// {@template act_server_storage_manager.CacheService.getImageFile.size}
   /// In case we use the cache and [maxWidth] and [maxHeight] are not null, the image file is

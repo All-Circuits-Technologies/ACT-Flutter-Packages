@@ -21,6 +21,7 @@ typedef QrCodeReaderValidator = bool Function(String);
 /// as argument.
 typedef QrCodeReaderResult = void Function(String);
 
+/// This is a factory of [RawMaterialButton] when we want to generate a permission button
 typedef PermissionButtonGen = RawMaterialButton Function({
   VoidCallback onPressed,
 });
@@ -42,6 +43,7 @@ class AskPermissionInfo {
   /// This is the space between the button and the text displayed to user
   final double spaceBetweenTextAndButton;
 
+  /// Class constructor
   const AskPermissionInfo({
     required this.permButton,
     required this.textAskingPermission,
@@ -111,6 +113,7 @@ class QrCodeWidget extends StatefulWidget {
   /// This is the border shape when the right QR code is discovered
   final double? borderShapeWhenDiscovered;
 
+  /// The information linked to the permission asking
   final AskPermissionInfo askPermissionInfo;
 
   /// Create the squared QR code scanner.

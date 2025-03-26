@@ -5,8 +5,15 @@
 
 /// Device 's state of bond/pair
 enum BondState {
+  /// When we don't know the current pairing/bonding state
   unknown,
+
+  /// When we are pairing/bonding with the device
   bonding,
+
+  /// When the pairing/bonding has failed
   bondingFailed,
+
+  /// When the device is paired/bonded
   bonded,
 }

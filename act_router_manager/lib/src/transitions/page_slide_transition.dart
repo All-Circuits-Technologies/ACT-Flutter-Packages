@@ -12,6 +12,7 @@ class PageSlideTransition extends CustomTransitionPage<void> {
   /// False if the slide is vertical
   final bool isAlignHorizontal;
 
+  /// Class constructor
   PageSlideTransition({
     super.key,
     super.name,
