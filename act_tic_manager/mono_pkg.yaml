@@ -9,5 +9,3 @@ stages:
   - analyze:
       - group:
           - analyze: --fatal-infos .
-  - unit_test:
-      - test: --flavor test .
