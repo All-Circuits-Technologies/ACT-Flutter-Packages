@@ -2,22 +2,36 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_flutter_utility/src/blocs/bloc_state_for_mixin.dart';
 import 'package:act_flutter_utility/src/models/banner_information_model.dart';
-import 'package:equatable/equatable.dart';
 
 /// State of the banner information bloc
-abstract class BannerInfoState extends Equatable {
+class BannerInfoState extends BlocStateForMixin<BannerInfoState> {
   /// True if the internet connectivity is ok
   final bool isInternetOk;
 
   /// Class constructor
-  BannerInfoState({
-    required BannerInfoState previousState,
-    bool? isInternetOk,
-  }) : isInternetOk = isInternetOk ?? previousState.isInternetOk;
+  const BannerInfoState({
+    required this.isInternetOk,
+  });
 
   /// Init class constructor
   const BannerInfoState.init() : isInternetOk = true;
+
+  /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
+  @override
+  BannerInfoState copyWith({
+    bool? isInternetOk,
+  }) =>
+      BannerInfoState(isInternetOk: isInternetOk ?? this.isInternetOk);
+
+  /// Copy the state with internet update
+  BannerInfoState copyWithInternetState({
+    required bool isInternetOk,
+  }) =>
+      copyWith(
+        isInternetOk: isInternetOk,
+      );
 
   /// Get the banners to display. This manages the [knownBanners] and the banners added
   /// automatically.
@@ -26,8 +40,7 @@ abstract class BannerInfoState extends Equatable {
     required BannerInformationModel? internetBannerInfoModel,
     required List<BannerInformationModel> knownBanners,
   }) {
-    final displayInternetLoose =
-        ((internetBannerInfoModel != null) && !isInternetOk);
+    final displayInternetLoose = ((internetBannerInfoModel != null) && !isInternetOk);
     final toDisplayBanners = <BannerInformationModel>[];
 
     if (displayInternetLoose) {
@@ -36,25 +49,12 @@ abstract class BannerInfoState extends Equatable {
 
     toDisplayBanners.addAll(knownBanners);
 
-    toDisplayBanners
-        .sort((a, b) => b.priorityWeight.compareTo(a.priorityWeight));
+    toDisplayBanners.sort((a, b) => b.priorityWeight.compareTo(a.priorityWeight));
 
     return toDisplayBanners;
   }
 
+  /// This is the state properties
   @override
-  List<Object?> get props => [isInternetOk];
-}
-
-/// Init state
-class BannerInfoInitState extends BannerInfoState {
-  const BannerInfoInitState() : super.init();
-}
-
-/// State linked to internet update
-class BannerInfoInternetState extends BannerInfoState {
-  BannerInfoInternetState({
-    required super.previousState,
-    required super.isInternetOk,
-  }) : super();
+  List<Object?> get props => [...super.props, isInternetOk];
 }

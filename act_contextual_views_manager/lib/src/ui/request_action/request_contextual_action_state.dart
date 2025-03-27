@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:equatable/equatable.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 
 /// State of the request ui page
-abstract class RequestContextualActionState extends Equatable {
+class RequestContextualActionState extends BlocStateForMixin<RequestContextualActionState> {
   /// True if the user is ok with what we request him
   final bool isOk;
 
@@ -13,13 +13,10 @@ abstract class RequestContextualActionState extends Equatable {
   final bool loading;
 
   /// Class constructor
-  RequestContextualActionState({
-    required RequestContextualActionState previousState,
-    bool? isOk,
-    bool? loading,
-  })  : isOk = isOk ?? previousState.isOk,
-        loading = loading ?? previousState.loading,
-        super();
+  const RequestContextualActionState({
+    required this.isOk,
+    required this.loading,
+  }) : super();
 
   /// Init class constructor
   const RequestContextualActionState.init({
@@ -27,33 +24,36 @@ abstract class RequestContextualActionState extends Equatable {
   })  : loading = true,
         super();
 
+  /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
-  List<Object?> get props => [isOk, loading];
-}
+  RequestContextualActionState copyWith({
+    bool? isOk,
+    bool? loading,
+  }) =>
+      RequestContextualActionState(
+        isOk: isOk ?? this.isOk,
+        loading: loading ?? this.loading,
+      );
 
-/// Init state
-class RequestContextualActionInitState extends RequestContextualActionState {
-  /// Class constructor
-  const RequestContextualActionInitState({
-    required super.isOk,
-  }) : super.init();
-}
+  /// Copy the current state and update the loading value
+  RequestContextualActionState copyWithLoadingState({
+    required bool loading,
+  }) =>
+      copyWith(
+        loading: loading,
+      );
 
-/// Called when the request result has been received
-class RequestContextualActionUpdateState extends RequestContextualActionState {
-  /// Class constructor
-  RequestContextualActionUpdateState({
-    required super.previousState,
-    required bool super.isOk,
-    super.loading,
-  }) : super();
-}
+  /// Copy the current state and update the result value
+  RequestContextualActionState copyWithResultState({
+    required bool isOk,
+    bool? loading,
+  }) =>
+      copyWith(
+        isOk: isOk,
+        loading: loading,
+      );
 
-/// Called when the request is processing
-class RequestContextualActionLoadingState extends RequestContextualActionState {
-  /// Class constructor
-  RequestContextualActionLoadingState({
-    required super.previousState,
-    required bool super.loading,
-  }) : super();
+  /// This is the state properties
+  @override
+  List<Object?> get props => [...super.props, isOk, loading];
 }

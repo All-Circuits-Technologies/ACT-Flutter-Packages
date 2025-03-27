@@ -2,25 +2,16 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:equatable/equatable.dart';
-
-/// Abstract event for the request user process
-abstract class RequestContextualActionEvent extends Equatable {
-  /// Class constructor
-  const RequestContextualActionEvent();
-}
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 
 /// Emitted to initialise the request ui bloc
-class RequestContextualActionInitEvent extends RequestContextualActionEvent {
+class RequestContextualActionInitEvent extends BlocEventForMixin {
   /// Class constructor
   const RequestContextualActionInitEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 /// Emitted when the new [isOk] status has been detected
-class RequestContextualActionNewStateEvent extends RequestContextualActionEvent {
+class RequestContextualActionNewStateEvent extends BlocEventForMixin {
   /// The new [isOk] value
   final bool isOk;
 
@@ -30,23 +21,17 @@ class RequestContextualActionNewStateEvent extends RequestContextualActionEvent 
   }) : super();
 
   @override
-  List<Object?> get props => [isOk];
+  List<Object?> get props => [...super.props, isOk];
 }
 
 /// Emitted when we have to ask to user
-class RequestContextualActionAskEvent extends RequestContextualActionEvent {
+class RequestContextualActionAskEvent extends BlocEventForMixin {
   /// Class constructor
   const RequestContextualActionAskEvent();
-
-  @override
-  List<Object?> get props => [];
 }
 
 /// Emitted when the user has refused to go further or to be requested
-class RequestContextualActionRefusedEvent extends RequestContextualActionEvent {
+class RequestContextualActionRefusedEvent extends BlocEventForMixin {
   /// Class constructor
   const RequestContextualActionRefusedEvent();
-
-  @override
-  List<Object?> get props => [];
 }

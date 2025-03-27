@@ -8,7 +8,7 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This class allows to override the default behaviour of Thingsboard when saving JWT token to
 /// memory
-class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage {
+class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   /// This is the key used by the Thingsboard library to store the JWT token
   static const _tokenTbKey = "jwt_token";
 
@@ -27,23 +27,39 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage {
 
   /// Called to get the content of an item
   @override
-  Future<String?> getItem(String key) async => _getSecretItem(key).load();
+  Future<String?> getItem(String key, {String? defaultValue}) async => _getSecretItem(key).load();
 
   /// Called to set the content of an item
   @override
   Future<void> setItem(String key, String value) => _getSecretItem(key).store(value);
 
+  /// Test if the [key] exists in the storage
+  @override
+  bool containsKey(String key) {
+    final secretItem = _tryToGetSecretItem(key);
+    return secretItem != null;
+  }
+
   /// Get the secret item linked to the Thingsboard key
   SecretItem<String, S> _getSecretItem<T>(String key) {
+    final secretItem = _tryToGetSecretItem(key);
+    if (secretItem == null) {
+      throw Exception("The wanted secret item searched with the key: $key, doesn't exist and it's "
+          "not managed");
+    }
+
+    return secretItem;
+  }
+
+  /// Get the secret item linked to the Thingsboard key
+  SecretItem<String, S>? _tryToGetSecretItem<T>(String key) {
     switch (key) {
       case _tokenTbKey:
         return _tbSecretManager.tbToken as SecretItem<String, S>;
       case _refreshTokenTbKey:
         return _tbSecretManager.tbRefreshToken as SecretItem<String, S>;
       default:
-        throw Exception(
-            "The wanted secret item searched with the key: $key, doesn't exist and it's "
-            "not managed");
+        return null;
     }
   }
 }

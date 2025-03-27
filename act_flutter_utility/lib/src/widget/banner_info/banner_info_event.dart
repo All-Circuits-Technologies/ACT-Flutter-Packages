@@ -2,16 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:equatable/equatable.dart';
-
-/// This is the event base for the Banner information bloc
-abstract class BannerInfoEvent extends Equatable {
-  /// Class constructor
-  const BannerInfoEvent();
-}
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 
 /// Emitted when the internet status has been updated
-class BannerInfoInternetUpdateEvent extends BannerInfoEvent {
+class BannerInfoInternetUpdateEvent extends BlocEventForMixin {
   /// True if the internet connectivity is ok
   final bool isInternetOk;
 
@@ -20,6 +14,7 @@ class BannerInfoInternetUpdateEvent extends BannerInfoEvent {
     required this.isInternetOk,
   });
 
+  /// This is the event properties
   @override
-  List<Object?> get props => [isInternetOk];
+  List<Object?> get props => [...super.props, isInternetOk];
 }

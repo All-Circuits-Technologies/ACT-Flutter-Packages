@@ -20,7 +20,6 @@ dependencies:
       url: https://github.com/benoit-rolandeau-act/dart_thingsboard_client.git
       ref: fix-tb-storage-interface
 
-
   # Help to implement value based equality without explicit override
   equatable: ^2.0.5
 
@@ -55,3 +54,4 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+

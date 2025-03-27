@@ -27,6 +27,9 @@ dependencies:
   act_abstract_manager:
     path: ../act_abstract_manager
 
+  act_flutter_utility:
+    path: ../act_flutter_utility
+
   act_global_manager:
     path: ../act_global_manager
 
