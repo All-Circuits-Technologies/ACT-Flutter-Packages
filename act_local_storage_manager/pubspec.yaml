@@ -24,6 +24,7 @@ dependencies:
   flutter_secure_storage: ^9.2.4
 
   # Wrap platform-specific persistent storage for simple data
+  # TODO(brolandeau): when updating the lib, verify if we still need to override `shared_preferences_android`
   shared_preferences: ^2.5.2
 
   # Flutter AC Technologies dependencies
@@ -57,7 +58,3 @@ dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The shared preferences doesn't use the latest android package which is needed by flutter.
   shared_preferences_android: ^2.4.8
-
-  # For now, Amplify cognito depends on libs which depends of web: ^0.5.0 and firebase crashlytics
-  # depends on web: ^1.0.0, we force the version of the web dependency
-  web: ^1.0.0

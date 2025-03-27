@@ -31,6 +31,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
 
   # A Flutter plugin for launching a URL.
+  # TODO(brolandeau): when updating the lib, verify if we still need to override `url_launcher_android`
   url_launcher: ^6.3.1
 
   # Tells which amount a widget is currently visible
