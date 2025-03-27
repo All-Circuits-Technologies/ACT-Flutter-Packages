@@ -59,3 +59,8 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^5.0.0
+
+dependency_overrides:
+  # This is needed to fix problem with building for Android app
+  # The url launcher doesn't use the latest android package which is needed by flutter.
+  url_launcher_android: ^6.3.15
