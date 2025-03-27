@@ -1,0 +1,944 @@
+# Created with package:mono_repo v6.6.3
+name: Dart CI
+on:
+  pull_request:
+defaults:
+  run:
+    shell: bash
+env:
+  PUB_ENVIRONMENT: bot.github
+permissions: read-all
+
+jobs:
+  job_001:
+    name: mono_repo self validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
+        with:
+          sdk: stable
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: mono_repo self validate
+        run: dart pub global activate mono_repo 6.6.3
+      - name: mono_repo self validate
+        run: dart pub global run mono_repo generate --validate
+  job_002:
+    name: "analyze; PKGS: act_abs_peripherals_manager, act_abstract_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_utility, act_enable_service_utility, act_entity, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_manager, act_launcher_icon, act_life_cycle_manager, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_router_manager, act_server_req_jwt_logins, act_server_req_manager, act_server_storage_manager, act_server_storage_ui, act_shared_auth, act_shared_auth_ui, act_splash_screen_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1045-473702886"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1028-566684912
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          channel: stable
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_abs_peripherals_manager_pub_upgrade
+        name: act_abs_peripherals_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_abs_peripherals_manager
+      - name: "act_abs_peripherals_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_abs_peripherals_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_abs_peripherals_manager
+      - id: act_abstract_manager_pub_upgrade
+        name: act_abstract_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_abstract_manager
+      - name: "act_abstract_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_abstract_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_abstract_manager
+      - id: act_amplify_api_pub_upgrade
+        name: act_amplify_api; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_api
+      - name: "act_amplify_api; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_amplify_api_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_api
+      - id: act_amplify_cognito_pub_upgrade
+        name: act_amplify_cognito; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_cognito
+      - name: "act_amplify_cognito; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_amplify_cognito_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_cognito
+      - id: act_amplify_core_pub_upgrade
+        name: act_amplify_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_core
+      - name: "act_amplify_core; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_amplify_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_core
+      - id: act_amplify_storage_s3_pub_upgrade
+        name: act_amplify_storage_s3; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+      - name: "act_amplify_storage_s3; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_amplify_storage_s3_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+      - id: act_aws_iot_core_pub_upgrade
+        name: act_aws_iot_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_aws_iot_core
+      - name: "act_aws_iot_core; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_aws_iot_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_aws_iot_core
+      - id: act_ble_manager_pub_upgrade
+        name: act_ble_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ble_manager
+      - name: "act_ble_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_ble_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ble_manager
+      - id: act_ble_manager_ui_pub_upgrade
+        name: act_ble_manager_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ble_manager_ui
+      - name: "act_ble_manager_ui; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_ble_manager_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ble_manager_ui
+      - id: act_config_manager_pub_upgrade
+        name: act_config_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_config_manager
+      - name: "act_config_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_config_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_config_manager
+      - id: act_consent_manager_pub_upgrade
+        name: act_consent_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_consent_manager
+      - name: "act_consent_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_consent_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_consent_manager
+      - id: act_contextual_views_manager_pub_upgrade
+        name: act_contextual_views_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_contextual_views_manager
+      - name: "act_contextual_views_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_contextual_views_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_contextual_views_manager
+      - id: act_dart_utility_pub_upgrade
+        name: act_dart_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_dart_utility
+      - name: "act_dart_utility; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_dart_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_dart_utility
+      - id: act_enable_service_utility_pub_upgrade
+        name: act_enable_service_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_enable_service_utility
+      - name: "act_enable_service_utility; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_enable_service_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_enable_service_utility
+      - id: act_entity_pub_upgrade
+        name: act_entity; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_entity
+      - name: "act_entity; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_entity_pub_upgrade.conclusion == 'success'"
+        working-directory: act_entity
+      - id: act_firebase_core_pub_upgrade
+        name: act_firebase_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_firebase_core
+      - name: "act_firebase_core; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_firebase_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_firebase_core
+      - id: act_firebase_crash_pub_upgrade
+        name: act_firebase_crash; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_firebase_crash
+      - name: "act_firebase_crash; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_firebase_crash_pub_upgrade.conclusion == 'success'"
+        working-directory: act_firebase_crash
+      - id: act_flutter_utility_pub_upgrade
+        name: act_flutter_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_flutter_utility
+      - name: "act_flutter_utility; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_flutter_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_flutter_utility
+      - id: act_global_manager_pub_upgrade
+        name: act_global_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_global_manager
+      - name: "act_global_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_global_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_global_manager
+      - id: act_halo_abstract_pub_upgrade
+        name: act_halo_abstract; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_abstract
+      - name: "act_halo_abstract; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_halo_abstract_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_abstract
+      - id: act_halo_ble_layer_pub_upgrade
+        name: act_halo_ble_layer; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_ble_layer
+      - name: "act_halo_ble_layer; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_halo_ble_layer_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_ble_layer
+      - id: act_halo_manager_pub_upgrade
+        name: act_halo_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_manager
+      - name: "act_halo_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_halo_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_manager
+      - id: act_internet_connectivity_manager_pub_upgrade
+        name: act_internet_connectivity_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_internet_connectivity_manager
+      - name: "act_internet_connectivity_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_internet_connectivity_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_internet_connectivity_manager
+      - id: act_intl_pub_upgrade
+        name: act_intl; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl
+      - name: "act_intl; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_intl_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl
+      - id: act_intl_ui_pub_upgrade
+        name: act_intl_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl_ui
+      - name: "act_intl_ui; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_intl_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl_ui
+      - id: act_jwt_manager_pub_upgrade
+        name: act_jwt_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_jwt_manager
+      - name: "act_jwt_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_jwt_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_jwt_manager
+      - id: act_launcher_icon_pub_upgrade
+        name: act_launcher_icon; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_launcher_icon
+      - name: "act_launcher_icon; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_launcher_icon_pub_upgrade.conclusion == 'success'"
+        working-directory: act_launcher_icon
+      - id: act_life_cycle_manager_pub_upgrade
+        name: act_life_cycle_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_life_cycle_manager
+      - name: "act_life_cycle_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_life_cycle_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_life_cycle_manager
+      - id: act_local_storage_manager_pub_upgrade
+        name: act_local_storage_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_local_storage_manager
+      - name: "act_local_storage_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_local_storage_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_local_storage_manager
+      - id: act_location_manager_pub_upgrade
+        name: act_location_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_location_manager
+      - name: "act_location_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_location_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_location_manager
+      - id: act_logger_manager_pub_upgrade
+        name: act_logger_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_logger_manager
+      - name: "act_logger_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_logger_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_logger_manager
+      - id: act_music_player_manager_pub_upgrade
+        name: act_music_player_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_music_player_manager
+      - name: "act_music_player_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_music_player_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_music_player_manager
+      - id: act_ocsigen_halo_manager_pub_upgrade
+        name: act_ocsigen_halo_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ocsigen_halo_manager
+      - name: "act_ocsigen_halo_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_ocsigen_halo_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ocsigen_halo_manager
+      - id: act_permissions_manager_pub_upgrade
+        name: act_permissions_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_permissions_manager
+      - name: "act_permissions_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_permissions_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_permissions_manager
+      - id: act_platform_manager_pub_upgrade
+        name: act_platform_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_platform_manager
+      - name: "act_platform_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_platform_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_platform_manager
+      - id: act_qr_code_pub_upgrade
+        name: act_qr_code; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_qr_code
+      - name: "act_qr_code; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_qr_code_pub_upgrade.conclusion == 'success'"
+        working-directory: act_qr_code
+      - id: act_router_manager_pub_upgrade
+        name: act_router_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_router_manager
+      - name: "act_router_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_router_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_router_manager
+      - id: act_server_req_jwt_logins_pub_upgrade
+        name: act_server_req_jwt_logins; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_req_jwt_logins
+      - name: "act_server_req_jwt_logins; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_server_req_jwt_logins_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_req_jwt_logins
+      - id: act_server_req_manager_pub_upgrade
+        name: act_server_req_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_req_manager
+      - name: "act_server_req_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_server_req_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_req_manager
+      - id: act_server_storage_manager_pub_upgrade
+        name: act_server_storage_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_storage_manager
+      - name: "act_server_storage_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_server_storage_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_storage_manager
+      - id: act_server_storage_ui_pub_upgrade
+        name: act_server_storage_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_storage_ui
+      - name: "act_server_storage_ui; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_server_storage_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_storage_ui
+      - id: act_shared_auth_pub_upgrade
+        name: act_shared_auth; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth
+      - name: "act_shared_auth; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_shared_auth_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth
+      - id: act_shared_auth_ui_pub_upgrade
+        name: act_shared_auth_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth_ui
+      - name: "act_shared_auth_ui; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_shared_auth_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth_ui
+      - id: act_splash_screen_manager_pub_upgrade
+        name: act_splash_screen_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_splash_screen_manager
+      - name: "act_splash_screen_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_splash_screen_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_splash_screen_manager
+      - id: act_thingsboard_client_pub_upgrade
+        name: act_thingsboard_client; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_thingsboard_client
+      - name: "act_thingsboard_client; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_thingsboard_client_pub_upgrade.conclusion == 'success'"
+        working-directory: act_thingsboard_client
+      - id: act_thingsboard_client_ui_pub_upgrade
+        name: act_thingsboard_client_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_thingsboard_client_ui
+      - name: "act_thingsboard_client_ui; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_thingsboard_client_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_thingsboard_client_ui
+      - id: act_tic_manager_pub_upgrade
+        name: act_tic_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_tic_manager
+      - name: "act_tic_manager; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_tic_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_tic_manager
+      - id: act_yaml_utility_pub_upgrade
+        name: act_yaml_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_yaml_utility
+      - name: "act_yaml_utility; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_yaml_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_yaml_utility
+  job_003:
+    name: "unit_test; PKGS: act_abs_peripherals_manager, act_abstract_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_utility, act_enable_service_utility, act_entity, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_manager, act_launcher_icon, act_life_cycle_manager, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_router_manager, act_server_req_jwt_logins, act_server_req_manager, act_server_storage_manager, act_server_storage_ui, act_shared_auth, act_shared_auth_ui, act_splash_screen_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_yaml_utility; `flutter test --flavor test .`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1042-830588858"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1028-566684912
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          channel: stable
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_abs_peripherals_manager_pub_upgrade
+        name: act_abs_peripherals_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_abs_peripherals_manager
+      - name: "act_abs_peripherals_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_abs_peripherals_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_abs_peripherals_manager
+      - id: act_abstract_manager_pub_upgrade
+        name: act_abstract_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_abstract_manager
+      - name: "act_abstract_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_abstract_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_abstract_manager
+      - id: act_amplify_api_pub_upgrade
+        name: act_amplify_api; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_api
+      - name: "act_amplify_api; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_amplify_api_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_api
+      - id: act_amplify_cognito_pub_upgrade
+        name: act_amplify_cognito; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_cognito
+      - name: "act_amplify_cognito; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_amplify_cognito_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_cognito
+      - id: act_amplify_core_pub_upgrade
+        name: act_amplify_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_core
+      - name: "act_amplify_core; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_amplify_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_core
+      - id: act_amplify_storage_s3_pub_upgrade
+        name: act_amplify_storage_s3; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+      - name: "act_amplify_storage_s3; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_amplify_storage_s3_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+      - id: act_aws_iot_core_pub_upgrade
+        name: act_aws_iot_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_aws_iot_core
+      - name: "act_aws_iot_core; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_aws_iot_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_aws_iot_core
+      - id: act_ble_manager_pub_upgrade
+        name: act_ble_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ble_manager
+      - name: "act_ble_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_ble_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ble_manager
+      - id: act_ble_manager_ui_pub_upgrade
+        name: act_ble_manager_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ble_manager_ui
+      - name: "act_ble_manager_ui; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_ble_manager_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ble_manager_ui
+      - id: act_config_manager_pub_upgrade
+        name: act_config_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_config_manager
+      - name: "act_config_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_config_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_config_manager
+      - id: act_consent_manager_pub_upgrade
+        name: act_consent_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_consent_manager
+      - name: "act_consent_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_consent_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_consent_manager
+      - id: act_contextual_views_manager_pub_upgrade
+        name: act_contextual_views_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_contextual_views_manager
+      - name: "act_contextual_views_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_contextual_views_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_contextual_views_manager
+      - id: act_dart_utility_pub_upgrade
+        name: act_dart_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_dart_utility
+      - name: "act_dart_utility; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_dart_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_dart_utility
+      - id: act_enable_service_utility_pub_upgrade
+        name: act_enable_service_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_enable_service_utility
+      - name: "act_enable_service_utility; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_enable_service_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_enable_service_utility
+      - id: act_entity_pub_upgrade
+        name: act_entity; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_entity
+      - name: "act_entity; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_entity_pub_upgrade.conclusion == 'success'"
+        working-directory: act_entity
+      - id: act_firebase_core_pub_upgrade
+        name: act_firebase_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_firebase_core
+      - name: "act_firebase_core; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_firebase_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_firebase_core
+      - id: act_firebase_crash_pub_upgrade
+        name: act_firebase_crash; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_firebase_crash
+      - name: "act_firebase_crash; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_firebase_crash_pub_upgrade.conclusion == 'success'"
+        working-directory: act_firebase_crash
+      - id: act_flutter_utility_pub_upgrade
+        name: act_flutter_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_flutter_utility
+      - name: "act_flutter_utility; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_flutter_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_flutter_utility
+      - id: act_global_manager_pub_upgrade
+        name: act_global_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_global_manager
+      - name: "act_global_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_global_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_global_manager
+      - id: act_halo_abstract_pub_upgrade
+        name: act_halo_abstract; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_abstract
+      - name: "act_halo_abstract; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_halo_abstract_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_abstract
+      - id: act_halo_ble_layer_pub_upgrade
+        name: act_halo_ble_layer; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_ble_layer
+      - name: "act_halo_ble_layer; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_halo_ble_layer_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_ble_layer
+      - id: act_halo_manager_pub_upgrade
+        name: act_halo_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_manager
+      - name: "act_halo_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_halo_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_manager
+      - id: act_internet_connectivity_manager_pub_upgrade
+        name: act_internet_connectivity_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_internet_connectivity_manager
+      - name: "act_internet_connectivity_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_internet_connectivity_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_internet_connectivity_manager
+      - id: act_intl_pub_upgrade
+        name: act_intl; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl
+      - name: "act_intl; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_intl_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl
+      - id: act_intl_ui_pub_upgrade
+        name: act_intl_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl_ui
+      - name: "act_intl_ui; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_intl_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl_ui
+      - id: act_jwt_manager_pub_upgrade
+        name: act_jwt_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_jwt_manager
+      - name: "act_jwt_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_jwt_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_jwt_manager
+      - id: act_launcher_icon_pub_upgrade
+        name: act_launcher_icon; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_launcher_icon
+      - name: "act_launcher_icon; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_launcher_icon_pub_upgrade.conclusion == 'success'"
+        working-directory: act_launcher_icon
+      - id: act_life_cycle_manager_pub_upgrade
+        name: act_life_cycle_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_life_cycle_manager
+      - name: "act_life_cycle_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_life_cycle_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_life_cycle_manager
+      - id: act_local_storage_manager_pub_upgrade
+        name: act_local_storage_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_local_storage_manager
+      - name: "act_local_storage_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_local_storage_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_local_storage_manager
+      - id: act_location_manager_pub_upgrade
+        name: act_location_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_location_manager
+      - name: "act_location_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_location_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_location_manager
+      - id: act_logger_manager_pub_upgrade
+        name: act_logger_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_logger_manager
+      - name: "act_logger_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_logger_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_logger_manager
+      - id: act_music_player_manager_pub_upgrade
+        name: act_music_player_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_music_player_manager
+      - name: "act_music_player_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_music_player_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_music_player_manager
+      - id: act_ocsigen_halo_manager_pub_upgrade
+        name: act_ocsigen_halo_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_ocsigen_halo_manager
+      - name: "act_ocsigen_halo_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_ocsigen_halo_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_ocsigen_halo_manager
+      - id: act_permissions_manager_pub_upgrade
+        name: act_permissions_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_permissions_manager
+      - name: "act_permissions_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_permissions_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_permissions_manager
+      - id: act_platform_manager_pub_upgrade
+        name: act_platform_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_platform_manager
+      - name: "act_platform_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_platform_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_platform_manager
+      - id: act_qr_code_pub_upgrade
+        name: act_qr_code; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_qr_code
+      - name: "act_qr_code; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_qr_code_pub_upgrade.conclusion == 'success'"
+        working-directory: act_qr_code
+      - id: act_router_manager_pub_upgrade
+        name: act_router_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_router_manager
+      - name: "act_router_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_router_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_router_manager
+      - id: act_server_req_jwt_logins_pub_upgrade
+        name: act_server_req_jwt_logins; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_req_jwt_logins
+      - name: "act_server_req_jwt_logins; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_server_req_jwt_logins_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_req_jwt_logins
+      - id: act_server_req_manager_pub_upgrade
+        name: act_server_req_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_req_manager
+      - name: "act_server_req_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_server_req_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_req_manager
+      - id: act_server_storage_manager_pub_upgrade
+        name: act_server_storage_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_storage_manager
+      - name: "act_server_storage_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_server_storage_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_storage_manager
+      - id: act_server_storage_ui_pub_upgrade
+        name: act_server_storage_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_server_storage_ui
+      - name: "act_server_storage_ui; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_server_storage_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_server_storage_ui
+      - id: act_shared_auth_pub_upgrade
+        name: act_shared_auth; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth
+      - name: "act_shared_auth; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_shared_auth_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth
+      - id: act_shared_auth_ui_pub_upgrade
+        name: act_shared_auth_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth_ui
+      - name: "act_shared_auth_ui; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_shared_auth_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth_ui
+      - id: act_splash_screen_manager_pub_upgrade
+        name: act_splash_screen_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_splash_screen_manager
+      - name: "act_splash_screen_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_splash_screen_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_splash_screen_manager
+      - id: act_thingsboard_client_pub_upgrade
+        name: act_thingsboard_client; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_thingsboard_client
+      - name: "act_thingsboard_client; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_thingsboard_client_pub_upgrade.conclusion == 'success'"
+        working-directory: act_thingsboard_client
+      - id: act_thingsboard_client_ui_pub_upgrade
+        name: act_thingsboard_client_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_thingsboard_client_ui
+      - name: "act_thingsboard_client_ui; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_thingsboard_client_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_thingsboard_client_ui
+      - id: act_tic_manager_pub_upgrade
+        name: act_tic_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_tic_manager
+      - name: "act_tic_manager; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_tic_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_tic_manager
+      - id: act_yaml_utility_pub_upgrade
+        name: act_yaml_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_yaml_utility
+      - name: "act_yaml_utility; flutter test --flavor test ."
+        run: flutter test --flavor test .
+        if: "always() && steps.act_yaml_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_yaml_utility
+    needs:
+      - job_001
+      - job_002
