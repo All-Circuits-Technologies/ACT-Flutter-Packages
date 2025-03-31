@@ -12,8 +12,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builder of the abstract firebase manager
-abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager, C extends AbstractConfigManager>
-    extends AbsManagerBuilder<T> {
+abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager,
+    C extends AbstractConfigManager> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsFirebaseBuilder(super.factory);
 
@@ -77,10 +77,10 @@ abstract class AbsFirebaseManager extends AbsWithLifeCycle {
   /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
-    await super.disposeLifeCycle();
-
     for (final service in _firebaseServices) {
       await service.disposeLifeCycle();
     }
+
+    await super.disposeLifeCycle();
   }
 }

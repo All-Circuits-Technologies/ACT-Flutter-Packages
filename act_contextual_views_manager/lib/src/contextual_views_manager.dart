@@ -86,7 +86,6 @@ class ContextualViewsManager extends AbsWithLifeCycle {
   @override
   Future<void> disposeLifeCycle() async {
     final futures = <Future>[
-      super.disposeLifeCycle(),
       _viewBuilder.dispose(),
     ];
 

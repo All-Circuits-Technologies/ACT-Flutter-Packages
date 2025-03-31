@@ -21,7 +21,8 @@ class LocationBuilder extends DerivedLocationBuilder<LocationManager> {
 }
 
 /// Builder used to create derived [LocationManager]
-class DerivedLocationBuilder<T extends LocationManager> extends AbstractPeriphBuilder<T> {
+class DerivedLocationBuilder<T extends LocationManager>
+    extends AbstractPeriphBuilder<T> {
   /// Class constructor
   DerivedLocationBuilder(super.factory);
 
@@ -53,7 +54,6 @@ class LocationManager extends AbstractPeriphManager {
   /// Initialize the manager
   @override
   Future<void> initLifeCycle() async {
-    // Get init config before calling super init manager
     _initConfig = await getInitConfig();
 
     _logsHelper = LogsHelper(
@@ -61,6 +61,9 @@ class LocationManager extends AbstractPeriphManager {
       logsCategory: logsCategory,
     );
 
+    // We get init config before calling super init manager, because [_initConfig] is used in
+    // the [getPermissionsConfig] method. And this method is called in the super initLifeCycle
+    // method.
     await super.initLifeCycle();
 
     // Initialize location service enabled status
@@ -75,7 +78,8 @@ class LocationManager extends AbstractPeriphManager {
   ///
   /// If needed to change the default config, just override this method in the derived class
   @protected
-  Future<LocationInitConfig> getInitConfig() async => const LocationInitConfig.defaultConfig();
+  Future<LocationInitConfig> getInitConfig() async =>
+      const LocationInitConfig.defaultConfig();
 
   /// Get the permissions configuration linked to this mixin permissions service
   @override
@@ -84,7 +88,8 @@ class LocationManager extends AbstractPeriphManager {
         if (_initConfig.isLocationUsageAlways)
           PermissionConfig(
             element: PermissionElement.locationAlways,
-            whenAskingForceGoToSettings: globalGetIt().get<PlatformManager>().isIos,
+            whenAskingForceGoToSettings:
+                globalGetIt().get<PlatformManager>().isIos,
             whenAskingDependsOn: const [PermissionElement.locationWhenInUse],
           ),
         const PermissionConfig(
@@ -123,7 +128,8 @@ class LocationManager extends AbstractPeriphManager {
       isAcceptanceCompulsory: isAcceptanceCompulsory,
       displayContextualIfNeeded: displayContextualIfNeeded,
       manageEnabling: () async {
-        final locationStatus = await MEnableService.openAppSettingAndWaitForUpdate<ServiceStatus>(
+        final locationStatus =
+            await MEnableService.openAppSettingAndWaitForUpdate<ServiceStatus>(
           isExpectedStatus: (status) => status == ServiceStatus.enabled,
           valueGetter: () async {
             final enabled = await Geolocator.isLocationServiceEnabled();
@@ -171,7 +177,8 @@ class LocationManager extends AbstractPeriphManager {
     if (!(await checkAndAskForPermissionsAndServices(
       askActionsToUser: askPermissionToUser,
     ))) {
-      _logsHelper.w("We can't get the current location: the permissions and services aren't "
+      _logsHelper.w(
+          "We can't get the current location: the permissions and services aren't "
           "activated");
       return null;
     }
@@ -182,7 +189,8 @@ class LocationManager extends AbstractPeriphManager {
       position = await Geolocator.getCurrentPosition(
         locationSettings: LocationSettings(
           accuracy: overrideDefaultAccuracy ?? _initConfig.accuracy,
-          timeLimit: overrideDefaultTimeLimit ?? _initConfig.timeLimitWhenGettingPosition,
+          timeLimit: overrideDefaultTimeLimit ??
+              _initConfig.timeLimitWhenGettingPosition,
         ),
       );
     } catch (error) {
@@ -205,7 +213,8 @@ class LocationManager extends AbstractPeriphManager {
     if (!(await checkAndAskForPermissionsAndServices(
       askActionsToUser: askPermissionToUser,
     ))) {
-      _logsHelper.w("We can't get the last known location: the permissions and services aren't "
+      _logsHelper.w(
+          "We can't get the last known location: the permissions and services aren't "
           "activated");
       return null;
     }

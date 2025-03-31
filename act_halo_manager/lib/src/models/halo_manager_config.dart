@@ -32,6 +32,7 @@ class HaloManagerConfig<HardwareType> extends Equatable {
     this.retryNbBeforeReturningError = defaultRetryNumber,
   }) : actionMutex = Mutex();
 
+  /// Class properties
   @override
   List<Object?> get props => [hardwareLayer, requestIdHelper];
 }

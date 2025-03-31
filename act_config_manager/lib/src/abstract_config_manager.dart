@@ -6,7 +6,8 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_config_manager/src/data/config_constants.dart' as config_constants;
+import 'package:act_config_manager/src/data/config_constants.dart'
+    as config_constants;
 import 'package:act_config_manager/src/services/config_singleton.dart';
 import 'package:act_config_manager/src/types/environment.dart';
 import 'package:act_config_manager/src/utilities/config_from_env_utility.dart';
@@ -15,7 +16,8 @@ import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builder for creating the ConfigManager
-abstract class AbstractConfigBuilder<T extends AbstractConfigManager> extends AbsManagerBuilder<T> {
+abstract class AbstractConfigBuilder<T extends AbstractConfigManager>
+    extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
   AbstractConfigBuilder(super.factory);
 
@@ -48,7 +50,8 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
     // We explicitly use Environment here because we need to get the env type to know the
     // environment to use in the app
     // ignore: do_not_use_environment
-    env = Environment.fromString(const String.fromEnvironment(Environment.envType));
+    env = Environment.fromString(
+        const String.fromEnvironment(Environment.envType));
   }
 
   /// Init the manager
@@ -57,7 +60,8 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
     await super.initLifeCycle();
     WidgetsFlutterBinding.ensureInitialized();
 
-    final configsValue = await ConfigFromYamlUtility.parseFromConfigFiles(configPath, env);
+    final configsValue =
+        await ConfigFromYamlUtility.parseFromConfigFiles(configPath, env);
     final envConfigs = await ConfigFromEnvUtility.parseFromEnv(configPath);
     final finalValue = JsonUtility.mergeJson(
       baseJson: configsValue,
@@ -78,7 +82,7 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
   /// Called when the manager is disposed
   @override
   Future<void> disposeLifeCycle() async {
-    await super.disposeLifeCycle();
     await ConfigSingleton.instance.disposeLifeCycle();
+    await super.disposeLifeCycle();
   }
 }
