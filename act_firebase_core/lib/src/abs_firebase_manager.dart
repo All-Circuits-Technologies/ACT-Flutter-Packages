@@ -12,8 +12,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/widgets.dart';
 
 /// Builder of the abstract firebase manager
-abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager,
-    C extends AbstractConfigManager> extends AbsManagerBuilder<T> {
+abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager, C extends AbstractConfigManager>
+    extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsFirebaseBuilder(super.factory);
 
