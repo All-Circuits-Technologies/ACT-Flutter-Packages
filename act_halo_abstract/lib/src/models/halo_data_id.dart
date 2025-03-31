@@ -7,7 +7,10 @@ import 'package:equatable/equatable.dart';
 
 /// Defines the id for all the HALO data exchanged between the device and the client
 class HaloDataId<T> extends Equatable {
+  /// This is the [value] of the halo data id
   final T value;
+
+  /// This is the id exchanged with the firmware
   final int id;
 
   /// Class constructor
@@ -27,8 +30,10 @@ class HaloDataId<T> extends Equatable {
 
 /// Defines the HALO data ID helper to list all the data ID managed
 abstract class AbstractHaloDataIdHelper<T> {
+  /// This is the [dataIds] linked to the value
   final Map<T, HaloDataId<T>> dataIds;
 
+  /// Class constructor
   AbstractHaloDataIdHelper({
     required this.dataIds,
   });

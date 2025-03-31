@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_ble_manager_ui/src/blocs/connect_to_device/ble_connect_to_device_event.dart';
 import 'package:act_ble_manager_ui/src/blocs/connect_to_device/ble_connect_to_device_state.dart';
+import 'package:act_ble_manager_ui/src/mixins/mixin_ble_connection_redirect_service.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mutex/mutex.dart';
@@ -19,7 +20,7 @@ import 'package:mutex/mutex.dart';
 /// - [DisconnectDeviceEvent] to disconnect the currently connected device.
 ///
 /// This bloc doesn't manage the redirection to a page in case of a device disconnection, if you
-/// want to do that, see the mixin: [MixinRequiredBleDeviceConnection]
+/// want to do that, see the mixin: [MixinBleConnectionRedirectService]
 class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToDeviceState> {
   /// If not null, this callback is called in the Ble manager connection process. It's called just
   /// after the connection and before the service discovery
@@ -117,7 +118,7 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
     _bondStateSub = newDevice.bondStateStream.listen(_onNewBondState);
   }
 
-  /// Called when the [DeviceConnectionState] of the [state.device] is updated
+  /// Called when the [DeviceConnectionState] of the [state] `device` is updated
   void _onNewConnectionState(DeviceConnectionState value) {
     if (state.connectionState == value) {
       // Nothing more to do
@@ -127,7 +128,7 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
     add(NewDeviceStateEvent(connectionState: value));
   }
 
-  /// Called when the [BondState] of the [state.device] is updated
+  /// Called when the [BondState] of the [state] `device` is updated
   void _onNewBondState(BondState value) {
     if (state.bondState == value) {
       // Nothing more to do

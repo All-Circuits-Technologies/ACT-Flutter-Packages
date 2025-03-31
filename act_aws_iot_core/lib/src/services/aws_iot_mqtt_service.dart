@@ -52,9 +52,6 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   /// The scheme used for MQTT connections, indicating a secure WebSocket connection.
   static const _scheme = 'wss';
 
-  /// The minimum delay between two connection attempts.
-  static const _minConnectPeriod = Duration(seconds: 30);
-
   /// The configuration to use for the service
   final AwsIotMqttConfigModel config;
 
@@ -96,14 +93,6 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
 
   /// This is the service responsible for the management of the subscription to the mqtt topics.
   late final AwsIotMqttSubcriptionService _mqttSubcriptionService;
-
-  /// This flag is used by the mechanism that prevents the service from trying to connect too
-  /// frequently. It is set to false when a connection is requested and will remain false for the
-  /// [_minConnectPeriod] duration. If a connection is requested during this period, the flag will
-  /// be set to true and the connection will be attempted after the [_minConnectPeriod] duration.
-  /// Finally, the flag is null when no connection was attempted to recently, meaning that we can
-  /// try to connect to the mqtt server without any delay.
-  bool? _isConnectAfterDelayEnabled;
 
   /// Flag to indicate if a disconnection was requested. It is checked in the [_onDisconnected]
   /// method to know whether the disconnection was requested or not (like when we lose the
@@ -172,8 +161,9 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   ///
   /// Listen to the observer utilities and try to connect to the mqtt server.
   @override
-  Future<void> initService() async {
-    await _mqttSubcriptionService.initService();
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
+    await _mqttSubcriptionService.initLifeCycle();
 
     // Listen to the observer utilities
     for (final obs in _observerUtilities) {
@@ -520,7 +510,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   /// - Disconnect from the mqtt server
   /// - Close all our streams
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     // Cancel the observer subscriptions
     for (final sub in _observerSubscriptions) {
       await sub.cancel();
@@ -539,8 +529,8 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     await _onMessageReceivedController.close();
 
     // Dispose the mqtt subscription service
-    await _mqttSubcriptionService.dispose();
+    await _mqttSubcriptionService.disposeLifeCycle();
 
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }

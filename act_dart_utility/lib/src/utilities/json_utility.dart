@@ -303,7 +303,7 @@ abstract class JsonUtility {
 
   /// The method merge two json value together.
   ///
-  /// If the values are Map<String, dynamic> we try to merge the value together by calling
+  /// If the values are Map\<String, dynamic\> we try to merge the value together by calling
   /// [mergeJson] method.
   ///
   /// If the values have a different type, the [toOverrideValue] is used.

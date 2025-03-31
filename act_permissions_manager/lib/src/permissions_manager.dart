@@ -17,7 +17,7 @@ import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 /// Builder for creating the PermissionsManager
-class PermissionsBuilder extends ManagerBuilder<PermissionsManager> {
+class PermissionsBuilder extends AbsManagerBuilder<PermissionsManager> {
   /// Class constructor with the class construction
   PermissionsBuilder() : super(PermissionsManager.new);
 
@@ -31,7 +31,7 @@ class PermissionsBuilder extends ManagerBuilder<PermissionsManager> {
 }
 
 /// The WiFi manager allows to manage the WiFi features of the mobile
-class PermissionsManager extends AbstractManager {
+class PermissionsManager extends AbsWithLifeCycle {
   /// Sometimes a permission request returns "denied" even though we have accepted the permission
   /// (it's a problem with the library). To compensate the problem we try to get the status
   /// multiple times after the request.
@@ -51,10 +51,6 @@ class PermissionsManager extends AbstractManager {
   PermissionsManager() : super() {
     _watchers = _initWatchers(this);
   }
-
-  /// Init method
-  @override
-  Future<void> initManager() async {}
 
   /// Has the user already denied the request
   Future<bool> shouldShowRationale(

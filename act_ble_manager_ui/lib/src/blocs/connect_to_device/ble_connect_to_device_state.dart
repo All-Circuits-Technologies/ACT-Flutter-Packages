@@ -6,7 +6,7 @@ import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This the abstract class of all the [BleConnectToDeviceBloc] states
+/// This the abstract class of all the `BleConnectToDeviceBloc` states
 ///
 /// We could have directly used the [bondState] and [connectionState] from the [device] instead
 /// of storing those information in the state, but when the update of those states are fast, the
@@ -39,7 +39,7 @@ abstract class BleConnectToDeviceState extends Equatable {
 
   /// True if we tried to connect in this view to a device and it has failed.
   /// This only works if the user tried to connect to the device through the
-  /// [ChooseDeviceToConnectToEvent] event
+  /// `ChooseDeviceToConnectToEvent` event
   final bool isConnectionFailed;
 
   /// True if we are trying to connect to a new device.

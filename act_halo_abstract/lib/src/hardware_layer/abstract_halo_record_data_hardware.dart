@@ -43,15 +43,11 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
   /// [onlyNotifyKey] allows to specify if the device send the complete value when a new record
   /// appears or only its key.
   /// For performance issues, it's better if the device already knows (by hardcoded configs in
-  /// the Firmware) what are the king of record data to send update
+  /// the Firmware) what are the kind of record data to send update
   Future<HaloErrorType> subRecordData({required HaloDataId dataId, bool onlyNotifyKey = false});
 
   /// This method allows to unsubscribe from the modification of a specific kind of record data
   /// thanks to the [HaloDataId] given
-  /// [onlyNotifyKey] allows to specify if the device send the complete value when a new record
-  /// appears or only its key.
-  /// For performance issues, it's better if the device already knows (by hardcoded configs in
-  /// the Firmware) what are the king of record data to send update
   Future<HaloErrorType> unSubRecordData({required HaloDataId dataId});
 
   /// This method allows to read a specific record data from the device and thanks to the

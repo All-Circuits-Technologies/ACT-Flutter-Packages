@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_ble_manager_ui/src/blocs/scanned_devices/ble_scanned_devices_event.dart';
 import 'package:act_ble_manager_ui/src/blocs/scanned_devices/ble_scanned_devices_state.dart';
+import 'package:act_ble_manager_ui/src/mixins/mixin_ble_connection_redirect_service.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mutex/mutex.dart';
@@ -27,7 +28,7 @@ typedef FilterDevice = bool Function(BleScannedDevice device);
 /// - [RequestPermsAndServiceEnablingEvent] to request permissions and service enabling to the user
 ///
 /// This bloc doesn't manage the redirection to a page in case of a device disconnection, if you
-/// want to do that, see the mixin: [MixinRequiredBleDeviceConnection]
+/// want to do that, see the mixin: [MixinBleConnectionRedirectService]
 class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevicesState> {
   /// This is the BLE scan handler
   final BleScanHandler _scanHandler;

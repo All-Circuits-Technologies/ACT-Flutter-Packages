@@ -6,5 +6,5 @@
 
 library;
 
-export 'src/abstract_manager.dart';
-export 'src/abstract_service.dart';
+export 'src/abs_manager_builder.dart';
+export 'src/abs_with_life_cycle.dart';

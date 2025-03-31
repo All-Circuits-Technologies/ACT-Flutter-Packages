@@ -23,7 +23,7 @@ enum PushAndRemoveUntilAction {
   });
 }
 
-/// This method is used with the [pushAndRemoveUntil] method, to guess if we need to pop the current
+/// This method is used with the `pushAndRemoveUntil` method, to guess if we need to pop the current
 /// view or not
 ///
 /// The [currentRoutePath] is the path of the current route

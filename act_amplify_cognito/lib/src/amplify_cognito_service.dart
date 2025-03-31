@@ -69,9 +69,10 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   ///
   /// Don't forget to create and init the children services here
   @override
-  Future<void> initService({
+  Future<void> initLifeCycle({
     LogsHelper? parentLogsHelper,
   }) async {
+    await super.initLifeCycle();
     _logsHelper = AbsAmplifyService.createLogsHelper(
       logCategory: _logsCategory,
       parentLogsHelper: parentLogsHelper,
@@ -91,11 +92,11 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
 
     // Because the services are independents between each others, we init them in parallel
     await Future.wait([
-      _signUpService.initService(),
-      _signInService.initService(),
-      _pwdService.initService(),
-      _userService.initService(),
-      _deleteService.initService(),
+      _signUpService.initLifeCycle(),
+      _signInService.initLifeCycle(),
+      _pwdService.initLifeCycle(),
+      _userService.initLifeCycle(),
+      _deleteService.initLifeCycle(),
     ]);
 
     // If the user is currently signed in we set the status in [_authStatus]
@@ -373,15 +374,13 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
       };
 
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     await Future.wait([
-      _signUpService.dispose(),
-      _signInService.dispose(),
-      _pwdService.dispose(),
-      _userService.dispose(),
-      _deleteService.dispose(),
+      _signUpService.disposeLifeCycle(),
+      _signInService.disposeLifeCycle(),
+      _pwdService.disposeLifeCycle(),
+      _userService.disposeLifeCycle(),
+      _deleteService.disposeLifeCycle(),
     ]);
 
     final subsFuture = <Future>[];
@@ -392,5 +391,6 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
     await Future.wait(subsFuture);
 
     await _authStatusCtrl.close();
+    await super.disposeLifeCycle();
   }
 }

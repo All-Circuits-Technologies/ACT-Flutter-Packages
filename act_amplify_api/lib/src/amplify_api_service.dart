@@ -68,9 +68,10 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
 
   /// Init the api service
   @override
-  Future<void> initService({
+  Future<void> initLifeCycle({
     LogsHelper? parentLogsHelper,
   }) async {
+    await super.initLifeCycle();
     _logsHelper = AbsAmplifyService.createLogsHelper(
       logCategory: _logsCategory,
       parentLogsHelper: parentLogsHelper,
@@ -263,9 +264,7 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
 
   /// Dispose the service
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
+  Future<void> disposeLifeCycle() async {
     final futuresList = <Future>[
       _authFailureCtrl.close(),
     ];
@@ -275,5 +274,7 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     }
 
     await Future.wait(futuresList);
+
+    await super.disposeLifeCycle();
   }
 }

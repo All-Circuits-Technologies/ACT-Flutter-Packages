@@ -5,7 +5,7 @@
 
 /// This enum describes possible scrollable options for a page
 ///
-/// See also [OptionalSingleChildScrollView] widget which is the effective end user of this enum.
+/// See also `OptionalSingleChildScrollView` widget which is the effective end user of this enum.
 enum SingleChildScrollViewType {
   /// Pages do not need any scroll capabilities
   ///

@@ -202,7 +202,7 @@ sealed class NumUtility {
 
     final intValue = newValue.toInt();
 
-    if (!ByteUtility.testNumberLimits(intValue, bytesNb, isSigned)) {
+    if (!ByteUtility.testNumberLimits(number: intValue, bytesNb: bytesNb, isSigned: isSigned)) {
       loggerManager.w("The double given: $value (with power of ten: $powerOfTenCoeff), can't be "
           "set into an integer with bytes number: $bytesNb, and which is signed: $isSigned");
       return null;
@@ -216,7 +216,7 @@ sealed class NumUtility {
   ///
   /// If [testEquality] is equals to true, it also returns true if values are equals.
   ///
-  /// Uses [compareTo] method.
+  /// Uses `compareTo` method.
   static bool isBaseLesserOrEqualTo<T extends num>({
     required T base,
     required T toCompareWith,
@@ -231,8 +231,8 @@ sealed class NumUtility {
   ///
   /// If [testEquality] is equals to true, it also returns true if values are equals.
   ///
-  /// Uses [compareTo] method.
-  static bool isBaseGreatherOrEqualTo<T extends num>({
+  /// Uses `compareTo` method.
+  static bool isBaseGreaterOrEqualTo<T extends num>({
     required T base,
     required T toCompareWith,
     bool testEquality = true,

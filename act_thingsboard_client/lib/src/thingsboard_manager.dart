@@ -18,9 +18,11 @@ typedef TbRequestToCall<T> = Future<T> Function(ThingsboardClient tbClient);
 
 /// Builder linked to the [ThingsboardManager]
 class ThingsboardBuilder<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends ManagerBuilder<ThingsboardManager<E, S>> {
+    extends AbsManagerBuilder<ThingsboardManager<E, S>> {
+  /// Builder constructor
   ThingsboardBuilder() : super(ThingsboardManager<E, S>.new);
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, E, S];
 }
@@ -28,7 +30,7 @@ class ThingsboardBuilder<E extends MixinThingsboardConf, S extends MixinThingsbo
 /// The Thingsboard manager which managed the authentication to the server but also the call of
 /// requests in safe mode
 class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends AbstractManager {
+    extends AbsWithLifeCycle {
   /// Thingsboard logs category
   static const _tbLogsCategory = "TB";
 
@@ -56,7 +58,8 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
 
   /// Init manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _tbLogsCategory,
@@ -72,9 +75,9 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
   /// Init the services linked to Thingsboard
   Future<void> _initServices() async {
     // Request service has to be the first one initialized
-    await _requestService.initService();
+    await _requestService.initLifeCycle();
 
-    await devicesService.initService();
+    await devicesService.initLifeCycle();
   }
 
   /// Useful to sign in the current user to its account
@@ -99,12 +102,12 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
 
   /// Manager dispose method
   @override
-  Future<void> dispose() async {
-    await super.dispose();
-
-    await devicesService.dispose();
+  Future<void> disposeLifeCycle() async {
+    await devicesService.disposeLifeCycle();
 
     // Request service has to be the last one disposed
-    await _requestService.dispose();
+    await _requestService.disposeLifeCycle();
+
+    await super.disposeLifeCycle();
   }
 }

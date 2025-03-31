@@ -28,7 +28,7 @@ import 'package:visibility_detector/visibility_detector.dart';
 /// - it does not report partially-visible widgets (considered visible)
 class ActVisibilityDetector extends StatefulWidget {
   /// Callback fired when widget gets hidden or visible-back.
-  final Function(bool) onVisibilityChanged;
+  final ValueChanged<bool> onVisibilityChanged;
 
   /// Inner widget
   final Widget child;
@@ -50,8 +50,7 @@ class ActVisibilityDetector extends StatefulWidget {
 /// State class (hence StatefulWidget) is actually required for its dispose method,
 /// in order to cancel our subscriptions. State has no impact on build(), hence it
 /// never uses setState().
-class _ActVisibilityDetectorState extends State<ActVisibilityDetector>
-    with WidgetsBindingObserver {
+class _ActVisibilityDetectorState extends State<ActVisibilityDetector> with WidgetsBindingObserver {
   /// Last visibility state, used to unbounce callbacks
   bool? _visible;
 

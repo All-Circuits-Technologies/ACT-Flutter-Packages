@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 /// Builder for creating the PropertiesManager
 abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
   AbstractPropertiesBuilder(super.factory);
 
@@ -22,7 +22,7 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
   Iterable<Type> dependsOn() => [LoggerManager];
 }
 
-/// [PropertiesManager] handles non-secret settings and preferences storage.
+/// [AbstractPropertiesManager] handles non-secret settings and preferences storage.
 ///
 /// Each supported property is accessible through a public member,
 /// which provides a getter and a setter to read from settings and
@@ -36,7 +36,7 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// accessible to other apps, but can be read back by advanced users or by any
 /// app on a rooted device.
 ///
-/// For secret data, please see [SecretsManager].
+/// For secret data, please see `SecretsManager`.
 ///
 /// Can be removed by user
 /// ----------------------
@@ -45,14 +45,14 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// It is also removed when user clears application data.
 ///
 /// In those two case, all defined properties are lost.
-abstract class AbstractPropertiesManager extends AbstractManager {
+abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   /// Tell if it's the first start of the app after install
   final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");
 
   /// True if it's the first start of the application
   bool isFirstStart;
 
-  /// Builds an instance of [PropertiesManager].
+  /// Builds an instance of [AbstractPropertiesManager].
   ///
   /// You may want to use created instance as a singleton
   /// in order to save memory.
@@ -62,7 +62,8 @@ abstract class AbstractPropertiesManager extends AbstractManager {
 
   /// Init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     try {
       isFirstStart = await _isFirstStart.load() ?? isFirstStart;
     } catch (error) {
@@ -85,7 +86,7 @@ abstract class AbstractPropertiesManager extends AbstractManager {
 /// providing strongly-typed load and store helpers.
 ///
 /// Such data is stored in plain text, hence should not be secret.
-/// For secrets, please see [SecretItem].
+/// For secrets, please see `SecretItem`.
 class SharedPreferencesItem<T> {
   /// The key used to access wrapped data inside SharedPreferences.
   final String key;
@@ -97,7 +98,7 @@ class SharedPreferencesItem<T> {
 
   /// Create a SharedPreferences wrapper for key [key] of type T.
   ///
-  /// Only [PropertiesManager] creates instances of this helper class.
+  /// Only [AbstractPropertiesManager] creates instances of this helper class.
   /// Other actors uses them.
   SharedPreferencesItem(this.key) : _updateStreamController = StreamController.broadcast();
 

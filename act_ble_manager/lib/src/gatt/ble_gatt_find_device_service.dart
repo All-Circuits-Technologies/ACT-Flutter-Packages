@@ -10,13 +10,13 @@ import 'package:act_ble_manager/src/ble_manager.dart';
 import 'package:act_ble_manager/src/data/constants.dart' as ble_constants;
 import 'package:act_ble_manager/src/gap/ble_gap_service.dart';
 import 'package:act_ble_manager/src/models/ble_device.dart';
-import 'package:act_ble_manager/src/models/ble_scan_update_status.dart';
 import 'package:act_ble_manager/src/models/ble_scanned_device.dart';
+import 'package:act_ble_manager/src/types/ble_scan_update_type.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 /// Manages the finding of device
-class BleGattFindDeviceService extends AbstractService {
+class BleGattFindDeviceService extends AbsWithLifeCycle {
   /// The BLE manager
   final BleManager _bleManager;
 
@@ -30,20 +30,24 @@ class BleGattFindDeviceService extends AbstractService {
 
   /// Called at the service initialization
   @override
-  Future<void> initService() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _scanHandler = _bleManager.bleGapService.toGenerateScanHandler();
   }
 
+  /// {@template act_ble_manager.BleGattFindDeviceService.isScannedDevice}
   /// Is jacket linked to [id] a scanned device
+  /// {@endtemplate}
   bool isScannedDevice(String id) => _scanHandler.isDetected(id);
 
+  /// {@template act_ble_manager.BleGattFindDeviceService.getBleDevice}
   /// Get [BleDevice] from [id], the method will search on scanned devices
   ///
   /// Return null if device has not been scanned
+  /// {@endtemplate}
   BleDevice? getBleDevice(String? id) {
     if (id == null) {
-      _bleManager.logsHelper
-          .w("The Ble device id given is null, can't get device");
+      _bleManager.logsHelper.w("The Ble device id given is null, can't get device");
       return null;
     }
 
@@ -62,7 +66,9 @@ class BleGattFindDeviceService extends AbstractService {
     return BleDevice(_scanHandler.getDetectedDevice(id)!);
   }
 
+  /// {@template act_ble_manager.BleGattFindDeviceService.findDeviceByMac}
   /// Find device by [id]
+  /// {@endtemplate}
   Future<BleDevice?> findDeviceByMac(String? id) async {
     final device = getBleDevice(id);
 
@@ -89,18 +95,15 @@ class BleGattFindDeviceService extends AbstractService {
 
     final updateStatus = await WaitUtility.nullableWaitForStatus(
         isExpectedStatus: (scanUpdate) =>
-            (scanUpdate.type != BleScanUpdateType.removeDevice &&
-                scanUpdate.device.id == id),
+            (scanUpdate.type != BleScanUpdateType.removeDevice && scanUpdate.device.id == id),
         statusEmitter: _scanHandler.scannedDevices,
         timeout: ble_constants.scanOnConnectionDuration,
-        doAction: () async =>
-            _scanHandler.startScan(scanMode: ScanMode.lowLatency));
+        doAction: () async => _scanHandler.startScan(scanMode: ScanMode.lowLatency));
 
     await _scanHandler.stopScan();
 
     if (updateStatus == null) {
-      _bleManager.logsHelper
-          .w("The device: $id hasn't been found in the expected time");
+      _bleManager.logsHelper.w("The device: $id hasn't been found in the expected time");
     }
 
     return updateStatus?.device;
@@ -108,9 +111,9 @@ class BleGattFindDeviceService extends AbstractService {
 
   /// Manage the disposing of the service
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _scanHandler.dispose();
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

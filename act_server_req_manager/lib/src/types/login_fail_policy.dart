@@ -4,6 +4,9 @@
 
 /// The policy to apply when we fail to log in
 enum LoginFailPolicy {
+  /// If the login fails we return an error
   errorIfLoginFails,
+
+  /// If the login fails we retry once before returning an error
   retryOnceIfLoginFails,
 }

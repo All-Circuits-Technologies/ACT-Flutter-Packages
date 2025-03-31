@@ -13,7 +13,7 @@ import 'package:act_music_player_manager/src/music_sound.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 /// Builder for creating the MusicPlayerManager
-class MusicPlayerBuilder<T> extends ManagerBuilder<MusicPlayerManager> {
+class MusicPlayerBuilder<T> extends AbsManagerBuilder<MusicPlayerManager> {
   /// Class constructor with the class construction
   MusicPlayerBuilder({
     required String audioFilePrefix,
@@ -28,15 +28,19 @@ class MusicPlayerBuilder<T> extends ManagerBuilder<MusicPlayerManager> {
   Iterable<Type> dependsOn() => [LoggerManager];
 }
 
-/// The [MusicPlayerManager] is a wrapper of the [audioplayers] plugin and simplifies
+/// The [MusicPlayerManager] is a wrapper of the `audioplayers` plugin and simplifies
 /// how it works
 ///
 /// The [MusicPlayerManager] can only play known sounds.
 /// It's recommended to use this class as a singleton with a global manager
-class MusicPlayerManager<T> extends AbstractManager {
+class MusicPlayerManager<T> extends AbsWithLifeCycle {
+  /// This is the path inside the assets folder where your files lie.
   final String audioFilePrefix;
+
+  /// This is the music sounds helper used to manage the musics
   final AbstractMusicSoundHelper<T> _musicSoundsHelper;
 
+  /// This is the audio players used in the manager
   final Map<String, AudioPlayerHelper> _audioPlayers;
 
   /// Class constructor
@@ -47,10 +51,11 @@ class MusicPlayerManager<T> extends AbstractManager {
         _audioPlayers = {},
         super();
 
-  /// The [init] method has to be called to initialize the class
+  /// The [initLifeCycle] method has to be called to initialize the class
   /// The method will load all sounds in cache
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     AudioCache.instance.prefix = audioFilePrefix;
     await AudioPlayer.global.setAudioContext(AudioContextConfig(
       respectSilence: true,
@@ -97,8 +102,7 @@ class MusicPlayerManager<T> extends AbstractManager {
     }
 
     if (doNotPlayIfPrevSameSoundStartedBefore != null &&
-        !helper.isElapsedEqOrAfterDuration(
-            doNotPlayIfPrevSameSoundStartedBefore)) {
+        !helper.isElapsedEqOrAfterDuration(doNotPlayIfPrevSameSoundStartedBefore)) {
       // Do not play the sound if not enough time passed
       return;
     }
@@ -126,8 +130,7 @@ class MusicPlayerManager<T> extends AbstractManager {
         volume: volume,
       );
     } catch (error) {
-      appLogger().e(
-          "A crash occurred when calling audio player music sound: $musicSound, error: "
+      appLogger().e("A crash occurred when calling audio player music sound: $musicSound, error: "
           "$error");
     }
 
@@ -172,8 +175,7 @@ class MusicPlayerManager<T> extends AbstractManager {
     try {
       duration = await player?.getDuration();
     } catch (error) {
-      appLogger().e(
-          "An error occurred when tried to get the duration of: $musicSound, "
+      appLogger().e("An error occurred when tried to get the duration of: $musicSound, "
           "error: $error");
     }
 
@@ -184,8 +186,7 @@ class MusicPlayerManager<T> extends AbstractManager {
   ///
   /// Note: playing in a loop may generate complete events between each loops (at least for iOS)
   // TODO(aloiseau): No events are never posted to the stream (bug)
-  Stream<void>? onPlayerComplete(T musicSound) =>
-      _accessInnerPlayer(musicSound)?.onPlayerComplete;
+  Stream<void>? onPlayerComplete(T musicSound) => _accessInnerPlayer(musicSound)?.onPlayerComplete;
 
   /// Init and load all the audio files in cache memory
   Future<void> _initAndLoadAudioPlayers() async {
@@ -204,8 +205,7 @@ class MusicPlayerManager<T> extends AbstractManager {
         await audioPlayer.setPlayerMode(PlayerMode.lowLatency);
         await audioPlayer.setReleaseMode(ReleaseMode.stop);
       } catch (error) {
-        appLogger().e(
-            "A crash occurred when fetching a sound from memory: $musicSound, "
+        appLogger().e("A crash occurred when fetching a sound from memory: $musicSound, "
             "error: $error");
       }
 
@@ -215,7 +215,7 @@ class MusicPlayerManager<T> extends AbstractManager {
 
   /// Private method to stop the music wanted
   ///
-  /// Stop all the music in the [musicSoundFilter] list
+  /// Stop all the music in the [musicFilesPath] list
   Future<void> _stopAllElements({
     required List<String> musicFilesPath,
   }) async {
@@ -235,8 +235,7 @@ class MusicPlayerManager<T> extends AbstractManager {
       try {
         await help.audioPlayer.stop();
       } catch (error) {
-        appLogger().e(
-            "An error occurred when tried to stop the audio player: $filePath");
+        appLogger().e("An error occurred when tried to stop the audio player: $filePath");
       }
 
       if (help.audioPlayer.state != PlayerState.stopped) {
@@ -267,11 +266,11 @@ class MusicPlayerManager<T> extends AbstractManager {
 
   /// To call in order to stop all sounds played and free the cache memory
   ///
-  /// After calling  [dispose], you have to call the [init] method if you want
+  /// After calling  [disposeLifeCycle], you have to call the [initLifeCycle] method if you want
   /// to reuse the class.
   @override
-  Future<void> dispose() async {
-    final futures = <Future>[super.dispose()];
+  Future<void> disposeLifeCycle() async {
+    final futures = <Future>[super.disposeLifeCycle()];
 
     for (final player in _audioPlayers.entries) {
       final help = player.value;
@@ -279,15 +278,13 @@ class MusicPlayerManager<T> extends AbstractManager {
         try {
           await help.audioPlayer.stop();
         } catch (error) {
-          appLogger().e(
-              "An error occurred when tried to stop the audio player: ${player.key}, "
+          appLogger().e("An error occurred when tried to stop the audio player: ${player.key}, "
               "while disposing the audio manager");
         }
 
         if (help.audioPlayer.state != PlayerState.stopped) {
-          appLogger()
-              .w("The sound ${player.key} can't be stopped, current state: "
-                  "${help.audioPlayer.state}, while disposing");
+          appLogger().w("The sound ${player.key} can't be stopped, current state: "
+              "${help.audioPlayer.state}, while disposing");
         }
       }
 
@@ -303,7 +300,10 @@ class MusicPlayerManager<T> extends AbstractManager {
 
 /// Helper which contains all the needed elements for extending the AudioPlayer
 class AudioPlayerHelper {
+  /// The used audio player
   AudioPlayer audioPlayer;
+
+  /// This is used to get the time elapsed since the last `start`
   Stopwatch elapsedTimer;
 
   /// Class constructor

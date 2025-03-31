@@ -99,7 +99,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
   @protected
   Future<HaloErrorType> implCallOrder({required HaloRequestParamsPacket request});
 
-  /// This method verifies if the [request.requestId] given matches the [expectedType]
+  /// This method verifies if the [request] requestId given matches the [expectedType]
   /// If the method type matches, null is returned and if they are not, an error result is returned
   HaloRequestResult? _verifyRequest({
     required HaloRequestParamsPacket request,

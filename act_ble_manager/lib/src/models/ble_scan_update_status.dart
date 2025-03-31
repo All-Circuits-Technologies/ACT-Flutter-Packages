@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_ble_manager/src/models/ble_scanned_device.dart';
+import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:equatable/equatable.dart';
 
 /// Bluetooth scan device status
@@ -19,11 +19,4 @@ class BleScanUpdateStatus extends Equatable {
 
   @override
   List<Object?> get props => [type, device];
-}
-
-/// BLE scan update type
-enum BleScanUpdateType {
-  addDevice,
-  removeDevice,
-  updateDevice,
 }

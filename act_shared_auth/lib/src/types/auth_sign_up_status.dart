@@ -3,10 +3,11 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// This is the sign up authentication status
 enum AuthSignUpStatus {
   /// An argument, optional on generic services API but mandatory for effective service, is missing
   ///
-  /// This can be the result of [MixinAuthService.signUp] if called without email despite
+  /// This can be the result of `MixinAuthService.signUp` if called without email despite
   /// a concrete service requiring it.
   missingArgument,
 
@@ -17,45 +18,45 @@ enum AuthSignUpStatus {
 
   /// The sign-up is not complete, a verification code has been sent to user and must be inputted
   ///
-  /// This is likely the result of [MixinAuthService.signUp], requiring a subsequent call
-  /// to [MixinAuthService.confirmSignUp]
+  /// This is likely the result of `MixinAuthService.signUp`, requiring a subsequent call
+  /// to `MixinAuthService.confirmSignUp`
   confirmSignUpWithCode(isSuccess: true, userNeedsToAct: true),
 
   /// Another account already exists with same account identifier
   ///
-  /// This is likely the result of [MixinAuthService.signUp]
+  /// This is likely the result of `MixinAuthService.signUp`
   accountIdentifierConflict(userNeedsToAct: true),
 
   /// Another account already exists with same email, phone or other globally unique attribute
   ///
-  /// This is likely the result of [MixinAuthService.signUp] but can also be the result of
-  /// [MixinAuthService.confirmSignUp] for services verifying those collisions lazily.
+  /// This is likely the result of `MixinAuthService.signUp` but can also be the result of
+  /// `MixinAuthService.confirmSignUp` for services verifying those collisions lazily.
   accountPropertyConflict(userNeedsToAct: true),
 
   /// Sign-up attempt is rejected due to weak chosen password
   ///
-  /// This can be the result of [MixinAuthService.signUp].
+  /// This can be the result of `MixinAuthService.signUp`.
   /// If service does not support accurate error distinction, [badArgument] may be fired instead.
   passwordNotConform(userNeedsToAct: true),
 
   /// The sign-up is complete.
   ///
-  /// This is likely the result of [MixinAuthService.confirmSignUp],
-  /// but may also be the result of [MixinAuthService.signUp] if no confirmations are needed
+  /// This is likely the result of `MixinAuthService.confirmSignUp`,
+  /// but may also be the result of `MixinAuthService.signUp` if no confirmations are needed
   done(isSuccess: true),
 
   /// The sign up session has expired, you likely need to resend a confirmation code
   ///
-  /// This can be the result of [MixinAuthService.confirmSignUp] if code has expired,
-  /// requiring a subsequent call to [MixinAuthService.resendSignUpCode].
+  /// This can be the result of `MixinAuthService.confirmSignUp` if code has expired,
+  /// requiring a subsequent call to `MixinAuthService.resendSignUpCode`.
   ///
-  /// This can also be the result of a [MixinAuthService.confirmSignUp] called with an bad account
+  /// This can also be the result of a `MixinAuthService.confirmSignUp` called with an bad account
   /// identifier (bad call) or targeting an account just recently confirmed (code already used).
   sessionExpired,
 
   /// Provided confirmation code is rejected
   ///
-  /// This can be the result of [MixinAuthService.confirmSignUp] if user made a typo error
+  /// This can be the result of `MixinAuthService.confirmSignUp` if user made a typo error
   wrongConfirmationCode(userNeedsToAct: true),
 
   /// This means that what we wanted is not yet supported by our packages and need more development

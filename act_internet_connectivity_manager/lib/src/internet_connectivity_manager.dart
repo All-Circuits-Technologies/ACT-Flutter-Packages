@@ -17,7 +17,7 @@ import 'package:flutter/foundation.dart';
 /// right type
 @protected
 abstract class AbstractInternetDerivedBuilder<T extends InternetConnectivityManager>
-    extends ManagerBuilder<T> {
+    extends AbsManagerBuilder<T> {
   /// Class constructor with the class construction
   AbstractInternetDerivedBuilder({
     required ClassFactory<T> factory,
@@ -37,7 +37,7 @@ class InternetConnectivityBuilder
 }
 
 /// Service to check connection to internet
-class InternetConnectivityManager extends AbstractManager {
+class InternetConnectivityManager extends AbsWithLifeCycle {
   /// This defines a period for retesting internet connection and verify if the internet connection
   /// is constant
   static const _testPeriod = Duration(milliseconds: 300);
@@ -80,7 +80,8 @@ class InternetConnectivityManager extends AbstractManager {
 
   /// Init manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _serverTestFqdn = await getTheServerFqdnToTest();
 
     _connectivity.onConnectivityChanged.listen(_connectionChange);
@@ -177,8 +178,8 @@ class InternetConnectivityManager extends AbstractManager {
   }
 
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _connectionCtrl.close();
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }

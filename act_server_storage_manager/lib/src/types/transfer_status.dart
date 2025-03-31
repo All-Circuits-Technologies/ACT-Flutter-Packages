@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// This is the transfer status
 enum TransferStatus {
   /// The download task is in progress.
   inProgress,

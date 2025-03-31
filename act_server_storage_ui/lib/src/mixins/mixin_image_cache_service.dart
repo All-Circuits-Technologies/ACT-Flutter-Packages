@@ -101,7 +101,7 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsServerStorageMa
 
   /// {@template act_server_storage_manager.MixinImageCacheService._getImageFileProcess}
   /// Get an image file based on a [fileId]. Set [useCache] to true to use the cache if available.
-  /// If the [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// If the `result` is [StorageRequestResult.success], the `file` will be the downloaded file.
   /// {@endtemplate}
   ///
   /// {@macro act_server_storage_manager.CacheService.getImageFile.size}

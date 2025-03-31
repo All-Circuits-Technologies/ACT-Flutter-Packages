@@ -27,9 +27,10 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
   /// Class constructor
   AmplifyStorageS3Service() : super();
 
-  /// Initialize the service by creating the logs helper
+  /// {@macro act_amplify_core.AbsAmplifyService.initLifeCycle}
   @override
-  Future<void> initService({LogsHelper? parentLogsHelper}) async {
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
+    await super.initLifeCycle();
     _logsHelper = AbsAmplifyService.createLogsHelper(
       logCategory: _logsCategory,
       parentLogsHelper: parentLogsHelper,

@@ -25,7 +25,7 @@ class AwsIotBuilder<
     T extends AwsIotManager<AuthManager, AmplifyManager, ConfigManager>,
     AuthManager extends AbsAuthManager,
     AmplifyManager extends AbsAmplifyManager,
-    ConfigManager extends MixinAwsIotConf> extends ManagerBuilder<T> {
+    ConfigManager extends MixinAwsIotConf> extends AbsManagerBuilder<T> {
   /// Class constructor
   AwsIotBuilder(super.factory);
 
@@ -44,7 +44,7 @@ class AwsIotBuilder<
 abstract class AwsIotManager<
     AuthManager extends AbsAuthManager,
     AmplifyManager extends AbsAmplifyManager,
-    ConfigManager extends MixinAwsIotConf> extends AbstractManager {
+    ConfigManager extends MixinAwsIotConf> extends AbsWithLifeCycle {
   /// Class logger category
   static const String _awsIotManagerLogCategory = 'aws_iot';
 
@@ -74,7 +74,8 @@ abstract class AwsIotManager<
   /// Start the aws iot services.
   @override
   @mustCallSuper
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _awsIotManagerLogCategory,
@@ -104,8 +105,8 @@ abstract class AwsIotManager<
     );
 
     // Initialize the services
-    await mqttService.initService();
-    await shadowsService.initService();
+    await mqttService.initLifeCycle();
+    await shadowsService.initLifeCycle();
   }
 
   /// This can be used by the derived class to add extra stream observers for managing the
@@ -115,10 +116,10 @@ abstract class AwsIotManager<
 
   /// Dispose the aws iot services.
   @override
-  Future<void> dispose() async {
-    await shadowsService.dispose();
-    await mqttService.dispose();
+  Future<void> disposeLifeCycle() async {
+    await shadowsService.disposeLifeCycle();
+    await mqttService.disposeLifeCycle();
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

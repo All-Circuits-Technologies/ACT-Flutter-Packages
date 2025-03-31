@@ -10,7 +10,7 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:flutter/foundation.dart';
 
 /// Builder of the [AbsAuthManager] manager
-abstract class AbsAuthBuilder<T extends AbsAuthManager> extends ManagerBuilder<T> {
+abstract class AbsAuthBuilder<T extends AbsAuthManager> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsAuthBuilder(super.factory);
 
@@ -23,7 +23,7 @@ abstract class AbsAuthBuilder<T extends AbsAuthManager> extends ManagerBuilder<T
 ///
 /// This manager is detached of the authentication provider thanks to the [MixinAuthService], which
 /// allows to minimize the code refactoring when we want to change the provider.
-abstract class AbsAuthManager extends AbstractManager {
+abstract class AbsAuthManager extends AbsWithLifeCycle {
   /// This is the authentication service to use in the application
   late final MixinAuthService authService;
 
@@ -33,7 +33,8 @@ abstract class AbsAuthManager extends AbstractManager {
   /// Init the manager
   @override
   @mustCallSuper
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     authService = await getAuthService();
     _authStatusSub = authService.authStatusStream.listen(onAuthStatusUpdated);
   }
@@ -43,7 +44,7 @@ abstract class AbsAuthManager extends AbstractManager {
   Future<MixinAuthService> getAuthService();
 
   /// {@template AbsAuthManager.onAuthStatusUpdated }
-  /// Called when the current [AuthState] linked to [authService] is updated.
+  /// Called when the current [AuthStatus] linked to [authService] is updated.
   ///
   /// Can be overridden in the derived class, to have the updated information.
   /// {@endtemplate}
@@ -52,8 +53,8 @@ abstract class AbsAuthManager extends AbstractManager {
 
   /// {@macro AbstractManager.dispose}
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _authStatusSub.cancel();
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

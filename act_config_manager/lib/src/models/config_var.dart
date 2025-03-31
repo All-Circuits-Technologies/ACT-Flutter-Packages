@@ -6,7 +6,7 @@ import 'package:act_config_manager/src/models/abs_config_var.dart';
 
 /// [ConfigVar] wraps a single config variable of type T, providing strongly-typed read helper.
 ///
-/// To load a List<T> use the class [ConfigVarList].
+/// To load a List\<T\> use the class `ConfigVarList`.
 ///
 /// If the config variable isn't defined in the environment, [load] method returns null
 class ConfigVar<T> extends AbsConfigVar<T> {

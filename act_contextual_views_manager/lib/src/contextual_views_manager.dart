@@ -16,7 +16,7 @@ typedef _RouterManagerGetter = AbstractRouterManager Function();
 
 /// Builder linked to the contextual views manager
 class ContextualViewsBuilder<R extends AbstractRouterManager>
-    extends ManagerBuilder<ContextualViewsManager> {
+    extends AbsManagerBuilder<ContextualViewsManager> {
   /// Class constructor
   /// The method expects an [AbstractViewBuilder] to use with the manager
   ContextualViewsBuilder({
@@ -32,7 +32,7 @@ class ContextualViewsBuilder<R extends AbstractRouterManager>
 
 /// This manager is used to display contextual views in the application.
 /// The application has to define by itself how it wants to display those views
-class ContextualViewsManager extends AbstractManager {
+class ContextualViewsManager extends AbsWithLifeCycle {
   static const _logsCategory = "contextView";
 
   /// The view builder linked to the manager
@@ -51,9 +51,10 @@ class ContextualViewsManager extends AbstractManager {
   })  : _viewBuilder = viewBuilder,
         _routerManagerGetter = routerManagerGetter;
 
-  /// The init manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _logsCategory,
@@ -81,14 +82,15 @@ class ContextualViewsManager extends AbstractManager {
         doAction: doAction,
       );
 
-  /// Dispose the manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futures = <Future>[
-      super.dispose(),
       _viewBuilder.dispose(),
     ];
 
     await Future.wait(futures);
+
+    await super.disposeLifeCycle();
   }
 }

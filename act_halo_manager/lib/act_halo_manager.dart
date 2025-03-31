@@ -7,3 +7,4 @@ library;
 export 'src/abstract_halo_manager.dart';
 export 'src/features/abstract_halo_feature.dart';
 export 'src/features/halo_request_to_device_feature.dart';
+export 'src/models/halo_manager_config.dart';

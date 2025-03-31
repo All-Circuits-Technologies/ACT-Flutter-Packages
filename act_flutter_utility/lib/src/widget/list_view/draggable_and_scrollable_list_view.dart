@@ -37,6 +37,7 @@ class DraggableAndScrollableListView extends StatelessWidget {
   /// [ScrollableReorderableListView] to allow the dragging of elements.
   final List<Widget> children;
 
+  /// Class constructor
   const DraggableAndScrollableListView({
     super.key,
     this.dragReorder,

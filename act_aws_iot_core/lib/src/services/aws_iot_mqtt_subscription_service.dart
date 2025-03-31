@@ -47,10 +47,6 @@ class AwsIotMqttSubcriptionService extends AbsAwsIotService {
     );
   }
 
-  /// Initialize the service but there is nothing to do here.
-  @override
-  Future<void> initService() async {}
-
   /// Test if we are subscribed to all the current topic.
   ///
   /// This doesn't wait if a subscription is processing.
@@ -93,7 +89,7 @@ class AwsIotMqttSubcriptionService extends AbsAwsIotService {
 
   /// Dispose the service.
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     // Close the watchers.
     for (final watcher in _watchers.values) {
       await watcher.close();
@@ -104,6 +100,6 @@ class AwsIotMqttSubcriptionService extends AbsAwsIotService {
       await sub.cancel();
     }
 
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

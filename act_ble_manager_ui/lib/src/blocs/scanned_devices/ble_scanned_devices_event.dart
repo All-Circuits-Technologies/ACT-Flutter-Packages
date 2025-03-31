@@ -6,7 +6,7 @@ import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This is the abstract event for the [BleScannedDevicesBloc] bloc
+/// This is the abstract event for the `BleScannedDevicesBloc` bloc
 abstract class BleScannedDevicesEvent extends Equatable {
   /// Class constructor
   const BleScannedDevicesEvent();

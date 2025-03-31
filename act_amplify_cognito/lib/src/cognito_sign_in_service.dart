@@ -11,7 +11,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// This service manages the Cognito Sign in methods
-class CognitoSignInService extends AbstractService {
+class CognitoSignInService extends AbsWithLifeCycle {
   /// This message is displayed in the exception message received when a sign in session is expired.
   /// This may happen, if you take too much time to update your password for confirmation after
   /// sign in
@@ -24,10 +24,6 @@ class CognitoSignInService extends AbstractService {
   CognitoSignInService({
     required this.logsHelper,
   }) : super();
-
-  /// Service init method
-  @override
-  Future<void> initService() async {}
 
   /// Sign the user in the application
   ///

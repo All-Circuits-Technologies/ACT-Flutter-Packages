@@ -78,12 +78,11 @@ abstract class ByteUtility {
     required int bytesNb,
     bool isSigned = true,
   }) {
-    if (!ByteUtility.testNumberLimits(number, bytesNb, isSigned)) {
+    if (!ByteUtility.testNumberLimits(number: number, bytesNb: bytesNb, isSigned: isSigned)) {
       return null;
     }
 
-    return unsafeConvertToLsbFirst(
-        number: number, bytesNb: bytesNb, isSigned: isSigned);
+    return unsafeConvertToLsbFirst(number: number, bytesNb: bytesNb, isSigned: isSigned);
   }
 
   /// Convert the given [number] to a LSB byte list
@@ -128,12 +127,11 @@ abstract class ByteUtility {
     required int bytesNb,
     bool isSigned = true,
   }) {
-    if (!ByteUtility.testNumberLimits(number, bytesNb, isSigned)) {
+    if (!ByteUtility.testNumberLimits(number: number, bytesNb: bytesNb, isSigned: isSigned)) {
       return null;
     }
 
-    return unsafeConvertToMsbFirst(
-        number: number, bytesNb: bytesNb, isSigned: isSigned);
+    return unsafeConvertToMsbFirst(number: number, bytesNb: bytesNb, isSigned: isSigned);
   }
 
   /// Convert the given [number] to a MSB byte list
@@ -254,8 +252,7 @@ abstract class ByteUtility {
     var number = 0;
 
     for (var idx = 0; idx < msbNumberLength; ++idx) {
-      number |= (msbNumber[idx] <<
-          (((msbNumberLength - 1) - idx) * ByteUtility._nbOfBitsInByte));
+      number |= (msbNumber[idx] << (((msbNumberLength - 1) - idx) * ByteUtility._nbOfBitsInByte));
     }
 
     if (isSigned) {
@@ -266,8 +263,9 @@ abstract class ByteUtility {
   }
 
   /// The method converts a list to Uint8List
-  /// The default Uint8List fromList constructor truncates the int values contains in the List<int>
-  /// to match an Uint8.
+  ///
+  /// The default Uint8List fromList constructor truncates the int values contains in the
+  /// List\<int\> to match an Uint8.
   ///
   /// This method test if the int values can be Uint8 or returns null if an overflow is detected
   static Uint8List? safeConvertList(
@@ -310,7 +308,11 @@ abstract class ByteUtility {
   }
 
   /// The method tests if what you ask on the [number] given is possible or not
-  static bool testNumberLimits(int number, int bytesNb, bool isSigned) {
+  static bool testNumberLimits({
+    required int number,
+    required int bytesNb,
+    required bool isSigned,
+  }) {
     if (bytesNb <= 0 || bytesNb > ByteUtility.bytesNbUInt64) {
       // The bytes nb isn't correct
       return false;

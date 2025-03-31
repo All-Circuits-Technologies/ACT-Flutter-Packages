@@ -14,10 +14,13 @@ import 'package:flutter_html/flutter_html.dart';
 /// The widget loads and display an asset file which contains translated text
 ///
 /// The [textPath] given is the raw path without the language tag. Thanks to the
-/// [context], the method will get the current language and try to load the file
+/// context, the method will get the current language and try to load the file
 /// with the right translation.
 class TranslatedHtmlText extends StatefulWidget {
+  /// This is the path of the HTML text to translate
   final String textPath;
+
+  /// This is the alignment of the translated HTML text
   final AlignmentGeometry alignment;
 
   /// Horizontal padding around the widget
@@ -45,11 +48,15 @@ class TranslatedHtmlText extends StatefulWidget {
   State createState() => _TranslatedHtmlTextState();
 }
 
+/// This is the state of [TranslatedHtmlText]
 class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
   /// The text retrieved from file and already translated
   late ScrollController _scrollController;
+
+  /// This is used to load the text at the first build
   late bool _first;
 
+  /// This is the retrieved translated text
   String? _txtTranslated;
 
   @override

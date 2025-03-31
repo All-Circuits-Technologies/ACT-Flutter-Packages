@@ -9,11 +9,13 @@ import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:flutter/material.dart';
 
 /// This is the abstract skeleton for the amplify services
-abstract class AbsAmplifyService extends AbstractService {
+abstract class AbsAmplifyService extends AbsWithLifeCycle {
+  /// {@template act_amplify_core.AbsAmplifyService.initLifeCycle}
   /// Asynchronous initialization of the service after the Amplify.configure call
+  /// {@endtemplate}
   @mustCallSuper
   @override
-  Future<void> initService({
+  Future<void> initLifeCycle({
     LogsHelper? parentLogsHelper,
   });
 

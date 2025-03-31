@@ -4,8 +4,13 @@
 
 /// The result of the request
 enum RequestResult {
+  /// The request succeeded
   success(isOk: true),
+
+  /// The request fails with a login error
   loginError,
+
+  /// The request fails with a global error
   globalError;
 
   /// Returns true if the request result is equal to [success]

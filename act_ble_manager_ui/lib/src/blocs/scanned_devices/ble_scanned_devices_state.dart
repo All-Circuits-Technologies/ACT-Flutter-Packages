@@ -6,7 +6,7 @@ import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This is the abstract state for the [BleScannedDevicesBloc] bloc
+/// This is the abstract state for the `BleScannedDevicesBloc` bloc
 abstract class BleScannedDevicesState extends Equatable {
   /// This is equals to true if the scan is active
   /// Please note that this does not necessarily mean what you think it means. This means that the
@@ -74,7 +74,7 @@ class BleUpdateDevicesState extends BleScannedDevicesState {
   /// Class constructor
   ///
   /// To fire a new display of the view, we copy the [devices] list given if it's equal to
-  /// [previousState.devices]. Because we fire this state to rebuild the view with an updated list
+  /// [previousState] devices. Because we fire this state to rebuild the view with an updated list
   BleUpdateDevicesState({
     required super.previousState,
     required List<BleScannedDevice> devices,

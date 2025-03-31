@@ -4,7 +4,7 @@
 
 import 'package:act_config_manager/src/models/abs_parser_config_var.dart';
 
-/// [NotNullableConfigVar] wraps a single config variable of type T, providing strongly-typed
+/// [NotNullParserConfigVar] wraps a single config variable of type T, providing strongly-typed
 /// read helper.
 ///
 /// If the config variable isn't defined in the environment, [load] method returns [defaultValue].

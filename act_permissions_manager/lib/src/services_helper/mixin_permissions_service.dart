@@ -56,7 +56,7 @@ class NotKnownDependencyException implements Exception {
 
 /// This contains the dependencies needed by the [MPermissionsService] when using the mixin on
 /// AbstractManager
-mixin MPermissionsServiceBuilder<T extends AbstractManager> on ManagerBuilder<T> {
+mixin MPermissionsServiceBuilder<T extends AbsWithLifeCycle> on AbsManagerBuilder<T> {
   @override
   Iterable<Type> dependsOn() => [PermissionsManager];
 }
@@ -64,7 +64,7 @@ mixin MPermissionsServiceBuilder<T extends AbstractManager> on ManagerBuilder<T>
 /// This mixin contains the management of permissions for Managers (you give the permissions linked
 /// to what you are doing and this mixin manages the asking and verification if you have the needed
 /// permissions)
-mixin MPermissionsService on AbstractManager {
+mixin MPermissionsService on AbsWithLifeCycle {
   /// The list of the permissions linked
   final Map<PermissionElement, _PermissionContainer> _permissionContainer = {};
 
@@ -87,7 +87,8 @@ mixin MPermissionsService on AbstractManager {
 
   /// Allow to init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final configs = getPermissionsConfig();
 
     final dependsOn = <PermissionElement, List<PermissionElement>>{};
@@ -210,6 +211,8 @@ mixin MPermissionsService on AbstractManager {
   /// value
   /// Returns true if [hasPermissions] has been updated in this method call
   @protected
+  // There is no doubt here of what the boolean positional parameter does; therefore we keep it
+  // ignore: avoid_positional_boolean_parameters
   Future<bool> updatePermission(PermissionElement element, bool newValue) async {
     final previousGranted = hasPermissions;
 
@@ -229,9 +232,8 @@ mixin MPermissionsService on AbstractManager {
   List<PermissionConfig> getPermissionsConfig();
 
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     final futures = <Future>[
-      super.dispose(),
       _permissionsCtrl.close(),
     ];
 
@@ -240,6 +242,7 @@ mixin MPermissionsService on AbstractManager {
     }
 
     await Future.wait(futures);
+    await super.disposeLifeCycle();
   }
 }
 
@@ -264,6 +267,8 @@ class _PermissionContainer {
   late final PermissionMonitorService _permissionMonitorService;
 
   /// The callback to call when the permission has to be updated
+  // There is no doubt here of what the boolean positional parameter does; therefore we keep it
+  // ignore: avoid_positional_boolean_parameters
   final void Function(PermissionElement, bool) updatePermission;
 
   /// State of the linked permission

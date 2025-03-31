@@ -10,7 +10,6 @@ import 'package:act_server_storage_manager/src/models/cache_storage_config.dart'
 import 'package:act_server_storage_manager/src/services/cache_with_images_manager.dart';
 import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/services/storage_http_file_service.dart';
-
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -20,7 +19,7 @@ import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 ///
 /// The [CacheWithImagesManager] only adds methods and no properties. Therefore, its ok to add it,
 /// even if we don't use the cache service for images.
-class CacheService extends AbstractService {
+class CacheService extends AbsWithLifeCycle {
   /// This is the log category linked to the cache service
   static const _logsCategory = "cache";
 
@@ -69,12 +68,13 @@ class CacheService extends AbstractService {
 
   /// Init the service
   @override
-  Future<void> initService() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper.i('Using cache service.');
   }
 
   /// Get a file based on a [fileId] from the cache or download it if it is not present. If the
-  /// [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// `result` is [StorageRequestResult.success], the `file` will be the downloaded file.
   Future<({StorageRequestResult result, File? file})> getFile(String fileId) async {
     try {
       final file = await _cacheManager.getSingleFile(fileId);
@@ -85,7 +85,7 @@ class CacheService extends AbstractService {
   }
 
   /// Get an image file based on a [fileId] from the cache or download it if it is not present.
-  /// If the [result] is [StorageRequestResult.success], the [file] will be the downloaded file.
+  /// If the `result` is [StorageRequestResult.success], the `file` will be the downloaded file.
   ///
   /// {@template act_server_storage_manager.CacheService.getImageFile.size}
   /// In case we use the cache and [maxWidth] and [maxHeight] are not null, the image file is
@@ -136,8 +136,8 @@ class CacheService extends AbstractService {
 
   /// Dispose the [_cacheManager].
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _cacheManager.dispose();
-    return super.dispose();
+    return super.disposeLifeCycle();
   }
 }

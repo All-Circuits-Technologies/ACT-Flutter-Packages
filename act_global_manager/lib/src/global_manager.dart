@@ -14,7 +14,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 /// The [globalGetIt] function is used to shortcut access to the managers
 GetIt globalGetIt() => GlobalManager.instance!.managers;
 
-/// The [EssLogger] function is used to shortcut access to the default logger
+/// The [appLogger] function is used to shortcut access to the default logger
 LoggerManager appLogger() => GlobalManager.instance!.defaultLogger;
 
 /// The [_GlobalManagerState] enum is used to manage the GlobalManager state
@@ -63,7 +63,7 @@ abstract class GlobalManager {
   /// Get the app package info
   PackageInfo get packageInfo => _packageInfo;
 
-  /// The [_create] constructor is used to construct the singleton instance
+  /// The create constructor is used to construct the singleton instance
   GlobalManager.create() : _state = _GlobalManagerState.created;
 
   /// This method is used to register asynchronously the app managers
@@ -71,7 +71,7 @@ abstract class GlobalManager {
   /// If the manager you want to register is the Logger Manager, this registers the
   /// [_defaultLogger].
   @protected
-  void registerManagerAsync<T extends AbstractManager>(ManagerBuilder<T> builder) {
+  void registerManagerAsync<T extends AbsWithLifeCycle>(AbsManagerBuilder<T> builder) {
     var asyncFactory = builder.asyncFactory;
     if (T == LoggerManager) {
       asyncFactory = () async {
@@ -89,7 +89,7 @@ abstract class GlobalManager {
     );
   }
 
-  /// The [_init] function is called at class constructor to init the singletons
+  /// The [init] function is called at class constructor to init the singletons
   @protected
   @mustCallSuper
   void init();

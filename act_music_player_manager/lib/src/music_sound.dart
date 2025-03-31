@@ -10,22 +10,29 @@ import 'package:flutter/foundation.dart';
 /// Represents a music sound to play
 @immutable
 class MusicSound<T> extends Equatable {
+  /// The representation of the music
   final T value;
+
+  /// The music file path
   final String filePath;
 
+  /// Class constructor
   const MusicSound({
     required this.value,
     required this.filePath,
   });
 
+  /// Class properties
   @override
   List<Object?> get props => [value];
 }
 
 /// Utility methods to manage [MusicSound] enum
 abstract class AbstractMusicSoundHelper<T> {
+  /// The music sound files list
   List<String>? _filesList;
 
+  /// The list of musics
   final Map<T, MusicSound<T>> musicSounds;
 
   /// Class constructor

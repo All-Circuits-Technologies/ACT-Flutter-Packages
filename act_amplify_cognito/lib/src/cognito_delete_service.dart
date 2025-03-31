@@ -11,7 +11,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// This service manages the Cognito account deletion methods
-class CognitoDeleteService extends AbstractService {
+class CognitoDeleteService extends AbsWithLifeCycle {
   /// This is the Cognito service logs helper
   final LogsHelper logsHelper;
 
@@ -19,10 +19,6 @@ class CognitoDeleteService extends AbstractService {
   CognitoDeleteService({
     required this.logsHelper,
   }) : super();
-
-  /// Service init method
-  @override
-  Future<void> initService() async {}
 
   /// User account deletion entry-point
   ///

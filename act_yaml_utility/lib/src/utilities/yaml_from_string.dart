@@ -7,7 +7,7 @@ import 'package:yaml/yaml.dart';
 
 /// This class contains useful methods to load JSON objects from YAML file content
 sealed class YamlFromString {
-  /// This method parses a YAML from [content] and returns a JSON like the [jsonDecode] method can
+  /// This method parses a YAML from [content] and returns a JSON like the `jsonDecode` method can
   /// return.
   static dynamic fromYaml(String content) {
     dynamic jsonContent;

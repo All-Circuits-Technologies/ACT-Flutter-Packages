@@ -7,10 +7,21 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 
 /// Defines the HALO service type
 enum HaloServiceType with MixinHaloType {
+  /// Represents an attribute
   attribute(rawValue: 0x00),
+
+  /// Represents instantaneous data
   instantData(rawValue: 0x01),
+
+  /// Represents record data
   recordData(rawValue: 0x02),
+
+  /// Represents a query
   request(rawValue: 0x03),
+
+  /// This means that the service is unknown.
+  ///
+  /// This value can't be sent to/by the Firmware
   unknown(rawValue: ByteUtility.maxInt64);
 
   /// Returns the raw value linked to the enum

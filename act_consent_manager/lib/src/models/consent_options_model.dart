@@ -10,7 +10,7 @@ import 'package:flutter/foundation.dart';
 /// [MixinConsentOptions] mixin. Not that even if [ConsentOptionsModel] extends [Equatable],
 /// the equality operator is overridden to compare the [_optionMap] using the [mapEquals] function.
 class ConsentOptionsModel<T extends MixinConsentOptions> extends Equatable {
-  /// Map of [ConsentStateEnum] values for each [option] of the consent.
+  /// Map of [ConsentStateEnum] values for each option of the consent.
   final Map<T, ConsentStateEnum> _optionMap;
 
   /// Get the [_optionMap].

@@ -4,7 +4,7 @@
 
 /// This library brings all dart types extensions into scope
 ///
-/// See also [act_dart_utility]
+/// See also `act_dart_utility`
 library;
 
 export 'src/extensions/iterable_extension.dart';

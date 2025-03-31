@@ -11,17 +11,19 @@ import 'package:flutter/material.dart';
 
 /// Abstract class which defines a builder for the consent manager specifying
 /// the other managers that it depends on.
-abstract class AbstractConsentBuilder<T extends AbstractConsentManager> extends ManagerBuilder<T> {
+abstract class AbstractConsentBuilder<T extends AbstractConsentManager>
+    extends AbsManagerBuilder<T> {
   /// Class constructor
   AbstractConsentBuilder(super.factory);
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   @mustCallSuper
   Iterable<Type> dependsOn() => [LoggerManager];
 }
 
 /// Abstract class to store consent services and manage them in an application.
-abstract class AbstractConsentManager<E extends Enum> extends AbstractManager {
+abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
   /// Class logger category
   static const String _consentManagerLogCategory = 'consent';
 
@@ -39,8 +41,10 @@ abstract class AbstractConsentManager<E extends Enum> extends AbstractManager {
       : _services = {},
         _observers = [];
 
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _consentManagerLogCategory,
@@ -48,10 +52,10 @@ abstract class AbstractConsentManager<E extends Enum> extends AbstractManager {
     final services = await getConsentServices(_logsHelper);
     _services.addAll(services);
 
-    await Future.wait(_services.values.map((service) => service.initService()));
+    await Future.wait(_services.values.map((service) => service.initLifeCycle()));
   }
 
-  /// Initialize the services after the view has been created
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initAfterView}
   @override
   Future<void> initAfterView(BuildContext context) async {
     await super.initAfterView(context);
@@ -77,10 +81,11 @@ abstract class AbstractConsentManager<E extends Enum> extends AbstractManager {
   AbstractConsentService<T>? getService<T extends MixinConsentOptions>(E consentType) =>
       _services[consentType] as AbstractConsentService<T>?;
 
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
-  Future<void> dispose() async {
-    await Future.wait(_services.values.map((service) => service.dispose()));
+  Future<void> disposeLifeCycle() async {
+    await Future.wait(_services.values.map((service) => service.disposeLifeCycle()));
     await Future.wait(_observers.map((observer) => observer.dispose()));
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }

@@ -8,7 +8,7 @@ import 'package:act_jwt_manager/src/handlers/abstract_jwt_handler.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 
 /// The manager builder linked to the [JwtManager]
-class JwtBuilder extends ManagerBuilder<JwtManager> {
+class JwtBuilder extends AbsManagerBuilder<JwtManager> {
   /// Class constructor
   JwtBuilder() : super(JwtManager.new);
 
@@ -19,7 +19,7 @@ class JwtBuilder extends ManagerBuilder<JwtManager> {
 /// This is the JWT manager
 ///
 /// Each "kind" of JWT is managed by a specific handler
-class JwtManager extends AbstractManager {
+class JwtManager extends AbsWithLifeCycle {
   /// This os the JWT logs category to use
   static const _jwtLogsCategory = "jwt";
 
@@ -34,7 +34,8 @@ class JwtManager extends AbstractManager {
 
   /// Init method of the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     logsHelper = LogsHelper(
       logsManager: globalGetIt().get<LoggerManager>(),
       logsCategory: _jwtLogsCategory,

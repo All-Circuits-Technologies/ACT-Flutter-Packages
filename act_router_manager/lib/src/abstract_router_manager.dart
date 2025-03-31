@@ -28,13 +28,13 @@ typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
     BuildContext context, T route, GoRouterState state);
 
 /// Builder for creating the AbstractGorouterManager
-class AbstractRouterBuilder<M extends AbstractRouterManager> extends ManagerBuilder<M> {
+class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsManagerBuilder<M> {
   /// Class constructor with the class construction
   AbstractRouterBuilder({
     required ClassFactory<M> factory,
   }) : super(factory);
 
-  /// List of manager dependence
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [
         LoggerManager,
@@ -43,7 +43,7 @@ class AbstractRouterBuilder<M extends AbstractRouterManager> extends ManagerBuil
 
 /// The [AbstractRouterManager] simplifies [GoRouter]
 /// It's recommended to use this class as a singleton with a global manager
-abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManager {
+abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCycle {
   /// The logs category linked to the router manager
   static const _logsCategory = "router";
 
@@ -74,10 +74,11 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
   /// Class constructor
   AbstractRouterManager() : super();
 
-  /// The [init] method has to be called to initialize the class
+  /// The [initLifeCycle] method has to be called to initialize the class
   /// The method will generate the router for GoRouter
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory);
 
     // RoutesHelper build
@@ -444,7 +445,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
   ///
   /// If the [route] exists in the route tree, we pop all the views until we arrive to it.
   /// When we are in this view we try to pop it.
-  /// If we can't pop or no [routes] are in the route tree (and so we have popped all the tree), we:
+  /// If we can't pop or [route] isn't in the route tree (and so we have popped all the tree), we:
   /// - if [replaceWithIfCannotPop] is not null, we replace the initial page with the
   ///   [replaceWithIfCannotPop] page.
   /// - if [replaceWithIfCannotPop] is null, we do nothing
@@ -629,11 +630,5 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbstractManag
     }
 
     return route.path;
-  }
-
-  /// After calling  [dispose}, you have to call the [init] method if you want to reuse the class.
-  @override
-  Future<void> dispose() async {
-    await super.dispose();
   }
 }

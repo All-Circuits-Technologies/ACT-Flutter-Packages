@@ -9,7 +9,7 @@ import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// This service manages the password mechanisms such as: update, reset password, etc.
-class CognitoPasswordService extends AbstractService {
+class CognitoPasswordService extends AbsWithLifeCycle {
   /// This is the Cognito service logs helper
   final LogsHelper logsHelper;
 
@@ -17,10 +17,6 @@ class CognitoPasswordService extends AbstractService {
   CognitoPasswordService({
     required this.logsHelper,
   }) : super();
-
-  /// Service init method
-  @override
-  Future<void> initService() async {}
 
   /// This method fires the password resets. A confirmation code should be sent.
   ///

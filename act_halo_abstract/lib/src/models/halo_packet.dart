@@ -8,7 +8,10 @@ import 'package:equatable/equatable.dart';
 
 /// This defines a HALO packet, with a [HaloDataId] and a [HaloPayloadPacket]
 class HaloPacket extends Equatable {
+  /// This is the id of the packet
   final HaloDataId dataId;
+
+  /// This is the payload of the packet
   final HaloPayloadPacket payload;
 
   /// Class constructor
@@ -17,6 +20,7 @@ class HaloPacket extends Equatable {
     required this.payload,
   }) : super();
 
+  /// This is the class properties
   @override
   List<Object?> get props => [dataId, payload];
 }

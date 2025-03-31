@@ -6,7 +6,7 @@ import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// This the abstract class of all the [BleConnectToDeviceBloc] events
+/// This the abstract class of all the `BleConnectToDeviceBloc` events
 abstract class BleConnectToDeviceEvent extends Equatable {
   /// Class constructor
   const BleConnectToDeviceEvent();
@@ -62,5 +62,6 @@ class NewDeviceStateEvent extends BleConnectToDeviceEvent {
 
 /// Emitted when the user wants to disconnect from the currently connected BleDevice
 class DisconnectDeviceEvent extends BleConnectToDeviceEvent {
+  /// Class constructor
   const DisconnectDeviceEvent();
 }

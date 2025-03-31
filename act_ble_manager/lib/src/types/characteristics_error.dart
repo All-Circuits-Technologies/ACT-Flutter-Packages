@@ -5,8 +5,13 @@
 
 /// Represents the errors which may happens with the characteristics
 enum CharacteristicsError {
+  /// When no error happens
   success(isSuccess: true),
+
+  /// When a generic error occurred
   genericError,
+
+  /// When the process couldn't be done because you miss authorization on the characteristic
   missAuthorization;
 
   /// True if the boolean is linked to success state

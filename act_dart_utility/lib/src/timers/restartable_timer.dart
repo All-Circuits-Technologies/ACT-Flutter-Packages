@@ -50,7 +50,7 @@ class RestartableTimer implements InterfaceRestartableTimer {
   /// Class constructor
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   RestartableTimer(
     this.duration,
@@ -68,7 +68,7 @@ class RestartableTimer implements InterfaceRestartableTimer {
   /// Factory to create a Restartable time which automatically restart the timer at each timeout.
   ///
   /// By default, the timer starts with its creation. To prevent that, you may set
-  /// [waitNextResetToStart] to true. In that case, you will have to call the restart method for
+  /// [waitNextRestartToStart] to true. In that case, you will have to call the restart method for
   /// starting the timer.
   factory RestartableTimer.autoRestart(
     Duration duration,

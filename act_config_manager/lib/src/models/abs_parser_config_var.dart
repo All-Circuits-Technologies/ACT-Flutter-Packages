@@ -11,8 +11,8 @@ import 'package:flutter/foundation.dart';
 /// - boolean,
 /// - string,
 /// - number,
-/// - Map<string, dynamic>
-/// - List<dynamic>
+/// - Map\<string, dynamic\>
+/// - List\<dynamic\>
 typedef ParserFunc<ParsedType, StoredType> = ParsedType? Function(StoredType value);
 
 /// This class allows to access a config variable value which needs to be parsed before being

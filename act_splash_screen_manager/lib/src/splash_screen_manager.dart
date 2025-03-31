@@ -8,7 +8,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 /// Builder of the splash screen manager
-class SplashScreenBuilder extends ManagerBuilder<SplashScreenManager> {
+class SplashScreenBuilder extends AbsManagerBuilder<SplashScreenManager> {
   /// Class constructor
   SplashScreenBuilder() : super(SplashScreenManager.new);
 
@@ -20,9 +20,10 @@ class SplashScreenBuilder extends ManagerBuilder<SplashScreenManager> {
 ///
 /// This manager keeps the splash screen until the first view is built. Therefore, it covers the
 /// managers initialization.
-class SplashScreenManager extends AbstractManager {
+class SplashScreenManager extends AbsWithLifeCycle {
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     // We keep the splashscreen displaying until all is ready
     FlutterNativeSplash.preserve(widgetsBinding: WidgetsFlutterBinding.ensureInitialized());
   }

@@ -14,7 +14,7 @@ import 'package:logger/logger.dart';
 typedef ActLogsErrorCallback = void Function(Object exception, StackTrace stackTrace);
 
 /// Builder for creating the LoggerManager
-class LoggerBuilder<C extends MixinLoggerConfig> extends ManagerBuilder<LoggerManager> {
+class LoggerBuilder<C extends MixinLoggerConfig> extends AbsManagerBuilder<LoggerManager> {
   /// A factory to create a manager instance
   LoggerBuilder() : super(_LoggerManagerPriv<C>.new);
 
@@ -33,7 +33,7 @@ class _LoggerManagerPriv<C extends MixinLoggerConfig> extends LoggerManager {
 }
 
 /// This class manages the [Logger] plugin class
-abstract class LoggerManager extends AbstractManager {
+abstract class LoggerManager extends AbsWithLifeCycle {
   /// This is the current logger used by the application
   late final Logger _logger;
 
@@ -44,8 +44,6 @@ abstract class LoggerManager extends AbstractManager {
   final Set<ActLogsErrorCallback> _platformErrorCallback;
 
   /// Constructor
-  ///
-  /// The [logLevel] given allows to customize the level of logs to display
   LoggerManager()
       : _flutterExceptionHandler = {},
         _platformErrorCallback = {};
@@ -56,7 +54,8 @@ abstract class LoggerManager extends AbstractManager {
 
   /// Init the manager
   @override
-  Future<void> initManager() async {
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
     final confManager = getLoggerConfig();
 
     _logger = Logger(
@@ -223,9 +222,9 @@ abstract class LoggerManager extends AbstractManager {
 
   /// To call in order to dispose the class elements
   @override
-  Future<void> dispose() async {
+  Future<void> disposeLifeCycle() async {
     await _logger.close();
-    await super.dispose();
+    await super.disposeLifeCycle();
   }
 }
 

@@ -6,13 +6,18 @@ import 'package:flutter/services.dart';
 
 /// This represents the screen orientation option and say how the may be displayed.
 enum ScreenOrientationOption {
+  /// This means the application can only be displayed in portray
   portrayOnly(orientations: [
     DeviceOrientation.portraitUp,
   ]),
+
+  /// This means the application can only be displayed in landscape
   landscapeOnly(orientations: [
     DeviceOrientation.landscapeLeft,
     DeviceOrientation.landscapeRight,
   ]),
+
+  /// This means that the application may rotation from portray to landscape (and vice versa)
   mayRotate(orientations: [
     DeviceOrientation.portraitUp,
     DeviceOrientation.landscapeLeft,

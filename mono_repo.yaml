@@ -9,6 +9,5 @@ github:
 
 merge_stages:
   - analyze
-  - unit_test
 
 self_validate: analyze

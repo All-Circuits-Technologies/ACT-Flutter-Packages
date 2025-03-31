@@ -13,8 +13,10 @@ import 'package:permission_handler/permission_handler.dart';
 
 /// Bloc for managing Qr Code events
 class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
+  /// This is the lock utility
   static final _lockUtility = LockUtility();
 
+  /// Class constructor
   QrCodeBloc() : super(const QrCodeState.init()) {
     on(_onQrCodePermissionRetrievedEvent);
     on(_onQrCodeFoundEvent);

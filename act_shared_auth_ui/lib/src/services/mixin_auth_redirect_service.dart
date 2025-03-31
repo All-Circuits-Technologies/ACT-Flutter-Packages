@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
-import 'package:act_shared_auth_ui/src/models/sign_in_page_extra.dart';
 import 'package:act_shared_auth_ui/src/types/mixin_auth_route.dart';
 import 'package:flutter/widgets.dart';
 

@@ -15,8 +15,8 @@ mixin MixinAuthService {
   ///
   /// [email] is often required by services as an anti-robot feature. Service may sent it a code
   /// to ensure user own this email address, in such case a subsequent call to [confirmSignUp]
-  /// is required to complete account sign-up. Services requiring an email address for [userId]
-  /// will likely ignore this parameter or can just test it against [userId] if provided.
+  /// is required to complete account sign-up. Services requiring an email address for [accountId]
+  /// will likely ignore this parameter or can just test it against [accountId] if provided.
   ///
   /// You are advised to read method implementation documentation for service-specific details.
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT

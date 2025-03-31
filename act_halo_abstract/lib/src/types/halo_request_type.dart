@@ -7,9 +7,18 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 
 /// The HALO request type
 enum HaloRequestType with MixinHaloType {
+  /// Designates a request for which an acknowledgment and one or more return values are expected
   function(rawValue: 0x00),
+
+  /// Designates a request for which an acknowledgment is expected and which has no return value
   procedure(rawValue: 0x01),
+
+  /// Designates a request for which no acknowledgment or return value is expected
   order(rawValue: 0x02),
+
+  /// This means that the request is unknown.
+  ///
+  /// This value can't be sent to/by the Firmware
   unknown(rawValue: ByteUtility.maxInt64);
 
   /// The raw value linked to the enum

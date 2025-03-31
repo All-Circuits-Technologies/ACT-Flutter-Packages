@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// This is the sign in authentication status
 enum AuthSignInStatus {
   /// The sign-in is not complete and must be confirmed with the user's new password.
   confirmSignInWithNewPassword(userNeedsToAct: true),
