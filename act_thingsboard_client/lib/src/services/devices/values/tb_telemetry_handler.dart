@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_thingsboard_client/src/mixins/mixin_telemetries_keys.dart';
 import 'package:act_thingsboard_client/src/models/tb_ext_attribute_data.dart';
+import 'package:act_thingsboard_client/src/models/tb_ts_value.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/a_tb_telemetry.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_attributes.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_values.dart';
@@ -50,10 +51,10 @@ class TbTelemetryHandler {
 
   /// The attribute controller used to emit messages when scrutinise time series are updated on
   /// thingsboard
-  final StreamController<Map<String, TsValue>> _tsCtrl;
+  final StreamController<Map<String, TbTsValue>> _tsCtrl;
 
   /// Stream linked to the [_tsCtrl] time series controller
-  Stream<Map<String, TsValue>> get timeSeriesStream => _tsCtrl.stream;
+  Stream<Map<String, TbTsValue>> get timeSeriesStream => _tsCtrl.stream;
 
   /// Subscription to the client attributes
   late final StreamSubscription _clientAttrSub;
@@ -153,12 +154,11 @@ class TbTelemetryHandler {
   /// Add new subscriptions on specific telemetry elements
   ///
   /// This is useful when using enum in app to list the telemetries keys
-  Future<bool> addKeys<Ca extends MixinTelemetriesKeys, Sha extends MixinTelemetriesKeys,
-          Sea extends MixinTelemetriesKeys, Ts extends MixinTelemetriesKeys>({
-    List<Ca>? clientKeys,
-    List<Sha>? sharedKeys,
-    List<Sea>? serverKeys,
-    List<Ts>? tsKeys,
+  Future<bool> addKeys({
+    List<MixinTelemetriesKeys>? clientKeys,
+    List<MixinTelemetriesKeys>? sharedKeys,
+    List<MixinTelemetriesKeys>? serverKeys,
+    List<MixinTelemetriesKeys>? tsKeys,
   }) =>
       add(
         clientKeys: _convertFromTelemetriesKeys(clientKeys),
@@ -224,12 +224,11 @@ class TbTelemetryHandler {
   /// Remove subscriptions on specific telemetry elements
   ///
   /// This is useful when using enum in app to list the telemetries keys
-  Future<bool> removeKeys<Ca extends MixinTelemetriesKeys, Sha extends MixinTelemetriesKeys,
-          Sea extends MixinTelemetriesKeys, Ts extends MixinTelemetriesKeys>({
-    List<Ca>? clientKeys,
-    List<Sha>? sharedKeys,
-    List<Sea>? serverKeys,
-    List<Ts>? tsKeys,
+  Future<bool> removeKeys({
+    List<MixinTelemetriesKeys>? clientKeys,
+    List<MixinTelemetriesKeys>? sharedKeys,
+    List<MixinTelemetriesKeys>? serverKeys,
+    List<MixinTelemetriesKeys>? tsKeys,
   }) =>
       remove(
         clientKeys: _convertFromTelemetriesKeys(clientKeys),
@@ -282,8 +281,8 @@ class TbTelemetryHandler {
   }
 
   /// Get timeseries values called on loading state
-  Map<String, TsValue> getTsValues() {
-    final tsValues = <String, TsValue>{};
+  Map<String, TbTsValue> getTsValues() {
+    final tsValues = <String, TbTsValue>{};
 
     for (final tsKey in timeSeriesKeys) {
       final value = _deviceValues.timeSeries.getTelemetryValue(tsKey);
@@ -437,8 +436,8 @@ class TbTelemetryHandler {
   }
 
   /// Called when new time series values are received
-  void _onReceivedTimeSeries(Map<String, TsValue> values) {
-    final tsValues = <String, TsValue>{};
+  void _onReceivedTimeSeries(Map<String, TbTsValue> values) {
+    final tsValues = <String, TbTsValue>{};
 
     for (final value in values.entries) {
       if (timeSeriesKeys.contains(value.key)) {

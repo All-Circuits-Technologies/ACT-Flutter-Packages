@@ -13,4 +13,21 @@ extension ActIterableLookup<T> on Iterable<T> {
   /// Return first item of current collection matching a given [predicate], null otherwise
   T? firstWhereOrNull(bool Function(T element) predicate) =>
       IterableUtility.firstWhereOrNull(this, predicate);
+
+  /// Return a copy of current collection, with all occurrences of [value] removed
+  Iterable<T> copyWithoutValue(T? value) => IterableUtility.copyWithoutValue<T>(this, value);
+
+  /// Return a copy of current collection, with all occurrences of [values] removed
+  Iterable<T> copyWithoutValues(Iterable<T> values) =>
+      IterableUtility.copyWithoutValues(this, values);
+
+  /// Test if at least one element of [atLeastOne] collection is contained in the current collection
+  bool testIfAtLeastOneIsInCollection(
+    Iterable<T> atLeastOne,
+  ) =>
+      IterableUtility.testIfAtLeastOneIsInCollection(atLeastOne, this);
+
+  /// Test if all the elements of [mustBeIn] collection are in the current collection
+  bool testIfListIsInCollection(Iterable<T> mustBeIn) =>
+      IterableUtility.testIfListIsInCollection(mustBeIn, this);
 }

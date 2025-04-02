@@ -4,6 +4,7 @@
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_thingsboard_client/src/models/tb_ext_attribute_data.dart';
+import 'package:act_thingsboard_client/src/models/tb_ts_value.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Helpful class to manage telemetries information
@@ -21,12 +22,12 @@ sealed class TbTelemetriesHelper {
   /// Returns null if the value is null or if we fail to parse the value retrieved
   ///
   /// The method raises an exception if the wanted type is unknown
-  static T? getTsValue<T>(TsValue? tsValue) => StringUtility.parseStrValue<T>(tsValue?.value);
+  static T? getTsValue<T>(TbTsValue? tsValue) => StringUtility.parseStrValue<T>(tsValue?.value);
 
   /// Parse the lastTs of the given [TsValue] and returns a [DateTime]
   ///
   /// Returns null if the value or timestamp is null
-  static DateTime? getTsLastUtcReceptionTime(TsValue? tsValue) => _parseUtcDateTime(tsValue?.ts);
+  static DateTime? getTsLastUtcReceptionTime(TbTsValue? tsValue) => _parseUtcDateTime(tsValue?.ts);
 
   /// Parse the lastTs of the given [TbExtAttributeData] and returns a [DateTime]
   ///

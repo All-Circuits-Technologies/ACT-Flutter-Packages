@@ -29,6 +29,9 @@ dependencies:
       url: https://github.com/benoit-rolandeau-act/dart_thingsboard_client.git
       ref: fix-tb-storage-interface
 
+  act_dart_utility:
+    path: ../act_dart_utility
+
   act_flutter_utility:
     path: ../act_flutter_utility
 

@@ -4,29 +4,39 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
+
 /// Helpful class to manage lists
-class ListUtility {
+sealed class ListUtility {
+  /// {@template act_dart_utility.ListUtility.copy}
   /// Return a copy of [list]
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
+  /// {@endtemplate}
   static List<T> copy<T>(List<T> list, {bool growable = true}) =>
       List<T>.from(list, growable: growable);
 
+  /// {@template act_dart_utility.ListUtility.copyWithoutValue}
   /// Return a copy of [list], with all occurrences of [value] removed
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
+  /// {@endtemplate}
   static List<T> copyWithoutValue<T>(List<T> list, T? value, {bool growable = true}) =>
-      list.where((cell) => cell != value).toList(growable: growable);
+      IterableUtility.copyWithoutValue(list, value).toList(growable: growable);
 
+  /// {@template act_dart_utility.ListUtility.copyWithoutValues}
   /// Return a copy of [list], with all occurrences of [values] removed
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
+  /// {@endtemplate}
   static List<T> copyWithoutValues<T>(List<T> list, List<T> values, {bool growable = true}) =>
-      list.where((cell) => !values.contains(cell)).toList(growable: growable);
+      IterableUtility.copyWithoutValues(list, values).toList(growable: growable);
 
+  /// {@template act_dart_utility.ListUtility.getListsIntersection}
   /// Only returns the elements which are contained in all the given lists
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
+  /// {@endtemplate}
   static List<T> getListsIntersection<T>(List<List<T>> elements, {bool growable = true}) {
     if (elements.isEmpty) {
       return [];
@@ -42,11 +52,15 @@ class ListUtility {
         );
   }
 
+  /// {@template act_dart_utility.ListUtility.interleave}
   /// Return a given [list] with [interleave] value inserted between each [list] item.
+  /// {@endtemplate}
   static List<T> interleave<T>(List<T> list, T interleave) =>
       interleaveWithBuilder(list, () => interleave);
 
+  /// {@template act_dart_utility.ListUtility.interleaveWithBuilder}
   /// Return a given [list] with built interleaves inserted between each [list] item.
+  /// {@endtemplate}
   static List<T> interleaveWithBuilder<T>(List<T> list, T Function() interleaveBuilder) =>
       list.fold(
         <T>[],
@@ -54,28 +68,19 @@ class ListUtility {
             previousValue.isEmpty ? [element] : [...previousValue, interleaveBuilder(), element],
       );
 
+  /// {@template act_dart_utility.ListUtility.testIfAtLeastOneIsInList}
   /// Test if at least one element of [atLeastOne] list is contained in the [globalList] list
-  static bool testIfAtLeastOneIsInList<T>(List<T> atLeastOne, List<T> globalList) {
-    for (final element in atLeastOne) {
-      if (globalList.contains(element)) {
-        return true;
-      }
-    }
+  /// {@endtemplate}
+  static bool testIfAtLeastOneIsInList<T>(List<T> atLeastOne, List<T> globalList) =>
+      IterableUtility.testIfAtLeastOneIsInCollection(atLeastOne, globalList);
 
-    return false;
-  }
-
+  /// {@template act_dart_utility.ListUtility.testIfListIsInList}
   /// Test if all the elements of [mustBeIn] list are in the [globalList] list
-  static bool testIfListIsInList<T>(List<T> mustBeIn, List<T> globalList) {
-    for (final element in mustBeIn) {
-      if (!globalList.contains(element)) {
-        return false;
-      }
-    }
+  /// {@endtemplate}
+  static bool testIfListIsInList<T>(List<T> mustBeIn, List<T> globalList) =>
+      IterableUtility.testIfListIsInCollection(mustBeIn, globalList);
 
-    return true;
-  }
-
+  /// {@template act_dart_utility.ListUtility.safeSublist}
   /// Returns a new list containing the elements between [start] and [end]. The [end] is not
   /// included.
   ///
@@ -85,6 +90,7 @@ class ListUtility {
   /// - If [start] overflows the list length, an empty list will be returned
   /// - If [end] is null or overflow the list length, the list length will be used.
   /// - If [end] is negative or before [start], an empty list will be returned.
+  /// {@endtemplate}
   static List<T> safeSublist<T>(List<T> list, int start, [int? end]) {
     final length = list.length;
     var tmpEnd = end;
@@ -104,6 +110,7 @@ class ListUtility {
     return list.sublist(tmpStart, tmpEnd);
   }
 
+  /// {@template act_dart_utility.ListUtility.safeSublistFromLength}
   /// Returns a new list containing the elements which begins at [start] and with the given
   /// [length].
   ///
@@ -113,13 +120,16 @@ class ListUtility {
   /// - If [start] overflows the list length, an empty list will be returned
   /// - If [length] is null or overflow the list length with [start], the list length will be used.
   /// - If [length] is negative, an empty list will be returned.
+  /// {@endtemplate}
   static List<T> safeSublistFromLength<T>(List<T> list, int start, [int? length]) =>
       safeSublist(list, start, (length != null) ? start + length : null);
 
+  /// {@template act_dart_utility.ListUtility.distinct}
   /// Returns a new list (in the same order as the given [list]) without any duplicated element.
   ///
   /// If the list objects are complexes, you can use the [getUniqueElem] method to extra an unique
   /// testable element from them.
+  /// {@endtemplate}
   static List<T> distinct<T, Y extends Object?>(
     List<T> list, {
     Y Function(T item)? getUniqueElem,
@@ -137,7 +147,7 @@ class ListUtility {
     return tmpList;
   }
 
-  /// {@template ListUtility.moveElement}
+  /// {@template act_dart_utility.ListUtility.moveElement}
   /// Move the item at the [currentIdx] to the [targetedIdx].
   ///
   /// The method modifies the given [list] and doesn't create a new one.
@@ -176,7 +186,7 @@ class ListUtility {
     list.insert(tmpTargetedIdx, item);
   }
 
-  /// {@template ListUtility.addOrReplace}
+  /// {@template act_dart_utility.ListUtility.addOrReplace}
   /// Append or replace the [listToAdd] into the [globalList].
   ///
   /// The method returns a new list with the result.

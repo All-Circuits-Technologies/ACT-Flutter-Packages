@@ -22,15 +22,11 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
 
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiState.tsValues}
   @override
-  final Map<String, TsValue> tsValues;
+  final Map<String, TbTsValue> tsValues;
 
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiState.attributesValues}
   @override
   final Map<String, TbExtAttributeData> attributesValues;
-
-  /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiState.dateTime}
-  @override
-  final DateTime dateTime;
 
   /// Class constructor
   const TbTelemetriesUiState({
@@ -39,7 +35,6 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
     required this.genericError,
     required this.tsValues,
     required this.attributesValues,
-    required this.dateTime,
   });
 
   /// Factory initializer
@@ -49,7 +44,6 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
         genericError = TbTelemetriesUiError.noError,
         tsValues = {},
         attributesValues = {},
-        dateTime = DateTime.now().toUtc(),
         super();
 
   /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
@@ -59,7 +53,7 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
     bool forceDeviceValue = false,
     bool? telemetryLoading,
     TbTelemetriesUiError? genericError,
-    Map<String, TsValue>? tsValues,
+    Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
     DateTime? dateTime,
   }) =>
@@ -69,7 +63,6 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
         genericError: genericError ?? this.genericError,
         tsValues: tsValues ?? this.tsValues,
         attributesValues: attributesValues ?? this.attributesValues,
-        dateTime: dateTime ?? this.dateTime,
       );
 
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiState.copyWithTbTelemetriesState}
@@ -79,7 +72,7 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
     bool forceDeviceValue = false,
     bool? telemetryLoading,
     TbTelemetriesUiError? genericError,
-    Map<String, TsValue>? tsValues,
+    Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
     DateTime? dateTime,
   }) =>

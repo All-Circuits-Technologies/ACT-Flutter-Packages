@@ -17,5 +17,5 @@ class TbExtAttributeData extends Equatable {
   const TbExtAttributeData({required this.data, required this.scope});
 
   @override
-  List<Object?> get props => [data, scope];
+  List<Object?> get props => [data.lastUpdateTs, data.key, data.value, scope];
 }

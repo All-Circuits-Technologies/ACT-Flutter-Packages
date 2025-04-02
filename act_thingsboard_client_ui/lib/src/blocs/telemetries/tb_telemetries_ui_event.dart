@@ -4,7 +4,6 @@
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
-import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Emitted at the initialisation
 class InitTbTelemetriesUiEvent extends BlocEventForMixin {
@@ -21,7 +20,7 @@ class RetryInitTbTelemetriesUiEvent extends BlocEventForMixin {
 /// Emitted when new time series values are received
 class NewTbTimeSeriesValuesUiEvent extends BlocEventForMixin {
   /// The list of time series values updated
-  final Map<String, TsValue> tsValues;
+  final Map<String, TbTsValue> tsValues;
 
   /// Class constructor
   const NewTbTimeSeriesValuesUiEvent({
