@@ -47,8 +47,7 @@ class TbTelemetryHandler {
   final StreamController<Map<String, TbExtAttributeData>> _attrCtrl;
 
   /// Stream linked to the [_attrCtrl] attribute controller
-  Stream<Map<String, TbExtAttributeData>> get attributesStream =>
-      _attrCtrl.stream;
+  Stream<Map<String, TbExtAttributeData>> get attributesStream => _attrCtrl.stream;
 
   /// The attribute controller used to emit messages when scrutinise time series are updated on
   /// thingsboard
@@ -80,23 +79,22 @@ class TbTelemetryHandler {
         _attrCtrl = StreamController.broadcast(),
         _tsCtrl = StreamController.broadcast(),
         _mutex = Mutex() {
-    _clientAttrSub = _deviceValues.clientAttributes.telemetryStream
-        .listen((values) => _onReceivedAttribute(
+    _clientAttrSub =
+        _deviceValues.clientAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
               values,
               AttributeScope.CLIENT_SCOPE,
             ));
-    _sharedAttrSub = _deviceValues.sharedAttributes.telemetryStream
-        .listen((values) => _onReceivedAttribute(
+    _sharedAttrSub =
+        _deviceValues.sharedAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
               values,
               AttributeScope.SHARED_SCOPE,
             ));
-    _serverAttrSub = _deviceValues.serverAttributes.telemetryStream
-        .listen((values) => _onReceivedAttribute(
+    _serverAttrSub =
+        _deviceValues.serverAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
               values,
               AttributeScope.SERVER_SCOPE,
             ));
-    _timeSeriesSub =
-        _deviceValues.timeSeries.telemetryStream.listen(_onReceivedTimeSeries);
+    _timeSeriesSub = _deviceValues.timeSeries.telemetryStream.listen(_onReceivedTimeSeries);
   }
 
   /// Add new subscriptions on specific telemetry elements
@@ -112,9 +110,8 @@ class TbTelemetryHandler {
           currentList: clientAttrKeys,
           telemetry: _deviceValues.clientAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to add subscription to the client "
-              "attribute keys: $clientKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the client "
+          "attribute keys: $clientKeys");
       return false;
     }
 
@@ -124,9 +121,8 @@ class TbTelemetryHandler {
           currentList: sharedAttrKeys,
           telemetry: _deviceValues.sharedAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to add subscription to the shared "
-              "attribute keys: $sharedKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the shared "
+          "attribute keys: $sharedKeys");
       return false;
     }
 
@@ -136,9 +132,8 @@ class TbTelemetryHandler {
           currentList: serverAttrKeys,
           telemetry: _deviceValues.serverAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to add subscription to the server "
-              "attribute keys: $serverKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the server "
+          "attribute keys: $serverKeys");
       return false;
     }
 
@@ -148,9 +143,8 @@ class TbTelemetryHandler {
           currentList: timeSeriesKeys,
           telemetry: _deviceValues.timeSeries,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to add subscription to the time "
-              "series keys: $tsKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the time "
+          "series keys: $tsKeys");
       return false;
     }
 
@@ -186,9 +180,8 @@ class TbTelemetryHandler {
           currentList: clientAttrKeys,
           telemetry: _deviceValues.clientAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove subscription from the "
-              "client attribute keys: $clientKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
+          "client attribute keys: $clientKeys");
       return false;
     }
 
@@ -198,9 +191,8 @@ class TbTelemetryHandler {
           currentList: sharedAttrKeys,
           telemetry: _deviceValues.sharedAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove subscription from the "
-              "shared attribute keys: $sharedKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
+          "shared attribute keys: $sharedKeys");
       return false;
     }
 
@@ -210,9 +202,8 @@ class TbTelemetryHandler {
           currentList: serverAttrKeys,
           telemetry: _deviceValues.serverAttributes,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove subscription from the "
-              "server attribute keys: $serverKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
+          "server attribute keys: $serverKeys");
       return false;
     }
 
@@ -222,9 +213,8 @@ class TbTelemetryHandler {
           currentList: timeSeriesKeys,
           telemetry: _deviceValues.timeSeries,
         ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove subscription from the "
-              "time series keys: $tsKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
+          "time series keys: $tsKeys");
       return false;
     }
 
@@ -234,15 +224,11 @@ class TbTelemetryHandler {
   /// Remove subscriptions on specific telemetry elements
   ///
   /// This is useful when using enum in app to list the telemetries keys
-  Future<bool> removeKeys<
-          Ca extends MixinTelemetriesKeys,
-          Sha extends MixinTelemetriesKeys,
-          Sea extends MixinTelemetriesKeys,
-          Ts extends MixinTelemetriesKeys>({
-    List<Ca>? clientKeys,
-    List<Sha>? sharedKeys,
-    List<Sea>? serverKeys,
-    List<Ts>? tsKeys,
+  Future<bool> removeKeys({
+    List<MixinTelemetriesKeys>? clientKeys,
+    List<MixinTelemetriesKeys>? sharedKeys,
+    List<MixinTelemetriesKeys>? serverKeys,
+    List<MixinTelemetriesKeys>? tsKeys,
   }) =>
       remove(
         clientKeys: _convertFromTelemetriesKeys(clientKeys),
@@ -259,9 +245,8 @@ class TbTelemetryHandler {
       currentList: clientAttrKeys,
       telemetry: _deviceValues.clientAttributes,
     ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove all the subscription to "
-              "client attribute keys: $clientAttrKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
+          "client attribute keys: $clientAttrKeys");
       return false;
     }
 
@@ -269,9 +254,8 @@ class TbTelemetryHandler {
       currentList: serverAttrKeys,
       telemetry: _deviceValues.serverAttributes,
     ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove all the subscription to "
-              "server attribute keys: $serverAttrKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
+          "server attribute keys: $serverAttrKeys");
       return false;
     }
 
@@ -279,9 +263,8 @@ class TbTelemetryHandler {
       currentList: sharedAttrKeys,
       telemetry: _deviceValues.sharedAttributes,
     ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove all the subscription to "
-              "shared attribute keys: $sharedAttrKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
+          "shared attribute keys: $sharedAttrKeys");
       return false;
     }
 
@@ -289,9 +272,8 @@ class TbTelemetryHandler {
       currentList: timeSeriesKeys,
       telemetry: _deviceValues.timeSeries,
     ))) {
-      _deviceValues.logsHelper
-          .w("A problem occurred when tried to remove all the subscription to "
-              "time series keys: $timeSeriesKeys");
+      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
+          "time series keys: $timeSeriesKeys");
       return false;
     }
 
@@ -320,12 +302,9 @@ class TbTelemetryHandler {
   Map<String, TbExtAttributeData> getAttributeValues() {
     final attributeValues = <String, TbExtAttributeData>{};
 
-    attributeValues
-        .addAll(getAttributeValuesByScope(scope: AttributeScope.CLIENT_SCOPE));
-    attributeValues
-        .addAll(getAttributeValuesByScope(scope: AttributeScope.SHARED_SCOPE));
-    attributeValues
-        .addAll(getAttributeValuesByScope(scope: AttributeScope.SERVER_SCOPE));
+    attributeValues.addAll(getAttributeValuesByScope(scope: AttributeScope.CLIENT_SCOPE));
+    attributeValues.addAll(getAttributeValuesByScope(scope: AttributeScope.SHARED_SCOPE));
+    attributeValues.addAll(getAttributeValuesByScope(scope: AttributeScope.SERVER_SCOPE));
 
     return attributeValues;
   }
@@ -358,8 +337,7 @@ class TbTelemetryHandler {
     required ATbTelemetry telemetry,
   }) =>
       _mutex.protect(() async {
-        final tmpToAdd =
-            ListUtility.copyWithoutValues(toAdd, currentList, growable: false);
+        final tmpToAdd = ListUtility.copyWithoutValues(toAdd, currentList, growable: false);
 
         if (tmpToAdd.isEmpty) {
           // Nothing to do
@@ -382,8 +360,7 @@ class TbTelemetryHandler {
     required ATbTelemetry telemetry,
   }) =>
       _mutex.protect(() async {
-        final tmpToRemove =
-            ListUtility.getListsIntersection([toRemove, currentList]);
+        final tmpToRemove = ListUtility.getListsIntersection([toRemove, currentList]);
 
         if (tmpToRemove.isEmpty) {
           // Nothing to do
@@ -444,14 +421,12 @@ class TbTelemetryHandler {
   }
 
   /// Called when new attribute values are received
-  void _onReceivedAttribute(
-      Map<String, AttributeData> values, AttributeScope scope) {
+  void _onReceivedAttribute(Map<String, AttributeData> values, AttributeScope scope) {
     final attributes = <String, TbExtAttributeData>{};
 
     for (final value in values.entries) {
       if (_getAttrKeysList(scope).contains(value.key)) {
-        attributes[value.key] =
-            TbExtAttributeData(data: value.value, scope: scope);
+        attributes[value.key] = TbExtAttributeData(data: value.value, scope: scope);
       }
     }
 
@@ -476,8 +451,7 @@ class TbTelemetryHandler {
   }
 
   /// Convert a [telemetriesKeys] list with the type [MixinTelemetriesKeys] to a string list
-  List<String>? _convertFromTelemetriesKeys(
-      List<MixinTelemetriesKeys>? telemetriesKeys) {
+  List<String>? _convertFromTelemetriesKeys(List<MixinTelemetriesKeys>? telemetriesKeys) {
     if (telemetriesKeys == null) {
       return null;
     }
