@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client_ui/src/blocs/telemetries/tb_telemetries_ui_error.dart';
@@ -30,18 +31,12 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
   /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiState.tsValues}
   /// The time series values
   /// {@endtemplate}
-  Map<String, TsValue> get tsValues;
+  Map<String, TbTsValue> get tsValues;
 
   /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiState.attributesValues}
   /// The attributes values
   /// {@endtemplate}
   Map<String, TbExtAttributeData> get attributesValues;
-
-  /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiState.dateTime}
-  /// The date time when we received the telemetries
-  /// Used to force a rebuild of the view
-  /// {@endtemplate}
-  DateTime get dateTime;
 
   /// Test if the current error offers the possibility to retry the request to server
   bool get canRetryRequest => (genericError == TbTelemetriesUiError.serverError);
@@ -55,9 +50,8 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
     bool forceDeviceValue = false,
     bool? telemetryLoading,
     TbTelemetriesUiError? genericError,
-    Map<String, TsValue>? tsValues,
+    Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
-    DateTime? dateTime,
   });
 
   /// Represents the error state of the device telemetries page
@@ -72,50 +66,36 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
   /// Represents the loading state of the device telemetries page
   ///
   /// and get timeseries and attribute values
-  S copyWithLoadingUiState({
+  S copyWithTelemetryInit({
     DeviceInfo? device,
-    bool forceDeviceValue = false,
-    bool? telemetryLoading,
-    Map<String, TsValue>? tsValues,
+    Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
   }) =>
       copyWithTbTelemetriesState(
         genericError: TbTelemetriesUiError.noError,
-        device: device,
-        forceDeviceValue: forceDeviceValue,
-        telemetryLoading: telemetryLoading,
-        tsValues: tsValues,
         attributesValues: attributesValues,
+        tsValues: tsValues,
+        device: device,
       );
 
   /// Represents a state for managing the telemetries reception
   S copyWithNewValuesUiState({
-    bool? telemetryLoading,
-    Map<String, TsValue>? tsValues,
+    Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
-  }) =>
-      copyWithTbTelemetriesState(
-        telemetryLoading: telemetryLoading,
-        tsValues: tsValues,
-        attributesValues: attributesValues,
-        dateTime: DateTime.now().toUtc(),
-      );
+  }) {
+    bool? loading;
+    if (telemetryLoading &&
+        ((tsValues != null && tsValues.isNotEmpty) ||
+            (attributesValues != null && attributesValues.isNotEmpty))) {
+      loading = false;
+    }
 
-  /// Represents a state when we receive new time series values
-  S copyWithTimeSeriesNewValuesUiState({
-    required Map<String, TsValue> tsValues,
-  }) =>
-      copyWithTbTelemetriesState(
-        tsValues: tsValues,
-      );
-
-  /// Represents a state when we receive new attributes values
-  S copyWithAttributesNewValuesUiState({
-    required Map<String, TbExtAttributeData> attributesValues,
-  }) =>
-      copyWithTbTelemetriesState(
-        attributesValues: attributesValues,
-      );
+    return copyWithTbTelemetriesState(
+      telemetryLoading: loading,
+      tsValues: MapUtility.copyAndMergeOrNull(this.tsValues, tsValues),
+      attributesValues: MapUtility.copyAndMergeOrNull(this.attributesValues, attributesValues),
+    );
+  }
 
   /// Helpful method to get the a time series value thanks to its [key].
   ///
@@ -153,6 +133,5 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
         genericError,
         tsValues,
         attributesValues,
-        dateTime,
       ];
 }

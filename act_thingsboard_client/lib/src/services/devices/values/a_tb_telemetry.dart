@@ -165,7 +165,7 @@ abstract class ATbTelemetry<T> {
         return false;
       }
 
-      _logsHelper.d("Unsubscribed to current sub");
+      _logsHelper.d("Unsubscribed from current sub: $_currentlySubscribed");
 
       _subscriber = null;
       await _subscription?.cancel();

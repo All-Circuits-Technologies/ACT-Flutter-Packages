@@ -4,8 +4,9 @@
 
 library;
 
-export 'package:act_thingsboard_client/act_thingsboard_client.dart' show TbExtAttributeData;
-export 'package:thingsboard_client/thingsboard_client.dart' show DeviceInfo, TsValue;
+export 'package:act_thingsboard_client/act_thingsboard_client.dart'
+    show TbExtAttributeData, TbTsValue;
+export 'package:thingsboard_client/thingsboard_client.dart' show DeviceInfo;
 
 export 'src/blocs/telemetries/mixins/mixin_tb_telemetries_ui_bloc.dart';
 export 'src/blocs/telemetries/mixins/mixin_tb_telemetries_ui_state.dart';

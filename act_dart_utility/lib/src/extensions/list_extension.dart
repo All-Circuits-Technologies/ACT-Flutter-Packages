@@ -83,14 +83,14 @@ extension ActListGen<T> on List<T> {
         getUniqueElem: getUniqueElem,
       );
 
-  /// {@macro ListUtility.moveElement}
+  /// {@macro act_dart_utility.ListUtility.moveElement}
   void moveElement(int currentIdx, int targetedIdx) => ListUtility.moveElement<T>(
         this,
         currentIdx,
         targetedIdx,
       );
 
-  /// {@macro ListUtility.addOrReplace}
+  /// {@macro act_dart_utility.ListUtility.addOrReplace}
   List<T> appendOrReplace(List<T> listToAdd, [int? start]) => ListUtility.appendOrReplace(
         this,
         listToAdd,

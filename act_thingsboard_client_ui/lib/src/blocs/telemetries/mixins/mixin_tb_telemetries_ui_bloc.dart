@@ -18,7 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 ///
 /// When we succeed to contact Thingsboard but the device is not known, the method will return
 /// (true, null)
-typedef GetDeviceInfo = Future<(bool, DeviceInfo?)> Function();
+typedef GetDeviceInfo = Future<({bool success, DeviceInfo? deviceInfo})> Function();
 
 /// This mixin is helpful to use the [TbTelemetriesUiBloc] and its states without extending it
 mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocForMixin<S> {
@@ -92,7 +92,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
     NewTbAttributesValuesUiEvent event,
     Emitter<S> emitter,
   ) async {
-    emitter.call(state.copyWithAttributesNewValuesUiState(
+    emitter.call(state.copyWithNewValuesUiState(
       attributesValues: event.attributesValues,
     ));
   }
@@ -136,15 +136,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
     final currentAttrValues = _tbTelemetryHandler!.getAttributeValues();
 
     /// Call the loading Ui State with telemetries and attributes values
-    emitter.call(state.copyWithLoadingUiState(
-      telemetryLoading: !_haveIAtLeastOneExpectedTelemetry(
-        currentTsValues: currentTsValues,
-        currentAttributes: currentAttrValues,
-        clientAttributesKeys: clientAttributesKeys,
-        sharedAttributesKeys: sharedAttributesKeys,
-        serverAttributesKeys: serverAttributesKeys,
-        timeSeriesKeys: timeSeriesKeys,
-      ),
+    emitter.call(state.copyWithTelemetryInit(
       device: deviceInfo,
       tsValues: currentTsValues,
       attributesValues: currentAttrValues,
@@ -166,9 +158,9 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
 
     final tbDevicesService = globalGetIt().get<ThingsboardManager>().devicesService;
 
-    final (result, deviceInfo) = await getDeviceInfo();
+    final result = await getDeviceInfo();
 
-    if (!result) {
+    if (!result.success) {
       appLogger().w("A problem occurred when tried to get the info of the thingsboard device, when "
           "getting to try to get its telemetries");
       emitter.call(state.copyWithErrorUiState(
@@ -177,7 +169,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
       return null;
     }
 
-    if (deviceInfo == null) {
+    if (result.deviceInfo == null) {
       appLogger().w("The wanted device info hasn't been found in thingsboard, when getting to try "
           "to get its telemetries");
       emitter.call(state.copyWithErrorUiState(
@@ -186,7 +178,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
       return null;
     }
 
-    final deviceId = deviceInfo.id?.id;
+    final deviceId = result.deviceInfo!.id?.id;
 
     if (deviceId == null) {
       appLogger().w("A problem occurred when tried to get the device id of the thingsboard device, "
@@ -202,7 +194,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
     _timeSeriesSub = handler.timeSeriesStream.listen(_onTimeSeriesUpdate);
     _attributesSub = handler.attributesStream.listen(_onAttributesUpdate);
 
-    return deviceInfo;
+    return result.deviceInfo;
   }
 
   /// This manages the internet connectivity in the [_initTelemetryHandler] method
@@ -233,7 +225,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
   }
 
   /// Called when the time series values are updated
-  void _onTimeSeriesUpdate(Map<String, TsValue> values) {
+  void _onTimeSeriesUpdate(Map<String, TbTsValue> values) {
     add(NewTbTimeSeriesValuesUiEvent(tsValues: values));
   }
 
@@ -249,42 +241,6 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
       () async => globalGetIt().get<ThingsboardManager>().devicesService.getCustomerDeviceByName(
             deviceName: deviceName,
           );
-
-  /// Say if in cache we have at least one expected telemetry (which means that somehow, one page
-  /// has already loaded some data)
-  static bool _haveIAtLeastOneExpectedTelemetry({
-    required Map<String, TsValue> currentTsValues,
-    required Map<String, TbExtAttributeData> currentAttributes,
-    required List<MixinTelemetriesKeys> clientAttributesKeys,
-    required List<MixinTelemetriesKeys> sharedAttributesKeys,
-    required List<MixinTelemetriesKeys> serverAttributesKeys,
-    required List<MixinTelemetriesKeys> timeSeriesKeys,
-  }) {
-    bool findKeys(
-      List<String> tmpTelemetriesKeys,
-      List<MixinTelemetriesKeys> telemetriesKeys,
-    ) {
-      for (final telemKey in telemetriesKeys) {
-        if (tmpTelemetriesKeys.contains(telemKey.tbKey)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    final currAttrKeys = currentAttributes.keys.toList();
-
-    if (findKeys(currAttrKeys, clientAttributesKeys) ||
-        findKeys(currAttrKeys, sharedAttributesKeys) ||
-        findKeys(currAttrKeys, serverAttributesKeys)) {
-      return true;
-    }
-
-    final currTsKeys = currentTsValues.keys.toList();
-
-    return findKeys(currTsKeys, timeSeriesKeys);
-  }
 
   /// Called when the BLoC close method is called
   @override

@@ -110,14 +110,14 @@ class TbDevicesService extends AbsWithLifeCycle {
   /// second element is the device retrieved.
   /// You can get the result: (true, null), in the case where the device is unknown for the current
   /// user
-  Future<(bool, DeviceInfo?)> getCustomerDeviceByName({
+  Future<({bool success, DeviceInfo? deviceInfo})> getCustomerDeviceByName({
     required String deviceName,
   }) async {
     final customerId = await getCurrentCustomerId();
 
     if (customerId == null) {
       _logsHelper.w("There is a problem with user customer id; we can't get the device by name");
-      return const (false, null);
+      return const (success: false, deviceInfo: null);
     }
 
     var pageLink = PageLink(_devicesNumberByPage, 0, deviceName);
@@ -136,7 +136,7 @@ class TbDevicesService extends AbsWithLifeCycle {
       if (!result.isOk || pageData == null) {
         _logsHelper.w("A problem occurred when tried to request the customer devices from the "
             "server");
-        return const (false, null);
+        return const (success: false, deviceInfo: null);
       }
 
       for (final device in pageData.data) {
@@ -152,7 +152,7 @@ class TbDevicesService extends AbsWithLifeCycle {
       }
     }
 
-    return (true, deviceFound);
+    return (success: true, deviceInfo: deviceFound);
   }
 
   /// Dispose the service

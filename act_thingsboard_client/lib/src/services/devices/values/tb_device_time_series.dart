@@ -2,11 +2,12 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_thingsboard_client/src/models/tb_ts_value.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/a_tb_telemetry.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Allows to manage and get values from time series
-class TbDeviceTimeSeries extends ATbTelemetry<TsValue> {
+class TbDeviceTimeSeries extends ATbTelemetry<TbTsValue> {
   /// The logs category linked to the time series class
   static const _timeSeriesName = "timeSeries";
 
@@ -27,13 +28,12 @@ class TbDeviceTimeSeries extends ATbTelemetry<TsValue> {
 
   /// Called to parse the subscription update received and get the [TsValue] linked
   @override
-  Future<Map<String, TsValue>> onUpdateValuesImpl(
-      SubscriptionUpdate subUpdate) async {
-    final elements = <String, TsValue>{};
+  Future<Map<String, TbTsValue>> onUpdateValuesImpl(SubscriptionUpdate subUpdate) async {
+    final elements = <String, TbTsValue>{};
 
     for (final tmp in subUpdate.data.entries) {
       if (tmp.value.isNotEmpty) {
-        elements[tmp.key] = tmp.value.first;
+        elements[tmp.key] = TbTsValue.fromTsValue(tmp.value.first);
       }
     }
 
@@ -42,5 +42,5 @@ class TbDeviceTimeSeries extends ATbTelemetry<TsValue> {
 
   /// Get the timestamp value linked to the last update value
   @override
-  int? getTimestamp(TsValue? value) => value?.ts;
+  int? getTimestamp(TbTsValue? value) => value?.ts;
 }
