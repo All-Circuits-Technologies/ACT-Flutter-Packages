@@ -6,7 +6,7 @@ library;
 
 /// This is the default path where the configs are stored
 /// The config has to be contained in assets.
-const defaultConfigPath = "config/";
+const defaultConfigPath = "assets/config/";
 
 /// This is the name of the local ini file to use to override env variables
 const dotEnvFileName = ".env";

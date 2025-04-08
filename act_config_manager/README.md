@@ -43,7 +43,8 @@ You may have different config values for each environment.
 
 ### Storage
 
-The configuration files have to be stored at the root of the project in a `config/` folder.
+The configuration files have to be stored in the assets folder of your project in a `assets/config/`
+folder.
 
 The folder has to be added in the assets of the `pubspec.yaml` of the main project (to be usable
 by the app after the build).
