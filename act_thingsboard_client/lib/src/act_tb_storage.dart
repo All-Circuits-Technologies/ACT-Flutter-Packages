@@ -8,7 +8,7 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This class allows to override the default behaviour of Thingsboard when saving JWT token to
 /// memory
-class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
+class ActTbStorage extends TbStorage<String> {
   /// This is the key used by the Thingsboard library to store the JWT token
   static const _tokenTbKey = "jwt_token";
 
@@ -16,10 +16,11 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   static const _refreshTokenTbKey = "refresh_token";
 
   /// The Thingsboard secret manager
-  final S _tbSecretManager;
+  final MixinThingsboardSecret _tbSecretManager;
 
   /// Class constructor
-  ActTbStorage({required S tbSecretManager}) : _tbSecretManager = tbSecretManager;
+  ActTbStorage({required MixinThingsboardSecret tbSecretManager})
+      : _tbSecretManager = tbSecretManager;
 
   /// Called to delete the content of an item
   @override
@@ -41,7 +42,7 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   }
 
   /// Get the secret item linked to the Thingsboard key
-  SecretItem<String, S> _getSecretItem<T>(String key) {
+  SecretItem<String> _getSecretItem<T>(String key) {
     final secretItem = _tryToGetSecretItem(key);
     if (secretItem == null) {
       throw Exception("The wanted secret item searched with the key: $key, doesn't exist and it's "
@@ -52,12 +53,12 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   }
 
   /// Get the secret item linked to the Thingsboard key
-  SecretItem<String, S>? _tryToGetSecretItem<T>(String key) {
+  SecretItem<String>? _tryToGetSecretItem<T>(String key) {
     switch (key) {
       case _tokenTbKey:
-        return _tbSecretManager.tbToken as SecretItem<String, S>;
+        return _tbSecretManager.tbToken;
       case _refreshTokenTbKey:
-        return _tbSecretManager.tbRefreshToken as SecretItem<String, S>;
+        return _tbSecretManager.tbRefreshToken;
       default:
         return null;
     }

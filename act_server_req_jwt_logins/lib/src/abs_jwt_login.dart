@@ -96,16 +96,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
   /// Update the token info from the server
   @protected
   void updateTokenInfo(T jwtResponse) {
-    _tokenInfo ??= TokenInfo(token: "");
-
-    _tokenInfo!.token = jwtResponse.token;
-
-    if (jwtResponse.expInMs != null) {
-      _tokenInfo!.tokenExpDate = DateTime.fromMillisecondsSinceEpoch(
-        jwtResponse.expInMs!,
-        isUtc: true,
-      );
-    }
+    _tokenInfo ??= jwtResponse.toTokenInfo();
   }
 
   /// This method verifies the token information retrieved from the server.

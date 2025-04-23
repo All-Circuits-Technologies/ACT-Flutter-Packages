@@ -76,12 +76,12 @@ mixin MixinAwsIotShadowDoc on Equatable {
   /// The desired state retrieved from shadow can be null
   @protected
   static Map<String, dynamic>? getDesiredState(Map<String, dynamic> json) {
-    final (result, desiredJson) = _getNullableJsonObject(json, desiredTag);
-    if (!result) {
+    final result = _getNullableJsonObject(json, desiredTag);
+    if (!result.isOk) {
       return null;
     }
 
-    return desiredJson ?? {};
+    return result.value ?? {};
   }
 
   /// Get the reported state of the document
@@ -150,7 +150,7 @@ mixin MixinAwsIotShadowDoc on Equatable {
 
   /// Get a nullabel json object from a json
   @protected
-  static (bool, Map<String, dynamic>?) _getNullableJsonObject(
+  static ({bool isOk, Map<String, dynamic>? value}) _getNullableJsonObject(
           Map<String, dynamic> json, String key) =>
       JsonUtility.getJsonObject(
         json: json,

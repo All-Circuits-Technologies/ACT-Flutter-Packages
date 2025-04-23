@@ -15,7 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  dart_jsonwebtoken: ^2.14.1
+  dart_jsonwebtoken: ^3.2.0
 
   # Help to implement value based equality without explicit override
   equatable: ^2.0.5

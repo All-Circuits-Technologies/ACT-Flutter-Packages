@@ -18,7 +18,7 @@ abstract class JsonUtility {
   /// type
   ///
   /// Returns true in first item if no problem occurred
-  static (bool, T?) getOneElement<T, Y>({
+  static ({bool isOk, T? value}) getOneElement<T, Y>({
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
@@ -32,21 +32,37 @@ abstract class JsonUtility {
         loggerManager.w("The element you want to get from JSON isn't present: $key");
       }
 
-      return (canBeUndefined, null);
+      return (isOk: canBeUndefined, value: null);
     }
 
-    final (status, value) = _castValueIfNeeded(
+    final result = _castValueIfNeeded(
       value: tmpValue,
       castValueFunc: castValueFunc,
       loggerManager: loggerManager,
     );
 
-    if (!status || value == null) {
+    if (!result.isOk || result.value == null) {
       loggerManager.w("The cast of the JSON element: $key, failed");
+      return (isOk: false, value: null);
     }
 
-    return (true, value);
+    return (isOk: true, value: result.value);
   }
+
+  /// Get one primary element (number, String or boolean) from JSON object
+  ///
+  /// Find the element thanks to the [key] given. If the element can be not present in the JSON set
+  /// [canBeUndefined] to true.
+  ///
+  /// Returns true in first item if no problem occurred
+  static ({bool isOk, T? value}) getOnePrimaryElement<T>({
+    required Map<String, dynamic> json,
+    required String key,
+    bool canBeUndefined = false,
+    required LoggerManager loggerManager,
+  }) =>
+      getOneElement<T, T>(
+          json: json, key: key, canBeUndefined: canBeUndefined, loggerManager: loggerManager);
 
   /// Get one element from JSON object
   ///
@@ -63,19 +79,32 @@ abstract class JsonUtility {
     T? Function(Y toCast)? castValueFunc,
     required LoggerManager loggerManager,
   }) {
-    final (success, value) = getOneElement<T, Y>(
+    final result = getOneElement<T, Y>(
       json: json,
       key: key,
       castValueFunc: castValueFunc,
       loggerManager: loggerManager,
     );
 
-    if (!success) {
+    if (!result.isOk) {
       return null;
     }
 
-    return value;
+    return result.value;
   }
+
+  /// Get one primary element (number, String or boolean) from JSON object
+  ///
+  /// Find the element thanks to the [key] given. We expect to find the element, if it's not
+  /// present we return null.
+  ///
+  /// Returns null if the element hasn't been found or it hasn't the right type
+  static T? getNotNullOnePrimaryElement<T>({
+    required Map<String, dynamic> json,
+    required String key,
+    required LoggerManager loggerManager,
+  }) =>
+      getNotNullOneElement<T, T>(json: json, key: key, loggerManager: loggerManager);
 
   /// Get a list of elements from JSON object
   ///
@@ -86,7 +115,7 @@ abstract class JsonUtility {
   /// the expected type.
   ///
   /// Returns true in first item if no problem occurred
-  static (bool, List<T>?) getElementsList<T, Y>({
+  static ({bool isOk, List<T>? value}) getElementsList<T, Y>({
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
@@ -101,13 +130,14 @@ abstract class JsonUtility {
         castValueFunc: (toCast) {
           final finalList = <T>[];
           for (final elem in toCast) {
-            final (status, value) = _castValueIfNeeded(
+            final result = _castValueIfNeeded(
               value: elem,
               castValueFunc: castElemValueFunc,
               loggerManager: loggerManager,
             );
 
-            if (!status || value == null) {
+            final value = result.value;
+            if (!result.isOk || value == null) {
               return null;
             }
 
@@ -118,7 +148,22 @@ abstract class JsonUtility {
         },
       );
 
-  /// Get a list of elements from JSON object
+  /// Get a list of primary elements (number, String or boolean) from JSON object
+  ///
+  /// Find the list thanks to the [key] given. If the element can be not present in the JSON set
+  /// [canBeUndefined] to true.
+  ///
+  /// Returns true in first item if no problem occurred
+  static ({bool isOk, List<T>? value}) getPrimaryElementsList<T>({
+    required Map<String, dynamic> json,
+    required String key,
+    bool canBeUndefined = false,
+    required LoggerManager loggerManager,
+  }) =>
+      getElementsList<T, T>(
+          json: json, key: key, canBeUndefined: canBeUndefined, loggerManager: loggerManager);
+
+  /// Get a list of not null elements from JSON object
   ///
   /// Find the list thanks to the [key] given. We expect to find the element, if it's not present
   /// we return null.
@@ -130,23 +175,35 @@ abstract class JsonUtility {
   static List<T>? getNotNullElementsList<T, Y>({
     required Map<String, dynamic> json,
     required String key,
-    bool canBeUndefined = false,
     T? Function(Y toCast)? castElemValueFunc,
     required LoggerManager loggerManager,
   }) {
-    final (success, value) = getElementsList<T, Y>(
+    final result = getElementsList<T, Y>(
       json: json,
       key: key,
       castElemValueFunc: castElemValueFunc,
       loggerManager: loggerManager,
     );
 
-    if (!success) {
+    if (!result.isOk) {
       return null;
     }
 
-    return value;
+    return result.value;
   }
+
+  /// Get a list of not null primary elements (number, String or boolean) from JSON object
+  ///
+  /// Find the list thanks to the [key] given. We expect to find the element, if it's not present
+  /// we return null.
+  ///
+  /// Returns null if the element hasn't been found or it hasn't the right type
+  static List<T>? getNotNullPrimaryElementsList<T>({
+    required Map<String, dynamic> json,
+    required String key,
+    required LoggerManager loggerManager,
+  }) =>
+      getNotNullElementsList<T, T>(json: json, key: key, loggerManager: loggerManager);
 
   /// Get one child JSON object from a given JSON object
   ///
@@ -154,7 +211,7 @@ abstract class JsonUtility {
   /// JSON set [canBeUndefined] to true.
   ///
   /// Returns true in first item if no problem occurred
-  static (bool, Map<String, dynamic>?) getJsonObject({
+  static ({bool isOk, Map<String, dynamic>? value}) getJsonObject({
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
@@ -178,17 +235,17 @@ abstract class JsonUtility {
     required String key,
     required LoggerManager loggerManager,
   }) {
-    final (success, value) = getOneElement<Map<String, dynamic>, Object?>(
+    final result = getOneElement<Map<String, dynamic>, Object?>(
       json: json,
       key: key,
       loggerManager: loggerManager,
     );
 
-    if (!success) {
+    if (!result.isOk) {
       return null;
     }
 
-    return value;
+    return result.value;
   }
 
   /// Get a list of JSON objects from a given JSON object
@@ -197,7 +254,7 @@ abstract class JsonUtility {
   /// [canBeUndefined] to true.
   ///
   /// Returns true in first item if no problem occurred
-  static (bool, List<Map<String, dynamic>>?) getJsonObjectsList({
+  static ({bool isOk, List<Map<String, dynamic>>? value}) getJsonObjectsList({
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
@@ -221,17 +278,17 @@ abstract class JsonUtility {
     required String key,
     required LoggerManager loggerManager,
   }) {
-    final (success, value) = getElementsList<Map<String, dynamic>, Object?>(
+    final result = getElementsList<Map<String, dynamic>, Object?>(
       json: json,
       key: key,
       loggerManager: loggerManager,
     );
 
-    if (!success) {
+    if (!result.isOk) {
       return null;
     }
 
-    return value;
+    return result.value;
   }
 
   /// Parse the response body to a Json
@@ -348,7 +405,7 @@ abstract class JsonUtility {
   }
 
   /// Cast the given [value] with the [castValueFunc] method, if the method is not null.
-  static (bool, T?) _castValueIfNeeded<T, Y>({
+  static ({bool isOk, T? value}) _castValueIfNeeded<T, Y>({
     // This method manipulates JSON value; therefore, it's ok to have dynamic here
     // ignore: avoid_annotating_with_dynamic
     required dynamic value,
@@ -358,24 +415,24 @@ abstract class JsonUtility {
     if (castValueFunc == null) {
       if (value is! T) {
         loggerManager.w("The JSON element hasn't been stored in the $T type");
-        return const (false, null);
+        return const (isOk: false, value: null);
       }
 
-      return (true, value);
+      return (isOk: true, value: value);
     }
 
     if (value is! Y) {
       loggerManager.w("The JSON element hasn't been stored in the $Y type, it can't "
           "be casted");
-      return const (false, null);
+      return const (isOk: false, value: null);
     }
 
     final castValue = castValueFunc(value);
     if (castValue == null) {
       loggerManager.w("The cast of the JSON element failed");
-      return const (false, null);
+      return const (isOk: false, value: null);
     }
 
-    return (true, castValue);
+    return (isOk: true, value: castValue);
   }
 }

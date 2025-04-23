@@ -63,7 +63,7 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
 
     final uri = Uri(port: port, host: hostname, scheme: ServerReqConstants.httpsScheme);
 
-    final tbStorage = ActTbStorage<S>(tbSecretManager: globalGetIt().get<S>());
+    final tbStorage = ActTbStorage(tbSecretManager: globalGetIt().get<S>());
 
     _tbClient = ThingsboardClient(uri.toString(), storage: tbStorage);
 

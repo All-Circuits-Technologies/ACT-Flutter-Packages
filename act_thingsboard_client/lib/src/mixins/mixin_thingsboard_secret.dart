@@ -5,17 +5,17 @@
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 
 /// This mixin contains all the secrets store variables needed by the ACT Thingsboard package
-mixin MixinThingsboardSecret<S extends AbstractSecretsManager, P extends AbstractPropertiesManager,
-    E extends MixinStoresConf> on AbstractSecretsManager<P, E> {
+mixin MixinThingsboardSecret<P extends AbstractPropertiesManager, E extends MixinStoresConf>
+    on AbstractSecretsManager<P, E> {
   /// This is the JWT linked to the current Thingsboard user stored in memory
-  final tbToken = SecretItem<String, S>("TB_TOKEN");
+  final tbToken = SecretItem<String>("TB_TOKEN");
 
   /// This is the refresh JWT linked to the current Thingsboard user stored in memory
-  final tbRefreshToken = SecretItem<String, S>("TB_REFRESH_TOKEN");
+  final tbRefreshToken = SecretItem<String>("TB_REFRESH_TOKEN");
 
   /// This is the username stored in memory of the current Thingsboard user
-  final username = SecretItem<String, S>("TB_USERNAME");
+  final username = SecretItem<String>("TB_USERNAME");
 
   /// This is the password stored in memory of the current Thingsboard user
-  final password = SecretItem<String, S>("TB_PASSWORD");
+  final password = SecretItem<String>("TB_PASSWORD");
 }

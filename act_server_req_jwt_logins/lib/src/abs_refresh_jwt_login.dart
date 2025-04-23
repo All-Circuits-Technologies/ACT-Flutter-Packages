@@ -100,16 +100,6 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
 
   /// Update the refresh token information from the refresh token answer
   void _updateRefreshTokenInfo(RefreshTokenAnswer jwtResponse) {
-    _refreshTokenInfo ??= TokenInfo(token: "");
-
-    _refreshTokenInfo!.token = jwtResponse.refreshToken;
-
-    // If the expiration isn't given, the refresh token will be used until it doesn't work anymore
-    if (jwtResponse.refreshExpInMs != null) {
-      _refreshTokenInfo!.tokenExpDate = DateTime.fromMillisecondsSinceEpoch(
-        jwtResponse.refreshExpInMs!,
-        isUtc: true,
-      );
-    }
+    _refreshTokenInfo ??= jwtResponse.toRefreshTokenInfo();
   }
 }
