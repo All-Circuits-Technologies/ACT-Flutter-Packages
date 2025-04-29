@@ -66,17 +66,23 @@ class CognitoUserService extends AbsWithLifeCycle {
   /// Get the access token of the logged user
   ///
   /// Return null if no user is logged or if a problem occurred
-  Future<String?> getAccessToken() async {
-    String token;
+  Future<AuthTokens?> getTokens() async {
+    AuthTokens? tokens;
     try {
       final amplifyResult = await Amplify.Auth.fetchAuthSession() as CognitoAuthSession;
-      token = amplifyResult.userPoolTokensResult.value.accessToken.raw;
+      final userPoolTokens = amplifyResult.userPoolTokensResult.value;
+      tokens = AuthTokens(
+        accessToken: userPoolTokens.accessToken.raw,
+        accessTokenExp: userPoolTokens.accessToken.claims.expiration,
+        refreshToken: userPoolTokens.refreshToken,
+        idToken: userPoolTokens.idToken.raw,
+      );
     } on AuthException catch (e) {
       logsHelper.d("Error retrieving auth session: ${e.message}");
       return null;
     }
 
-    return token;
+    return tokens;
   }
 
   /// Get email address of currently logged user

@@ -6,6 +6,18 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 
 /// This mixin has to be used by third party package when implementing shared authentication.
 mixin MixinAuthService {
+  /// {@template act_shared_auth.MixinAuthService.authStatus}
+  /// This is the current [AuthStatus]
+  /// {@endtemplate}
+  AuthStatus get authStatus;
+
+  /// {@template act_shared_auth.MixinAuthService.authStatusStream}
+  /// This stream emits [AuthStatus] update
+  /// {@endtemplate}
+  Stream<AuthStatus> get authStatusStream;
+
+  Future<void> setStorageService(MixinAuthStorageService? storageService) async {}
+
   /// {@template act_shared_auth.MixinAuthService.signUp}
   /// User self-registration entry-point
   ///
@@ -63,16 +75,6 @@ mixin MixinAuthService {
   }) =>
       _crashUnimplemented("resendSignUpCode");
 
-  /// {@template act_shared_auth.MixinAuthService.authStatusStream}
-  /// This stream emits [AuthStatus] update
-  /// {@endtemplate}
-  Stream<AuthStatus> get authStatusStream;
-
-  /// {@template act_shared_auth.MixinAuthService.authStatus}
-  /// This is the current [AuthStatus]
-  /// {@endtemplate}
-  AuthStatus get authStatus;
-
   /// {@template act_shared_auth.MixinAuthService.signInUser}
   /// Sign the user in the application
   ///
@@ -83,6 +85,18 @@ mixin MixinAuthService {
     required String username,
     required String password,
   });
+
+  /// {@template act_shared_auth.MixinAuthService.confirmSignIn}
+  /// This method allows to confirm the sign in.
+  /// In case, an admin creates an user with a temporary password, this method is used to send the
+  /// new password.
+  ///
+  /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
+  /// {@endtemplate}
+  Future<AuthSignInResult> confirmSignIn({
+    required String confirmationValue,
+  }) async =>
+      _crashUnimplemented("confirmSignIn");
 
   /// {@template act_shared_auth.MixinAuthService.signOut}
   /// Log out the user from the application
@@ -103,26 +117,18 @@ mixin MixinAuthService {
   /// {@endtemplate}
   Future<String?> getCurrentUserId() async => _crashUnimplemented("getUserCurrentId");
 
-  /// {@template act_shared_auth.MixinAuthService.getAccessToken}
+  /// {@template act_shared_auth.MixinAuthService.getTokens}
   /// Get the access token of the logged user
+  ///
+  /// The implementation of this method must try to get a valid access Token. This means if the
+  /// auth service stores a refresh token and/or the username and password, the method will try to
+  /// use them to get a valid access token when calling this method.
   ///
   /// Return null if no user is logged or if a problem occurred
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<String?> getAccessToken() async => _crashUnimplemented("getAccessToken");
-
-  /// {@template act_shared_auth.MixinAuthService.confirmSignIn}
-  /// This method allows to confirm the sign in.
-  /// In case, an admin creates an user with a temporary password, this method is used to send the
-  /// new password.
-  ///
-  /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
-  /// {@endtemplate}
-  Future<AuthSignInResult> confirmSignIn({
-    required String confirmationValue,
-  }) async =>
-      _crashUnimplemented("confirmSignIn");
+  Future<AuthTokens?> getTokens() async => _crashUnimplemented("getTokens");
 
   /// {@template act_shared_auth.MixinAuthService.resetPassword}
   /// This method fires the password resets. A confirmation code could be sent.

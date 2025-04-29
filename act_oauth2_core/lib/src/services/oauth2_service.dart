@@ -6,7 +6,7 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 
-class OAuth2AuthService<P extends Enum> extends AbsWithLifeCycle with MixinAuthService {
+class OAuth2Service<P extends Enum> extends AbsWithLifeCycle with MixinAuthService {
   static const _logsCategory = "oauth2";
 
   late final FlutterAppAuth _appAuth;
@@ -35,7 +35,7 @@ class OAuth2AuthService<P extends Enum> extends AbsWithLifeCycle with MixinAuthS
     return provider.authStatus;
   }
 
-  OAuth2AuthService({required Map<P, AbsOAuth2ProviderService> providers, P? currentProvider})
+  OAuth2Service({required Map<P, AbsOAuth2ProviderService> providers, P? currentProvider})
     : _providers = providers,
       _currentProviderKey =
           currentProvider ?? ((providers.length == 1) ? providers.keys.first : null),
@@ -158,16 +158,16 @@ class OAuth2AuthService<P extends Enum> extends AbsWithLifeCycle with MixinAuthS
     return provider.getCurrentUserId();
   }
 
-  /// {@macro act_shared_auth.MixinAuthService.getAccessToken}
+  /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
-  Future<String?> getAccessToken() async {
+  Future<AuthTokens?> getTokens() async {
     final provider = _getCurrentProvider();
     if (provider == null) {
       _logsHelper.w("No provider has been set, we can't get the access token");
       return null;
     }
 
-    return provider.getAccessToken();
+    return provider.getTokens();
   }
 
   /// {@macro act_shared_auth.MixinAuthService.confirmSignIn}

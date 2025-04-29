@@ -27,9 +27,6 @@ mixin MixinDefaultOAuth2Provider on AbsOAuth2ProviderService {
   }
 
   @protected
-  Future<DefaultOAuth2Conf> getDefaultOAuth2Conf();
-
-  @protected
   Future<MixinOAuth2TokensSecret> getTokensSecretService();
 
   @override
@@ -46,7 +43,7 @@ mixin MixinDefaultOAuth2Provider on AbsOAuth2ProviderService {
   }
 
   @override
-  Future<String?> getAccessToken() async {
+  Future<AuthTokens?> getTokens() async {
     if (_oAuth2Tokens.accessToken?.isValid ?? false) {
       return _oAuth2Tokens.accessToken!.token;
     }

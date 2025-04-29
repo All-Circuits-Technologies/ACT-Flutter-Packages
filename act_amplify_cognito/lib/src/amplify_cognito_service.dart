@@ -291,7 +291,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   ///
   /// Return null if no user is logged or if a problem occurred
   @override
-  Future<String?> getAccessToken() => _userService.getAccessToken();
+  Future<AuthTokens?> getTokens() => _userService.getTokens();
 
   /// This method allows to confirm the sign in.
   /// In case, an admin creates an user with a temporary password, this method is used to send the
