@@ -11,12 +11,4 @@ mixin MixinThingsboardConf on AbstractConfigManager {
 
   /// This is the port of the Thingsboard server to request
   final tbPort = const ConfigVar<int>('thingsboard.port');
-
-  /// This is the default username to use if none is contained in the app memory
-  /// WARNING: the value of this env variable has to be contained in a "local.env" file
-  final tbDefaultUsername = const ConfigVar<String>('thingsboard.default.username');
-
-  /// This is the default password to use if none is contained in the app memory
-  /// WARNING: the value of this env variable has to be contained in a "local.env" file
-  final tbDefaultPassword = const ConfigVar<String>('thingsboard.default.password');
 }

@@ -38,9 +38,6 @@ dependencies:
   act_logger_manager:
     path: ../act_logger_manager
 
-  act_server_req_jwt_logins:
-    path: ../act_server_req_jwt_logins
-
   # Shared auth library
   act_shared_auth:
     path: ../act_shared_auth

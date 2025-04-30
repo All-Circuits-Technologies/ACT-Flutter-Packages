@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_shared_auth/act_shared_auth.dart';
+import 'package:flutter/foundation.dart';
 
 /// This mixin has to be used by third party package when implementing shared authentication.
 mixin MixinAuthService {
@@ -39,7 +40,7 @@ mixin MixinAuthService {
     required String password,
     String? email,
   }) =>
-      _crashUnimplemented("signUp");
+      crashUnimplemented("signUp");
 
   /// {@template act_shared_auth.MixinAuthService.confirmSignUp}
   /// User self-registration second half
@@ -57,7 +58,7 @@ mixin MixinAuthService {
     required String accountId,
     required String code,
   }) =>
-      _crashUnimplemented("confirmSignUp");
+      crashUnimplemented("confirmSignUp");
 
   /// {@template act_shared_auth.MixinAuthService.resendSignUpCode}
   /// Re-ask a sign-up confirmation code
@@ -73,7 +74,7 @@ mixin MixinAuthService {
   Future<AuthSignUpResult> resendSignUpCode({
     required String accountId,
   }) =>
-      _crashUnimplemented("resendSignUpCode");
+      crashUnimplemented("resendSignUpCode");
 
   /// {@template act_shared_auth.MixinAuthService.signInUser}
   /// Sign the user in the application
@@ -96,7 +97,10 @@ mixin MixinAuthService {
   Future<AuthSignInResult> confirmSignIn({
     required String confirmationValue,
   }) async =>
-      _crashUnimplemented("confirmSignIn");
+      crashUnimplemented("confirmSignIn");
+
+  Future<AuthSignInResult> redirectToExternalUserSignIn() async =>
+      crashUnimplemented("redirectToExternalUserSignIn");
 
   /// {@template act_shared_auth.MixinAuthService.signOut}
   /// Log out the user from the application
@@ -115,7 +119,7 @@ mixin MixinAuthService {
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<String?> getCurrentUserId() async => _crashUnimplemented("getUserCurrentId");
+  Future<String?> getCurrentUserId() async => crashUnimplemented("getUserCurrentId");
 
   /// {@template act_shared_auth.MixinAuthService.getTokens}
   /// Get the access token of the logged user
@@ -128,7 +132,7 @@ mixin MixinAuthService {
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthTokens?> getTokens() async => _crashUnimplemented("getTokens");
+  Future<AuthTokens?> getTokens() async => crashUnimplemented("getTokens");
 
   /// {@template act_shared_auth.MixinAuthService.resetPassword}
   /// This method fires the password resets. A confirmation code could be sent.
@@ -141,7 +145,7 @@ mixin MixinAuthService {
   Future<AuthResetPwdResult> resetPassword({
     required String username,
   }) async =>
-      _crashUnimplemented("resetPassword");
+      crashUnimplemented("resetPassword");
 
   /// {@template act_shared_auth.MixinAuthService.confirmResetPassword}
   /// Confirm the password resetting. The [confirmationCode] is the one received by mail, SMS, etc.
@@ -156,7 +160,7 @@ mixin MixinAuthService {
     required String newPassword,
     required String confirmationCode,
   }) async =>
-      _crashUnimplemented("confirmResetPassword");
+      crashUnimplemented("confirmResetPassword");
 
   /// {@template act_shared_auth.MixinAuthService.updatePassword}
   /// Allows to update the user password.
@@ -169,7 +173,7 @@ mixin MixinAuthService {
     required String oldPassword,
     required String newPassword,
   }) async =>
-      _crashUnimplemented("updatePassword");
+      crashUnimplemented("updatePassword");
 
   /// {@template act_shared_auth.MixinAuthService.getEmailAddress}
   /// Get email address of currently logged user
@@ -178,7 +182,7 @@ mixin MixinAuthService {
   /// Returns null if no users are logged in, if account has no known emails (unlikely)
   /// or if a problem occurred
   /// {@endtemplate}
-  Future<String?> getEmailAddress() async => _crashUnimplemented("getEmailAddress");
+  Future<String?> getEmailAddress() async => crashUnimplemented("getEmailAddress");
 
   /// {@template act_shared_auth.MixinAuthService.setEmailAddress}
   /// Change email address of currently logged user
@@ -187,7 +191,7 @@ mixin MixinAuthService {
   /// [address] should be a valid email address.
   /// {@endtemplate}
   Future<AuthPropertyResult> setEmailAddress(String address) async =>
-      _crashUnimplemented("setEmailAddress");
+      crashUnimplemented("setEmailAddress");
 
   /// {@template act_shared_auth.MixinAuthService.confirmEmailAddressUpdate}
   /// Confirm email address change of currently logged user
@@ -196,7 +200,7 @@ mixin MixinAuthService {
   /// You may need to call this method after [setEmailAddress] depending on its result.
   /// {@endtemplate}
   Future<AuthPropertyResult> confirmEmailAddressUpdate({required String code}) async =>
-      _crashUnimplemented("confirmEmailAddressUpdate");
+      crashUnimplemented("confirmEmailAddressUpdate");
 
   /// {@template act_shared_auth.MixinAuthService.deleteAccount}
   /// Delete currently logged-in account
@@ -205,14 +209,15 @@ mixin MixinAuthService {
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthDeleteResult> deleteAccount() async => _crashUnimplemented("deleteAccount");
+  Future<AuthDeleteResult> deleteAccount() async => crashUnimplemented("deleteAccount");
 
   /// This trap forcibly crashes the app when unsupported methods are reached
   ///
   /// Service either misses this method implementation or it does not support it at all.
   /// If a service can support missing method but do not implement it yet, developer may want to
   /// implement it and return notSupportedYet error (which exists in all auth statuses).
-  Never _crashUnimplemented(String method) {
+  @protected
+  Never crashUnimplemented(String method) {
     final err = "$runtimeType service does not implement $method";
     assert(false, err);
     throw Exception(err);

@@ -72,9 +72,11 @@ class CognitoUserService extends AbsWithLifeCycle {
       final amplifyResult = await Amplify.Auth.fetchAuthSession() as CognitoAuthSession;
       final userPoolTokens = amplifyResult.userPoolTokensResult.value;
       tokens = AuthTokens(
-        accessToken: userPoolTokens.accessToken.raw,
-        accessTokenExp: userPoolTokens.accessToken.claims.expiration,
-        refreshToken: userPoolTokens.refreshToken,
+        accessToken: AuthToken(
+          raw: userPoolTokens.accessToken.raw,
+          expiration: userPoolTokens.accessToken.claims.expiration,
+        ),
+        refreshToken: AuthToken(raw: userPoolTokens.refreshToken),
         idToken: userPoolTokens.idToken.raw,
       );
     } on AuthException catch (e) {

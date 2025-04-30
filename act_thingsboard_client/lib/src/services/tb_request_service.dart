@@ -18,8 +18,7 @@ import 'package:mutex/mutex.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Useful method to request Thingsboard in a protective way
-class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends AbsWithLifeCycle {
+class TbRequestService<E extends MixinThingsboardConf> extends AbsWithLifeCycle {
   /// Mutex protecting the sign in and avoiding to signIn in parallel
   final Mutex _signInMutex;
 

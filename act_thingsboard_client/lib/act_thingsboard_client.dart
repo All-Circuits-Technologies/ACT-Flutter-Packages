@@ -6,7 +6,6 @@ library;
 
 export 'package:act_thingsboard_client/src/mixins/mixin_telemetries_keys.dart';
 export 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_conf.dart';
-export 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_secret.dart';
 export 'package:act_thingsboard_client/src/models/tb_ext_attribute_data.dart';
 export 'package:act_thingsboard_client/src/models/tb_request_response.dart';
 export 'package:act_thingsboard_client/src/models/tb_ts_value.dart';

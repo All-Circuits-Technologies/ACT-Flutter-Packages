@@ -8,7 +8,6 @@ import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_conf.dart';
-import 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_secret.dart';
 import 'package:act_thingsboard_client/src/services/devices/tb_devices_service.dart';
 import 'package:act_thingsboard_client/src/services/tb_request_service.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -17,20 +16,19 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 typedef TbRequestToCall<T> = Future<T> Function(ThingsboardClient tbClient);
 
 /// Builder linked to the [ThingsboardManager]
-class ThingsboardBuilder<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends AbsManagerBuilder<ThingsboardManager<E, S>> {
+class ThingsboardBuilder<E extends MixinThingsboardConf>
+    extends AbsManagerBuilder<ThingsboardManager<E>> {
   /// Builder constructor
-  ThingsboardBuilder() : super(ThingsboardManager<E, S>.new);
+  ThingsboardBuilder() : super(ThingsboardManager<E>.new);
 
   /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
-  Iterable<Type> dependsOn() => [LoggerManager, E, S];
+  Iterable<Type> dependsOn() => [LoggerManager, E];
 }
 
 /// The Thingsboard manager which managed the authentication to the server but also the call of
 /// requests in safe mode
-class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsboardSecret>
-    extends AbsWithLifeCycle {
+class ThingsboardManager<E extends MixinThingsboardConf> extends AbsWithLifeCycle {
   /// Thingsboard logs category
   static const _tbLogsCategory = "TB";
 
@@ -41,17 +39,7 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
   late final TbDevicesService devicesService;
 
   /// The request service linked to the manager
-  late final TbRequestService<E, S> _requestService;
-
-  /// Get the authenticated user
-  ///
-  /// The method waits the end of signing before getting the value
-  Future<AuthUser?> getSafeAuthUser() => _requestService.getSafeAuthUser();
-
-  /// Returns true if a user is currently authenticated
-  ///
-  /// The method waits the end of signing before getting the value
-  Future<bool> isSafeAuthenticated() => _requestService.isSafeAuthenticated();
+  late final TbRequestService<E> _requestService;
 
   /// Class constructor
   ThingsboardManager() : super();
@@ -65,17 +53,8 @@ class ThingsboardManager<E extends MixinThingsboardConf, S extends MixinThingsbo
       logsCategory: _tbLogsCategory,
     );
 
-    _requestService = TbRequestService<E, S>(logsHelper: _logsHelper);
+    _requestService = TbRequestService<E>(logsHelper: _logsHelper);
     devicesService = TbDevicesService(requestService: _requestService, logsHelper: _logsHelper);
-
-    // We don't block the app launch
-    unawaited(_initServices());
-  }
-
-  /// Init the services linked to Thingsboard
-  Future<void> _initServices() async {
-    // Request service has to be the first one initialized
-    await _requestService.initLifeCycle();
 
     await devicesService.initLifeCycle();
   }

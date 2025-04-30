@@ -10,6 +10,8 @@ mixin MixinAuthStorageService {
 
   Future<AuthTokens?> loadTokens() async => _crashUnimplemented("loadTokens");
 
+  Future<void> clearTokens() async => _crashUnimplemented("clearTokens");
+
   Future<bool> storeUserIds({
     required String username,
     required String password,
@@ -18,6 +20,8 @@ mixin MixinAuthStorageService {
 
   Future<({String username, String password})?> loadUserIds() async =>
       _crashUnimplemented("loadUserIds");
+
+  Future<void> clearUserIds() async => _crashUnimplemented("clearUserIds");
 
   /// This trap forcibly crashes the app when unsupported methods are reached
   ///

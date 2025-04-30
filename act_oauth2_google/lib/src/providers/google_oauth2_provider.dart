@@ -3,9 +3,7 @@ import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_oauth2_google/src/errors/no_google_oauth2_conf_error.dart';
 import 'package:act_oauth2_google/src/mixins/mixin_google_oauth2_conf.dart';
 
-class GoogleOAuth2Provider<C extends MixinGoogleOAuth2Conf, S extends MixinOAuth2TokensSecret>
-    extends AbsOAuth2ProviderService
-    with MixinDefaultOAuth2Provider {
+class GoogleOAuth2Provider<C extends MixinGoogleOAuth2Conf> extends AbsOAuth2ProviderService {
   static const _logsCategory = "google";
 
   GoogleOAuth2Provider() : super(logsCategory: _logsCategory);
@@ -19,7 +17,4 @@ class GoogleOAuth2Provider<C extends MixinGoogleOAuth2Conf, S extends MixinOAuth
 
     return tmpConf;
   }
-
-  @override
-  Future<MixinOAuth2TokensSecret> getTokensSecretService() async => globalGetIt().get<S>();
 }

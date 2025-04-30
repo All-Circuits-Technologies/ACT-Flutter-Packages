@@ -119,7 +119,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// [retryRequestIfErrorNb] defines the nb of times we want to repeat the request if it hasn't
   /// worked. If the login fails because of a global error, the login policy chosen will be applied,
   /// and this parameter not used. If the login fails because the credentials are not correct, this
-  /// is not used ant the request won't be repeated.
+  /// is not used and the request won't be repeated.
   /// [retryTimeout] defines the timeout to wait between each retry. If no timeout is given, no wait
   /// is done.
   Future<RequestResponse<RespBody>> executeRequest<RespBody>({

@@ -10,6 +10,7 @@ export 'package:act_shared_auth/src/models/auth_property_result.dart';
 export 'package:act_shared_auth/src/models/auth_reset_pwd_result.dart';
 export 'package:act_shared_auth/src/models/auth_sign_in_result.dart';
 export 'package:act_shared_auth/src/models/auth_sign_up_result.dart';
+export 'package:act_shared_auth/src/models/auth_token.dart';
 export 'package:act_shared_auth/src/models/auth_tokens.dart';
 export 'package:act_shared_auth/src/services/abs_auth_manager.dart';
 export 'package:act_shared_auth/src/services/mixin_auth_service.dart';
