@@ -99,6 +99,13 @@ mixin MixinAuthService {
   }) async =>
       crashUnimplemented("confirmSignIn");
 
+  /// {@template act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
+  /// This method allows to redirect the sign in to an external page.
+  ///
+  /// This can be used to manage OAuth2.0 authentication.
+  ///
+  /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
+  /// {@endtemplate}
   Future<AuthSignInResult> redirectToExternalUserSignIn() async =>
       crashUnimplemented("redirectToExternalUserSignIn");
 

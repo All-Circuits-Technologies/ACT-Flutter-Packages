@@ -7,6 +7,7 @@ import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:mutex/mutex.dart';
 
 abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthService {
   static const redirectUrlSeparator = ":/";
@@ -22,6 +23,8 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
 
   /// This stream controller sends event when the [AuthStatus] change
   final StreamController<AuthStatus> _authStatusCtrl;
+
+  final Mutex _mutex;
 
   /// The current [AuthStatus]
   AuthStatus _authStatus;
@@ -46,7 +49,8 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     : _authStatus = AuthStatus.signedOut,
       _authTokens = const AuthTokens(),
       _authStatusCtrl = StreamController.broadcast(),
-      _logsCategory = logsCategory;
+      _logsCategory = logsCategory,
+      _mutex = Mutex();
 
   Future<void> initProvider({
     required LogsHelper parentLogsHelper,
@@ -110,7 +114,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   Future<DefaultOAuth2Conf> getDefaultOAuth2Conf();
 
   @override
-  Future<bool> isUserSigned() async {
+  Future<bool> isUserSigned() => _mutex.protect(() async {
     final isUserSigned =
         (_authTokens.accessToken?.isValid ?? false) || (_authTokens.refreshToken?.isValid ?? false);
     if (!isUserSigned) {
@@ -119,10 +123,10 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     }
 
     return isUserSigned;
-  }
+  });
 
   @override
-  Future<AuthTokens?> getTokens() async {
+  Future<AuthTokens?> getTokens() => _mutex.protect(() async {
     if (_authTokens.accessToken?.isValid ?? false) {
       return _authTokens;
     }
@@ -137,14 +141,14 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     }
 
     return _authTokens;
-  }
+  });
 
   @override
   Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
       crashUnimplemented("signInUser");
 
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn() async {
+  Future<AuthSignInResult> redirectToExternalUserSignIn() => _mutex.protect(() async {
     final redirectUrl = await buildRedirectUrl();
     AuthSignInStatus? errorStatus;
     AuthorizationTokenResponse? response;
@@ -178,10 +182,10 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
 
     setAuthStatus(AuthStatus.signedIn);
     return AuthSignInResult(status: AuthSignInStatus.done, extra: _authTokens);
-  }
+  });
 
   @override
-  Future<bool> signOut() async {
+  Future<bool> signOut() => _mutex.protect(() async {
     final redirectUrl = await buildPostLogoutRedirectUrl();
     var result = false;
     try {
@@ -209,7 +213,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     setAuthStatus(AuthStatus.signedOut);
 
     return true;
-  }
+  });
 
   /// To call in order to the set the [AuthStatus] and send an event to the [AuthStatus] stream
   @protected
