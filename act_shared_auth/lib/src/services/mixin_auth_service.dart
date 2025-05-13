@@ -17,6 +17,8 @@ mixin MixinAuthService {
   /// {@endtemplate}
   Stream<AuthStatus> get authStatusStream;
 
+  MixinAuthStorageService? get storageService => null;
+
   Future<void> setStorageService(MixinAuthStorageService? storageService) async {}
 
   /// {@template act_shared_auth.MixinAuthService.signUp}

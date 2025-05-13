@@ -13,9 +13,16 @@ class SimpleMultiAuthService<P extends Enum> extends AbsWithLifeCycle
   @override
   final LogsHelper logsHelper;
 
-  SimpleMultiAuthService({required Map<P, MixinAuthService> providers, P? currentProvider})
-      : providers = providers,
-        logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory) {
-    currentProviderKey = currentProvider ?? ((providers.length == 1) ? providers.keys.first : null);
+  final P? _initProviderKey;
+
+  SimpleMultiAuthService({required this.providers, P? currentProvider})
+      : logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory),
+        _initProviderKey = currentProvider;
+
+  @override
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
+    await setCurrentProviderKey(
+        _initProviderKey ?? ((providers.length == 1) ? providers.keys.first : null));
   }
 }

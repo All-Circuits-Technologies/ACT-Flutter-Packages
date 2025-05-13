@@ -13,6 +13,7 @@ mixin MixinAuthSecrets<P extends AbstractPropertiesManager, E extends MixinStore
     "AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
+    doNotMigrate: true,
   );
 
   final authIds = const SecretItem<AuthUserIds>(

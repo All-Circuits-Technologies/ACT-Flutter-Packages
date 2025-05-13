@@ -14,11 +14,11 @@ class ActTbStorage extends TbStorage<String> {
   /// This is the key used by the Thingsboard library to store the refresh JWT token
   static const _refreshTokenTbKey = "refresh_token";
 
-  final MixinAuthStorageService? _storageService;
+  final MixinAuthStorageService? Function()? _storageServiceGetter;
 
   /// Class constructor
-  ActTbStorage({required MixinAuthStorageService? storageService})
-      : _storageService = storageService;
+  ActTbStorage({required MixinAuthStorageService? Function()? storageServiceGetter})
+      : _storageServiceGetter = storageServiceGetter;
 
   /// Called to delete the content of an item
   @override
@@ -43,9 +43,11 @@ class ActTbStorage extends TbStorage<String> {
     return token != null;
   }
 
+  MixinAuthStorageService? _getStorageService() => _storageServiceGetter?.call();
+
   /// Get the secret item linked to the Thingsboard key
   Future<AuthToken?> _tryToGetTokenItem(String key) async {
-    final tokens = await _storageService?.loadTokens();
+    final tokens = await _getStorageService()?.loadTokens();
     if (tokens == null) {
       // No need to go further, there are no tokens to load
       return null;
@@ -62,12 +64,13 @@ class ActTbStorage extends TbStorage<String> {
   }
 
   Future<bool> _storeTokenItem(String key, String value) async {
-    if (_storageService == null) {
+    final storageService = _getStorageService();
+    if (storageService == null) {
       // No need to go further, there is no storage service
       return false;
     }
 
-    var tokens = (await _storageService!.loadTokens()) ?? const AuthTokens();
+    var tokens = (await storageService.loadTokens()) ?? const AuthTokens();
 
     switch (key) {
       case _tokenTbKey:
@@ -80,11 +83,12 @@ class ActTbStorage extends TbStorage<String> {
         return false;
     }
 
-    return _storageService!.storeTokens(tokens: tokens);
+    return storageService.storeTokens(tokens: tokens);
   }
 
   Future<void> _clearTokenItem(String key) async {
-    var tokens = await _storageService?.loadTokens();
+    final storageService = _getStorageService();
+    var tokens = await storageService?.loadTokens();
     if (tokens == null) {
       // No need to go further, there is no element to clear
       return;
@@ -101,6 +105,6 @@ class ActTbStorage extends TbStorage<String> {
         return;
     }
 
-    await _storageService!.storeTokens(tokens: tokens);
+    await storageService!.storeTokens(tokens: tokens);
   }
 }

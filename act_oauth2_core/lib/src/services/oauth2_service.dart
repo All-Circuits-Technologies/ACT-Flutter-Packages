@@ -18,15 +18,18 @@ class OAuth2Service<P extends Enum> extends AbsWithLifeCycle
   @override
   final LogsHelper logsHelper;
 
-  OAuth2Service({required Map<P, AbsOAuth2ProviderService> providers, P? currentProvider})
-    : providers = providers,
-      logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory) {
-    currentProviderKey = currentProvider ?? ((providers.length == 1) ? providers.keys.first : null);
-  }
+  final P? _initProviderKey;
+
+  OAuth2Service({required this.providers, P? currentProvider})
+    : logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory),
+      _initProviderKey = currentProvider;
 
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
+    await setCurrentProviderKey(
+      _initProviderKey ?? ((providers.length == 1) ? providers.keys.first : null),
+    );
     _appAuth = const FlutterAppAuth();
 
     await Future.wait(

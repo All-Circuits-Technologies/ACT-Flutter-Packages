@@ -6,7 +6,7 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_req_manager/src/models/request_param.dart';
 import 'package:act_server_req_manager/src/server_requester.dart';
 import 'package:act_server_req_manager/src/types/login_fail_policy.dart';
-import 'package:act_server_req_manager/src/types/request_result.dart';
+import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:flutter/cupertino.dart';
 
 /// This class manages the log in to a specific server and the adding of credentials in the other
@@ -33,7 +33,7 @@ abstract class AbsServerLogin {
 
   /// This methods manages the login to the third server if it's needed. It also adds to the
   /// request all the authentication information which are asked by the third server.
-  Future<RequestResult> manageLogin(RequestParam requestParam);
+  Future<RequestStatus> manageLogin(RequestParam requestParam);
 
   /// Clear the logins
   @mustCallSuper

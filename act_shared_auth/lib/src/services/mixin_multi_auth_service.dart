@@ -17,13 +17,12 @@ mixin MixinMultiAuthService<P extends Enum, M extends MixinAuthService>
 
   final List<StreamSubscription> _subs = [];
 
+  MixinAuthStorageService? _storageService;
+
   P? _currentProviderKey;
 
   @protected
   P? get currentProviderKey => _currentProviderKey;
-
-  @protected
-  set currentProviderKey(P? value) => _currentProviderKey = value;
 
   /// {@macro act_shared_auth.MixinAuthService.authStatusStream}
   Stream<AuthStatus> get authStatusStream => _serviceStatusCtrl.stream;
@@ -52,6 +51,59 @@ mixin MixinMultiAuthService<P extends Enum, M extends MixinAuthService>
         );
       }),
     );
+  }
+
+  @protected
+  Future<void> setCurrentProviderKey(P? value) async {
+    if (_currentProviderKey == value) {
+      // Nothing to do
+      return;
+    }
+
+    final oldKey = _currentProviderKey;
+    _currentProviderKey = value;
+
+    if (_storageService == null) {
+      // Nothing more to do
+      return;
+    }
+
+    if (_currentProviderKey != null) {
+      final provider = providers[oldKey];
+      if (provider != null) {
+        await provider.setStorageService(null);
+      }
+
+      // Clear storage values
+      await _storageService!.clearTokens();
+      if (await _storageService!.isUserIdsStorageSupported()) {
+        await _storageService!.clearUserIds();
+      }
+    }
+
+    if (value != null) {
+      final provider = providers[value];
+      if (provider != null) {
+        await provider.setStorageService(_storageService);
+      }
+    }
+  }
+
+  @override
+  Future<void> setStorageService(MixinAuthStorageService? storageService) async {
+    if (storageService == _storageService) {
+      // Nothing to do
+      return;
+    }
+
+    _storageService = storageService;
+    final provider = getCurrentProvider();
+    if (provider == null) {
+      // Nothing to do
+      return;
+    }
+
+    return provider.setStorageService(storageService);
   }
 
   /// {@macro act_shared_auth.MixinAuthService.signUp}
@@ -105,7 +157,7 @@ mixin MixinMultiAuthService<P extends Enum, M extends MixinAuthService>
     P? providerKey,
   }) async {
     if (providerKey != null) {
-      _currentProviderKey = providerKey;
+      await setCurrentProviderKey(providerKey);
     }
 
     final provider = getCurrentProvider();
@@ -135,7 +187,7 @@ mixin MixinMultiAuthService<P extends Enum, M extends MixinAuthService>
     P? providerKey,
   }) async {
     if (providerKey != null) {
-      _currentProviderKey = providerKey;
+      await setCurrentProviderKey(providerKey);
     }
 
     final provider = getCurrentProvider();

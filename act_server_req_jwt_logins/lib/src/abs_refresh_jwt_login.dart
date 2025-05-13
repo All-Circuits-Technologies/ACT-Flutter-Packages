@@ -66,7 +66,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
 
     final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
 
-    if (response.result != RequestResult.success) {
+    if (response.status != RequestStatus.success) {
       logsHelper.w("A problem occurred when tried to get the refresh token");
       return false;
     }

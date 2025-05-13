@@ -27,7 +27,7 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   /// This is the authentication service to use in the application
   late final MixinAuthService authService;
 
-  late final MixinAuthStorageService? _storageService;
+  late final MixinAuthStorageService? storageService;
 
   /// This is the subscription linked to the auth status stream
   late final StreamSubscription _authStatusSub;
@@ -38,9 +38,9 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     authService = await getAuthService();
-    _storageService = await getStorageService();
-    if (_storageService != null) {
-      await authService.setStorageService(_storageService);
+    storageService = await getStorageService();
+    if (storageService != null) {
+      await authService.setStorageService(storageService);
     }
     _authStatusSub = authService.authStatusStream.listen(onAuthStatusUpdated);
   }

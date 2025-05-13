@@ -33,6 +33,9 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
 
   MixinAuthStorageService? _storageService;
 
+  @override
+  MixinAuthStorageService? get storageService => _storageService;
+
   @protected
   FlutterAppAuth get appAuth => _appAuth;
 

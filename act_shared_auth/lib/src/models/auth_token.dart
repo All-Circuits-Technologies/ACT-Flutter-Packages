@@ -1,5 +1,6 @@
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_jwt_utilities/act_jwt_utilities.dart';
 import 'package:equatable/equatable.dart';
 
 class AuthToken extends Equatable {
@@ -59,6 +60,20 @@ class AuthToken extends Equatable {
       raw: raw,
       expiration: expirationResult.value,
     );
+  }
+
+  static AuthToken? fromJwtToken(String token) {
+    final jwt = JwtParserUtility.tryToParseToken(token);
+    if (jwt == null) {
+      return null;
+    }
+
+    final expResult = JwtParserUtility.getExpiration(jwt);
+    if (!expResult.isOk) {
+      return null;
+    }
+
+    return AuthToken(raw: token, expiration: expResult.exp);
   }
 
   @override

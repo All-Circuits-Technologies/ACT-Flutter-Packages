@@ -4,9 +4,9 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_values.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
-import 'package:act_thingsboard_client/src/services/tb_request_service.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This service manages the Thingsboard devices
@@ -18,7 +18,7 @@ class TbDevicesService extends AbsWithLifeCycle {
   static const _devicesNumberByPage = 50;
 
   /// The thingsboard request service
-  final TbRequestService _requestService;
+  final AbsTbServerReqManager _requestManager;
 
   /// The logs helper linked to the manager
   late final LogsHelper _logsHelper;
@@ -28,9 +28,9 @@ class TbDevicesService extends AbsWithLifeCycle {
 
   /// Class constructor
   TbDevicesService({
-    required TbRequestService requestService,
+    required AbsTbServerReqManager requestManager,
     required LogsHelper logsHelper,
-  })  : _requestService = requestService,
+  })  : _requestManager = requestManager,
         _deviceValues = {},
         _logsHelper = logsHelper.createASubLogsHelper(_tbLogsCategory);
 
@@ -40,7 +40,7 @@ class TbDevicesService extends AbsWithLifeCycle {
 
     if (deviceValues == null) {
       deviceValues = TbDeviceValues(
-        requestService: _requestService,
+        requestManager: _requestManager,
         deviceId: deviceId,
         logsHelper: _logsHelper,
       );
@@ -55,9 +55,11 @@ class TbDevicesService extends AbsWithLifeCycle {
   ///
   /// Returns null if a problem occurred.
   Future<String?> getCurrentCustomerId() async {
-    final authUser = await _requestService.getSafeAuthUser();
+    final authUserResult =
+        await _requestManager.request((tbClient) async => tbClient.getAuthUser());
+    final authUser = authUserResult.requestResponse;
 
-    if (authUser == null) {
+    if (!authUserResult.isOk || authUser == null) {
       _logsHelper.w("We aren't logged, we can't get the customer id");
       return null;
     }
@@ -87,8 +89,8 @@ class TbDevicesService extends AbsWithLifeCycle {
       return null;
     }
 
-    final result = await _requestService
-        .safeRequest((tbClient) async => tbClient.getDeviceService().getCustomerDevices(
+    final result = await _requestManager
+        .request((tbClient) async => tbClient.getDeviceService().getCustomerDevices(
               customerId,
               pageLink ?? PageLink(_devicesNumberByPage),
             ));
@@ -125,8 +127,8 @@ class TbDevicesService extends AbsWithLifeCycle {
     var hasNext = true;
 
     while (deviceFound == null && hasNext) {
-      final result = await _requestService
-          .safeRequest((tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
+      final result = await _requestManager
+          .request((tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
                 customerId,
                 pageLink,
               ));

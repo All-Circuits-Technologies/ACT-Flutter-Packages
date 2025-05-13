@@ -13,7 +13,7 @@ class TbDeviceTimeSeries extends ATbTelemetry<TbTsValue> {
 
   /// Class constructor
   TbDeviceTimeSeries({
-    required super.requestService,
+    required super.requestManager,
     required super.logsHelper,
     required super.deviceId,
   }) : super(telemetryName: _timeSeriesName);

@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_jwt_manager/src/models/jwt_options.dart';
-import 'package:act_jwt_manager/src/models/sign_result.dart';
+import 'package:act_jwt_utilities/src/models/jwt_options.dart';
+import 'package:act_jwt_utilities/src/models/sign_result.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 import 'package:flutter/foundation.dart';
@@ -63,8 +63,7 @@ abstract class AbstractJwtHandler {
   /// If [publicKey] is undefined, the handler won't be able to sign new JWT
   /// If [privateKey] is undefined, the handler won't be able to verify received JWT
   @protected
-  Future<void> initKeys(
-      {required JWTKey? publicKey, required JWTKey? privateKey}) async {
+  Future<void> initKeys({required JWTKey? publicKey, required JWTKey? privateKey}) async {
     _publicKey = publicKey;
     _privateKey = privateKey;
   }
@@ -83,16 +82,14 @@ abstract class AbstractJwtHandler {
     final signResult = await signImpl(payload);
 
     if (signResult == null) {
-      logsHelper.w(
-          "A problem occurred when tried to test the signing of the JWT process.");
+      logsHelper.w("A problem occurred when tried to test the signing of the JWT process.");
       return false;
     }
 
     final verifyResult = await verify(token: signResult.jwt);
 
     if (verifyResult == null) {
-      logsHelper.w(
-          "A problem occurred when tried to test the verification of the JWT process");
+      logsHelper.w("A problem occurred when tried to test the verification of the JWT process");
       return false;
     }
 
@@ -115,8 +112,7 @@ abstract class AbstractJwtHandler {
     if (_jwtOptions.issuer == null ||
         _jwtOptions.expirationTime == null ||
         _jwtOptions.audience == null) {
-      logsHelper.w(
-          "Can't sign a JWT token, the issuer, expiration time and audience information "
+      logsHelper.w("Can't sign a JWT token, the issuer, expiration time and audience information "
           "haven't been given");
       return null;
     }
