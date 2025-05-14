@@ -27,6 +27,8 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   /// This is the authentication service to use in the application
   late final MixinAuthService authService;
 
+  /// This is the storage auth service to use in the application in order to store and load from
+  /// phone memory the ids and/or tokens
   late final MixinAuthStorageService? storageService;
 
   /// This is the subscription linked to the auth status stream
@@ -49,6 +51,7 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   @protected
   Future<MixinAuthService> getAuthService();
 
+  /// This method has to be overridden to give the auth storage service to use
   @protected
   Future<MixinAuthStorageService?> getStorageService() async => null;
 

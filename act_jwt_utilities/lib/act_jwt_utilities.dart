@@ -4,7 +4,7 @@
 
 library;
 
-export 'package:act_jwt_utilities/src/data/jwt_keys_constant.dart';
+export 'package:act_jwt_utilities/src/constants/jwt_keys_constant.dart';
 export 'package:act_jwt_utilities/src/handlers/abstract_jwt_handler.dart';
 export 'package:act_jwt_utilities/src/jwt_manager.dart';
 export 'package:act_jwt_utilities/src/models/jwt_options.dart';

@@ -1,3 +1,0 @@
-library;
-
-const expirationClaimKey = "exp";

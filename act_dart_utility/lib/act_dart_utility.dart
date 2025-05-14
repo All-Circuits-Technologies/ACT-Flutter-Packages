@@ -9,6 +9,8 @@
 /// See also `act_dart_utility_ext` file
 library;
 
+export 'src/errors/act_singleton_not_created_error.dart';
+export 'src/errors/act_unsupported_type_error.dart';
 export 'src/mixins/mixin_result_status.dart';
 export 'src/models/num_boundaries.dart';
 export 'src/shared_watcher.dart';

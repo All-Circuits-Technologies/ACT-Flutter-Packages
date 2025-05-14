@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2024 - 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -17,8 +17,28 @@ mixin MixinAuthService {
   /// {@endtemplate}
   Stream<AuthStatus> get authStatusStream;
 
+  /// {@template act_shared_auth.MixinAuthService.storageService}
+  /// This is the storage service used to load and store the user ids such as its password, username
+  /// and tokens.
+  ///
+  /// If null, this means we don't want to store this data or a third party package we use already
+  /// does it.
+  ///
+  /// Be careful, the storage service is set after the service creation and not given in its
+  /// constructor.
+  /// {@endtemplate}
   MixinAuthStorageService? get storageService => null;
 
+  /// {@template act_shared_auth.MixinAuthService.setStorageService}
+  /// Set the current storage service.
+  ///
+  /// If null, this means we don't want to store this data or a third party package we use already
+  /// does it.
+  ///
+  /// Be careful, this method is called by the `AbsAuthManager` after the service creation and not
+  /// given in its constructor. Therefore, you have to manage the loading of tokens or ids from
+  /// memory in this method.
+  /// {@endtemplate}
   Future<void> setStorageService(MixinAuthStorageService? storageService) async {}
 
   /// {@template act_shared_auth.MixinAuthService.signUp}
@@ -131,9 +151,13 @@ mixin MixinAuthService {
   Future<String?> getCurrentUserId() async => crashUnimplemented("getUserCurrentId");
 
   /// {@template act_shared_auth.MixinAuthService.getTokens}
-  /// Get the access token of the logged user
+  /// Get the tokens of the logged user. If not null, the object:
   ///
-  /// The implementation of this method must try to get a valid access Token. This means if the
+  /// - must contain an `access token`,
+  /// - could contain a `refresh token`,
+  /// - could contain a `id token` (if the tokens are linked to OAuth process)
+  ///
+  /// The implementation of this method must try to get valid Tokens. This means if the
   /// auth service stores a refresh token and/or the username and password, the method will try to
   /// use them to get a valid access token when calling this method.
   ///

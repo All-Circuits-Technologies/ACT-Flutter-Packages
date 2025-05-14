@@ -1,26 +1,40 @@
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_server_req_manager/act_server_req_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client/src/constants/tb_constants.dart' as tb_constants;
-import 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
 
+/// This is the builder to [TbStdAuthServerReqManager]
 class TbStdAuthServerReqBuilder<A extends AbsAuthManager>
     extends AbsTbServerReqBuilder<TbStdAuthServerReqManager> {
+  /// Class constructor
   TbStdAuthServerReqBuilder()
       : super(() => TbStdAuthServerReqManager(
               authGetter: globalGetIt().get<A>,
             ));
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [...super.dependsOn(), A];
 }
 
+/// This manager uses a derived class of [AbsAuthManager] to manage the Thingsboard tokens.
+///
+/// We expect that `TbStdAuthService` is used as auth provider.
+///
+/// {@macro act_thingsboard_client.AbsTbServerReqManager.details}
 class TbStdAuthServerReqManager extends AbsTbServerReqManager {
+  /// This is the log category of the [TbStdAuthServerReqManager]
   static final _stdAuthTbLogsCategory = "stdAuth";
 
+  /// Getter to access the [AbsAuthManager]
   final AbsAuthManager Function() _authGetter;
 
+  /// Class constructor
   TbStdAuthServerReqManager({
     required AbsAuthManager Function() authGetter,
   })  : _authGetter = authGetter,

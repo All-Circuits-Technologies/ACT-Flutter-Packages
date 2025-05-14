@@ -30,23 +30,7 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// which provides a getter and a setter to read from settings and
 /// save to settings respectively.
 ///
-/// Not suitable for secrets
-/// ------------------------
-///
-/// This class uses SharedPreferences storage backend, which uses a clear-text
-/// XML file within application private storage. This storage is normally  not
-/// accessible to other apps, but can be read back by advanced users or by any
-/// app on a rooted device.
-///
-/// For secret data, please see `SecretsManager`.
-///
-/// Can be removed by user
-/// ----------------------
-///
-/// Backend storage is removed when user uninstalls the application.
-/// It is also removed when user clears application data.
-///
-/// In those two case, all defined properties are lost.
+/// {@macro act_local_storage_manager.PropertiesSingleton.details}
 abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   /// Tell if it's the first start of the app after install
   final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");

@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_local_storage_manager/src/data/storage_constants.dart' as storage_constants;
+import 'package:act_local_storage_manager/src/constants/storage_constants.dart'
+    as storage_constants;
 
 /// This mixin contains the [NotNullableConfigVar] object used in the `act_local_storage_manager`
 /// package.

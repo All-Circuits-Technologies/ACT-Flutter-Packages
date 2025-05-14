@@ -43,6 +43,7 @@ class ActTbStorage extends TbStorage<String> {
     return token != null;
   }
 
+  /// Get the storage service by calling [_storageServiceGetter] method
   MixinAuthStorageService? _getStorageService() => _storageServiceGetter?.call();
 
   /// Get the secret item linked to the Thingsboard key
@@ -63,6 +64,9 @@ class ActTbStorage extends TbStorage<String> {
     }
   }
 
+  /// Store the [value] in memory thanks to its [key]
+  ///
+  /// Returns true if no problem occurred
   Future<bool> _storeTokenItem(String key, String value) async {
     final storageService = _getStorageService();
     if (storageService == null) {
@@ -86,6 +90,7 @@ class ActTbStorage extends TbStorage<String> {
     return storageService.storeTokens(tokens: tokens);
   }
 
+  /// Clear the element from memory, found thanks to the [key] given
   Future<void> _clearTokenItem(String key) async {
     final storageService = _getStorageService();
     var tokens = await storageService?.loadTokens();

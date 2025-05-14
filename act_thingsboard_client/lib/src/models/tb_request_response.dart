@@ -14,7 +14,7 @@ class TbRequestResponse<T> extends Equatable {
   /// The Thingsboard request response
   final T? requestResponse;
 
-  /// True if the [result] is equal to [RequestResult.success]
+  /// True if the [status] is equal to [RequestStatus.success]
   bool get isOk => status.isOk;
 
   /// Class constructor
@@ -23,6 +23,7 @@ class TbRequestResponse<T> extends Equatable {
   /// Export the class member to patterns
   (RequestStatus, T?) toPatterns() => (status, requestResponse);
 
+  /// Class properties
   @override
   List<Object?> get props => [status, requestResponse];
 }

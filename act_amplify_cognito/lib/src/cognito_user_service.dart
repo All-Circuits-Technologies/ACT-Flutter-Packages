@@ -63,9 +63,7 @@ class CognitoUserService extends AbsWithLifeCycle {
     return userId;
   }
 
-  /// Get the access token of the logged user
-  ///
-  /// Return null if no user is logged or if a problem occurred
+  /// {@macro act_shared_auth.MixinAuthService.getTokens}
   Future<AuthTokens?> getTokens() async {
     AuthTokens? tokens;
     try {

@@ -1,3 +1,0 @@
-library;
-
-const saveUserIdsDefaultValue = false;

@@ -4,5 +4,5 @@
 
 library;
 
-/// This is the url of the Google issuer
-const googleIssuerUrl = "https://accounts.google.com";
+/// This is the default value used to know we store (or not) the user ids in local storage
+const saveUserIdsDefaultValue = false;

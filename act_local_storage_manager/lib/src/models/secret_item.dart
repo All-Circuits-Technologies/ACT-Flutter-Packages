@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
@@ -17,14 +21,20 @@ class SecretItem<T> {
   /// This setting only applies for iOS devices.
   final bool doNotMigrate;
 
+  /// This is used to parse the value stored to the wanted type
+  ///
+  /// Returns null if the `value` given is null or if the parsing has failed
+  ///
+  /// If [parser] is equal to null, we use [StringUtility.parseStrValue] method to parse the value.
   final T? Function(String? value)? parser;
 
+  /// Cast the `value` given to a string to store in secret storage
+  ///
+  /// If [castTo] is equals to null, we use the default `toString` method of primitive types. If
+  /// the type isn't primitive, an exception may raise.
   final String Function(T value)? castTo;
 
   /// Create a FlutterSecureStorage wrapper for key [key] of type T.
-  ///
-  /// Only [AbstractPropertiesManager] creates instances of this helper class.
-  /// Other actors uses them.
   const SecretItem(
     this.key, {
     this.doNotMigrate = false,
@@ -34,11 +44,11 @@ class SecretItem<T> {
 
   /// Load value from secure storage.
   ///
-  /// Never returns null (thanks to the async keyword),
-  /// but returns Future\<T\>(null) if value is not found or fails to be parsed.
+  /// Returns null if value is not found or fails to be parsed.
   ///
-  /// Can (unlikely) return a Future.error.
-  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
+  /// If the cast from String to T isn't supported, the method will throw an [UnsupportedError].
+  ///
+  /// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
   Future<T?> load() async {
     final value = await SecretsSingleton.instance.secureStorage.read(key: key);
 
@@ -47,7 +57,9 @@ class SecretItem<T> {
 
   /// Store value to secure storage.
   ///
-  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
+  /// May throw an [UnsupportedError] if T isn't supported.
+  ///
+  /// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
   Future<void> store(T value) async {
     if (value == null) {
       // Underlying storage can not store null values, no need to ge further.
@@ -77,7 +89,9 @@ class SecretItem<T> {
           // A _SecretItem<unsupported T> member was added to SecretsManager.
           // Dear developer, please add the support for your specific T.
           appLogger().e('Unsupported type $T');
-          return Future.error('Unsupported type $T');
+          throw ActUnsupportedTypeError<T>(
+            context: "key: $key",
+          );
       }
     }
 
@@ -92,6 +106,6 @@ class SecretItem<T> {
 
   /// Delete a value stored in secure storage.
   ///
-  /// Can throw a `PlatformException` (see [AbstractSecretsManager] iOS note).
+  /// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
   Future<void> delete() async => SecretsSingleton.instance.secureStorage.delete(key: key);
 }

@@ -4,7 +4,9 @@
 
 import 'dart:async';
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_local_storage_manager/src/errors/act_type_not_matching_target_error.dart';
 import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 
 /// [SharedPreferencesItem] wraps a single property of type T,
@@ -23,7 +25,7 @@ class SharedPreferencesItem<T> {
 
   /// Create a SharedPreferences wrapper for key [key] of type T.
   ///
-  /// Only [AbstractPropertiesManager] creates instances of this helper class.
+  /// Only `AbstractPropertiesManager` creates instances of this helper class.
   /// Other actors uses them.
   SharedPreferencesItem(this.key) : _updateStreamController = StreamController.broadcast();
 
@@ -32,8 +34,7 @@ class SharedPreferencesItem<T> {
   /// Returns null if preference item is not found (if it has never been stored
   /// or if it has been deleted meanwhile).
   ///
-  /// Null is also returned in the very unlikely case of type mismatch.
-  /// This unlikely since we save the value ourselves in same T type.
+  /// If T isn't known, this will raise an [UnsupportedError] error.
   Future<T?> load() async {
     switch (T) {
       case const (bool):
@@ -51,7 +52,9 @@ class SharedPreferencesItem<T> {
         // An unsupported T item was added to PropertiesManager.
         // Dear developer, please add the support for your specific T.
         appLogger().e("Unsupported type $T for key $key");
-        return Future.error("Unsupported type $T for key $key");
+        throw ActUnsupportedTypeError<T>(
+          context: "key: $key",
+        );
     }
   }
 
@@ -76,7 +79,7 @@ class SharedPreferencesItem<T> {
     if (castMethod == null) {
       if (value is! ResultType) {
         appLogger().e("Key $key loaded as $value instead of type $ResultType");
-        return Future.error("Key $key loaded as $value instead of type $ResultType");
+        throw ActTypeNotMatchingTargetError<ResultType>(key: key, value: value);
       }
 
       return value;
@@ -84,13 +87,15 @@ class SharedPreferencesItem<T> {
 
     if (value is! RetrievedFromPrefsType) {
       appLogger().e("Key $key loaded as $value instead of type $RetrievedFromPrefsType");
-      return Future.error("Key $key loaded as $value instead of type $RetrievedFromPrefsType");
+      throw ActTypeNotMatchingTargetError<RetrievedFromPrefsType>(key: key, value: value);
     }
 
     return castMethod(value);
   }
 
   /// Store value to underlying storage.
+  ///
+  /// If T isn't known, this will raise an [UnsupportedError] error.
   Future<bool> store(T value) async {
     final prefs = PropertiesSingleton.instance.prefs;
     var success = false;
@@ -115,7 +120,9 @@ class SharedPreferencesItem<T> {
         // An unsupported T item was added to PropertiesManager.
         // Dear developer, please add the support for your specific T.
         appLogger().e("Unsupported type $T");
-        return Future.error("Unsupported type $T");
+        throw ActUnsupportedTypeError<T>(
+          context: "key: $key",
+        );
     }
 
     if (!success) {

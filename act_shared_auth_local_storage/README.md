@@ -14,7 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 ## Presentation
 
 This package contains services to store the tokens and ids got from the authentication services
-to the local secure storage.
+to the act local secure storage.
 
 It also allows the same authentication services to get the information from the local secure
 storage.

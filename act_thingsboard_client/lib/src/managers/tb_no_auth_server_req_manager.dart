@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -8,20 +12,32 @@ import 'package:act_thingsboard_client/src/act_tb_storage.dart';
 import 'package:act_thingsboard_client/src/constants/tb_constants.dart' as tb_constants;
 import 'package:thingsboard_client/thingsboard_client.dart';
 
+/// This is the builder of the [TbNoAuthServerReqManager] class
+///
+/// The [TbNoAuthServerReqManager] doesn't depend on [AbsAuthManager], it only passes the
+/// `storageService` to the created ThingsboardClient.
 class TbNoAuthServerReqBuilder<C extends MixinThingsboardConf, A extends AbsAuthManager>
     extends AbsManagerBuilder<TbNoAuthServerReqManager> {
+  /// Class constructor
   TbNoAuthServerReqBuilder()
       : super(() => TbNoAuthServerReqManager(
               storageServiceGetter: () => globalGetIt().get<A>().storageService,
               confGetter: globalGetIt().get<C>,
             ));
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [C, LoggerManager];
 }
 
+/// This manager is helpful to requests the Thingsboard server without authentication.
+///
+/// The manager creates the [ThingsboardClient] to use.
+///
+/// It's helpful to call Thingsboard requests which doesn't depend on authentication.
 class TbNoAuthServerReqManager extends AbsWithLifeCycle {
-  static final _noAuthTbLogsCategory = tb_constants.getSubLog(subCategory: "noAuth");
+  /// This is the log category used with the manager
+  static final _noAuthTbLogsCategory = tb_constants.getTbLogCategory(subCategory: "noAuth");
 
   /// The [ThingsboardClient] used to request Thingsboard
   late final ThingsboardClient _tbClient;
@@ -29,13 +45,16 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   /// The logs helper linked to the manager
   late final LogsHelper _logsHelper;
 
+  /// This is the thingsboard storage used with [_tbClient]
   final ActTbStorage _tbStorage;
 
+  /// The method is used to get the wanted Thingsboard conf
   final MixinThingsboardConf Function() _confGetter;
 
   /// Getter to get the linked [ThingsboardClient]
   ThingsboardClient get tbClient => _tbClient;
 
+  /// Class constructor
   TbNoAuthServerReqManager({
     required MixinAuthStorageService? Function()? storageServiceGetter,
     required MixinThingsboardConf Function() confGetter,

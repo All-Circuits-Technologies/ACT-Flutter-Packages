@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
 import 'dart:async';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
@@ -9,24 +13,34 @@ import 'package:act_thingsboard_client/src/managers/tb_no_auth_server_req_manage
 import 'package:mutex/mutex.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
+/// This is the service used to authenticate the user with the standard Thingsboard authentications
 class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
+  /// This is the log category linked to the auth service
   static const _logsCategory = "tbAuth";
 
+  /// This is the controller linked to the authentication status
   final StreamController<AuthStatus> _authStatusCtrl;
 
+  /// This is the [TbNoAuthServerReqManager] used to request the server
   late final TbNoAuthServerReqManager _noAuthReqManager;
 
+  /// The mutex is used to prevent to authenticate the server in parallel
   final Mutex _mutex;
 
+  /// This is the logs helper
   final LogsHelper _logsHelper;
 
+  /// The current authentication status
   AuthStatus _authStatus;
 
+  /// The service used to store the authentication info
   MixinAuthStorageService? _storageService;
 
+  /// {@macro act_shared_auth.MixinAuthService.storageService}
   @override
   MixinAuthStorageService? get storageService => _storageService;
 
+  /// {@macro act_shared_auth.MixinAuthService.authStatus}
   @override
   AuthStatus get authStatus => _authStatus;
 
@@ -34,6 +48,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   @override
   Stream<AuthStatus> get authStatusStream => _authStatusCtrl.stream;
 
+  /// Class constructor
   TbStdAuthService()
       : _authStatus = AuthStatus.signedOut,
         _authStatusCtrl = StreamController<AuthStatus>.broadcast(),
@@ -55,22 +70,17 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     await _unSafeGetTokens(initTokensLoading: _storageService!.loadTokens);
   }
 
+  /// {@macro act_shared_auth.MixinAuthService.setStorageService}
   @override
   Future<void> setStorageService(MixinAuthStorageService? storageService) async =>
       _storageService = storageService;
 
-  @override
-  Future<bool> isUserSigned() => _mutex.protect(() async => _authStatus == AuthStatus.signedIn);
-
+  /// {@macro act_shared_auth.MixinAuthService.signInUser}
   @override
   Future<AuthSignInResult> signInUser({required String username, required String password}) =>
       _mutex.protect(() async => _unSafeSignInUser(username: username, password: password));
 
-  @override
-  Future<AuthTokens?> getTokens() => _mutex.protect(() async => _unSafeGetTokens(
-        initTokensLoading: _getTokensFromTbClient,
-      ));
-
+  /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override
   Future<bool> signOut() => _mutex.protect(() async {
         await _noAuthReqManager.tbClient.logout();
@@ -81,6 +91,24 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
         return true;
       });
 
+  /// {@macro act_shared_auth.MixinAuthService.isUserSigned}
+  @override
+  Future<bool> isUserSigned() => _mutex.protect(() async => _authStatus == AuthStatus.signedIn);
+
+  /// {@macro act_shared_auth.MixinAuthService.getTokens}
+  @override
+  Future<AuthTokens?> getTokens() => _mutex.protect(() async => _unSafeGetTokens(
+        initTokensLoading: _getTokensFromTbClient,
+      ));
+
+  /// This method is useful to update, if needed, the [AuthStatus] by calling [_setAuthStatus].
+  ///
+  /// It wraps a [request] and tests the result of request with method [testResult] to know if we
+  /// need to call [_setAuthStatus] method.
+  ///
+  /// If [testResult] method returns null, it means that we have nothing to set.
+  ///
+  /// Return what the [request] method has returned
   Future<T> _wrapSetAuthUser<T>(
     Future<T> Function() request, {
     required AuthStatus? Function(T result) testResult,
@@ -95,6 +123,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     return result;
   }
 
+  /// {@macro act_shared_auth.MixinAuthService.signInUser}
+  ///
+  /// Sign in the user without the mutex protection
   Future<AuthSignInResult> _unSafeSignInUser({
     required String username,
     required String password,
@@ -128,6 +159,11 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
         return null;
       });
 
+  /// {@macro act_shared_auth.MixinAuthService.getTokens}
+  ///
+  /// Get the tokens without the mutex protection.
+  ///
+  /// [initTokensLoading] is used to get the tokens from memory at start
   Future<AuthTokens?> _unSafeGetTokens({
     required FutureOr<AuthTokens?> Function() initTokensLoading,
   }) =>
@@ -178,6 +214,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     _authStatusCtrl.add(value);
   }
 
+  /// Try to sign in the user from the tokens returned by [loadTokens] method
+  ///
+  /// Return true if no problem occurred
   Future<bool> _tryToLogInFromTokens({
     required FutureOr<AuthTokens?> Function() loadTokens,
   }) async {
@@ -218,6 +257,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     return true;
   }
 
+  /// Try to sign in the user from the user ids stored in memory
+  ///
+  /// Return true if no problem occurred
   Future<bool> _tryToLogInFromUsersInMemory({
     required MixinAuthStorageService storageService,
   }) async {
@@ -243,6 +285,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     return true;
   }
 
+  /// This method is called to refresh a token thanks to the given [refreshToken]
+  ///
+  /// Return the refreshed token and the token, or null if a problem occurred
   Future<AuthTokens?> _refreshToken(AuthToken refreshToken) async {
     final response = await _noAuthReqManager.request(
       (tbClient) async => tbClient.refreshJwtToken(refreshToken: refreshToken.raw),
@@ -256,6 +301,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
     return _getTokensFromTbClient();
   }
 
+  /// Get the tokens from the current [ThingsboardClient]
+  ///
+  /// Return null if a problem occurred
   AuthTokens? _getTokensFromTbClient() {
     final tbClient = _noAuthReqManager.tbClient;
     final accessStrToken = tbClient.getJwtToken();

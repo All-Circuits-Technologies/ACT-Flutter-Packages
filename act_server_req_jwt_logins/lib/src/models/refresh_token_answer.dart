@@ -35,13 +35,18 @@ class RefreshTokenAnswer extends TokenAnswer {
     required this.refreshPayload,
   });
 
+  /// Transform the current refresh token answer to [TokenInfo]
   TokenInfo toRefreshTokenInfo() => TokenInfo(
         token: refreshToken,
         tokenExpDate: TokenAnswer.parseExpData(refreshExpInMs),
       );
 
-  static RefreshTokenAnswer? parseJwtTokens(
-      {required String token, required String refreshToken, LogsHelper? logsHelper}) {
+  /// Parse a [RefreshTokenAnswer] from a stringified [token] and [refreshToken]
+  static RefreshTokenAnswer? parseJwtTokens({
+    required String token,
+    required String refreshToken,
+    LogsHelper? logsHelper,
+  }) {
     final tokenAns = TokenAnswer.tryToParseJwtToken(token, logsHelper: logsHelper);
     final refreshTokenAns = TokenAnswer.tryToParseJwtToken(refreshToken, logsHelper: logsHelper);
 
@@ -56,6 +61,7 @@ class RefreshTokenAnswer extends TokenAnswer {
         refreshPayload: refreshTokenAns.payload);
   }
 
+  /// Model properties
   @override
   List<Object?> get props => [...super.props, refreshToken, refreshPayload];
 }

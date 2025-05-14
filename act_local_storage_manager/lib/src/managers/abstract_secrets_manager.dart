@@ -35,9 +35,7 @@ abstract class AbstractSecretsBuilder<
 /// Data is not always accessible
 /// -----------------------------
 ///
-/// iOS: Those secrets are not accessible after a restart of the device,
-/// until device is unlocked once. A `PlatformException` will be thrown
-/// if an access is attempted in this case.
+/// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
 abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
     E extends MixinStoresConf> extends AbsWithLifeCycle {
   /// Builds an instance of [AbstractSecretsManager].

@@ -23,6 +23,7 @@ class TokenInfo extends Equatable {
     this.tokenExpDate,
   });
 
+  /// Copy the current token and update the given elements
   TokenInfo copyWith({
     String? token,
     DateTime? tokenExpDate,
@@ -32,6 +33,7 @@ class TokenInfo extends Equatable {
           token: token ?? this.token,
           tokenExpDate: tokenExpDate ?? (forceTokenExpDate ? null : tokenExpDate));
 
+  /// Equatable properties
   @override
   List<Object?> get props => [token, tokenExpDate];
 }

@@ -17,6 +17,7 @@ export 'package:act_shared_auth/src/services/mixin_auth_service.dart';
 export 'package:act_shared_auth/src/services/mixin_auth_status_manager_callback.dart';
 export 'package:act_shared_auth/src/services/mixin_auth_storage_service.dart';
 export 'package:act_shared_auth/src/services/mixin_multi_auth_service.dart';
+export 'package:act_shared_auth/src/services/simple_multi_auth_service.dart';
 export 'package:act_shared_auth/src/types/auth_delete_status.dart';
 export 'package:act_shared_auth/src/types/auth_property_status.dart';
 export 'package:act_shared_auth/src/types/auth_reset_pwd_status.dart';

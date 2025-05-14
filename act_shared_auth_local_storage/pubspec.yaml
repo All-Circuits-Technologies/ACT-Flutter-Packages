@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 name: act_shared_auth_local_storage
-description: This contains services to store ids from the authentication services to secure local
-  storage.
+description: This contains services to store ids from the authentication services to act secure
+  local storage.
 publish_to: none
 
 environment:

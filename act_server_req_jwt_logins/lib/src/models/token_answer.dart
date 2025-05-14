@@ -32,11 +32,13 @@ class TokenAnswer extends Equatable {
   /// Class constructor
   const TokenAnswer({required this.token, required this.payload});
 
+  /// Transform the current token answer to [TokenInfo]
   TokenInfo toTokenInfo() => TokenInfo(
         token: token,
         tokenExpDate: parseExpData(expInMs),
       );
 
+  /// Parse the expiration date from milliseconds since epoch to date time
   @protected
   static DateTime? parseExpData(int? expInMs) {
     if (expInMs == null) {
@@ -46,6 +48,9 @@ class TokenAnswer extends Equatable {
     return DateTime.fromMillisecondsSinceEpoch(expInMs, isUtc: true);
   }
 
+  /// Try to parse a JWT from [token]
+  ///
+  /// Returns null if a problem occurred
   static TokenAnswer? tryToParseJwtToken(
     String token, {
     LogsHelper? logsHelper,
@@ -65,6 +70,7 @@ class TokenAnswer extends Equatable {
     return TokenAnswer(token: token, payload: payload);
   }
 
+  /// Properties list
   @override
   List<Object?> get props => [token, payload];
 }

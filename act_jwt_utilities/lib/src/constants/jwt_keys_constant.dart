@@ -4,5 +4,5 @@
 
 library;
 
-/// This is the url of the Google issuer
-const googleIssuerUrl = "https://accounts.google.com";
+/// This is the key used in JWT to symbolise the expiration date claim
+const expirationClaimKey = "exp";

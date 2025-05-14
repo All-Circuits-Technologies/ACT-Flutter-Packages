@@ -17,7 +17,7 @@ abstract class JsonUtility {
   /// A cast function can be given: [castValueFunc] to transform the value retrieved to the expected
   /// type
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, T? value}) getOneElement<T, Y>({
     required Map<String, dynamic> json,
     required String key,
@@ -54,7 +54,7 @@ abstract class JsonUtility {
   /// Find the element thanks to the [key] given. If the element can be not present in the JSON set
   /// [canBeUndefined] to true.
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, T? value}) getOnePrimaryElement<T>({
     required Map<String, dynamic> json,
     required String key,
@@ -114,7 +114,7 @@ abstract class JsonUtility {
   /// A cast function can be given: [castElemValueFunc] to transform the elements list retrieved to
   /// the expected type.
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, List<T>? value}) getElementsList<T, Y>({
     required Map<String, dynamic> json,
     required String key,
@@ -153,7 +153,7 @@ abstract class JsonUtility {
   /// Find the list thanks to the [key] given. If the element can be not present in the JSON set
   /// [canBeUndefined] to true.
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, List<T>? value}) getPrimaryElementsList<T>({
     required Map<String, dynamic> json,
     required String key,
@@ -210,7 +210,7 @@ abstract class JsonUtility {
   /// Find the JSON object thanks to the [key] given. If the JSON object can be not present in the
   /// JSON set [canBeUndefined] to true.
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, Map<String, dynamic>? value}) getJsonObject({
     required Map<String, dynamic> json,
     required String key,
@@ -253,7 +253,7 @@ abstract class JsonUtility {
   /// Find the list thanks to the [key] given. If the element can be not present in the JSON set
   /// [canBeUndefined] to true.
   ///
-  /// Returns true in first item if no problem occurred
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, List<Map<String, dynamic>>? value}) getJsonObjectsList({
     required Map<String, dynamic> json,
     required String key,
@@ -405,6 +405,8 @@ abstract class JsonUtility {
   }
 
   /// Cast the given [value] with the [castValueFunc] method, if the method is not null.
+  ///
+  /// Returns true in `isOk` parameter if no problem occurred
   static ({bool isOk, T? value}) _castValueIfNeeded<T, Y>({
     // This method manipulates JSON value; therefore, it's ok to have dynamic here
     // ignore: avoid_annotating_with_dynamic
