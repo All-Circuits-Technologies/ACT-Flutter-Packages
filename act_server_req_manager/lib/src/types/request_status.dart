@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 /// The result of the request
-enum RequestResult {
+enum RequestStatus {
   /// The request succeeded
   success(isOk: true),
 
@@ -17,5 +17,5 @@ enum RequestResult {
   final bool isOk;
 
   /// Class constructor
-  const RequestResult({this.isOk = false});
+  const RequestStatus({this.isOk = false});
 }

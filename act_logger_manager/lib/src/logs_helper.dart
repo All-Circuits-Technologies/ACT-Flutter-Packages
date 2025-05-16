@@ -8,7 +8,7 @@ import 'package:logger/logger.dart';
 /// Helpful class to manage logs with library and managers
 class LogsHelper {
   /// Useful to separate the logs category with subs category
-  static const _logsCategorySeparator = "/";
+  static const logsCategorySeparator = "/";
 
   /// The log category to use when displaying messages from activities
   final String logsCategory;
@@ -89,6 +89,6 @@ class LogsHelper {
   LogsHelper createASubLogsHelper(String subCategory) => LogsHelper(
         logsManager: logsManager,
         enableLog: enableLog,
-        logsCategory: "$logsCategory$_logsCategorySeparator$subCategory",
+        logsCategory: "$logsCategory$logsCategorySeparator$subCategory",
       );
 }

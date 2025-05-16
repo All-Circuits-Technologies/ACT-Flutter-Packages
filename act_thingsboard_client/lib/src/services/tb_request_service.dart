@@ -113,7 +113,7 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
           retryTimeout: retryTimeout,
         );
 
-        if (loginResponse.result != RequestResult.success) {
+        if (loginResponse.result != RequestStatus.success) {
           _logsHelper
               .w("A problem occurred when tried to sign in the user thanks to the identifiers "
                   "given");
@@ -181,17 +181,17 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
   }) async {
     var retryRequestNb = 0;
     var loginRetryNb = 0;
-    var globalResult = RequestResult.globalError;
+    var globalResult = RequestStatus.globalError;
     T? tbResult;
 
-    while (globalResult != RequestResult.success && retryRequestNb <= retryRequestIfErrorNb) {
+    while (globalResult != RequestStatus.success && retryRequestNb <= retryRequestIfErrorNb) {
       // We reset the previous specific error
-      globalResult = RequestResult.globalError;
+      globalResult = RequestStatus.globalError;
 
       retryRequestNb++;
       (globalResult, tbResult) = (await _safeRequestNoAuth(requestToCall)).toPatterns();
 
-      if (useAuth && globalResult == RequestResult.loginError && loginRetryNb == 0) {
+      if (useAuth && globalResult == RequestStatus.loginError && loginRetryNb == 0) {
         loginRetryNb++;
         retryRequestNb--;
 
@@ -203,7 +203,7 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
         }
       }
 
-      if (globalResult != RequestResult.success && retryTimeout != null) {
+      if (globalResult != RequestStatus.success && retryTimeout != null) {
         await Future.delayed(retryTimeout);
       }
     }
@@ -212,27 +212,27 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
   }
 
   /// The method allows to call Thingsboard request and catches the error throwing from it for
-  /// returning [RequestResult] information
+  /// returning [RequestStatus] information
   ///
   /// The method doesn't manage the reconnection and/or getting of user tokens
   Future<TbRequestResponse<T>> _safeRequestNoAuth<T>(TbRequestToCall<T> requestToCall) async {
-    var result = RequestResult.success;
+    var result = RequestStatus.success;
     T? tbResult;
 
     try {
       tbResult = await requestToCall(_tbClient);
     } on ThingsboardError catch (error) {
-      result = RequestResult.globalError;
+      result = RequestStatus.globalError;
 
       if (error.errorCode == ThingsBoardErrorCode.general) {
         _logsHelper.w("A generic error happens on Thingsboard when tried to request it: $error");
         _logsHelper.w("Source of the error: ${error.error}");
       } else if (error.errorCode == ThingsBoardErrorCode.jwtTokenExpired ||
           error.errorCode == ThingsBoardErrorCode.authentication) {
-        result = RequestResult.loginError;
+        result = RequestStatus.loginError;
       }
     } catch (error) {
-      result = RequestResult.globalError;
+      result = RequestStatus.globalError;
       _logsHelper.d("An error occurred when requesting Thingsboard: $error");
     }
 
@@ -265,7 +265,7 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
           useAuth: false,
         );
 
-        if (loginResponse.result != RequestResult.success) {
+        if (loginResponse.result != RequestStatus.success) {
           _logsHelper
               .w("A problem occurred when tried to sign in the user thanks to the identifiers "
                   "stored in memory");
@@ -280,15 +280,15 @@ class TbRequestService<E extends MixinThingsboardConf, S extends MixinThingsboar
     var result = await _safeRequestImpl((tbClient) => tbClient.init());
 
     // The init method called previously doesn't consider that no JWT tokens in memory is an error
-    if (result.result == RequestResult.success && _tbClient.getAuthUser() == null) {
+    if (result.result == RequestStatus.success && _tbClient.getAuthUser() == null) {
       _logsHelper.d("There is no thingsboard tokens stored in app, we try to sign from memory");
 
       if (!(await _signInFromMemoryImpl())) {
-        result = const TbRequestResponse(result: RequestResult.loginError);
+        result = const TbRequestResponse(result: RequestStatus.loginError);
       }
     }
 
-    if (result.result != RequestResult.success) {
+    if (result.result != RequestStatus.success) {
       _logsHelper.w("We can't log in to Thingsboard at start of the app.");
     }
   }

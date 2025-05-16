@@ -35,7 +35,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
   /// This method manages the login to the third server if it's needed. It also adds to the
   /// request all the authentication information which are asked by the third server.
   @override
-  Future<RequestResult> manageLogin(RequestParam requestParam) async {
+  Future<RequestStatus> manageLogin(RequestParam requestParam) async {
     if (verifyTokenInfo(_tokenInfo)) {
       // Token is valid
     } else if (await managedIntermediateProcess()) {
@@ -43,7 +43,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     } else {
       final result = await _manageLogInToServer();
 
-      if (result != RequestResult.success) {
+      if (result != RequestStatus.success) {
         // Nothing has worked, we stop here
         await clearLogins();
         return result;
@@ -56,11 +56,11 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     if (_tokenInfo == null || !verifyTokenInfo(_tokenInfo)) {
       logsHelper.e("The token info aren't correct but we succeeded all the login process, that "
           "can't happen but it happened...");
-      return RequestResult.globalError;
+      return RequestStatus.globalError;
     }
 
     _formatHeaderWithToken(requestParam, _tokenInfo!.token);
-    return RequestResult.success;
+    return RequestStatus.success;
   }
 
   /// Clear the logins
@@ -96,16 +96,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
   /// Update the token info from the server
   @protected
   void updateTokenInfo(T jwtResponse) {
-    _tokenInfo ??= TokenInfo(token: "");
-
-    _tokenInfo!.token = jwtResponse.token;
-
-    if (jwtResponse.expInMs != null) {
-      _tokenInfo!.tokenExpDate = DateTime.fromMillisecondsSinceEpoch(
-        jwtResponse.expInMs!,
-        isUtc: true,
-      );
-    }
+    _tokenInfo ??= jwtResponse.toTokenInfo();
   }
 
   /// This method verifies the token information retrieved from the server.
@@ -116,19 +107,19 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
   static bool verifyTokenInfo(TokenInfo? tokenInfo) => tokenInfo != null && tokenInfo.isValid;
 
   /// This manages the logIn into the server via the [getLoginRequest] executed
-  Future<RequestResult> _manageLogInToServer() async {
+  Future<RequestStatus> _manageLogInToServer() async {
     final loginRequest = await getLoginRequest();
 
     if (loginRequest == null) {
       logsHelper.w("Can't create the JWT token login request");
-      return RequestResult.globalError;
+      return RequestStatus.globalError;
     }
 
     final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
 
-    if (response.result != RequestResult.success) {
+    if (response.status != RequestStatus.success) {
       logsHelper.w("A problem occurred when tried to login to the app");
-      return response.result;
+      return response.status;
     }
 
     final jwtResponse = await parseLoginResponse(response);
@@ -136,19 +127,19 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     if (jwtResponse == null) {
       logsHelper.w("A problem occurred when parsed the response received to get the JWT login "
           "token");
-      return RequestResult.globalError;
+      return RequestStatus.globalError;
     }
 
     if (!(await manageLoginResponseForInterProcess(jwtResponse))) {
       logsHelper.w("A problem occurred when parsed the response received by the intermediate "
           "process");
-      return RequestResult.globalError;
+      return RequestStatus.globalError;
     }
 
     updateTokenInfo(jwtResponse);
 
     logsHelper.d("New token retrieved from server");
-    return RequestResult.success;
+    return RequestStatus.success;
   }
 
   /// This method adds the token into the headers of the future request

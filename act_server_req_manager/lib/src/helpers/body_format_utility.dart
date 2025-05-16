@@ -12,7 +12,7 @@ import 'package:act_server_req_manager/src/models/request_response.dart';
 import 'package:act_server_req_manager/src/server_req_constants.dart';
 import 'package:act_server_req_manager/src/types/http_methods.dart';
 import 'package:act_server_req_manager/src/types/mime_types.dart';
-import 'package:act_server_req_manager/src/types/request_result.dart';
+import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
@@ -111,13 +111,13 @@ sealed class BodyFormatUtility {
         }
       }
 
-      var result = RequestResult.globalError;
+      var result = RequestStatus.globalError;
 
       if (responseReceived.statusCode == HttpStatus.unauthorized) {
-        result = RequestResult.loginError;
+        result = RequestStatus.loginError;
       }
 
-      return RequestResponse<Body>(result: result, response: responseReceived);
+      return RequestResponse<Body>(status: result, response: responseReceived);
     }
 
     final (result, body) = _parseResponseBody<Body>(
@@ -126,16 +126,16 @@ sealed class BodyFormatUtility {
       logsHelper: logsHelper,
     );
 
-    var finalResult = RequestResult.success;
+    var finalResult = RequestStatus.success;
 
     if (!result) {
       logsHelper.w("An error occurred when tried to parse body from response of request: "
           "$urlToRequest");
-      finalResult = RequestResult.globalError;
+      finalResult = RequestStatus.globalError;
     }
 
     return RequestResponse<Body>(
-      result: finalResult,
+      status: finalResult,
       response: responseReceived,
       castedBody: body,
     );

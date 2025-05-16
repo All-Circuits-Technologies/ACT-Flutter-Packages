@@ -2,7 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_req_jwt_logins/src/models/token_answer.dart';
+import 'package:act_server_req_jwt_logins/src/models/token_info.dart';
 
 /// Contains the refresh token answer
 class RefreshTokenAnswer extends TokenAnswer {
@@ -33,6 +35,33 @@ class RefreshTokenAnswer extends TokenAnswer {
     required this.refreshPayload,
   });
 
+  /// Transform the current refresh token answer to [TokenInfo]
+  TokenInfo toRefreshTokenInfo() => TokenInfo(
+        token: refreshToken,
+        tokenExpDate: TokenAnswer.parseExpData(refreshExpInMs),
+      );
+
+  /// Parse a [RefreshTokenAnswer] from a stringified [token] and [refreshToken]
+  static RefreshTokenAnswer? parseJwtTokens({
+    required String token,
+    required String refreshToken,
+    LogsHelper? logsHelper,
+  }) {
+    final tokenAns = TokenAnswer.tryToParseJwtToken(token, logsHelper: logsHelper);
+    final refreshTokenAns = TokenAnswer.tryToParseJwtToken(refreshToken, logsHelper: logsHelper);
+
+    if (tokenAns == null || refreshTokenAns == null) {
+      return null;
+    }
+
+    return RefreshTokenAnswer(
+        token: token,
+        payload: tokenAns.payload,
+        refreshToken: refreshToken,
+        refreshPayload: refreshTokenAns.payload);
+  }
+
+  /// Model properties
   @override
   List<Object?> get props => [...super.props, refreshToken, refreshPayload];
 }

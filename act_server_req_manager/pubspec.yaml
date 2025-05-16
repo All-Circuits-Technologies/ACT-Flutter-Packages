@@ -33,6 +33,10 @@ dependencies:
   act_logger_manager:
     path: ../act_logger_manager
 
+  # Shared auth library
+  act_shared_auth:
+    path: ../act_shared_auth
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

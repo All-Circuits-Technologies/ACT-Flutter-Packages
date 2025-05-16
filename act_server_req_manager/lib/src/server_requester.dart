@@ -12,7 +12,7 @@ import 'package:act_server_req_manager/src/models/request_param.dart';
 import 'package:act_server_req_manager/src/models/request_response.dart';
 import 'package:act_server_req_manager/src/models/server_urls.dart';
 import 'package:act_server_req_manager/src/server_req_constants.dart';
-import 'package:act_server_req_manager/src/types/request_result.dart';
+import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:http/http.dart';
 
 /// We can request the server through this requester. This doesn't manage the login (it's done by
@@ -64,7 +64,7 @@ class ServerRequester extends AbsWithLifeCycle {
     );
 
     if (request == null) {
-      return const RequestResponse(result: RequestResult.globalError);
+      return const RequestResponse(status: RequestStatus.globalError);
     }
 
     logsHelper.d("Request the server: ${requestParam.httpMethod.str} - $urlToRequest");
@@ -88,7 +88,7 @@ class ServerRequester extends AbsWithLifeCycle {
     }
 
     if (response == null) {
-      return const RequestResponse(result: RequestResult.globalError);
+      return const RequestResponse(status: RequestStatus.globalError);
     }
 
     return BodyFormatUtility.formatResponse(
