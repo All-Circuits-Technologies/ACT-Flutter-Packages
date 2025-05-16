@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_thingsboard_client/src/services/tb_request_service.dart';
+import 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -23,7 +23,7 @@ abstract class ATbTelemetry<T> {
   final LogsHelper _logsHelper;
 
   /// The thingsboard request service
-  final TbRequestService _requestService;
+  final AbsTbServerReqManager _requestManager;
 
   /// The list of keys of the currently subscribed telemetry
   final List<String> _currentlySubscribed;
@@ -54,7 +54,7 @@ abstract class ATbTelemetry<T> {
 
   /// Class constructor
   ATbTelemetry({
-    required TbRequestService requestService,
+    required AbsTbServerReqManager requestManager,
     required LogsHelper logsHelper,
     required String telemetryName,
     required this.deviceId,
@@ -63,7 +63,7 @@ abstract class ATbTelemetry<T> {
         _updateMutex = Mutex(),
         _logsHelper = logsHelper.createASubLogsHelper(telemetryName),
         _updatedTelemetry = StreamController.broadcast(),
-        _requestService = requestService;
+        _requestManager = requestManager;
 
   /// Get the telemetry value linked to the given key. If one of the elements is already listened,
   /// this element won't be subscribed twice.
@@ -159,8 +159,7 @@ abstract class ATbTelemetry<T> {
     }
 
     if (_subscriber != null) {
-      if (!(await _requestService.safeRequest((tbClient) async => _subscriber?.unsubscribe()))
-          .isOk) {
+      if (!(await _requestManager.request((tbClient) async => _subscriber?.unsubscribe())).isOk) {
         _logsHelper.w("A problem occurred when tried to unsubscribe from the telemetry");
         return false;
       }
@@ -178,7 +177,7 @@ abstract class ATbTelemetry<T> {
       return true;
     }
 
-    final telemetryService = _requestService.tbClient.getTelemetryService();
+    final telemetryService = _requestManager.tbClient.getTelemetryService();
 
     final subscriber = TelemetrySubscriber(
       telemetryService,
@@ -187,7 +186,7 @@ abstract class ATbTelemetry<T> {
 
     final subscription = subscriber.dataStream.listen(_onUpdateValues);
 
-    if (!(await _requestService.safeRequest((tbClient) async => subscriber.subscribe())).isOk) {
+    if (!(await _requestManager.request((tbClient) async => subscriber.subscribe())).isOk) {
       _logsHelper.w("A problem occurred when tried to subscribe to telemetry");
       await subscription.cancel();
       return false;

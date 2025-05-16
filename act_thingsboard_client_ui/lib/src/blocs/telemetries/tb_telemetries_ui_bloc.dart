@@ -10,8 +10,9 @@ import 'package:act_thingsboard_client_ui/act_thingsboard_client_ui.dart';
 ///
 /// It can be used as it is (when you don't need other BloC process in your view) or with another
 /// BLoC, using the MixinTbTelemetriesUiBloc mixin
-class TbTelemetriesUiBloc extends BlocForMixin<TbTelemetriesUiState>
-    with MixinTbTelemetriesUiBloc<TbTelemetriesUiState> {
+class TbTelemetriesUiBloc<Tb extends AbsTbServerReqManager>
+    extends BlocForMixin<TbTelemetriesUiState>
+    with MixinTbTelemetriesUiBloc<Tb, TbTelemetriesUiState> {
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.clientAttributesKeys}
   @override
   final List<MixinTelemetriesKeys> clientAttributesKeys;
