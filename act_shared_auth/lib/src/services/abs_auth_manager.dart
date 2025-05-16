@@ -14,7 +14,7 @@ abstract class AbsAuthBuilder<T extends AbsAuthManager> extends AbsManagerBuilde
   /// Class constructor
   AbsAuthBuilder(super.factory);
 
-  /// Abstract method which list the manager dependence on others managers
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }
@@ -27,6 +27,10 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   /// This is the authentication service to use in the application
   late final MixinAuthService authService;
 
+  /// This is the storage auth service to use in the application in order to store and load from
+  /// phone memory the ids and/or tokens
+  late final MixinAuthStorageService? storageService;
+
   /// This is the subscription linked to the auth status stream
   late final StreamSubscription _authStatusSub;
 
@@ -36,14 +40,26 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     authService = await getAuthService();
+    storageService = await getStorageService();
+    if (storageService != null) {
+      await authService.setStorageService(storageService);
+    }
     _authStatusSub = authService.authStatusStream.listen(onAuthStatusUpdated);
   }
 
+  /// {@template act_shared_auth.AbsAuthManager.getAuthService}
   /// This method has to be overridden to give the authentication service to use
+  /// {@endtemplate}
   @protected
   Future<MixinAuthService> getAuthService();
 
-  /// {@template AbsAuthManager.onAuthStatusUpdated }
+  /// {@template act_shared_auth.AbsAuthManager.getStorageService}
+  /// This method has to be overridden to give the auth storage service to use
+  /// {@endtemplate}
+  @protected
+  Future<MixinAuthStorageService?> getStorageService() async => null;
+
+  /// {@template act_shared_auth.AbsAuthManager.onAuthStatusUpdated}
   /// Called when the current [AuthStatus] linked to [authService] is updated.
   ///
   /// Can be overridden in the derived class, to have the updated information.
@@ -51,7 +67,7 @@ abstract class AbsAuthManager extends AbsWithLifeCycle {
   @protected
   Future<void> onAuthStatusUpdated(AuthStatus status) async {}
 
-  /// {@macro AbstractManager.dispose}
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _authStatusSub.cancel();
