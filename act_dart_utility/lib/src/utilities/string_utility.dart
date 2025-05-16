@@ -3,6 +3,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/src/errors/act_unsupported_type_error.dart';
 import 'package:act_dart_utility/src/utilities/bool_helper.dart';
 
 /// This class provides a set of [String] helpers, not provided by Dart.
@@ -66,7 +67,7 @@ abstract class StringUtility {
       case const (bool):
         castedValue = BoolHelper.tryParse(value);
       default:
-        throw Exception("The given type: $T isn't managed by the method");
+        throw ActUnsupportedTypeError<T>();
     }
 
     return castedValue as T?;

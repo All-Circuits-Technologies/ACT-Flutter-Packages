@@ -61,7 +61,7 @@ To install it globally, you have to call:
 | [act_internet_connectivity_manager](act_internet_connectivity_manager/) | The package contains the internet connectivity manager to know when we are connected to internet, or not.      |         |
 | [act_intl](act_intl/)                                                   | This package contains non-graphical utilities classes linked to translations.                                  |         |
 | [act_intl_ui](act_intl_ui/)                                             | This package contains graphical helpers linked to translations.                                                |         |
-| [act_jwt_manager](act_jwt_manager/)                                     | Useful to manage JWT in mobile app                                                                             |         |
+| [act_jwt_utilities](act_jwt_utilities/)                                 | Contains useful classes to manage JWT in mobile app                                                            |         |
 | [act_launcher_icon](act_launcher_icon/)                                 | Useful package to generate launcher icons for the apps                                                         |         |
 | [act_life_cycle_manager](act_life_cycle_manager/)                       | This package contains the manager for the life cycle.                                                          |         |
 | [act_local_storage_manager](act_local_storage_manager/)                 | This package contains two managers to store properties and secrets                                             |         |

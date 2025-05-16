@@ -4,6 +4,8 @@
 
 library;
 
-export 'src/abstract_properties_manager.dart';
-export 'src/abstract_secrets_manager.dart';
-export 'src/mixin_stores_conf.dart';
+export 'src/managers/abstract_properties_manager.dart';
+export 'src/managers/abstract_secrets_manager.dart';
+export 'src/mixins/mixin_stores_conf.dart';
+export 'src/models/secret_item.dart';
+export 'src/models/shared_preferences_item.dart';
