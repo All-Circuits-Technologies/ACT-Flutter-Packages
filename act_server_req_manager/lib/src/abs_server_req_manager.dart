@@ -15,7 +15,7 @@ import 'package:act_server_req_manager/src/models/requester_config.dart';
 import 'package:act_server_req_manager/src/models/server_urls.dart';
 import 'package:act_server_req_manager/src/server_requester.dart';
 import 'package:act_server_req_manager/src/types/login_fail_policy.dart';
-import 'package:act_server_req_manager/src/types/request_result.dart';
+import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 
@@ -119,7 +119,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// [retryRequestIfErrorNb] defines the nb of times we want to repeat the request if it hasn't
   /// worked. If the login fails because of a global error, the login policy chosen will be applied,
   /// and this parameter not used. If the login fails because the credentials are not correct, this
-  /// is not used ant the request won't be repeated.
+  /// is not used and the request won't be repeated.
   /// [retryTimeout] defines the timeout to wait between each retry. If no timeout is given, no wait
   /// is done.
   Future<RequestResponse<RespBody>> executeRequest<RespBody>({
@@ -132,41 +132,41 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
     var loginRetryNb = 0;
     final localAbsServerLogin = _absServerLogin;
 
-    var globalResult = RequestResult.globalError;
+    var globalResult = RequestStatus.globalError;
     Response? response;
     RespBody? castedBody;
 
-    while (globalResult != RequestResult.success && retryRequestNb <= retryRequestIfErrorNb) {
+    while (globalResult != RequestStatus.success && retryRequestNb <= retryRequestIfErrorNb) {
       // We reset the previous specific error
-      globalResult = RequestResult.globalError;
+      globalResult = RequestStatus.globalError;
 
       retryRequestNb++;
-      var loginResult = RequestResult.success;
+      var loginResult = RequestStatus.success;
 
       if (ifExistUseAuth && localAbsServerLogin != null) {
         loginResult = await localAbsServerLogin.manageLogin(requestParam);
 
-        if (loginResult != RequestResult.success) {
-          globalResult = RequestResult.loginError;
+        if (loginResult != RequestStatus.success) {
+          globalResult = RequestStatus.loginError;
           await localAbsServerLogin.clearLogins();
 
-          if (loginResult == RequestResult.loginError) {
+          if (loginResult == RequestStatus.loginError) {
             _logsHelper.e("There is a problem when tried to log-in, may be the logins aren't "
                 "right?");
-            return RequestResponse(result: globalResult);
+            return RequestResponse(status: globalResult);
           }
 
           _logsHelper.w("An error occurred when managing the login of a request");
         }
       }
 
-      if (loginResult == RequestResult.success) {
+      if (loginResult == RequestStatus.success) {
         (globalResult, response, castedBody) =
             (await _serverRequester.executeRequestWithoutAuth<RespBody>(requestParam)).toPatterns();
 
         if (localAbsServerLogin != null &&
             localAbsServerLogin.loginFailPolicy == LoginFailPolicy.retryOnceIfLoginFails &&
-            globalResult == RequestResult.loginError &&
+            globalResult == RequestStatus.loginError &&
             loginRetryNb == 0) {
           // We clear the login info
           await localAbsServerLogin.clearLogins();
@@ -175,12 +175,12 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
         }
       }
 
-      if (globalResult != RequestResult.success && retryTimeout != null) {
+      if (globalResult != RequestStatus.success && retryTimeout != null) {
         await Future.delayed(retryTimeout);
       }
     }
 
-    return RequestResponse(result: globalResult, response: response, castedBody: castedBody);
+    return RequestResponse(status: globalResult, response: response, castedBody: castedBody);
   }
 
   /// The method returns the requester configuration to apply

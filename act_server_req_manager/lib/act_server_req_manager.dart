@@ -14,4 +14,5 @@ export 'src/models/requester_config.dart';
 export 'src/server_req_constants.dart';
 export 'src/server_requester.dart';
 export 'src/types/login_fail_policy.dart';
-export 'src/types/request_result.dart';
+export 'src/types/request_status.dart';
+export 'src/types/request_status_ext_auth.dart';

@@ -66,7 +66,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
 
     final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
 
-    if (response.result != RequestResult.success) {
+    if (response.status != RequestStatus.success) {
       logsHelper.w("A problem occurred when tried to get the refresh token");
       return false;
     }
@@ -100,16 +100,6 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
 
   /// Update the refresh token information from the refresh token answer
   void _updateRefreshTokenInfo(RefreshTokenAnswer jwtResponse) {
-    _refreshTokenInfo ??= TokenInfo(token: "");
-
-    _refreshTokenInfo!.token = jwtResponse.refreshToken;
-
-    // If the expiration isn't given, the refresh token will be used until it doesn't work anymore
-    if (jwtResponse.refreshExpInMs != null) {
-      _refreshTokenInfo!.tokenExpDate = DateTime.fromMillisecondsSinceEpoch(
-        jwtResponse.refreshExpInMs!,
-        isUtc: true,
-      );
-    }
+    _refreshTokenInfo ??= jwtResponse.toRefreshTokenInfo();
   }
 }
