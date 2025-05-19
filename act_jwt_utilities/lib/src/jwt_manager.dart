@@ -4,7 +4,7 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_jwt_manager/src/handlers/abstract_jwt_handler.dart';
+import 'package:act_jwt_utilities/src/handlers/abstract_jwt_handler.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 
 /// The manager builder linked to the [JwtManager]

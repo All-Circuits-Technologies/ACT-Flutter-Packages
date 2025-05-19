@@ -35,13 +35,13 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
 
   /// Test if the [key] exists in the storage
   @override
-  bool containsKey(String key) {
+  Future<bool> containsKey(String key) async {
     final secretItem = _tryToGetSecretItem(key);
     return secretItem != null;
   }
 
   /// Get the secret item linked to the Thingsboard key
-  SecretItem<String, S> _getSecretItem<T>(String key) {
+  SecretItem<String> _getSecretItem<T>(String key) {
     final secretItem = _tryToGetSecretItem(key);
     if (secretItem == null) {
       throw Exception("The wanted secret item searched with the key: $key, doesn't exist and it's "
@@ -52,12 +52,12 @@ class ActTbStorage<S extends MixinThingsboardSecret> extends TbStorage<String> {
   }
 
   /// Get the secret item linked to the Thingsboard key
-  SecretItem<String, S>? _tryToGetSecretItem<T>(String key) {
+  SecretItem<String>? _tryToGetSecretItem<T>(String key) {
     switch (key) {
       case _tokenTbKey:
-        return _tbSecretManager.tbToken as SecretItem<String, S>;
+        return _tbSecretManager.tbToken;
       case _refreshTokenTbKey:
-        return _tbSecretManager.tbRefreshToken as SecretItem<String, S>;
+        return _tbSecretManager.tbRefreshToken;
       default:
         return null;
     }
