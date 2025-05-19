@@ -12,7 +12,7 @@ class TbDeviceAttributes extends ATbTelemetry<AttributeData> {
 
   /// Class constructor
   TbDeviceAttributes({
-    required super.requestService,
+    required super.requestManager,
     required super.logsHelper,
     required super.deviceId,
     required this.scope,
@@ -29,8 +29,7 @@ class TbDeviceAttributes extends ATbTelemetry<AttributeData> {
 
   /// Called to parse the subscription update received and get the [AttributeData] linked
   @override
-  Future<Map<String, AttributeData>> onUpdateValuesImpl(
-      SubscriptionUpdate subUpdate) async {
+  Future<Map<String, AttributeData>> onUpdateValuesImpl(SubscriptionUpdate subUpdate) async {
     final attrValues = <AttributeData>[];
     subUpdate.updateAttributeData(attrValues);
 

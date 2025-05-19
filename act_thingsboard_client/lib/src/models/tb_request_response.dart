@@ -9,20 +9,21 @@ import 'package:equatable/equatable.dart';
 /// context
 class TbRequestResponse<T> extends Equatable {
   /// The result of the response
-  final RequestStatus result;
+  final RequestStatus status;
 
   /// The Thingsboard request response
   final T? requestResponse;
 
-  /// True if the [result] is equal to [RequestStatus.success]
-  bool get isOk => result.isOk;
+  /// True if the [status] is equal to [RequestStatus.success]
+  bool get isOk => status.isOk;
 
   /// Class constructor
-  const TbRequestResponse({required this.result, this.requestResponse});
+  const TbRequestResponse({required this.status, this.requestResponse});
 
   /// Export the class member to patterns
-  (RequestStatus, T?) toPatterns() => (result, requestResponse);
+  (RequestStatus, T?) toPatterns() => (status, requestResponse);
 
+  /// Class properties
   @override
-  List<Object?> get props => [result, requestResponse];
+  List<Object?> get props => [status, requestResponse];
 }

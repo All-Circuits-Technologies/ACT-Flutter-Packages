@@ -21,7 +21,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 typedef GetDeviceInfo = Future<({bool success, DeviceInfo? deviceInfo})> Function();
 
 /// This mixin is helpful to use the [TbTelemetriesUiBloc] and its states without extending it
-mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocForMixin<S> {
+mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
+    S extends MixinTbTelemetriesUiState<S>> on BlocForMixin<S> {
   /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.clientAttributesKeys}
   /// The keys of client attributes to listen
   /// {@endtemplate}
@@ -156,7 +157,7 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
       return null;
     }
 
-    final tbDevicesService = globalGetIt().get<ThingsboardManager>().devicesService;
+    final tbDevicesService = globalGetIt().get<Tb>().devicesService;
 
     final result = await getDeviceInfo();
 
@@ -235,10 +236,10 @@ mixin MixinTbTelemetriesUiBloc<S extends MixinTbTelemetriesUiState<S>> on BlocFo
   }
 
   /// Get the [GetDeviceInfo] callback from the the given [deviceName]
-  static GetDeviceInfo getCallbackFromDeviceName({
+  static GetDeviceInfo getCallbackFromDeviceName<Tb extends AbsTbServerReqManager>({
     required String deviceName,
   }) =>
-      () async => globalGetIt().get<ThingsboardManager>().devicesService.getCustomerDeviceByName(
+      () async => globalGetIt().get<Tb>().devicesService.getCustomerDeviceByName(
             deviceName: deviceName,
           );
 

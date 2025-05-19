@@ -5,10 +5,10 @@
 import 'dart:async';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_attributes.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_time_series.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
-import 'package:act_thingsboard_client/src/services/tb_request_service.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Contains the memory cache of the subscribed telemetry (attributes and time series) linked to a
@@ -46,41 +46,40 @@ class TbDeviceValues {
 
   /// Class constructor
   TbDeviceValues({
-    required TbRequestService requestService,
+    required AbsTbServerReqManager requestManager,
     required this.deviceId,
     required LogsHelper logsHelper,
   }) : logsHelper = logsHelper.createASubLogsHelper(deviceId) {
     _clientAttributes = TbDeviceAttributes(
-      requestService: requestService,
+      requestManager: requestManager,
       logsHelper: logsHelper,
       deviceId: deviceId,
       scope: AttributeScope.CLIENT_SCOPE,
     );
 
     _sharedAttributes = TbDeviceAttributes(
-      requestService: requestService,
+      requestManager: requestManager,
       logsHelper: logsHelper,
       deviceId: deviceId,
       scope: AttributeScope.SHARED_SCOPE,
     );
 
     _serverAttributes = TbDeviceAttributes(
-      requestService: requestService,
+      requestManager: requestManager,
       logsHelper: logsHelper,
       deviceId: deviceId,
       scope: AttributeScope.SERVER_SCOPE,
     );
 
     _timeSeries = TbDeviceTimeSeries(
-      requestService: requestService,
+      requestManager: requestManager,
       logsHelper: logsHelper,
       deviceId: deviceId,
     );
   }
 
   /// Create a telemetry handler to observe attributes or time series values
-  TbTelemetryHandler createTelemetryHandler() =>
-      TbTelemetryHandler(deviceValues: this);
+  TbTelemetryHandler createTelemetryHandler() => TbTelemetryHandler(deviceValues: this);
 
   /// Class dispose method
   Future<void> dispose() async {

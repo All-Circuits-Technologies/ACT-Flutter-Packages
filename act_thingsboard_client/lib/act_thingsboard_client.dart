@@ -4,15 +4,18 @@
 
 library;
 
+export 'package:act_thingsboard_client/src/constants/tb_constants.dart';
+export 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
+export 'package:act_thingsboard_client/src/managers/tb_no_auth_server_req_manager.dart';
+export 'package:act_thingsboard_client/src/managers/tb_std_auth_server_req_manager.dart';
 export 'package:act_thingsboard_client/src/mixins/mixin_telemetries_keys.dart';
 export 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_conf.dart';
-export 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_secret.dart';
 export 'package:act_thingsboard_client/src/models/tb_ext_attribute_data.dart';
 export 'package:act_thingsboard_client/src/models/tb_request_response.dart';
 export 'package:act_thingsboard_client/src/models/tb_ts_value.dart';
 export 'package:act_thingsboard_client/src/services/devices/tb_devices_service.dart';
 export 'package:act_thingsboard_client/src/services/devices/values/tb_device_values.dart';
 export 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
-export 'package:act_thingsboard_client/src/thingsboard_manager.dart';
+export 'package:act_thingsboard_client/src/services/tb_std_auth_service.dart';
 export 'package:act_thingsboard_client/src/utils/tb_telemetries_helper.dart';
 export 'package:thingsboard_client/thingsboard_client.dart' show AttributeScope;
