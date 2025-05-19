@@ -34,16 +34,16 @@ jobs:
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; PKGS: act_abs_peripherals_manager, act_abstract_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_utility, act_enable_service_utility, act_entity, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_launcher_icon, act_life_cycle_manager, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_router_manager, act_server_req_jwt_logins, act_server_req_manager, act_server_storage_manager, act_server_storage_ui, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
+    name: "analyze; PKGS: act_abs_peripherals_manager, act_abstract_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_utility, act_enable_service_utility, act_entity, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_launcher_icon, act_life_cycle_manager, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_router_manager, act_server_req_jwt_logins, act_server_req_manager, act_server_storage_manager, act_server_storage_ui, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1077-153080576"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1111-292068454"
           restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager--!!too_long!!-1060-242120565
+            os:ubuntu-latest;pub-cache-hosted;sdk:stable;packages:act_abs_peripherals_manager-act_abstract_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_utility-act_enable_service_utility-act_entity-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_layer-act_halo_manager-!!too_long!!-1094-1062412855
             os:ubuntu-latest;pub-cache-hosted;sdk:stable
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -342,6 +342,24 @@ jobs:
         run: flutter analyze --fatal-infos .
         if: "always() && steps.act_music_player_manager_pub_upgrade.conclusion == 'success'"
         working-directory: act_music_player_manager
+      - id: act_oauth2_core_pub_upgrade
+        name: act_oauth2_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_oauth2_core
+      - name: "act_oauth2_core; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_oauth2_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_oauth2_core
+      - id: act_oauth2_google_pub_upgrade
+        name: act_oauth2_google; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_oauth2_google
+      - name: "act_oauth2_google; flutter analyze --fatal-infos ."
+        run: flutter analyze --fatal-infos .
+        if: "always() && steps.act_oauth2_google_pub_upgrade.conclusion == 'success'"
+        working-directory: act_oauth2_google
       - id: act_ocsigen_halo_manager_pub_upgrade
         name: act_ocsigen_halo_manager; flutter pub upgrade
         run: flutter pub upgrade
