@@ -77,7 +77,7 @@ package "act_thingsboard_client" #FEEEFE {
     TbNoAuthServerReqManager *--> "1" ThingsboardClient
 
     abstract class AbsTbServerReqManager {
-        +TbRequestResponse request(T Function(ThingsboardClient tbClient) requestToCall)
+        {abstract} +TbRequestResponse request(T Function(ThingsboardClient tbClient) requestToCall)
     }
     AbsTbServerReqManager o--> "1" TbNoAuthServerReqManager
 
@@ -88,7 +88,8 @@ package "act_thingsboard_client" #FEEEFE {
     TbNoAuthServerReqManager o--> "1" ActTbStorage
 
     class TbStdAuthServerReqManager
-    TbStdAuthServerReqManager <|-- AbsTbServerReqManager
+    TbStdAuthServerReqManager --|> AbsTbServerReqManager
+    TbStdAuthServerReqManager ..> AbsAuthManager
 
     class TbStdAuthService
     MixinAuthService <|.. TbStdAuthService
@@ -97,7 +98,7 @@ package "act_thingsboard_client" #FEEEFE {
 
 class MyAppAuthManager
 AbsAuthManager <|-- MyAppAuthManager
-MyAppAuthManager *--> "1" TbStdAuthService
+TbStdAuthService "1" <--* MyAppAuthManager
 
 MyAppAuthManager ..> TbNoAuthServerReqManager
 @enduml
