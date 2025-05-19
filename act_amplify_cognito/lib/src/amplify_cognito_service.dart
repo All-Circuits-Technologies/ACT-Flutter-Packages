@@ -65,9 +65,8 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
         _cognitoStreamSubs = [],
         super();
 
-  /// Init the service
-  ///
-  /// Don't forget to create and init the children services here
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
+  /// {@macro act_amplify_core.AbsAmplifyService.initLifeCycle}
   @override
   Future<void> initLifeCycle({
     LogsHelper? parentLogsHelper,
@@ -287,11 +286,9 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
         includeRegion: false,
       );
 
-  /// Get the access token of the logged user
-  ///
-  /// Return null if no user is logged or if a problem occurred
+  /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
-  Future<String?> getAccessToken() => _userService.getAccessToken();
+  Future<AuthTokens?> getTokens() => _userService.getTokens();
 
   /// This method allows to confirm the sign in.
   /// In case, an admin creates an user with a temporary password, this method is used to send the

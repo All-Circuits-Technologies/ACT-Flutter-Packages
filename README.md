@@ -78,6 +78,7 @@ To install it globally, you have to call:
 | [act_server_storage_manager](act_server_storage_manager/)               | Act server storage manager package.                                                                            |         |
 | [act_server_storage_ui](act_server_storage_ui/)                         | Contains helpful widgets to work with act_server_storage_manager                                               |         |
 | [act_shared_auth](act_shared_auth/)                                     | This contains generic and shared elements for authentication services.                                         |         |
+| [act_shared_auth_local_storage](act_shared_auth_local_storage/)         | This contains services to store ids from the authentication services to act secure local storage.              |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                               | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                               |         |
 | [act_splash_screen_manager](act_splash_screen_manager/)                 | Useful package to support native splash screens in mobile applications                                         |         |
 | [act_thingsboard_client](act_thingsboard_client/)                       | Helpful package to use the Thingsboard client with app                                                         |         |
