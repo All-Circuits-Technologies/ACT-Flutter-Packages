@@ -113,9 +113,9 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
     final completer = Completer<ui.Image>();
     tmpImage.resolve(ImageConfiguration.empty).addListener(ImageStreamListener((info, _) {
       completer.complete(info.image);
-      tmpImage.evict();
     }));
     final image = await completer.future;
+    await tmpImage.evict();
     return ImageInfo(image: image);
   }
 }
