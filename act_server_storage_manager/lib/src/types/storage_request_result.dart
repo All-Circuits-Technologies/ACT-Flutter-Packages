@@ -13,6 +13,9 @@ enum StorageRequestResult {
   /// The request failed because of a local io error (file not found, directory not created, etc.)
   ioError,
 
+  /// The request failed because it is not supported by underlying service
+  unsupportedError,
+
   /// General failure
   genericError,
 }

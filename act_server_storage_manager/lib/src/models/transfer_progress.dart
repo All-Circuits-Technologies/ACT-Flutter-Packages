@@ -8,6 +8,8 @@ import 'package:equatable/equatable.dart';
 /// Class representing the transfer progress of a file being downloaded or uploaded
 class TransferProgress extends Equatable {
   /// The total bytes to transfer
+  ///
+  /// Negative when unknown.
   final int totalBytes;
 
   /// The bytes transferred

@@ -1,0 +1,239 @@
+// SPDX-FileCopyrightText: 2025 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+import 'dart:async';
+import 'dart:io';
+
+import 'package:act_abstract_manager/act_abstract_manager.dart';
+import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_server_storage_manager/act_server_storage_manager.dart';
+import 'package:path/path.dart' as path;
+import 'package:path_provider/path_provider.dart';
+
+/// This service implements a generic HTTP/HTTPS storage service.
+///
+/// Note that there is no standardize way to list files of an HTTP folder, therefore this generic
+/// HTTP service does not implement listFiles and returns a systematic error instead.
+///
+/// Also, this service does not support HTTP custom headers nor authentication (see getFile)
+class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
+  /// Logs category for the HTTP storage service
+  static const _logsCategory = "storageHttp";
+
+  /// HTTP root to work with.
+  ///
+  /// This must be a folder. Can be a simple server (such as "http://fqdn")
+  /// or a more specialized URL (such as "http://fqdn:port/foo/folder/").
+  late final Uri root;
+
+  /// The service logs helper
+  late final LogsHelper _logsHelper;
+
+  /// Client used to download from HTTP.
+  ///
+  /// Using a client member increases chances to reuse same socket for subsequent requests.
+  final HttpClient _httpClient;
+
+  /// Class constructor
+  HttpStorageService({required Uri root})
+      : _httpClient = HttpClient(),
+        super() {
+    // Early ensure a final slash in our root member
+    // so our getDownloadUrl is simpler
+    this.root = _ensureUriTailingSlash(root);
+  }
+
+  /// Initialize the service by creating the logs helper
+  @override
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
+    await super.initLifeCycle();
+    _logsHelper = LogsHelper(
+      logsManager: globalGetIt().get<LoggerManager>(),
+      logsCategory: _logsCategory,
+    );
+  }
+
+  /// Get the download url of a file based on a [fileId].
+  @override
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
+    String fileId,
+  ) async {
+    final fileUri = _getDownloadUri(fileId: fileId);
+
+    if (fileUri == null) {
+      return (
+        result: StorageRequestResult.genericError,
+        downloadUrl: null,
+      );
+    }
+
+    return (
+      result: StorageRequestResult.success,
+      downloadUrl: fileUri.toString(),
+    );
+  }
+
+  /// Download [fileId] file, in a local [directory] or in a default download directory.
+  /// [onProgress] callback is not supported and ignored.
+  // TODO(aloiseau): handle credentials and custom headers
+  // Note(aloiseau): This method is not called when caching is enabled, which sounds weird
+  //                 and may duplicate credentials/custom headers support code if any.
+  @override
+  Future<({StorageRequestResult result, File? file})> getFile(
+    String fileId, {
+    Directory? directory,
+    OnProgressCallback? onProgress,
+  }) async {
+    // Compute URL to download
+    final fileUri = _getDownloadUri(fileId: fileId);
+    if (fileUri == null) {
+      return (
+        result: StorageRequestResult.genericError,
+        file: null,
+      );
+    }
+
+    // Optional progression helper variables
+    var contentLength = -1;
+    var downloadedBytes = 0;
+
+    // Locally downloaded file
+    File? dlFile;
+
+    try {
+      // Prepare download destination
+      // (getDownloadsDirectory may raise a MissingPlatformDirectoryException)
+      directory ??= await MixinStorageService.getDownloadsDirectory();
+
+      // TODO(aloiseau): Avoid file collision in local download area
+      //    by either prepending a service-dedicated top folder into dlDirPath
+      //    or by inserting a root or fileUri hash into dlDirPath or instead of fileId below
+      final dlFilepath = '${directory.path}/$fileId';
+      final dlDirPath = dlFilepath.substring(0, dlFilepath.lastIndexOf('/'));
+
+      // (directory creation may throw an exception)
+      await Directory(dlDirPath).create(recursive: true);
+
+      // Forge HTTP request
+      // (getUrl may throw a SocketException if host lookup fails)
+      final getResp = await _httpClient.getUrl(fileUri);
+      final closeResp = await getResp.close();
+      final downloadResult = _parseHttpResponseCode(closeResp.statusCode);
+      if (downloadResult != StorageRequestResult.success) {
+        return (
+          result: StorageRequestResult.genericError,
+          file: null,
+        );
+      }
+
+      // Download by explicit chunks to handle optional progress feedback
+      dlFile = File(dlFilepath);
+      final dlFileWriteStream = dlFile.openWrite();
+
+      contentLength = closeResp.contentLength;
+      downloadedBytes = 0;
+      await for (final chunk in closeResp) {
+        dlFileWriteStream.add(chunk);
+
+        downloadedBytes += chunk.length;
+        onProgress?.call(TransferProgress(
+          bytesTransferred: downloadedBytes,
+          totalBytes: contentLength, // Note: (-1) if unknown
+          transferStatus: TransferStatus.inProgress,
+        ));
+      }
+
+      // Free resources
+      await dlFileWriteStream.close();
+      _logsHelper.d('File $fileId downloaded to directory $directory');
+    } on Exception catch (e) {
+      _logsHelper.e('Error while downloading file $fileId to directory $directory: $e');
+
+      onProgress?.call(TransferProgress(
+        bytesTransferred: downloadedBytes,
+        totalBytes: contentLength, // Note: (-1) if unknown
+        transferStatus: TransferStatus.failure,
+      ));
+
+      return (result: _parseException(e), file: null);
+    }
+
+    if (!dlFile.existsSync()) {
+      assert(false, "Should never fire");
+      return (result: StorageRequestResult.genericError, file: null);
+    }
+
+    onProgress?.call(TransferProgress(
+      bytesTransferred: downloadedBytes,
+      totalBytes: contentLength, // Note: (-1) if unknown
+      transferStatus: TransferStatus.success,
+    ));
+
+    return (result: StorageRequestResult.success, file: dlFile);
+  }
+
+  /// HTTP have no standard listing feature. Always return an unsupported error.
+  @override
+  Future<({StorageRequestResult result, StoragePage? page})> listFiles(
+    String searchPath, {
+    int? pageSize,
+    String? nextToken,
+    bool recursiveSearch = false,
+  }) async =>
+      (result: StorageRequestResult.unsupportedError, page: null);
+
+  /// Tell if given [fileUri] (typically a download URI) appears safe or not
+  ///
+  /// It is especially considered unsafe if it would escape [root] (and by the way likely escape
+  /// locale download/cache area).
+  bool _isFileUriSafe(Uri fileUri) =>
+      // Basic for now
+      path.isWithin(root.path, fileUri.path);
+
+  /// Get download Uri for given [fileId]
+  Uri? _getDownloadUri({required String fileId}) {
+    // Ensure fileId is later processed as a relative path to our root (which ends with a slash)
+    var sanitizedRelativePath = fileId;
+
+    while (sanitizedRelativePath.startsWith("/")) {
+      sanitizedRelativePath = sanitizedRelativePath.substring(1);
+    }
+
+    final downloadUri = root.resolve(sanitizedRelativePath);
+
+    if (!_isFileUriSafe(downloadUri)) {
+      _logsHelper.e("FileId $fileId appears wrong or unsafe, rejected");
+      return null;
+    }
+
+    return root.resolve(sanitizedRelativePath);
+  }
+
+  /// Return an Uri which forcibly finishes with a slash
+  static Uri _ensureUriTailingSlash(Uri uri) {
+    if (!uri.path.endsWith('/')) {
+      return uri.replace(path: '${uri.path}/');
+    }
+    return uri;
+  }
+
+  /// Convert a full download HTTP response code to a StorageRequestResult
+  static StorageRequestResult _parseHttpResponseCode(int code) => switch (code) {
+        // We may want we use http_status or http_status_code package one day
+        200 => StorageRequestResult.success,
+        401 => StorageRequestResult.accessDenied,
+        403 => StorageRequestResult.accessDenied,
+        _ => StorageRequestResult.genericError,
+      };
+
+  /// Convert an exception to a StorageRequestResult
+  static StorageRequestResult _parseException(Exception e) => switch (e) {
+        HttpException _ => StorageRequestResult.ioError, // Closed by peer
+        MissingPlatformDirectoryException _ => StorageRequestResult.ioError,
+        HandshakeException _ => StorageRequestResult.ioError, // TLS issue
+        SocketException _ => StorageRequestResult.ioError, // Hostname resolution failed
+        _ => StorageRequestResult.genericError,
+      };
+}
