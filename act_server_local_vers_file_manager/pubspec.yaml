@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2025 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_server_local_vers_file_manager
+description: "Act server localized and versioned file manager."
+version: 0.1.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+  flutter: ">=3.0.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Easily create managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Utilities around dart core types
+  act_dart_utility:
+    path : ../act_dart_utility
+
+  # Global manager
+  act_global_manager:
+    path : ../act_global_manager
+
+  # Loggers
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Help fetching remotely stored files
+  act_server_storage_manager:
+    path: ../act_server_storage_manager
+
+  # Path manipulation tools
+  path: ^1.8.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
