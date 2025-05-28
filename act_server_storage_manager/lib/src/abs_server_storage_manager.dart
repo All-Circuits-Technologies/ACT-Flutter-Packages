@@ -94,9 +94,11 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
           maxNbOfCachedObjects: configManager.storageCacheNumberOfObjectsCached.load(),
         ),
       );
-    }
 
-    await _cacheService?.initLifeCycle();
+      await _cacheService!.initLifeCycle();
+    } else {
+      _cacheService = null;
+    }
   }
 
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.

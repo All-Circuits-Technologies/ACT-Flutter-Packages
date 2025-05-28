@@ -291,10 +291,9 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
       futures.add(help.audioPlayer.dispose());
     }
 
-    return Future.wait(futures).then((value) {
-      _audioPlayers.clear();
-      AudioCache.instance.clearAll();
-    });
+    await Future.wait(futures);
+    _audioPlayers.clear();
+    await AudioCache.instance.clearAll();
   }
 }
 
