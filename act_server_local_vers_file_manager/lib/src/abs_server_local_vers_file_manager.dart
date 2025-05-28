@@ -198,6 +198,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
         dirId: dirId,
         versionToFileName: versionToFileName ?? defaultVersionToFileName ?? (version) => version,
         locales: locales ?? defaultLocales ?? [systemLocale],
+        explicitVersion: explicitVersion,
         cacheVersion: cacheVersion ?? defaultCacheVersion ?? true,
         cacheFile: cacheFile ?? defaultCacheFile ?? true,
       );
