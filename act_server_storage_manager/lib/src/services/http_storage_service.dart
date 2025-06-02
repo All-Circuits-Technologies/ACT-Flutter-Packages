@@ -208,7 +208,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
       return null;
     }
 
-    return root.resolve(sanitizedRelativePath);
+    return downloadUri;
   }
 
   /// Return an Uri which forcibly finishes with a slash
