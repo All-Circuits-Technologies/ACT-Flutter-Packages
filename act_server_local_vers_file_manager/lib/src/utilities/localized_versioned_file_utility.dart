@@ -74,7 +74,8 @@ sealed class LocalizedVersionedFileTool {
       versionToFileName: versionToFileName,
       cacheVersion: cacheVersion,
       cacheFile: cacheFile,
-      versionOverride: explicitVersion ?? await localizedVersionResult.data!.file.readAsString(),
+      versionOverride:
+          explicitVersion ?? (await localizedVersionResult.data!.file.readAsString()).trim(),
     );
 
     if (versionedFileResult.result != StorageRequestResult.success) {

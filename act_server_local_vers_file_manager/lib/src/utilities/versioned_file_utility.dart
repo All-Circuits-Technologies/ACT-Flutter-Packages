@@ -120,7 +120,7 @@ sealed class VersionedFileUtility {
     }
 
     // Read "current" file, fail upon any issue
-    final version = await requestResult.file!.readAsString();
+    final version = (await requestResult.file!.readAsString()).trim();
 
     if (version.isEmpty) {
       return (requestResult: StorageRequestResult.genericError, version: null);
