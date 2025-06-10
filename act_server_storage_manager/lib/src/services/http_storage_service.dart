@@ -42,7 +42,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
         super() {
     // Early ensure a final slash in our root member
     // so our getDownloadUrl is simpler
-    this.root = _ensureUriTailingSlash(root);
+    this.root = _ensureUriTrailingSlash(root);
   }
 
   /// Initialize the service by creating the logs helper
@@ -212,7 +212,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   }
 
   /// Return an Uri which forcibly finishes with a slash
-  static Uri _ensureUriTailingSlash(Uri uri) {
+  static Uri _ensureUriTrailingSlash(Uri uri) {
     if (!uri.path.endsWith('/')) {
       return uri.replace(path: '${uri.path}/');
     }
