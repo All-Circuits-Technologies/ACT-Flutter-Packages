@@ -49,10 +49,14 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   @override
   Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _logsCategory,
-    );
+    if (parentLogsHelper == null) {
+      _logsHelper = LogsHelper(
+        logsManager: globalGetIt().get<LoggerManager>(),
+        logsCategory: _logsCategory,
+      );
+    } else {
+      _logsHelper = parentLogsHelper.createASubLogsHelper(_logsCategory);
+    }
   }
 
   /// Get the download url of a file based on a [fileId].
