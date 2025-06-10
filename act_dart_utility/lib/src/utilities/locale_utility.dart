@@ -36,12 +36,20 @@ sealed class LocaleUtility {
   ///
   /// Note that only language and optional region sub-tags are supported. Script is not supported.
   /// Note that case of resulted locale is identical to case of input string.
-  static Locale localeFromString({required String string, String? separator}) {
+  ///
+  /// Returns null if [string] failed to be parsed.
+  static Locale? localeFromString({required String string, String? separator}) {
+    if (string.isEmpty || (separator != null && separator.isEmpty)) {
+      return null;
+    }
+
     separator ??= string.contains(underscoreSeparator) ? underscoreSeparator : bcp47CodesSeparator;
     final subTags = string.split(separator);
 
     // Reminder: we only support a subset of locales
-    assert(subTags.isNotEmpty && subTags.length <= 2, "Locale should have one or two sub-tags");
+    if (subTags.length >= 3) {
+      return null;
+    }
 
     final languageCode = subTags.first;
     final countryCode = subTags.length >= 2 ? subTags.last : null;
