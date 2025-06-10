@@ -29,6 +29,7 @@ export '../src/utilities/future_utility.dart';
 export '../src/utilities/iterable_utility.dart';
 export '../src/utilities/json_utility.dart';
 export '../src/utilities/list_utility.dart';
+export '../src/utilities/locale_utility.dart';
 export '../src/utilities/lock_utility.dart';
 export '../src/utilities/map_utility.dart';
 export '../src/utilities/num_utility.dart';
