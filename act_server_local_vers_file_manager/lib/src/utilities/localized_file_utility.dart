@@ -77,6 +77,14 @@ sealed class LocalizedFileUtility {
       separator: _localeCodesSep,
     );
 
+    if (foundLocale == null) {
+      // We stringified locales at the very beginning of this method
+      // and we transformed one of them back to a locale.
+      // We do not expect any issue here.
+      assert(false, "Should never fire");
+      return (result: StorageRequestResult.genericError, data: null);
+    }
+
     return (
       result: variantUtilityResult.result,
       data: (
