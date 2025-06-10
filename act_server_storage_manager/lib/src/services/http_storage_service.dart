@@ -26,7 +26,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   ///
   /// This must be a folder. Can be a simple server (such as "http://fqdn")
   /// or a more specialized URL (such as "http://fqdn:port/foo/folder/").
-  late final Uri root;
+  final Uri _httpRoot;
 
   /// The service logs helper
   late final LogsHelper _logsHelper;
@@ -37,13 +37,11 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   final HttpClient _httpClient;
 
   /// Class constructor
-  HttpStorageService({required Uri root})
+  HttpStorageService({required Uri httpRoot})
       : _httpClient = HttpClient(),
-        super() {
-    // Early ensure a final slash in our root member
-    // so our getDownloadUrl is simpler
-    this.root = _ensureUriTrailingSlash(root);
-  }
+        // Early ensure a final slash in our _httpRoot member so our getDownloadUrl is simpler
+        _httpRoot = _ensureUriTrailingSlash(httpRoot),
+        super();
 
   /// Initialize the service by creating the logs helper
   @override
@@ -190,11 +188,11 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
 
   /// Tell if given [fileUri] (typically a download URI) appears safe or not
   ///
-  /// It is especially considered unsafe if it would escape [root] (and by the way likely escape
+  /// It is especially considered unsafe if it would escape [_httpRoot] (and by the way likely escape
   /// locale download/cache area).
   bool _isFileUriSafe(Uri fileUri) =>
       // Basic for now
-      path.isWithin(root.path, fileUri.path);
+      path.isWithin(_httpRoot.path, fileUri.path);
 
   /// Get download Uri for given [fileId]
   Uri? _getDownloadUri({required String fileId}) {
@@ -205,7 +203,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
       sanitizedRelativePath = sanitizedRelativePath.substring(1);
     }
 
-    final downloadUri = root.resolve(sanitizedRelativePath);
+    final downloadUri = _httpRoot.resolve(sanitizedRelativePath);
 
     if (!_isFileUriSafe(downloadUri)) {
       _logsHelper.e("FileId $fileId appears wrong or unsafe, rejected");
