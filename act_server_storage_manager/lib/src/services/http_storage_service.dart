@@ -91,67 +91,80 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     // Compute URL to download
     final fileUri = _getDownloadUri(fileId: fileId);
     if (fileUri == null) {
-      return (
-        result: StorageRequestResult.genericError,
-        file: null,
-      );
+      _logsHelper.e('Failed to compute download URL for $fileId');
+      _handleEarlyFailureProgression(onProgress);
+      return (result: StorageRequestResult.genericError, file: null);
     }
 
-    // Optional progression helper variables
-    var contentLength = -1;
-    var downloadedBytes = 0;
-
-    // Locally downloaded file
-    File? dlFile;
-
+    // Prepare download destination
     try {
-      // Prepare download destination
       // (getDownloadsDirectory may raise a MissingPlatformDirectoryException)
       directory ??= await MixinStorageService.getDownloadsDirectory();
+    } on Exception catch (e) {
+      _logsHelper.e('Failed to find a directory to download into: $e');
+      _handleEarlyFailureProgression(onProgress);
+      return (result: _parseException(e), file: null);
+    }
 
-      // TODO(aloiseau): Avoid file collision in local download area
-      //    by either prepending a service-dedicated top folder into dlDirPath
-      //    or by inserting a root or fileUri hash into dlDirPath or instead of fileId below
-      final dlFilepath = '${directory.path}/$fileId';
-      final dlDirPath = dlFilepath.substring(0, dlFilepath.lastIndexOf('/'));
+    // TODO(aloiseau): Avoid file collision in local download area
+    //    by either prepending a service-dedicated top folder into dlDirPath
+    //    or by inserting a root or fileUri hash into dlDirPath or instead of fileId below
+    final dlFilepath = '${directory.path}/$fileId';
+    final dlDirPath = dlFilepath.substring(0, dlFilepath.lastIndexOf('/'));
 
+    // Create destination folder if needed
+    try {
       // (directory creation may throw an exception)
       await Directory(dlDirPath).create(recursive: true);
-
-      // Forge HTTP request
-      // (getUrl may throw a SocketException if host lookup fails)
-      final getResp = await _httpClient.getUrl(fileUri);
-      final closeResp = await getResp.close();
-      final downloadResult = _parseHttpResponseCode(closeResp.statusCode);
-      if (downloadResult != StorageRequestResult.success) {
-        return (
-          result: StorageRequestResult.genericError,
-          file: null,
-        );
-      }
-
-      // Download by explicit chunks to handle optional progress feedback
-      dlFile = File(dlFilepath);
-      final dlFileWriteStream = dlFile.openWrite();
-
-      contentLength = closeResp.contentLength;
-      downloadedBytes = 0;
-      await for (final chunk in closeResp) {
-        dlFileWriteStream.add(chunk);
-
-        downloadedBytes += chunk.length;
-        onProgress?.call(TransferProgress(
-          bytesTransferred: downloadedBytes,
-          totalBytes: contentLength, // Note: (-1) if unknown
-          transferStatus: TransferStatus.inProgress,
-        ));
-      }
-
-      // Free resources
-      await dlFileWriteStream.close();
-      _logsHelper.d('File $fileId downloaded to directory $directory');
     } on Exception catch (e) {
-      _logsHelper.e('Error while downloading file $fileId to directory $directory: $e');
+      _logsHelper.e('Failed to create download directory $directory: $e');
+      _handleEarlyFailureProgression(onProgress);
+      return (result: _parseException(e), file: null);
+    }
+
+    // Forge HTTP request
+    final HttpClientResponse closeResp;
+    try {
+      // (getUrl and close may throw exceptions)
+      final getResp = await _httpClient.getUrl(fileUri);
+      closeResp = await getResp.close();
+    } on Exception catch (e) {
+      _logsHelper.e('Failed to query URL $fileUri: $e');
+      _handleEarlyFailureProgression(onProgress);
+      return (result: _parseException(e), file: null);
+    }
+
+    final downloadResult = _parseHttpResponseCode(closeResp.statusCode);
+    if (downloadResult != StorageRequestResult.success) {
+      _handleEarlyFailureProgression(onProgress);
+      return (result: StorageRequestResult.genericError, file: null);
+    }
+
+    // Download locally, by explicit chunks to handle optional progress feedback
+    final dlFile = File(dlFilepath);
+    final dlFileWriteStream = dlFile.openWrite();
+
+    final contentLength = closeResp.contentLength;
+    var downloadedBytes = 0;
+    await for (final chunk in closeResp) {
+      dlFileWriteStream.add(chunk);
+
+      downloadedBytes += chunk.length;
+      onProgress?.call(TransferProgress(
+        bytesTransferred: downloadedBytes,
+        totalBytes: contentLength, // Note: (-1) if unknown
+        transferStatus: TransferStatus.inProgress,
+      ));
+    }
+
+    // Free resources
+    try {
+      // If an error occurred while opening or writing the file,
+      // then closing may throw an error
+      await dlFileWriteStream.close();
+      _logsHelper.d('File $fileId downloaded as $dlFilepath');
+    } on Exception catch (e) {
+      _logsHelper.e('Error while downloading file $fileId: $e');
 
       onProgress?.call(TransferProgress(
         bytesTransferred: downloadedBytes,
@@ -162,7 +175,9 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
       return (result: _parseException(e), file: null);
     }
 
+    // Epilogue
     if (!dlFile.existsSync()) {
+      _logsHelper.e("Downloaded file '${dlFile.path}' vanished");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, file: null);
     }
@@ -213,6 +228,17 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     }
 
     return downloadUri;
+  }
+
+  /// Announce an early download failure to [onProgress], if it is not null
+  static void _handleEarlyFailureProgression(OnProgressCallback? onProgress) {
+    onProgress?.call(const TransferProgress(
+      // No bytes transferred
+      bytesTransferred: 0,
+      // Unknown source file size (we actually don't care for early failures)
+      totalBytes: -1,
+      transferStatus: TransferStatus.failure,
+    ));
   }
 
   /// Return an Uri which forcibly finishes with a slash
