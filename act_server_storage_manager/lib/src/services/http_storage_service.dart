@@ -176,7 +176,9 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     return (result: StorageRequestResult.success, file: dlFile);
   }
 
-  /// HTTP have no standard listing feature. Always return an unsupported error.
+  /// HTTP have no standard listing feature. Always throw an UnsupportedError.
+  // If needed one day, a http-server-specific listFiles may be implemented in a subclass
+  // such as Nginx JSON file listing support, but this is out of scope here.
   @override
   Future<({StorageRequestResult result, StoragePage? page})> listFiles(
     String searchPath, {
@@ -184,7 +186,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     String? nextToken,
     bool recursiveSearch = false,
   }) async =>
-      (result: StorageRequestResult.unsupportedError, page: null);
+      throw UnsupportedError("HTTP features no generic directory listing command");
 
   /// Tell if given [fileUri] (typically a download URI) appears safe or not
   ///
