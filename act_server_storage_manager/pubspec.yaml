@@ -20,6 +20,9 @@ dependencies:
   # Used to cache files
   flutter_cache_manager: ^3.4.1
 
+  # Helps manipulating paths
+  path: ^1.9.0
+
   # Used to get the application directory (cache, documents, etc.)
   path_provider: ^2.1.5
 
