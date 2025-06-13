@@ -6,10 +6,10 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 # Act Server Localized Versioned File Manager <!-- omit from toc -->
 
-This packages helps accessing translated and/or versioned files
-within a ServerStorageManager.
+This package helps accessing translated and/or versioned files within a ServerStorageManager.
 
-Retrieving GCU/GDPR texts from a remote server is a typical use case of this package.
+Retrieving GCU/GDPR texts from a remote server is a typical use case of this package,
+as well as retrieving a firmware blob.
 
 ## Table of contents <!-- omit from toc -->
 
@@ -29,7 +29,7 @@ Retrieving GCU/GDPR texts from a remote server is a typical use case of this pac
 
 ### Key features
 
-This packages let you to:
+This package lets you:
 
 - Download a localized file from a ServerStorageManager
 - Download a versioned file from a ServerStorageManager
