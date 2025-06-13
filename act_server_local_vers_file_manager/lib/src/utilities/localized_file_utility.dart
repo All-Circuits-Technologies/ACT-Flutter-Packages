@@ -7,6 +7,7 @@ import 'dart:ui';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/variant_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 import 'package:flutter/rendering.dart';
@@ -25,14 +26,6 @@ import 'package:flutter/rendering.dart';
 /// - my_file/en_us/my_file.md
 /// {@endtemplate}
 sealed class LocalizedFileUtility {
-  /// We use underscores as locale codes separator.
-  /// Ex: American english locale variant would be named "en_us".
-  static const _localeCodesSep = "_";
-
-  /// Storage is expected to support folders, with this separator
-  // TODO(aloiseau): get path separator from the storage service
-  static const _pathSep = "/";
-
   /// Search localized [fileName] in [dirId] of [storage].
   ///
   /// That is, find first [dirId]/$locale/[fileName] based on sorted [locales],
@@ -54,14 +47,15 @@ sealed class LocalizedFileUtility {
 
     final variants = expandedLocales.map((locale) => LocaleUtility.localeToString(
           locale: locale,
-          separator: _localeCodesSep,
+          separator: ServerLocalVersFileConstants.localeCodesSep,
         ).toLowerCase());
 
     // Process lookup with variants
     final variantUtilityResult = await VariantFileUtility.getVariantFile(
       storage: storage,
       variants: variants,
-      variantToFilePath: (variant) => "$dirId$_pathSep$variant$_pathSep$fileName",
+      variantToFilePath: (variant) =>
+          [dirId, variant, fileName].join(ServerLocalVersFileConstants.storagePathSep),
       useCache: useCache,
     );
 
@@ -79,7 +73,7 @@ sealed class LocalizedFileUtility {
     final foundVariant = variantUtilityResult.data!.variant;
     final foundLocale = LocaleUtility.localeFromString(
       string: foundVariant,
-      separator: _localeCodesSep,
+      separator: ServerLocalVersFileConstants.localeCodesSep,
     );
 
     if (foundLocale == null) {

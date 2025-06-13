@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/localized_file_utility.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/versioned_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
@@ -49,13 +50,14 @@ sealed class LocalizedVersionedFileTool {
     String? explicitVersion,
     required bool cacheVersion,
     required bool cacheFile,
+    required LogsHelper logsHelper,
   }) async {
     // Peek versioned file unconditionally (even with explicit version) since it is the entry point
     // to search sibling final file.
     final localizedVersionResult = await LocalizedFileUtility.getLocalizedFile(
       storage: storage,
       dirId: dirId,
-      fileName: VersionedFileUtility.currentVersionStampFileName,
+      fileName: ServerLocalVersFileConstants.currentVersionStampFileName,
       locales: locales,
       useCache: cacheVersion,
       logsHelper: logsHelper,

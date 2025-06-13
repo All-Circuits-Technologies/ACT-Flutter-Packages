@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains versioned file helper static functions.
@@ -21,9 +22,6 @@ import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 /// - my_file/v2.md
 /// {@endtemplate}
 sealed class VersionedFileUtility {
-  /// Name of stamp file used to hold current active version
-  static const String currentVersionStampFileName = "current";
-
   /// Get a versioned file within [storage] [dirId] folder.
   ///
   /// Name of the file to find is computed from its version using [versionToFileName].
@@ -117,7 +115,8 @@ sealed class VersionedFileUtility {
   }) async {
     // Get "current" file, fail upon any issue
     final requestResult = await storage.getFile(
-      "$dirId/$currentVersionStampFileName",
+      [dirId, ServerLocalVersFileConstants.currentVersionStampFileName]
+          .join(ServerLocalVersFileConstants.storagePathSep),
       useCache: useCache,
     );
 
