@@ -73,7 +73,8 @@ sealed class VersionedFileUtility {
 
     // Fetched versioned file
     final versionedFileName = versionToFileName(versionToFetch);
-    final versionedFilePath = "$dirId/$versionedFileName";
+    final versionedFilePath =
+        [dirId, versionedFileName].join(ServerLocalVersFileConstants.storagePathSep);
     final fileFetchResult = await storage.getFile(
       versionedFilePath,
       useCache: cacheFile,
