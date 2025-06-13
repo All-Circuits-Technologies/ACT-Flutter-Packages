@@ -34,6 +34,12 @@ abstract class AbsServerLocalVersFileBuilder<T extends AbsServerLocalVersFileMan
 ///
 /// This manager is the entry point of current package.
 /// It is abstract to enforce accurately-named project-specific subclasses.
+///
+/// Albeit not strictly required if all files are hosted in a unique HTTP/HTTPS file server,
+/// creating dedicated subclasses per project file kinds (ex: consents, firmware blobs, etc)
+/// is advised to allow for file-kind specific file manager and http storage settings such as
+/// caching and credentials. Also, using several deeper http roots better restricts accessible files
+/// than using a single upper/larger http root.
 abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
   /// Getter function used to lately retrieve storage manager
   final AbsServerStorageManager Function() _storageManagerGetter;
@@ -61,8 +67,10 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
   /// Constructor for [AbsServerLocalVersFileManager].
   ///
   /// [storageManagerGetter] is a getter for the [AbsServerStorageManager] this manager instance
-  /// must browse into. [defaultLocales], [defaultVersionToFileName], [defaultCacheVersion] and
-  /// [defaultCacheFile] are optional default values used by manager methods.
+  /// must browse into.
+  /// [defaultLocales], [defaultVersionToFileName], [defaultCacheVersion] and [defaultCacheFile]
+  /// are optional default values used by manager methods. Those are not taken from a ConfigManager
+  /// mixin since a project may need several versioned-file managers with different defaults.
   AbsServerLocalVersFileManager({
     required AbsServerStorageManager Function() storageManagerGetter,
     this.defaultLocales,
@@ -83,15 +91,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
 
   /// Get a localized [fileName] within [dirId] folder.
   ///
-  /// Localized files are expected to follow a specific filesystem layout:
-  /// - Any localized file must be handled within a dedicated folder
-  /// - Such folder must contain one sub-folder per locale, joined with underscore and lowercase
-  /// - Wanted file must exist in all local sub-folders, with the same [fileName]
-  ///
-  /// Example:
-  /// - my_file/fr_fr/my_file.md
-  /// - my_file/fr/my_file.md
-  /// - my_file/en_us/my_file.md
+  /// {@macro act_server_local_vers_file_manager.LocalizedFileUtility.serverRequirements}
   ///
   /// That is, find first [dirId]/$locale/[fileName] based on sorted [locales], [defaultLocales]
   /// or [systemLocale] with $locale in "en_us" format (underscore, lowercase).
@@ -118,22 +118,12 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
 
   /// Get a versioned file within [dirId] folder.
   ///
-  /// Versioned files are expected to follow a specific filesystem layout:
-  /// - they must be handled within a dedicated folder
-  /// - Such folder must contain a "current" stamp file as well as wanted sibling file
-  ///   whose name is computed from the content of "current" stamp file.
-  ///
-  /// Example:
-  /// - my_file/current   # ex: "v2"
-  /// - my_file/v1.md
-  /// - my_file/v2.md
+  /// {@macro act_server_local_vers_file_manager.VersionedFileUtility.serverRequirements}
   ///
   /// Name of the file to find is computed from its version using [versionToFileName], otherwise
   /// [defaultVersionToFileName], otherwise file name is expected to exactly match version.
   ///
-  /// An explicit [versionOverride] can be given to retrieve this version of the file instead of
-  /// current version of it. This can also be used as an accelerator when caller already know
-  /// the current version, saving one read operation.
+  /// {@macro act_server_local_vers_file_manager.VersionedFileUtility.versionOverride}
   ///
   /// Intermediate and result can be cached or not by storage using [cacheVersion] and [cacheFile],
   /// or [defaultCacheVersion] and [defaultCacheFile], defaulting to true when choice is left null.
@@ -158,17 +148,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
 
   /// Get a localized and versioned file within [dirId] folder.
   ///
-  /// Localized and versioned files are expected to follow a specific filesystem layout:
-  /// - they must be handled within a dedicated folder
-  /// - Such folder must contain one sub-folder per locale, joined with underscore and lowercase
-  /// - Per-locale sub-folder must contain a "current" stamp file as well as wanted sibling file
-  ///   whose name is computed from the content of "current" stamp file.
-  ///
-  /// Example:
-  /// - my_file/fr_fr/current   # ex: "v2"
-  /// - my_file/fr_fr/v1.md
-  /// - my_file/fr_fr/v2.md
-  /// - my_file/en_us/...
+  /// {@macro act_server_local_vers_file_manager.LocalizedVersionedFileTool.serverRequirements}
   ///
   /// That is:
   /// - find first localized "current" file within [dirId]

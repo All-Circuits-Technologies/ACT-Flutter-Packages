@@ -12,6 +12,7 @@ import 'package:flutter/rendering.dart';
 
 /// This pseudo-class contains localized file helper static functions.
 ///
+/// {@template act_server_local_vers_file_manager.LocalizedFileUtility.serverRequirements}
 /// Localized files are expected to follow a specific filesystem layout:
 /// - Any localized file must be handled within a dedicated folder
 /// - Such folder must contain one sub-folder per locale, joined with underscore and lowercase
@@ -21,6 +22,7 @@ import 'package:flutter/rendering.dart';
 /// - my_file/fr_fr/my_file.md
 /// - my_file/fr/my_file.md
 /// - my_file/en_us/my_file.md
+/// {@endtemplate}
 sealed class LocalizedFileUtility {
   /// We use underscores as locale codes separator.
   /// Ex: American english locale variant would be named "en_us".
@@ -32,8 +34,8 @@ sealed class LocalizedFileUtility {
 
   /// Search localized [fileName] in [dirId] of [storage].
   ///
-  /// That is, find first [dirId]/locale/[fileName] based on sorted [locales],
-  /// with locale in "en_us" format (underscore, lowercase).
+  /// That is, find first [dirId]/$locale/[fileName] based on sorted [locales],
+  /// with $locale in "en_us" format (underscore, lowercase).
   static Future<
       ({
         StorageRequestResult result,

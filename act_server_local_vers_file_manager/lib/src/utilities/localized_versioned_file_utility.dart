@@ -13,6 +13,7 @@ import 'package:path/path.dart' as path;
 
 /// This pseudo-class contains localized and versioned file helper static functions.
 ///
+/// {@template act_server_local_vers_file_manager.LocalizedVersionedFileTool.serverRequirements}
 /// Localized and versioned files are expected to follow a specific filesystem layout:
 /// - they must be handled within a dedicated folder
 /// - Such folder must contain one sub-folder per locale, joined with underscore and lowercase
@@ -24,8 +25,9 @@ import 'package:path/path.dart' as path;
 /// - my_file/fr_fr/v1.md
 /// - my_file/fr_fr/v2.md
 /// - my_file/en_us/...
+/// {@endtemplate}
 sealed class LocalizedVersionedFileTool {
-  /// Search a localized and versioned file within [dirId] of [storage].
+  /// Get a localized and versioned file within [dirId] of [storage].
   ///
   /// That is:
   /// - find first localized "current" file within [storage] [dirId]

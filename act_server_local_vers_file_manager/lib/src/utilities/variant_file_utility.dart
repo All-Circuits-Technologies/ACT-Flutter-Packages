@@ -29,11 +29,13 @@ sealed class VariantFileUtility {
   }) async {
     StorageRequestResult? firstError;
 
+    // Iterate over all sorted variants to get the file from best variant first
     for (final variant in variants) {
       final variantPath = variantToFilePath(variant);
       final fetchResult = await storage.getFile(variantPath, useCache: useCache);
 
       if (fetchResult.result == StorageRequestResult.success && fetchResult.file != null) {
+        // File found, no need to go further
         return (
           result: fetchResult.result,
           data: (
@@ -44,11 +46,12 @@ sealed class VariantFileUtility {
         );
       }
 
-      // Save best attempt error to return it if no variants can be found
+      // First/best attempt error might be useful later as global error,
+      // if file can't be found from any variant
       firstError ??= fetchResult.result;
     }
 
-    // Failed to find file in any variant
+    // Failed to find file from any variant
     return (
       result: firstError ?? StorageRequestResult.genericError,
       data: null,

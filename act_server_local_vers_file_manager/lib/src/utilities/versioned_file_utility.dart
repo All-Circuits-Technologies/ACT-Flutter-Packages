@@ -8,6 +8,7 @@ import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains versioned file helper static functions.
 ///
+/// {@template act_server_local_vers_file_manager.VersionedFileUtility.serverRequirements}
 /// Versioned files are expected to follow a specific filesystem layout:
 /// - they must be handled within a dedicated folder
 /// - Such folder must contain a "current" stamp file as well as wanted sibling file
@@ -17,6 +18,7 @@ import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 /// - my_file/current   # ex: "v2"
 /// - my_file/v1.md
 /// - my_file/v2.md
+/// {@endtemplate}
 sealed class VersionedFileUtility {
   /// Name of stamp file used to hold current active version
   static const String currentVersionStampFileName = "current";
@@ -24,9 +26,12 @@ sealed class VersionedFileUtility {
   /// Get a versioned file within [storage] [dirId] folder.
   ///
   /// Name of the file to find is computed from its version using [versionToFileName].
+  ///
+  /// {@template act_server_local_vers_file_manager.VersionedFileUtility.versionOverride}
   /// An explicit [versionOverride] can be given to retrieve this version of the file instead of
   /// current version of it. This can also be used as an accelerator when caller already know
   /// the current version, saving one read operation.
+  /// {@endtemplate}
   ///
   /// Result can be cached or not by [storage] using [cacheVersion] and [cacheFile] which
   /// respectively enable caching of the content of "current" file or of result versioned file.
