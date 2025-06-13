@@ -21,11 +21,11 @@ dependencies:
 
   # Utilities around dart core types
   act_dart_utility:
-    path : ../act_dart_utility
+    path: ../act_dart_utility
 
   # Global manager
   act_global_manager:
-    path : ../act_global_manager
+    path: ../act_global_manager
 
   # Loggers
   act_logger_manager:
