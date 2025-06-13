@@ -6,6 +6,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/variant_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 import 'package:flutter/rendering.dart';
@@ -46,6 +47,7 @@ sealed class LocalizedFileUtility {
     required String fileName,
     required List<Locale> locales,
     required bool useCache,
+    required LogsHelper logsHelper,
   }) async {
     // Convert locales to variants.
     final expandedLocales = LocaleUtility.expandLocales(locales);
@@ -68,6 +70,7 @@ sealed class LocalizedFileUtility {
     }
 
     if (variantUtilityResult.data == null) {
+      logsHelper.e("A successful variant file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -83,6 +86,7 @@ sealed class LocalizedFileUtility {
       // We stringified locales at the very beginning of this method
       // and we transformed one of them back to a locale.
       // We do not expect any issue here.
+      logsHelper.e("Variants are stringified locales, so should be readable as locales again");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }

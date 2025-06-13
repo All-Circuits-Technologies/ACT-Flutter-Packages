@@ -5,6 +5,7 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/localized_file_utility.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/versioned_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
@@ -57,6 +58,7 @@ sealed class LocalizedVersionedFileTool {
       fileName: VersionedFileUtility.currentVersionStampFileName,
       locales: locales,
       useCache: cacheVersion,
+      logsHelper: logsHelper,
     );
 
     if (localizedVersionResult.result != StorageRequestResult.success) {
@@ -64,6 +66,7 @@ sealed class LocalizedVersionedFileTool {
     }
 
     if (localizedVersionResult.data == null) {
+      logsHelper.e("A successful localized file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -78,6 +81,7 @@ sealed class LocalizedVersionedFileTool {
       cacheFile: cacheFile,
       versionOverride:
           explicitVersion ?? (await localizedVersionResult.data!.file.readAsString()).trim(),
+      logsHelper: logsHelper,
     );
 
     if (versionedFileResult.result != StorageRequestResult.success) {
@@ -85,6 +89,7 @@ sealed class LocalizedVersionedFileTool {
     }
 
     if (versionedFileResult.data == null) {
+      logsHelper.e("A successful versioned file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }

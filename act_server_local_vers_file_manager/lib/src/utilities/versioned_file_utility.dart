@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains versioned file helper static functions.
@@ -46,6 +47,7 @@ sealed class VersionedFileUtility {
     String? versionOverride,
     required bool cacheVersion,
     required bool cacheFile,
+    required LogsHelper logsHelper,
   }) async {
     var versionToFetch = versionOverride;
 
@@ -55,6 +57,7 @@ sealed class VersionedFileUtility {
         storage: storage,
         dirId: dirId,
         useCache: cacheVersion,
+        logsHelper: logsHelper,
       );
 
       if (versionRequestResult.requestResult != StorageRequestResult.success) {
@@ -62,11 +65,12 @@ sealed class VersionedFileUtility {
       }
 
       versionToFetch = versionRequestResult.version;
-    }
 
-    if (versionToFetch == null) {
-      assert(false, "Should never fire");
-      return (result: StorageRequestResult.genericError, data: null);
+      if (versionToFetch == null) {
+        logsHelper.e("A successful getFileCurrentVersion call should always return a version");
+        assert(false, "Should never fire");
+        return (result: StorageRequestResult.genericError, data: null);
+      }
     }
 
     // Fetched versioned file
@@ -82,6 +86,7 @@ sealed class VersionedFileUtility {
     }
 
     if (fileFetchResult.file == null) {
+      logsHelper.e("A successful storage download result should always have a file");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -108,6 +113,7 @@ sealed class VersionedFileUtility {
     required AbsServerStorageManager storage,
     required String dirId,
     required bool useCache,
+    required LogsHelper logsHelper,
   }) async {
     // Get "current" file, fail upon any issue
     final requestResult = await storage.getFile(
@@ -120,6 +126,7 @@ sealed class VersionedFileUtility {
     }
 
     if (requestResult.file == null) {
+      logsHelper.e("A successful storage download result should always have a file");
       assert(false, "Should never fire");
       return (requestResult: StorageRequestResult.genericError, version: null);
     }

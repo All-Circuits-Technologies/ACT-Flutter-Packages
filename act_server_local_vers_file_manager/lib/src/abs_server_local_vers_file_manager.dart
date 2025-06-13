@@ -5,6 +5,7 @@
 import 'dart:io';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/localized_file_utility.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/localized_versioned_file_utility.dart';
@@ -41,6 +42,9 @@ abstract class AbsServerLocalVersFileBuilder<T extends AbsServerLocalVersFileMan
 /// caching and credentials. Also, using several deeper http roots better restricts accessible files
 /// than using a single upper/larger http root.
 abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
+  /// Logs helper category
+  static const String _fileManagerLogCategory = 'file';
+
   /// Getter function used to lately retrieve storage manager
   final AbsServerStorageManager Function() _storageManagerGetter;
 
@@ -64,6 +68,13 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
   @protected
   Locale get systemLocale;
 
+  /// Manager logs helper
+  late final LogsHelper _logsHelper;
+
+  /// This is an access to [_logsHelper] for the derived classes
+  @protected
+  LogsHelper get logsHelper => _logsHelper;
+
   /// Constructor for [AbsServerLocalVersFileManager].
   ///
   /// [storageManagerGetter] is a getter for the [AbsServerStorageManager] this manager instance
@@ -85,6 +96,10 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
   @mustCallSuper
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
+    _logsHelper = LogsHelper(
+      logsManager: globalGetIt().get<LoggerManager>(),
+      logsCategory: _fileManagerLogCategory,
+    );
 
     _storageManager = _storageManagerGetter();
   }
@@ -114,6 +129,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
         fileName: fileName,
         locales: locales ?? defaultLocales ?? [systemLocale],
         useCache: useCache ?? defaultCacheFile ?? true,
+        logsHelper: _logsHelper,
       );
 
   /// Get a versioned file within [dirId] folder.
@@ -144,6 +160,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
         versionToFileName: versionToFileName ?? defaultVersionToFileName ?? (version) => version,
         cacheVersion: cacheVersion ?? defaultCacheVersion ?? true,
         cacheFile: cacheFile ?? defaultCacheFile ?? true,
+        logsHelper: _logsHelper,
       );
 
   /// Get a localized and versioned file within [dirId] folder.
@@ -181,5 +198,6 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
         explicitVersion: explicitVersion,
         cacheVersion: cacheVersion ?? defaultCacheVersion ?? true,
         cacheFile: cacheFile ?? defaultCacheFile ?? true,
+        logsHelper: _logsHelper,
       );
 }
