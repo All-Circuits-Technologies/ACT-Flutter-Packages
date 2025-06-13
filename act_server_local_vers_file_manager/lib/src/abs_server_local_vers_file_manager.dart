@@ -165,7 +165,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
 
   /// Get a localized and versioned file within [dirId] folder.
   ///
-  /// {@macro act_server_local_vers_file_manager.LocalizedVersionedFileTool.serverRequirements}
+  /// {@macro act_server_local_vers_file_manager.LocalizedVersionedFileUtility.serverRequirements}
   ///
   /// That is:
   /// - find first localized "current" file within [dirId]
@@ -190,7 +190,7 @@ abstract class AbsServerLocalVersFileManager extends AbsWithLifeCycle {
     bool? cacheVersion,
     bool? cacheFile,
   }) async =>
-      LocalizedVersionedFileTool.getLocalizedVersionedFile(
+      LocalizedVersionedFileUtility.getLocalizedVersionedFile(
         storage: _storageManager,
         dirId: dirId,
         versionToFileName: versionToFileName ?? defaultVersionToFileName ?? (version) => version,
