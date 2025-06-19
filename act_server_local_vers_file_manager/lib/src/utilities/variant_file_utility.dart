@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains variant file helper static functions.
@@ -26,6 +27,7 @@ sealed class VariantFileUtility {
     required Iterable<String> variants,
     required String Function(String) variantToFilePath,
     required bool useCache,
+    required LogsHelper logsHelper,
   }) async {
     StorageRequestResult? firstError;
 
@@ -52,6 +54,7 @@ sealed class VariantFileUtility {
     }
 
     // Failed to find file from any variant
+    logsHelper.w("Failed to find any '${variantToFilePath("<variant>")}' file");
     return (
       result: firstError ?? StorageRequestResult.genericError,
       data: null,

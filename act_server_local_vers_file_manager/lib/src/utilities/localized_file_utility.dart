@@ -57,6 +57,7 @@ sealed class LocalizedFileUtility {
       variantToFilePath: (variant) =>
           [dirId, variant, fileName].join(ServerLocalVersFileConstants.storagePathSep),
       useCache: useCache,
+      logsHelper: logsHelper,
     );
 
     if (variantUtilityResult.result != StorageRequestResult.success) {
