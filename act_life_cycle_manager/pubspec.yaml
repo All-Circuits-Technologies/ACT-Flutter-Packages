@@ -9,7 +9,6 @@ name: act_life_cycle_manager
 description: This package contains the manager for the life cycle.
 
 # Project configuration
-version: 0.1.0
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'

@@ -4,7 +4,6 @@
 
 name: act_amplify_cognito
 description: This is the package used to add cognito support to the mobile app
-version: 0.1.0
 publish_to: none
 
 environment:
@@ -16,13 +15,13 @@ dependencies:
     sdk: flutter
 
   # TODO(brolandeau): when updating the lib, verify if we still need to override `web`
-  amplify_auth_cognito: ^2.6.1
+  amplify_auth_cognito: 2.6.3
 
-  amplify_flutter: ^2.6.1
+  amplify_flutter: 2.6.3
 
-  aws_signature_v4: ^0.6.3
+  aws_signature_v4: 0.6.6
 
-  equatable: ^2.0.5
+  equatable: 2.0.7
 
   # The abstract manager
   act_abstract_manager:
@@ -57,4 +56,4 @@ dev_dependencies:
 dependency_overrides:
   # For now, Amplify cognito depends on libs which depends of web: ^0.5.0 and firebase crashlytics
   # depends on web: ^1.0.0, we force the version of the web dependency
-  web: ^1.0.0
+  web: 1.0.0

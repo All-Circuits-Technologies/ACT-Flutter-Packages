@@ -7,10 +7,8 @@
 # Project definition
 name: act_config_manager
 description: This package contains methods to manage config variables.
-
-# Project configuration
-version: 0.1.0
 publish_to: none
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"
@@ -22,10 +20,10 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: ^2.0.5
+  equatable: 2.0.7
 
   # Load configuration at runtime from a .env file which can be used throughout the application.
-  flutter_dotenv: ^5.1.0
+  flutter_dotenv: 5.2.1
 
   # Easily create managers
   act_abstract_manager:

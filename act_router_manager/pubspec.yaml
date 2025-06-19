@@ -7,7 +7,6 @@ name: act_router_manager
 description: This package contains a router manager.
 
 # Project configuration
-version: 1.0.1
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -20,10 +19,10 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: ^2.0.5
+  equatable: 2.0.7
 
   # Implements the Router API
-  go_router: ^14.2.8
+  go_router: 15.2.3
 
   # Easily create managers
   act_abstract_manager:

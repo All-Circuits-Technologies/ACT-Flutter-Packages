@@ -6,9 +6,6 @@
 
 name: act_local_storage_manager
 description: This package contains two managers to store properties and secrets
-
-version: 1.0.0
-
 publish_to: none
 
 environment:
@@ -21,11 +18,11 @@ dependencies:
     sdk: flutter
 
   # Store/Load data in secure storage
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: 9.2.4
 
   # Wrap platform-specific persistent storage for simple data
   # TODO(brolandeau): when updating the lib, verify if we still need to override `shared_preferences_android`
-  shared_preferences: ^2.5.2
+  shared_preferences: 2.5.3
 
   # Flutter AC Technologies dependencies
   act_abstract_manager:
@@ -57,4 +54,4 @@ dev_dependencies:
 dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The shared preferences doesn't use the latest android package which is needed by flutter.
-  shared_preferences_android: ^2.4.8
+  shared_preferences_android: 2.4.10

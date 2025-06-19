@@ -4,7 +4,6 @@
 
 name: act_server_local_vers_file_manager
 description: "Act server localized and versioned file manager."
-version: 0.1.0
 publish_to: none
 
 environment:
@@ -36,7 +35,7 @@ dependencies:
     path: ../act_server_storage_manager
 
   # Path manipulation tools
-  path: ^1.8.0
+  path: 1.9.1
 
 dev_dependencies:
   flutter_test:
