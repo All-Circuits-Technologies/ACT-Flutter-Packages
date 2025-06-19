@@ -75,12 +75,20 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   AbstractRouterManager() : super();
 
   /// The [initLifeCycle] method has to be called to initialize the class
-  /// The method will generate the router for GoRouter
+  ///
+  /// Don't forget to call [initAfterManagersAndBeforeViews] method in the global manager after the
+  /// init of all managers and before the first view display
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory);
+  }
 
+  /// {@template act_router_manager.AbstractRouterManager.initAfterManagersAndBeforeViews}
+  /// This method is called after all the managers are initialized but before the first view is
+  /// built.
+  /// {@endtemplate}
+  Future<void> initAfterManagersAndBeforeViews() async {
     // RoutesHelper build
     final helper = await createRoutesHelper(_logsHelper);
 
@@ -97,7 +105,12 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     );
   }
 
-  /// RoutesHelper creation method
+  /// {@template act_router_manager.AbstractRouterManager.createRoutesHelper}
+  /// Create the [AbstractRoutesHelper] used by the manager
+  ///
+  /// This method is called after the initialization of all the other managers. Therefore, it's safe
+  /// to call any of them here.
+  /// {@endtemplate}
   @protected
   Future<AbstractRoutesHelper<T>> createRoutesHelper(LogsHelper logsHelper);
 
