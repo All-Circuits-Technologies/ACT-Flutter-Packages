@@ -165,7 +165,7 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   @override
   List<Object?> get props => [
         logsHelper,
-        createPageCallback,
+        createPageCallback.keys,
         observers,
         values,
         initialRoute,
