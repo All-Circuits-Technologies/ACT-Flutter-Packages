@@ -26,6 +26,10 @@ typedef ViewDisplayCallback<T extends AbstractViewContext, C> = FutureOr<ViewDis
   DoActionDisplayCallback<C>? callback,
 );
 
+/// This method represents a callback to display a contextual view
+typedef DisplayDialog<T extends AbstractViewContext> = Future<void> Function(
+    ExtraContextualViewConfig<T> extra);
+
 /// This is the abstract view builder which is used to manage the building of contextual views in
 /// your app
 abstract class AbstractViewBuilder {
@@ -49,8 +53,10 @@ abstract class AbstractViewBuilder {
   /// Class constructors
   AbstractViewBuilder() : _registeredBuilders = {};
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.initBuilder}
   /// Init the process of the builder, this method is called when the initManager method of the
   /// [ContextualViewsManager] class is called
+  /// {@endtemplate}
   Future<void> initBuilder({
     required AbstractRouterManager routerManager,
     required LogsHelper logsHelper,
@@ -61,17 +67,21 @@ abstract class AbstractViewBuilder {
     return initProcess();
   }
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.initProcess}
   /// This method has to be overridden by the derived class and it's called when the linked
   /// [ContextualViewsManager] is initializing.
   /// The [_routerManager] and [_logsHelper] are created when calling this method
+  /// {@endtemplate}
   @mustCallSuper
   @protected
   Future<void> initProcess();
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.registerViewDisplay}
   /// Register a specific view context
   /// This method has to be used if you want to have a particular derived class as parameter of the
   /// callback.
   /// If you don't care about it, you can use [registerAbsViewDisplay]
+  /// {@endtemplate}
   void registerViewDisplay<T extends AbstractViewContext>({
     required T context,
     required ViewDisplayCallback<T, dynamic> callback,
@@ -84,7 +94,9 @@ abstract class AbstractViewBuilder {
         ),
       );
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.onContextualPage}
   /// Register a page to display when the given context is asked
+  /// {@endtemplate}
   void onContextualPage<T extends AbstractViewContext>({
     required T context,
     required MixinRoute route,
@@ -95,6 +107,22 @@ abstract class AbstractViewBuilder {
           context: context as T,
           doAction: doAction,
           route: route,
+        ),
+      );
+
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.onContextualDialog}
+  /// Register a dialog to display when the given context is asked
+  /// {@endtemplate}
+  void onContextualDialog<T extends AbstractViewContext>({
+    required T context,
+    required DisplayDialog<T> displayDialog,
+  }) =>
+      registerAbsViewDisplay(
+        context: context,
+        callback: (context, doAction) async => _onContextualDialogDisplay(
+          context: context as T,
+          doAction: doAction,
+          displayDialog: displayDialog,
         ),
       );
 
@@ -139,10 +167,47 @@ abstract class AbstractViewBuilder {
     );
   }
 
+  /// This method is called when a dialog has to be displayed
+  ///
+  /// The method adds a particular extra object to the dialog
+  Future<ViewDisplayResult<C>> _onContextualDialogDisplay<C, T extends AbstractViewContext>({
+    required T context,
+    required DoActionDisplayCallback<C>? doAction,
+    required DisplayDialog<T> displayDialog,
+  }) async {
+    final completer = Completer<ViewDisplayStatus>();
+    C? tmpOtherValue;
+
+    await displayDialog(
+      ExtraContextualViewConfig<T>(
+        context: context,
+        requestExtraAction: (doAction != null)
+            ? () async {
+                final (ok, value) = await doAction();
+
+                tmpOtherValue = value;
+
+                return ok;
+              }
+            : null,
+        callWhenEnded: (status) async => completer.complete(status),
+      ),
+    );
+
+    final result = await completer.future;
+
+    return ViewDisplayResult(
+      status: result,
+      customResult: tmpOtherValue,
+    );
+  }
+
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.registerAbsViewDisplay}
   /// Register a specific view context
   /// This method has to be used if you want to register a generic view context and you have no
   /// problem to get the abstract view context
   /// If you want to get a derived class, you can use [registerViewDisplay]
+  /// {@endtemplate}
   void registerAbsViewDisplay({
     required AbstractViewContext context,
     required ViewDisplayCallback callback,
@@ -159,6 +224,7 @@ abstract class AbstractViewBuilder {
     _registeredBuilders[context.uniqueKey] = callback;
   }
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.display}
   /// Ask to display a view thanks to the registered builders
   ///
   /// The meaning and usage of the [doAction] method depends of the [context]. The method returns
@@ -166,6 +232,7 @@ abstract class AbstractViewBuilder {
   /// The first item is a boolean and it's used by the delegated view to know if everything is
   /// alright.
   /// The second item has to be returned in the [ViewDisplayResult]
+  /// {@endtemplate}
   Future<ViewDisplayResult<C>> display<C>({
     required AbstractViewContext context,
     DoActionDisplayCallback<C>? doAction,
@@ -181,7 +248,9 @@ abstract class AbstractViewBuilder {
     return (await builder(context, doAction)).toCast<C>();
   }
 
+  /// {@template act_contextual_views_manager.AbstractViewBuilder.dispose}
   /// Call to dispose the builder
+  /// {@endtemplate}
   @mustCallSuper
   Future<void> dispose();
 }

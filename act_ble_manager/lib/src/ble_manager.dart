@@ -18,9 +18,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 
 /// Builder for creating the BleManager
-class BleBuilder<C extends MixinBleConf> extends AbstractPeriphBuilder<BleManager<C>> {
+class BleBuilder<C extends MixinBleConf> extends AbstractPeriphBuilder<BleManager> {
   /// A factory to create a manager instance
-  BleBuilder() : super(BleManager<C>.new);
+  BleBuilder() : super(() => BleManager(confGetter: globalGetIt().get<C>));
 
   /// List of manager dependence
   @override
@@ -28,7 +28,7 @@ class BleBuilder<C extends MixinBleConf> extends AbstractPeriphBuilder<BleManage
 }
 
 /// This class manages everything related to Bluetooth Low energy
-class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
+class BleManager extends AbstractPeriphManager {
   /// This timeout is used when we are enabling the BLE
   static const _enableTimeout = Duration(seconds: 10);
 
@@ -37,6 +37,9 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
 
   /// This is the flutter ble instance
   final FlutterReactiveBle _flutterBle;
+
+  /// This is the getter for the BLE configuration
+  final MixinBleConf Function() _confGetter;
 
   /// This is the service which manages everything linked to the GATT service
   late final BleGattService bleGattService;
@@ -57,8 +60,10 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
   StreamSubscription<BleStatus>? _bleStatusSub;
 
   /// [BleManager] constructor
-  BleManager()
-      : _flutterBle = FlutterReactiveBle(),
+  BleManager({
+    required MixinBleConf Function() confGetter,
+  })  : _flutterBle = FlutterReactiveBle(),
+        _confGetter = confGetter,
         _bleReInitCtrl = StreamController<void>.broadcast() {
     bleGapService = BleGapService(bleManager: this, flutterReactiveBle: _flutterBle);
     bleGattService = BleGattService(bleManager: this, flutterReactiveBle: _flutterBle);
@@ -80,8 +85,7 @@ class BleManager<C extends MixinBleConf> extends AbstractPeriphManager {
 
     // We get the "display scanned device in logs" information from env manager and set it to the
     // GAP service
-    bleGapService.displayScannedDeviceInLogs =
-        globalGetIt().get<C>().displayScannedDeviceInLogs.load();
+    bleGapService.displayScannedDeviceInLogs = _confGetter().displayScannedDeviceInLogs.load();
 
     await bleGattService.initLifeCycle();
   }

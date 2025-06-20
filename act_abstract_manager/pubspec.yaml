@@ -9,7 +9,6 @@ name: act_abstract_manager
 description: This package contains the base for all the managers
 
 # Project configuration
-version: 0.1.0
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'

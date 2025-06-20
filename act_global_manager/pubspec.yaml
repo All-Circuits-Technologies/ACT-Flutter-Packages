@@ -9,7 +9,6 @@ name: act_global_manager
 description: This package contains the default global_manager which has to be extended in the app.
 
 # Project configuration
-version: 0.1.0
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -23,10 +22,10 @@ dependencies:
 
   # Decouple the interface from concrete implementation and
   # access the concrete implementation from everywhere in your App
-  get_it: ^8.0.0
+  get_it: 8.0.3
 
   # Query information about the application package
-  package_info_plus: ^8.0.2
+  package_info_plus: 8.3.0
 
   # Flutter AC Technologies dependencies
   # Easily create managers

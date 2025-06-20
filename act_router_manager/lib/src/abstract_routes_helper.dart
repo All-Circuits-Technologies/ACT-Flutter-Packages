@@ -8,6 +8,7 @@ import 'package:act_router_manager/src/models/route_page_details.dart';
 import 'package:act_router_manager/src/transitions/route_transition.dart';
 import 'package:act_router_manager/src/types/mixin_route.dart';
 import 'package:act_router_manager/src/types/screen_orientation_option.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -18,7 +19,7 @@ typedef CreatePageCallback<T extends MixinRoute> = RoutePageDetails Function(
 );
 
 /// Utility methods to manage [MixinRoute] enum
-abstract class AbstractRoutesHelper<T extends MixinRoute> {
+abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   /// This is the logs helper linked to the route manager
   final LogsHelper logsHelper;
 
@@ -159,4 +160,18 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> {
 
     return extra as ExtraType;
   }
+
+  /// This is the list of class properties
+  @override
+  List<Object?> get props => [
+        logsHelper,
+        createPageCallback.keys,
+        observers,
+        values,
+        initialRoute,
+        errorRoute,
+        debugLogDiagnostics,
+        defaultTransition,
+        defaultOrientation,
+      ];
 }

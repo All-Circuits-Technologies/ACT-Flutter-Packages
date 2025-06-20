@@ -18,4 +18,16 @@ mixin MixinEnableServiceViewBuilder on AbstractViewBuilder {
         ),
         route: route,
       );
+
+  /// This allows to register a dialog to display when a service enabling is asked to user
+  void onEnableDialog({
+    required EnableServiceElement element,
+    required DisplayDialog<EnableServiceViewContext> displayDialog,
+  }) =>
+      onContextualDialog(
+        context: EnableServiceViewContext(
+          element: element,
+        ),
+        displayDialog: displayDialog,
+      );
 }

@@ -9,7 +9,6 @@ name: act_flutter_utility
 description: This package contains useful methods and classes which extends flutter functionality.
 
 # Project configuration
-version: 0.1.0
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -22,20 +21,20 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: ^2.0.5
+  equatable: 2.0.7
 
   # Implement the BLoC (Business Logic Component) design pattern
-  flutter_bloc: ^9.1.0
+  flutter_bloc: 9.1.1
 
   # SVG image widget
-  flutter_svg: ^2.0.10+1
+  flutter_svg: 2.2.0
 
   # A Flutter plugin for launching a URL.
   # TODO(brolandeau): when updating the lib, verify if we still need to override `url_launcher_android`
-  url_launcher: ^6.3.1
+  url_launcher: 6.3.1
 
   # Tells which amount a widget is currently visible
-  visibility_detector: ^0.4.0+2
+  visibility_detector: 0.4.0+2
 
   act_config_manager:
     path: ../act_config_manager
@@ -64,4 +63,4 @@ dev_dependencies:
 dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The url launcher doesn't use the latest android package which is needed by flutter.
-  url_launcher_android: ^6.3.15
+  url_launcher_android: 6.3.16

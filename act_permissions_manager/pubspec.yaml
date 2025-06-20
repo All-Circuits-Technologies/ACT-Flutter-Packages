@@ -9,7 +9,6 @@ name: act_permissions_manager
 description: Useful classes to manager permissions
 
 # Project configuration
-version: 0.1.0
 publish_to: none
 environment:
   sdk: '>=3.0.0 <4.0.0'
@@ -22,16 +21,16 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: ^2.0.5
+  equatable: 2.0.7
 
-  mutex: ^3.1.0
+  mutex: 3.1.0
 
   # To request permissions (eg. SMS, GPS...)
   # TODO(brolandeau): when updating the lib, verify if we still need to override `permission_handler_android`
-  permission_handler: ^11.4.0
+  permission_handler: 12.0.0+1
 
   # Extend the capabilities of Dart Streams and StreamControllers
-  rxdart: ^0.28.0
+  rxdart: 0.28.0
 
   # Easily create managers
   act_abstract_manager:
@@ -72,4 +71,4 @@ dev_dependencies:
 dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The permission handler doesn't use the latest android package which is needed by flutter.
-  permission_handler_android: ^12.1.0
+  permission_handler_android: 13.0.1
