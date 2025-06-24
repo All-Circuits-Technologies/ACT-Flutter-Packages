@@ -101,6 +101,9 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     }
   }
 
+  /// Get the path separator used by the storage service.
+  String getPathSeparator() => globalGetIt().get<C>().storagePathSeparator.load();
+
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.
   Future<({StorageRequestResult result, File? file})> getFile(
     String fileId, {
@@ -199,8 +202,10 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     return (result: StorageRequestResult.success, page: page);
   }
 
+  /// {@template act_server_storage_manager.AbsServerStorageManager.getStorageService}
   /// This method is used by the [AbsServerStorageManager] to get the [CacheService] instance to
   /// use. It must be implemented by the concrete class.
+  /// {@endtemplate}
   @protected
   Future<MixinStorageService> getStorageService();
 

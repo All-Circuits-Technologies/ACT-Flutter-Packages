@@ -9,13 +9,18 @@ import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart';
 import 'package:equatable/equatable.dart';
 
+/// This class is used to store the options for a server local directory.
 class ServerLocalDirOptions extends Equatable {
+  /// The key used to store the locales in the JSON.
   static const _localesKey = "locales";
+
+  /// The key used to store the cache version option in the JSON.
   static const _cacheVersionKey = "cacheVersion";
+
+  /// The key used to store the cache file option in the JSON.
   static const _cacheFileKey = "cacheFile";
 
   /// Optional locales to search localized files with.
-  /// See also [systemLocale] which may be enough.
   final List<Locale>? locales;
 
   /// Optional function for the computation of a file name given a version
@@ -27,6 +32,7 @@ class ServerLocalDirOptions extends Equatable {
   /// Optional caching of final files requests
   final bool? cacheFile;
 
+  /// Class constructor
   const ServerLocalDirOptions({
     this.locales,
     this.versionToFileName,
@@ -34,6 +40,7 @@ class ServerLocalDirOptions extends Equatable {
     this.cacheFile,
   });
 
+  /// Returns a copy of this [ServerLocalDirOptions] with the given parameters.
   ServerLocalDirOptions copyWith({
     List<Locale>? locales,
     bool forceLocalesValue = false,
@@ -46,19 +53,23 @@ class ServerLocalDirOptions extends Equatable {
   }) =>
       ServerLocalDirOptions(
         locales: locales ?? (forceLocalesValue ? null : this.locales),
-        versionToFileName:
-            versionToFileName ?? (forceVersionToFileNameValue ? null : this.versionToFileName),
-        cacheVersion: cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
+        versionToFileName: versionToFileName ??
+            (forceVersionToFileNameValue ? null : this.versionToFileName),
+        cacheVersion:
+            cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
         cacheFile: cacheFile ?? (forceCacheFileValue ? null : this.cacheFile),
       );
 
+  /// Parses a [ServerLocalDirOptions] from a JSON map.
+  /// Returns `null` if the parsing fails.
   static ServerLocalDirOptions? parseFromJson(Map<String, dynamic> json) {
     final loggerManager = appLogger();
     final localsResult = JsonUtility.getElementsList<Locale, String>(
       json: json,
       key: _localesKey,
       canBeUndefined: true,
-      castElemValueFunc: (toCast) => LocaleUtility.localeFromString(string: toCast),
+      castElemValueFunc: (toCast) =>
+          LocaleUtility.localeFromString(string: toCast),
       loggerManager: loggerManager,
     );
 
@@ -76,8 +87,11 @@ class ServerLocalDirOptions extends Equatable {
       loggerManager: loggerManager,
     );
 
-    if (!localsResult.isOk || !cacheVersionResult.isOk || !cacheFileResult.isOk) {
-      appLogger().w("We failed to parse the ServerLocalDirOptions model from JSON");
+    if (!localsResult.isOk ||
+        !cacheVersionResult.isOk ||
+        !cacheFileResult.isOk) {
+      appLogger()
+          .w("We failed to parse the ServerLocalDirOptions model from JSON");
       return null;
     }
 
@@ -88,6 +102,7 @@ class ServerLocalDirOptions extends Equatable {
     );
   }
 
+  /// Contains the class properties
   @override
   List<Object?> get props => [locales, cacheVersion, cacheFile];
 }

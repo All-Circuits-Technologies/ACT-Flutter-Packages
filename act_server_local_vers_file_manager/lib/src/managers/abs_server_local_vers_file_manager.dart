@@ -1,3 +1,4 @@
+// SPDX-FileCopyrightText: 2025 Anthony Loiseau <anthony.loiseau@allcircuits.com>
 // SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
@@ -35,13 +36,17 @@ abstract class AbsServerLocalVersFileBuilder<D extends MixinServerLocalVersFileT
       ];
 }
 
+/// Abstract class for a localized and versioned file manager.
+/// This allows to manage multiple folders in a same storage server or in different servers.
 abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileType>
     extends AbsWithLifeCycle {
   /// Logs helper category
   static const String _fileManagerLogCategory = 'serverMultiDir';
 
+  /// Getter for the configuration manager
   final MixinServerLocalVersFileConfig<D> Function() _configManagerGetter;
 
+  /// The configuration of all the server local directories
   late final ServerLocalDirConfig<D> _localDirConfig;
 
   /// Manager logs helper
@@ -51,6 +56,7 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
   @protected
   LogsHelper get logsHelper => _logsHelper;
 
+  /// Class constructor
   AbsServerLocalVersFileManager({
     required MixinServerLocalVersFileConfig<D> Function() configManagerGetter,
   })  : _configManagerGetter = configManagerGetter,
@@ -71,14 +77,14 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
     );
   }
 
-  /// Get a localized [fileName] within [dirId] folder.
+  /// Get a localized [fileName] within [dirType] folder.
   ///
   /// {@macro act_server_local_vers_file_manager.LocalizedFileUtility.serverRequirements}
   ///
-  /// That is, find first [dirId]/$locale/[fileName] based on sorted [locales], [defaultLocales]
-  /// or [systemLocale] with $locale in "en_us" format (underscore, lowercase).
+  /// That is, find first [dirType]/$locale/[fileName] based on sorted [locales], options.locales
+  /// or result of [_getLocalesToUse] with $locale in "en_us" format (underscore, lowercase).
   ///
-  /// Result can be cached or not by storage using [useCache] or [defaultCacheFile],
+  /// Result can be cached or not by storage using [useCache] or options.cacheFile,
   /// defaulting to true when choice is left null.
   Future<
       ({
@@ -102,17 +108,18 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
         ),
       );
 
-  /// Get a versioned file within [dirId] folder.
+  /// Get a versioned file within [dirType] folder.
   ///
   /// {@macro act_server_local_vers_file_manager.VersionedFileUtility.serverRequirements}
   ///
   /// Name of the file to find is computed from its version using [versionToFileName], otherwise
-  /// [defaultVersionToFileName], otherwise file name is expected to exactly match version.
+  /// options.versionToFileName, otherwise file name is expected to exactly match version.
   ///
   /// {@macro act_server_local_vers_file_manager.VersionedFileUtility.versionOverride}
   ///
   /// Intermediate and result can be cached or not by storage using [cacheVersion] and [cacheFile],
-  /// or [defaultCacheVersion] and [defaultCacheFile], defaulting to true when choice is left null.
+  /// or options.cacheVersion and options.cacheFile, defaulting to false for [cacheVersion] and true
+  /// for [cacheFile] when choice is left null.
   Future<
       ({
         StorageRequestResult result,
@@ -138,6 +145,13 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
         ),
       );
 
+  /// Fetch current version of a versioned file within [dirType] folder.
+  ///
+  /// {@macro act_server_local_vers_file_manager.VersionedFileUtility.serverRequirements}
+  ///
+  /// That is, read "version" file within [storage] [dirType] folder, optionally caching result
+  /// using [cacheVersion] or options.cacheVersion, defaulting to false for [cacheVersion] when
+  /// choice is left null.
   Future<
       ({
         StorageRequestResult requestResult,
@@ -157,21 +171,23 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
         ),
       );
 
-  /// Get a localized and versioned file within [dirId] folder.
+  /// Get a localized and versioned file within [dirType] folder.
   ///
   /// {@macro act_server_local_vers_file_manager.LocalizedVersionedFileUtility.serverRequirements}
   ///
   /// That is:
-  /// - find first localized "current" file within [dirId]
-  ///    (first "$locale/current" file based on sorted [locales], [defaultLocales],
-  ///     or [systemLocale] with $locale in "en_us" format, underscore, lowercase),
+  ///
+  /// - find first localized "current" file within [dirType]
+  ///    (first "$locale/current" file based on sorted [locales], options.locales
+  ///    or result of [_getLocalesToUse] with $locale in "en_us" format, underscore, lowercase),
   /// - find sibling versioned file, from [explicitVersion] or from "current" version
   ///
   /// Sibling file name is computed from version to fetch using [versionToFileName],
-  /// or [defaultVersionToFileName], defaulting to version itself.
+  /// or options.versionToFileName, defaulting to version itself.
   ///
   /// Intermediate and result can be cached or not by storage using [cacheVersion] and [cacheFile],
-  /// or [defaultCacheVersion] and [defaultCacheFile], defaulting to true when choice is left null.
+  /// or options.cacheVersion and options.cacheFile, defaulting to false for [cacheVersion] and true
+  /// for [cacheFile] when choice is left null.
   Future<
       ({
         StorageRequestResult result,
@@ -199,6 +215,17 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
         ),
       );
 
+  /// Get the current localized version of a file within [dirType] folder.
+  ///
+  /// {@macro act_server_local_vers_file_manager.LocalizedVersionedFileUtility.serverRequirements}
+  ///
+  /// Find first localized "current" file within [dirType] (first "$locale/current" file based on
+  /// sorted [locales], options.locales or result of [_getLocalesToUse] with $locale in "en_us"
+  /// format, underscore, lowercase).
+  ///
+  /// That is, read "version" file within [storage] [dirType] folder, optionally caching result
+  /// using [cacheVersion] or options.cacheVersion, defaulting to false for [cacheVersion] when
+  /// choice is left null.
   Future<
       ({
         StorageRequestResult result,
@@ -219,24 +246,41 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
                 logsHelper: logsHelper,
               ));
 
+  /// {@template act_server_local_vers_file_manager.AbsServerLocalVersFileManager.getOptionsOverrides}
+  /// This method allows to override the options got from the config manager, but also to give a
+  /// default VersionToFileNameParser for a given dir type.
+  /// {@endtemplate}
   @protected
   Future<Map<D, ServerLocalDirOptions>> getOptionsOverrides() async => {};
 
+  /// {@template act_server_local_vers_file_manager.AbsServerLocalVersFileManager.getDefaultLocale}
+  /// Get the default app locale to use for the localized files. This locale is the one used when
+  /// the current locale isn't supported by the app.
+  /// {@endtemplate}
   @protected
   Future<Locale> getDefaultLocale();
 
+  /// {@template act_server_local_vers_file_manager.AbsServerLocalVersFileManager.getCurrentLocale}
+  /// Get the current app locale to use for the localized files.
+  /// {@endtemplate}
   @protected
   Future<Locale> getCurrentLocale();
 
+  /// {@template act_server_local_vers_file_manager.AbsServerLocalVersFileManager.getStorageManager}
+  /// Get the storage manager for a given [dirType].
+  /// {@endtemplate}
   @protected
   AbsServerStorageManager getStorageManager(D dirType);
 
+  /// Get the default configuration for a given [dirType] and call the provided [configGetter] with
+  /// the options got.
   Future<T> _getDefaultConfig<T>({
     required D dirType,
     required Future<T> Function(ServerLocalDirOptions? options) configGetter,
   }) async =>
       configGetter(_localDirConfig.options[dirType]);
 
+  /// Parse the server configuration and return a [ServerLocalDirConfig] instance.
   Future<ServerLocalDirConfig<D>> _parseServerConfig({
     required MixinServerLocalVersFileConfig<D> configManager,
   }) async {
@@ -267,6 +311,7 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
     );
   }
 
+  /// Get the list of locales to use for localized files.
   Future<List<Locale>> _getLocalesToUse() => Future.wait([
         getCurrentLocale(),
         getDefaultLocale(),

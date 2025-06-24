@@ -6,7 +6,7 @@ import 'dart:io';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart'
-    as ServerLocalVersFileConstants;
+    as server_local_vers_file_constants;
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains versioned file helper static functions.
@@ -66,7 +66,8 @@ sealed class VersionedFileUtility {
       versionToFetch = versionRequestResult.version;
 
       if (versionToFetch == null) {
-        logsHelper.e("A successful getFileCurrentVersion call should always return a version");
+        logsHelper.e(
+            "A successful getFileCurrentVersion call should always return a version");
         assert(false, "Should never fire");
         return (result: StorageRequestResult.genericError, data: null);
       }
@@ -75,7 +76,7 @@ sealed class VersionedFileUtility {
     // Fetched versioned file
     final versionedFileName = versionToFileName(versionToFetch);
     final versionedFilePath =
-        [dirId, versionedFileName].join(ServerLocalVersFileConstants.storagePathSep);
+        [dirId, versionedFileName].join(storage.getPathSeparator());
     final fileFetchResult = await storage.getFile(
       versionedFilePath,
       useCache: cacheFile,
@@ -86,7 +87,8 @@ sealed class VersionedFileUtility {
     }
 
     if (fileFetchResult.file == null) {
-      logsHelper.e("A successful storage download result should always have a file");
+      logsHelper
+          .e("A successful storage download result should always have a file");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -117,8 +119,8 @@ sealed class VersionedFileUtility {
   }) async {
     // Get "current" file, fail upon any issue
     final requestResult = await storage.getFile(
-      [dirId, ServerLocalVersFileConstants.currentVersionStampFileName]
-          .join(ServerLocalVersFileConstants.storagePathSep),
+      [dirId, server_local_vers_file_constants.currentVersionStampFileName]
+          .join(storage.getPathSeparator()),
       useCache: cacheVersion,
     );
 
@@ -127,7 +129,8 @@ sealed class VersionedFileUtility {
     }
 
     if (requestResult.file == null) {
-      logsHelper.e("A successful storage download result should always have a file");
+      logsHelper
+          .e("A successful storage download result should always have a file");
       assert(false, "Should never fire");
       return (requestResult: StorageRequestResult.genericError, version: null);
     }

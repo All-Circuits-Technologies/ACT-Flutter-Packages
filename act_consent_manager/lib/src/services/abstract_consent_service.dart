@@ -180,26 +180,36 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
     _observersSubs.clear();
   }
 
+  /// {@template act_consent_manager.AbstractConsentService.loadLatestVersion}
   /// Fetch the latest available version of the consent.
+  /// {@endtemplate}
   @protected
   Future<StatusWithNotNullValueResult<ConsentLoadStatus, String>> loadLatestVersion();
 
+  /// {@template act_consent_manager.AbstractConsentService.loadConsentText}
   /// Fetch the text of the consent.
+  /// {@endtemplate}
   @protected
   Future<StatusWithNotNullValueResult<ConsentLoadStatus, String>> loadConsentText(String version);
 
+  /// {@template act_consent_manager.AbstractConsentService.loadUserConsentData}
   /// Get (from a server or a local storage) the [ConsentDataModel] of the user.
+  /// {@endtemplate}
   @protected
   Future<StatusWithNullableValueResult<ConsentLoadStatus, ConsentDataModel<T>>>
       loadUserConsentData();
 
+  /// {@template act_consent_manager.AbstractConsentService.saveConsentData}
   /// Save the [ConsentDataModel] of the user in a server or a local storage.
   /// Return true if the data is saved successfully, false otherwise.
+  /// {@endtemplate}
   @protected
   Future<bool> saveConsentData(ConsentDataModel<T> consentData);
 
+  /// {@template act_consent_manager.AbstractConsentService.widgetFromConsentText}
   /// This method creates a [Widget] from the text of the consent. The default supported text format
   /// is markdown, override this method to support other formats.
+  /// {@endtemplate}
   @protected
   Future<Widget> widgetFromConsentText(String text) async => MarkdownBody(
         data: text,

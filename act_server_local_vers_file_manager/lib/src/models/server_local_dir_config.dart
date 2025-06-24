@@ -7,13 +7,18 @@ import 'package:act_server_local_vers_file_manager/src/models/server_local_dir_o
 import 'package:act_server_local_vers_file_manager/src/types/mixin_server_local_vers_file_type.dart';
 import 'package:equatable/equatable.dart';
 
+/// This class is used to store the configuration of the server local directories.
+/// It contains a map of [MixinServerLocalVersFileType] to [ServerLocalDirOptions].
 class ServerLocalDirConfig<T extends MixinServerLocalVersFileType> extends Equatable {
+  /// This is the options stored in config
   final Map<T, ServerLocalDirOptions> options;
 
+  /// Class constructor
   const ServerLocalDirConfig({
     required this.options,
   });
 
+  /// Returns a copy of this [ServerLocalDirConfig] with the given options.
   ServerLocalDirConfig copyWith({
     Map<MixinServerLocalVersFileType, ServerLocalDirOptions>? options,
   }) =>
@@ -21,6 +26,7 @@ class ServerLocalDirConfig<T extends MixinServerLocalVersFileType> extends Equat
         options: options ?? this.options,
       );
 
+  /// Parses a [ServerLocalDirConfig] from a JSON map.
   static ServerLocalDirConfig<T>? parseFromJson<T extends MixinServerLocalVersFileType>(
     Map<String, dynamic> json, {
     required List<T> dirTypes,
@@ -63,6 +69,7 @@ class ServerLocalDirConfig<T extends MixinServerLocalVersFileType> extends Equat
     return ServerLocalDirConfig(options: dirsOptions);
   }
 
+  /// Contains the class properties
   @override
   List<Object?> get props => [options];
 }
