@@ -7,7 +7,8 @@ import 'dart:ui';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
+import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart'
+    as ServerLocalVersFileConstants;
 import 'package:act_server_local_vers_file_manager/src/utilities/variant_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 import 'package:flutter/rendering.dart';

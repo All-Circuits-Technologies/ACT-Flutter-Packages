@@ -14,9 +14,17 @@ dependencies:
   flutter:
     sdk: flutter
 
+  equatable: 2.0.7
+
+  # Path manipulation tools
+  path: 1.9.1
+
   # Easily create managers
   act_abstract_manager:
     path: ../act_abstract_manager
+
+  act_config_manager:
+    path: ../act_config_manager
 
   # Utilities around dart core types
   act_dart_utility:
@@ -33,9 +41,6 @@ dependencies:
   # Help fetching remotely stored files
   act_server_storage_manager:
     path: ../act_server_storage_manager
-
-  # Path manipulation tools
-  path: 1.9.1
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
+import 'package:act_server_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
@@ -33,6 +33,9 @@ class StorageHttpFileService extends HttpFileService {
       throw Exception('Error while getting download url for $url: $urlResult');
     }
 
-    return super.get(urlResult.downloadUrl!);
+    return super.get(
+      urlResult.downloadUrl!,
+      headers: _storageService.headers,
+    );
   }
 }

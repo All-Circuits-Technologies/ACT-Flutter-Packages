@@ -12,7 +12,7 @@ import 'package:act_server_storage_manager/src/models/cache_storage_config.dart'
 import 'package:act_server_storage_manager/src/models/storage_file.dart';
 import 'package:act_server_storage_manager/src/models/storage_page.dart';
 import 'package:act_server_storage_manager/src/services/cache_service.dart';
-import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
+import 'package:act_server_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter/material.dart';
 

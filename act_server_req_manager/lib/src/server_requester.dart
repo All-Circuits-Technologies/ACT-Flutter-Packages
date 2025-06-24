@@ -6,13 +6,13 @@ import 'dart:async';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_req_manager/src/helpers/body_format_utility.dart';
-import 'package:act_server_req_manager/src/helpers/url_format_utility.dart';
 import 'package:act_server_req_manager/src/models/request_param.dart';
 import 'package:act_server_req_manager/src/models/request_response.dart';
 import 'package:act_server_req_manager/src/models/server_urls.dart';
 import 'package:act_server_req_manager/src/server_req_constants.dart';
 import 'package:act_server_req_manager/src/types/request_status.dart';
+import 'package:act_server_req_manager/src/utilities/body_format_utility.dart';
+import 'package:act_server_req_manager/src/utilities/url_format_utility.dart';
 import 'package:http/http.dart';
 
 /// We can request the server through this requester. This doesn't manage the login (it's done by

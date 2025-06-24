@@ -5,7 +5,8 @@
 import 'dart:io';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
+import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart'
+    as ServerLocalVersFileConstants;
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
 
 /// This pseudo-class contains versioned file helper static functions.
@@ -54,7 +55,7 @@ sealed class VersionedFileUtility {
       final versionRequestResult = await getFileCurrentVersion(
         storage: storage,
         dirId: dirId,
-        useCache: cacheVersion,
+        cacheVersion: cacheVersion,
         logsHelper: logsHelper,
       );
 
@@ -103,7 +104,7 @@ sealed class VersionedFileUtility {
   /// Fetch current version of a versioned file.
   ///
   /// That is, read "version" file within [storage] [dirId] folder, optionally caching result
-  /// using [useCache].
+  /// using [cacheVersion].
   static Future<
       ({
         StorageRequestResult requestResult,
@@ -111,14 +112,14 @@ sealed class VersionedFileUtility {
       })> getFileCurrentVersion({
     required AbsServerStorageManager storage,
     required String dirId,
-    required bool useCache,
+    required bool cacheVersion,
     required LogsHelper logsHelper,
   }) async {
     // Get "current" file, fail upon any issue
     final requestResult = await storage.getFile(
       [dirId, ServerLocalVersFileConstants.currentVersionStampFileName]
           .join(ServerLocalVersFileConstants.storagePathSep),
-      useCache: useCache,
+      useCache: cacheVersion,
     );
 
     if (requestResult.result != StorageRequestResult.success) {
