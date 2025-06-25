@@ -23,7 +23,9 @@ import 'package:flutter/foundation.dart';
 ///
 /// It specifies the other managers [AbsServerLocalVersFileManager] depends on.
 /// It is made abstract to enforce projects to subclass their own accurately-named manager(s).
-abstract class AbsServerLocalVersFileBuilder<D extends MixinServerLocalVersFileType,
+abstract class AbsServerLocalVersFileBuilder<
+    D extends MixinServerLocalVersFileType,
+    C extends MixinServerLocalVersFileConfig<D>,
     T extends AbsServerLocalVersFileManager<D>> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsServerLocalVersFileBuilder(super.factory);
@@ -33,6 +35,7 @@ abstract class AbsServerLocalVersFileBuilder<D extends MixinServerLocalVersFileT
   @mustCallSuper
   Iterable<Type> dependsOn() => [
         LoggerManager,
+        C,
       ];
 }
 
@@ -62,7 +65,7 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
   })  : _configManagerGetter = configManagerGetter,
         super();
 
-  /// Initialize the manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
   @mustCallSuper
   Future<void> initLifeCycle() async {
