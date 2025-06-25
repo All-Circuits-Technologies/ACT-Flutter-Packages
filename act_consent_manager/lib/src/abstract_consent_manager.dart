@@ -2,10 +2,13 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_consent_manager/act_consent_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_intl/act_intl.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +22,7 @@ abstract class AbstractConsentBuilder<T extends AbstractConsentManager>
   /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   @mustCallSuper
-  Iterable<Type> dependsOn() => [LoggerManager];
+  Iterable<Type> dependsOn() => [LoggerManager, LocalesManager];
 }
 
 /// Abstract class to store consent services and manage them in an application.
@@ -30,6 +33,9 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
   /// Logs helper
   late final LogsHelper _logsHelper;
 
+  /// List of subscriptions to cancel on dispose
+  final List<StreamSubscription> _subscriptions;
+
   /// Map of consent services
   final Map<E, AbstractConsentService> _services;
 
@@ -39,7 +45,8 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
   /// Class constructor
   AbstractConsentManager()
       : _services = {},
-        _observers = [];
+        _observers = [],
+        _subscriptions = [];
 
   /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
@@ -53,6 +60,9 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
     _services.addAll(services);
 
     await Future.wait(_services.values.map((service) => service.initLifeCycle()));
+
+    _subscriptions.add(
+        globalGetIt().get<LocalesManager>().currentLocaleStream.listen(_onCurrentLocaleUpdate));
   }
 
   /// {@macro act_abstract_manager.AbsWithLifeCycle.initAfterView}
@@ -83,11 +93,17 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
   AbstractConsentService<T>? getService<T extends MixinConsentOptions>(E consentType) =>
       _services[consentType] as AbstractConsentService<T>?;
 
+  /// Reset the local consent info for all services when the current locale is updated.
+  Future<void> _onCurrentLocaleUpdate(Locale locale) async {
+    await Future.wait(_services.values.map((service) => service.resetLocalConsentInfo()));
+  }
+
   /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_services.values.map((service) => service.disposeLifeCycle()));
     await Future.wait(_observers.map((observer) => observer.dispose()));
+    await Future.wait(_subscriptions.map((sub) => sub.cancel()));
     await super.disposeLifeCycle();
   }
 }

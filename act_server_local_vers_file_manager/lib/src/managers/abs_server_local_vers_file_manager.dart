@@ -161,7 +161,6 @@ abstract class AbsServerLocalVersFileManager<D extends MixinServerLocalVersFileT
         String? version,
       })> getFileCurrentVersion({
     required D dirType,
-    String? versionOverride,
     bool? cacheVersion,
   }) async =>
       _getDefaultConfig(

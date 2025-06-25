@@ -13,4 +13,4 @@ const localeCodesSep = "_";
 const currentVersionStampFileName = "current";
 
 /// This defines a function to parse a version string into a file name.
-typedef VersionToFileNameParser = String Function(String);
+typedef VersionToFileNameParser = String Function(String version);

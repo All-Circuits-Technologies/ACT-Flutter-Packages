@@ -5,5 +5,8 @@
 
 library;
 
-export 'src/utils/intl_file_utility.dart';
-export 'src/utils/intl_utility.dart';
+export 'src/managers/locales_manager.dart' hide InternalCurrentLocaleSetter;
+export 'src/observers/locales_observer_widget.dart';
+export 'src/utilities/intl_file_utility.dart';
+export 'src/utilities/intl_utility.dart';
+export 'src/utilities/locale_utility.dart';

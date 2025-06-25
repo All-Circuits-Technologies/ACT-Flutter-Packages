@@ -65,6 +65,10 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   /// [getConsentTextWidget] to load the text if it is not already loaded.
   Widget? get textWidget => _textWidget;
 
+  /// Get the logs helper of the service
+  @protected
+  LogsHelper get logsHelper => _logsHelper;
+
   /// Class constructor
   AbstractConsentService({
     required LogsHelper logsHelper,
@@ -309,6 +313,20 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
           await getConsentTextWidget();
         }
       });
+
+  /// Reset the local consent info, i.e. the latest version and the text widget.
+  /// This method is useful when you want to reload the consent info from the server.
+  Future<void> resetLocalConsentInfo() async {
+    // First we clean the latest version and text widget
+    _logsHelper.i('Resetting local consent info');
+    await _stateMutex.protect(() async => _loadTextWidgetMutex.protect(() async {
+          _textWidget = null;
+          _setLatestVersion(null);
+        }));
+
+    // Then we retry to get the info
+    await loadAllConsentInfo();
+  }
 
   /// Change the latest version of the consent, publish the new global state if needed
   void _setLatestVersion(String? latestVersion) {

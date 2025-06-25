@@ -4,6 +4,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -45,6 +47,9 @@ abstract class GlobalManager {
   /// This is the Get it instance used to get managers
   final managers = GetIt.instance;
 
+  /// This is the list of managers registered in the app
+  final List<AbsWithLifeCycle> _registeredManagers;
+
   /// This returns true if the app is in release mode
   final isReleaseMode = kReleaseMode;
 
@@ -64,7 +69,9 @@ abstract class GlobalManager {
   PackageInfo get packageInfo => _packageInfo;
 
   /// The create constructor is used to construct the singleton instance
-  GlobalManager.create() : _state = _GlobalManagerState.created;
+  GlobalManager.create()
+      : _state = _GlobalManagerState.created,
+        _registeredManagers = [];
 
   /// This method is used to register asynchronously the app managers
   ///
@@ -72,15 +79,16 @@ abstract class GlobalManager {
   /// [_defaultLogger].
   @protected
   void registerManagerAsync<T extends AbsWithLifeCycle>(AbsManagerBuilder<T> builder) {
-    var asyncFactory = builder.asyncFactory;
-    if (T == LoggerManager) {
-      asyncFactory = () async {
-        final loggerManager = await builder.asyncFactory();
+    Future<T> asyncFactory() async {
+      final manager = await builder.asyncFactory();
 
-        GlobalManager.instance!._defaultLogger = loggerManager as LoggerManager;
+      if (T == LoggerManager) {
+        GlobalManager.instance!._defaultLogger = manager as LoggerManager;
+      }
 
-        return loggerManager;
-      };
+      _registeredManagers.add(manager);
+
+      return manager;
     }
 
     managers.registerSingletonAsync<T>(
@@ -126,7 +134,11 @@ abstract class GlobalManager {
     // Initialize screen
     instance?.initScreen(context);
 
+    // We don't wait the initialisation here to not block the display of the first view
+    unawaited(Future.wait(_registeredManagers.map((manager) => manager.initAfterView(context))));
+
     instance!._state = _GlobalManagerState.initForWidget;
+
     return true;
   }
 
@@ -134,4 +146,12 @@ abstract class GlobalManager {
   /// Possibly used with ScreenUtil plugin and add the instance to managers
   @mustCallSuper
   void initScreen(BuildContext context) {}
+
+  /// The [dispose] method is used to dispose all the managers
+  /// It has to be called in the main app dispose method
+  @mustCallSuper
+  Future<void> dispose() async {
+    _defaultLogger.i("Disposing the global manager and managers");
+    await Future.wait(_registeredManagers.map((manager) => manager.disposeLifeCycle()));
+  }
 }

@@ -34,6 +34,10 @@ dependencies:
   act_global_manager:
     path: ../act_global_manager
 
+  # Utilities around dart core types
+  act_intl:
+    path: ../act_intl
+
   # Loggers
   act_logger_manager:
     path: ../act_logger_manager
