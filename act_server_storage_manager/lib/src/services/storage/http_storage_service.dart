@@ -8,7 +8,11 @@ import 'dart:io';
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_storage_manager/act_server_storage_manager.dart';
+import 'package:act_server_storage_manager/src/models/storage_page.dart';
+import 'package:act_server_storage_manager/src/models/transfer_progress.dart';
+import 'package:act_server_storage_manager/src/services/storage/mixin_storage_service.dart';
+import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
+import 'package:act_server_storage_manager/src/types/transfer_status.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 
@@ -28,6 +32,9 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   /// or a more specialized URL (such as "http://fqdn:port/foo/folder/").
   final Uri _httpRoot;
 
+  @override
+  final Map<String, String>? headers;
+
   /// The service logs helper
   late final LogsHelper _logsHelper;
 
@@ -37,8 +44,10 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   final HttpClient _httpClient;
 
   /// Class constructor
-  HttpStorageService({required Uri httpRoot})
-      : _httpClient = HttpClient(),
+  HttpStorageService({
+    required Uri httpRoot,
+    this.headers,
+  })  : _httpClient = HttpClient(),
         // Early ensure a final slash in our _httpRoot member so our getDownloadUrl is simpler
         _httpRoot = _ensureUriTrailingSlash(httpRoot),
         super();
@@ -126,8 +135,15 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     final HttpClientResponse closeResp;
     try {
       // (getUrl and close may throw exceptions)
-      final getResp = await _httpClient.getUrl(fileUri);
-      closeResp = await getResp.close();
+      final getReq = await _httpClient.getUrl(fileUri);
+
+      // If the headers have been given we set them
+      if (headers != null) {
+        for (final header in headers!.entries) {
+          getReq.headers.add(header.key, header.value);
+        }
+      }
+      closeResp = await getReq.close();
     } on Exception catch (e) {
       _logsHelper.e('Failed to query URL $fileUri: $e');
       _handleEarlyFailureProgression(onProgress);

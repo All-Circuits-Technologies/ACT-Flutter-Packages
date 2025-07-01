@@ -8,7 +8,6 @@ import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_req_manager/src/abs_server_login.dart';
-import 'package:act_server_req_manager/src/helpers/url_format_utility.dart';
 import 'package:act_server_req_manager/src/models/request_param.dart';
 import 'package:act_server_req_manager/src/models/request_response.dart';
 import 'package:act_server_req_manager/src/models/requester_config.dart';
@@ -16,6 +15,7 @@ import 'package:act_server_req_manager/src/models/server_urls.dart';
 import 'package:act_server_req_manager/src/server_requester.dart';
 import 'package:act_server_req_manager/src/types/login_fail_policy.dart';
 import 'package:act_server_req_manager/src/types/request_status.dart';
+import 'package:act_server_req_manager/src/utilities/url_format_utility.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart';
 

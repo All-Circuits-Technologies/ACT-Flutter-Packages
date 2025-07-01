@@ -12,7 +12,7 @@ import 'package:act_server_storage_manager/src/models/cache_storage_config.dart'
 import 'package:act_server_storage_manager/src/models/storage_file.dart';
 import 'package:act_server_storage_manager/src/models/storage_page.dart';
 import 'package:act_server_storage_manager/src/services/cache_service.dart';
-import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
+import 'package:act_server_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter/material.dart';
 
@@ -100,6 +100,9 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
       _cacheService = null;
     }
   }
+
+  /// Get the path separator used by the storage service.
+  String getPathSeparator() => globalGetIt().get<C>().storagePathSeparator.load();
 
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.
   Future<({StorageRequestResult result, File? file})> getFile(
@@ -199,8 +202,10 @@ abstract class AbsServerStorageManager<C extends MixinStorageConfig> extends Abs
     return (result: StorageRequestResult.success, page: page);
   }
 
+  /// {@template act_server_storage_manager.AbsServerStorageManager.getStorageService}
   /// This method is used by the [AbsServerStorageManager] to get the [CacheService] instance to
   /// use. It must be implemented by the concrete class.
+  /// {@endtemplate}
   @protected
   Future<MixinStorageService> getStorageService();
 

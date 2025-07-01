@@ -28,7 +28,11 @@ mixin MixinStorageService on AbsWithLifeCycle {
   ///
   /// Note that the [getApplicationCacheDirectory] might raise a [MissingPlatformDirectoryException]
   /// See [https://pub.dev/documentation/path_provider/latest/path_provider/MissingPlatformDirectoryException-class.html]
-  static Future<Directory> getDownloadsDirectory() async => getApplicationCacheDirectory();
+  static Future<Directory> getDownloadsDirectory() async =>
+      getApplicationCacheDirectory();
+
+  /// Headers to be used in requests. This can be overridden by the implementation.
+  Map<String, String>? get headers => null;
 
   /// Get the download url of a file based on a [fileId].
   Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(

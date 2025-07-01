@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_server_req_jwt_logins/src/abs_jwt_login.dart';
-import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart' as jwt_login_constants;
 import 'package:act_server_req_jwt_logins/src/models/refresh_token_answer.dart';
 import 'package:act_server_req_jwt_logins/src/models/token_info.dart';
 import 'package:act_server_req_manager/act_server_req_manager.dart';
@@ -24,7 +23,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin<RefreshTokenAnswer> {
     required super.loginFailPolicy,
     required super.logsHelper,
     super.headerAuthKey = ServerReqConstants.authorizationHeader,
-    super.headerAuthValueFormatted = jwt_login_constants.authBearer,
+    super.headerAuthValueFormatted = AuthConstants.authBearer,
   }) : _refreshTokenInfo = null;
 
   /// This method returns the request to execute in order to refresh the token from the server and

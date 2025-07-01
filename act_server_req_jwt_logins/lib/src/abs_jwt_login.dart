@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_server_req_jwt_logins/src/jwt_login_constants.dart' as jwt_login_constants;
 import 'package:act_server_req_jwt_logins/src/models/token_answer.dart';
 import 'package:act_server_req_jwt_logins/src/models/token_info.dart';
 import 'package:act_server_req_manager/act_server_req_manager.dart';
@@ -29,7 +28,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
     required super.loginFailPolicy,
     required super.logsHelper,
     this.headerAuthKey = ServerReqConstants.authorizationHeader,
-    this.headerAuthValueFormatted = jwt_login_constants.authBearer,
+    this.headerAuthValueFormatted = AuthConstants.authBearer,
   }) : _tokenInfo = null;
 
   /// This method manages the login to the third server if it's needed. It also adds to the
@@ -145,7 +144,7 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
   /// This method adds the token into the headers of the future request
   void _formatHeaderWithToken(RequestParam futureRequestParam, String token) {
     futureRequestParam.headers[headerAuthKey] = headerAuthValueFormatted.replaceAll(
-      jwt_login_constants.tokenBearerKey,
+      AuthConstants.tokenBearerKey,
       token,
     );
   }

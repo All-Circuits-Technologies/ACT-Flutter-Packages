@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_server_storage_manager/src/constants/default_server_storage_constants.dart'
+    as default_server_storage_constants;
 
 /// This mixin has to be applied in the ConfigManager of the main app and provides configuration
 /// for the storage manager.
@@ -11,6 +13,12 @@ mixin MixinStorageConfig on AbstractConfigManager {
   final storageCacheNumberOfObjectsCached = const NotNullableConfigVar<int>(
     'storage.cache.numberOfObjectsCached',
     defaultValue: 100,
+  );
+
+  /// Allows to override the storage manager default path separator
+  final storagePathSeparator = const NotNullableConfigVar<String>(
+    "storage.pathSeparator",
+    defaultValue: default_server_storage_constants.storagePathSep,
   );
 
   /// Allows to override the storage manager stale period

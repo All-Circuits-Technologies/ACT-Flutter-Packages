@@ -63,8 +63,10 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycle {
     await Future.wait(_services.values.map((service) => service.initAfterView(context)));
   }
 
+  /// {@template act_consent_manager.AbstractConsentManager.getConsentServices}
   /// Provide the [_services] map with the consent type as key and
   /// the service as value
+  /// {@endtemplate}
   @protected
   Future<Map<E, AbstractConsentService>> getConsentServices(
     LogsHelper logsHelper,

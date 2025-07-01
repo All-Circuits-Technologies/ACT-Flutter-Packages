@@ -8,7 +8,7 @@ import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_storage_manager/src/models/cache_storage_config.dart';
 import 'package:act_server_storage_manager/src/services/cache_with_images_manager.dart';
-import 'package:act_server_storage_manager/src/services/mixin_storage_service.dart';
+import 'package:act_server_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_server_storage_manager/src/services/storage_http_file_service.dart';
 import 'package:act_server_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';

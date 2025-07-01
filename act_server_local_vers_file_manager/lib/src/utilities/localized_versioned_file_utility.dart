@@ -6,7 +6,8 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_local_vers_file_manager/src/server_local_vers_file_constants.dart';
+import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart'
+    as server_local_vers_file_constants;
 import 'package:act_server_local_vers_file_manager/src/utilities/localized_file_utility.dart';
 import 'package:act_server_local_vers_file_manager/src/utilities/versioned_file_utility.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
@@ -29,6 +30,64 @@ import 'package:path/path.dart' as path;
 /// - my_file/en_us/...
 /// {@endtemplate}
 sealed class LocalizedVersionedFileUtility {
+  /// Fetch current version of a localized and versioned file.
+  ///
+  /// That is, read "version" file within [storage] [dirId] $locale folder, optionally caching
+  /// result using [cacheVersion].
+  static Future<
+      ({
+        StorageRequestResult result,
+        ({Locale locale, String version})? data,
+      })> getFileLocalizedCurrentVersion({
+    required AbsServerStorageManager storage,
+    required String dirId,
+    required List<Locale> locales,
+    required bool cacheVersion,
+    required LogsHelper logsHelper,
+  }) async {
+    // Peek versioned file unconditionally (even with explicit version) since it is the entry point
+    // to search sibling final file.
+    final localizedVersionResult = await LocalizedFileUtility.getLocalizedFile(
+      storage: storage,
+      dirId: dirId,
+      fileName: server_local_vers_file_constants.currentVersionStampFileName,
+      locales: locales,
+      useCache: cacheVersion,
+      logsHelper: logsHelper,
+    );
+
+    if (localizedVersionResult.result != StorageRequestResult.success) {
+      return (result: localizedVersionResult.result, data: null);
+    }
+
+    if (localizedVersionResult.data == null) {
+      logsHelper.e(
+          "A successful localized file utility result should always have a valid data");
+      assert(false, "Should never fire");
+      return (result: StorageRequestResult.genericError, data: null);
+    }
+
+    final currentVersionResult =
+        await VersionedFileUtility.getFileCurrentVersion(
+      storage: storage,
+      dirId: path.dirname(localizedVersionResult.data!.filePath),
+      cacheVersion: cacheVersion,
+      logsHelper: logsHelper,
+    );
+
+    if (currentVersionResult.requestResult != StorageRequestResult.success) {
+      return (result: currentVersionResult.requestResult, data: null);
+    }
+
+    return (
+      result: StorageRequestResult.success,
+      data: (
+        locale: localizedVersionResult.data!.locale,
+        version: currentVersionResult.version!,
+      ),
+    );
+  }
+
   /// Get a localized and versioned file within [dirId] of [storage].
   ///
   /// That is:
@@ -57,7 +116,7 @@ sealed class LocalizedVersionedFileUtility {
     final localizedVersionResult = await LocalizedFileUtility.getLocalizedFile(
       storage: storage,
       dirId: dirId,
-      fileName: ServerLocalVersFileConstants.currentVersionStampFileName,
+      fileName: server_local_vers_file_constants.currentVersionStampFileName,
       locales: locales,
       useCache: cacheVersion,
       logsHelper: logsHelper,
@@ -68,7 +127,8 @@ sealed class LocalizedVersionedFileUtility {
     }
 
     if (localizedVersionResult.data == null) {
-      logsHelper.e("A successful localized file utility result should always have a valid data");
+      logsHelper.e(
+          "A successful localized file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -81,8 +141,8 @@ sealed class LocalizedVersionedFileUtility {
       versionToFileName: versionToFileName,
       cacheVersion: cacheVersion,
       cacheFile: cacheFile,
-      versionOverride:
-          explicitVersion ?? (await localizedVersionResult.data!.file.readAsString()).trim(),
+      versionOverride: explicitVersion ??
+          (await localizedVersionResult.data!.file.readAsString()).trim(),
       logsHelper: logsHelper,
     );
 
@@ -91,7 +151,8 @@ sealed class LocalizedVersionedFileUtility {
     }
 
     if (versionedFileResult.data == null) {
-      logsHelper.e("A successful versioned file utility result should always have a valid data");
+      logsHelper.e(
+          "A successful versioned file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
