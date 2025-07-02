@@ -34,6 +34,9 @@ dependencies:
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
 
+  act_intl:
+    path: ../act_intl
+
   # Authentification lib
   act_shared_auth:
     path: ../act_shared_auth

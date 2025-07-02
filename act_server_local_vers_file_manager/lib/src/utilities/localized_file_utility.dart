@@ -5,7 +5,7 @@
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_intl/act_intl.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart'
     as server_local_vers_file_constants;
@@ -46,18 +46,16 @@ sealed class LocalizedFileUtility {
     // Convert locales to variants.
     final expandedLocales = LocaleUtility.expandLocales(locales);
 
-    final variants =
-        expandedLocales.map((locale) => LocaleUtility.localeToString(
-              locale: locale,
-              separator: server_local_vers_file_constants.localeCodesSep,
-            ).toLowerCase());
+    final variants = expandedLocales.map((locale) => LocaleUtility.localeToString(
+          locale: locale,
+          separator: server_local_vers_file_constants.localeCodesSep,
+        ).toLowerCase());
 
     // Process lookup with variants
     final variantUtilityResult = await VariantFileUtility.getVariantFile(
       storage: storage,
       variants: variants,
-      variantToFilePath: (variant) =>
-          [dirId, variant, fileName].join(storage.getPathSeparator()),
+      variantToFilePath: (variant) => [dirId, variant, fileName].join(storage.getPathSeparator()),
       useCache: useCache,
       logsHelper: logsHelper,
     );
@@ -67,8 +65,7 @@ sealed class LocalizedFileUtility {
     }
 
     if (variantUtilityResult.data == null) {
-      logsHelper.e(
-          "A successful variant file utility result should always have a valid data");
+      logsHelper.e("A successful variant file utility result should always have a valid data");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }
@@ -84,8 +81,7 @@ sealed class LocalizedFileUtility {
       // We stringified locales at the very beginning of this method
       // and we transformed one of them back to a locale.
       // We do not expect any issue here.
-      logsHelper.e(
-          "Variants are stringified locales, so should be readable as locales again");
+      logsHelper.e("Variants are stringified locales, so should be readable as locales again");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }

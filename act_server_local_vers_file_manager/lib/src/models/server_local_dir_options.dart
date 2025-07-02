@@ -6,6 +6,7 @@ import 'dart:ui';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_intl/act_intl.dart';
 import 'package:act_server_local_vers_file_manager/src/constants/server_local_vers_file_constants.dart';
 import 'package:equatable/equatable.dart';
 
@@ -53,10 +54,9 @@ class ServerLocalDirOptions extends Equatable {
   }) =>
       ServerLocalDirOptions(
         locales: locales ?? (forceLocalesValue ? null : this.locales),
-        versionToFileName: versionToFileName ??
-            (forceVersionToFileNameValue ? null : this.versionToFileName),
-        cacheVersion:
-            cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
+        versionToFileName:
+            versionToFileName ?? (forceVersionToFileNameValue ? null : this.versionToFileName),
+        cacheVersion: cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
         cacheFile: cacheFile ?? (forceCacheFileValue ? null : this.cacheFile),
       );
 
@@ -68,8 +68,7 @@ class ServerLocalDirOptions extends Equatable {
       json: json,
       key: _localesKey,
       canBeUndefined: true,
-      castElemValueFunc: (toCast) =>
-          LocaleUtility.localeFromString(string: toCast),
+      castElemValueFunc: (toCast) => LocaleUtility.localeFromString(string: toCast),
       loggerManager: loggerManager,
     );
 
@@ -87,11 +86,8 @@ class ServerLocalDirOptions extends Equatable {
       loggerManager: loggerManager,
     );
 
-    if (!localsResult.isOk ||
-        !cacheVersionResult.isOk ||
-        !cacheFileResult.isOk) {
-      appLogger()
-          .w("We failed to parse the ServerLocalDirOptions model from JSON");
+    if (!localsResult.isOk || !cacheVersionResult.isOk || !cacheFileResult.isOk) {
+      appLogger().w("We failed to parse the ServerLocalDirOptions model from JSON");
       return null;
     }
 
