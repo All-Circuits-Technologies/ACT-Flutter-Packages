@@ -19,10 +19,10 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # Implements the Router API
-  go_router: 15.2.3
+  go_router: ^15.1.3
 
   # Easily create managers
   act_abstract_manager:

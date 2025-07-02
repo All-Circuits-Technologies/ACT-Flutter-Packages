@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  rxdart: 0.28.0
+  rxdart: ^0.28.0
 
   act_abstract_manager:
     path: ../act_abstract_manager

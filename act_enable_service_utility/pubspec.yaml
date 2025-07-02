@@ -16,9 +16,9 @@ dependencies:
     sdk: flutter
 
   # Open phone settings in app
-  app_settings: 6.1.1
+  app_settings: ^6.1.1
 
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   act_abstract_manager:
     path: ../act_abstract_manager

@@ -21,10 +21,10 @@ dependencies:
     sdk: flutter
 
   # Widget rendering static HTML and CSS as Flutter widgets
-  flutter_html: 3.0.0
+  flutter_html: ^3.0.0
 
   # Code to deal with internationalized/localized messages
-  intl: 0.20.2
+  intl: ^0.20.2
 
   # Non-graphical internationalization helpers
   act_intl:

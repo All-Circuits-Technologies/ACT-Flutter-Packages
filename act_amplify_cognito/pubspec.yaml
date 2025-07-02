@@ -15,13 +15,13 @@ dependencies:
     sdk: flutter
 
   # TODO(brolandeau): when updating the lib, verify if we still need to override `web`
-  amplify_auth_cognito: 2.6.3
+  amplify_auth_cognito: ^2.6.3
 
-  amplify_flutter: 2.6.3
+  amplify_flutter: ^2.6.3
 
-  aws_signature_v4: 0.6.6
+  aws_signature_v4: ^0.6.6
 
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # The abstract manager
   act_abstract_manager:

@@ -15,9 +15,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
-  firebase_crashlytics: 4.3.7
+  firebase_crashlytics: ^4.3.7
 
   # Contains useful classes to create managers in the app
   act_abstract_manager:

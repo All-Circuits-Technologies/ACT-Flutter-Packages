@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  flutter_native_splash: 2.4.6
+  flutter_native_splash: ^2.4.6
 
   # Easily create managers
   act_abstract_manager:

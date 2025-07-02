@@ -16,13 +16,13 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # Implement the BLoC (Business Logic Component) design pattern
-  flutter_bloc: 9.1.1
+  flutter_bloc: ^9.1.1
 
   # Mutual exclusion with implementation of normal and read-write mutex
-  mutex: 3.1.0
+  mutex: ^3.1.0
 
   thingsboard_client:
     git:

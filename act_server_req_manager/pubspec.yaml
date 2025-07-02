@@ -15,10 +15,10 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # Future-based API for HTTP requests
-  http: 1.4.0
+  http: ^1.4.0
 
   # Easily create managers
   act_abstract_manager:
