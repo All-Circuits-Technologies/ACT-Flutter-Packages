@@ -15,9 +15,9 @@ dependencies:
     sdk: flutter
 
   # TODO(brolandeau): when updating the lib, verify if we still need to override `web`
-  amplify_auth_cognito: ^2.6.3
+  amplify_auth_cognito: ^2.6.4
 
-  amplify_flutter: ^2.6.3
+  amplify_flutter: ^2.6.4
 
   aws_signature_v4: ^0.6.6
 
