@@ -16,7 +16,7 @@ dependencies:
     sdk: flutter
 
   # Discover network connectivity and configure thems
-  connectivity_plus: 6.1.4
+  connectivity_plus: ^6.1.4
 
   act_abstract_manager:
     path: ../act_abstract_manager

@@ -32,8 +32,6 @@ import 'package:mutex/mutex.dart';
 /// AwsIotMqttService.onUnsubscribedStream, [AwsIotMqttService.onMessageReceivedStream].
 class AwsIotMqttService<AuthManager extends AbsAuthManager,
     AmplifyManager extends AbsAmplifyManager> extends AbsAwsIotService {
-  static const _awsIotService = AWSService('iotdevicegateway');
-
   /// This is the base period for the reconnect timer.
   static const _reconnectTimerBasePeriod = Duration(seconds: 1);
 
@@ -321,7 +319,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     final url = cognitoService
         .signUrl(
           creds: creds,
-          service: _awsIotService,
+          service: AWSService.iotCore,
           region: config.region,
           endpoint: config.endpoint,
           signerValidityDuration: config.signerValidityDuration,

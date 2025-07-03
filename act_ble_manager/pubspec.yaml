@@ -15,16 +15,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  async: 2.13.0
+  async: ^2.13.0
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # Library to handle BLE for multiple devices
-  flutter_reactive_ble: 5.4.0
+  flutter_reactive_ble: ^5.4.0
 
   # Mutual exclusion with implementation of normal and read-write mutex
-  mutex: 3.1.0
+  mutex: ^3.1.0
 
   act_abs_peripherals_manager:
     path: ../act_abs_peripherals_manager

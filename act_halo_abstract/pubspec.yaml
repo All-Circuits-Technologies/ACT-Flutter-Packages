@@ -16,7 +16,7 @@ dependencies:
     sdk: flutter
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
   # Easily create managers
   act_abstract_manager:

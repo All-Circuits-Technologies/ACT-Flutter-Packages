@@ -15,16 +15,16 @@ dependencies:
   flutter:
     sdk: flutter
 
-  app_settings: 6.1.1
+  app_settings: ^6.1.1
 
   # Help to implement value based equality without explicit override
-  equatable: 2.0.7
+  equatable: ^2.0.7
 
-  flutter_bloc: 9.1.1
+  flutter_bloc: ^9.1.1
 
-  permission_handler: 12.0.0+1
+  permission_handler: ^12.0.0+1
 
-  qr_code_scanner: 1.0.1
+  qr_code_scanner: ^1.0.1
 
   act_dart_utility:
     path: ../act_dart_utility

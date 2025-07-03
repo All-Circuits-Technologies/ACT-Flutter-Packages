@@ -18,11 +18,11 @@ dependencies:
     sdk: flutter
 
   # Store/Load data in secure storage
-  flutter_secure_storage: 9.2.4
+  flutter_secure_storage: ^9.2.4
 
   # Wrap platform-specific persistent storage for simple data
   # TODO(brolandeau): when updating the lib, verify if we still need to override `shared_preferences_android`
-  shared_preferences: 2.5.3
+  shared_preferences: ^2.5.3
 
   # Flutter AC Technologies dependencies
   act_abstract_manager:

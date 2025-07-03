@@ -14,7 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  icons_launcher: 3.0.1
+  icons_launcher: ^3.0.1
 
 dev_dependencies:
   flutter_test:
