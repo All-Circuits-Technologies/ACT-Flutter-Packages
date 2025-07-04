@@ -19,7 +19,7 @@ enum HaloCategoryType with MixinHaloType {
   /// This means that the category is unknown.
   ///
   /// This value can't be sent to/by the Firmware
-  unknown(rawValue: ByteUtility.maxInt64);
+  unknown(rawValue: ByteUtility.maxInt32);
 
   /// This defines the notification flags and keys raw value
   static const int _notifFlagsKeysValue = 0x01;

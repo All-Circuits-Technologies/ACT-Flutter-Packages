@@ -6,6 +6,15 @@ name: act_amplify_cognito
 description: This is the package used to add cognito support to the mobile app
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

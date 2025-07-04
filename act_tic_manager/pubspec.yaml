@@ -6,6 +6,15 @@ name: act_tic_manager
 description: This package contains a tic manager which helps to display HMI in pace
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.2 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

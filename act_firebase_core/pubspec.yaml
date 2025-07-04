@@ -6,6 +6,15 @@ name: act_firebase_core
 description: "This is the main package to manage firebase with our ACT libs"
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

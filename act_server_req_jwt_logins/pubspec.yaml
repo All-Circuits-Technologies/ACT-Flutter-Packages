@@ -6,6 +6,15 @@ name: act_server_req_jwt_logins
 description: Contains specific server logins to work with JWT
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.2 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

@@ -7,6 +7,15 @@ name: act_internet_connectivity_manager
 description: The package contains the internet connectivity manager to know when we are connected to internet, or not.
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"
@@ -17,6 +26,8 @@ dependencies:
 
   # Discover network connectivity and configure thems
   connectivity_plus: ^6.1.4
+
+  http: ^1.4.0
 
   act_abstract_manager:
     path: ../act_abstract_manager

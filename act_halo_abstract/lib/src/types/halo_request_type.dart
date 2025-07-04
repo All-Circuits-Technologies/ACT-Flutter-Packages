@@ -19,7 +19,7 @@ enum HaloRequestType with MixinHaloType {
   /// This means that the request is unknown.
   ///
   /// This value can't be sent to/by the Firmware
-  unknown(rawValue: ByteUtility.maxInt64);
+  unknown(rawValue: ByteUtility.maxInt32);
 
   /// The raw value linked to the enum
   @override
