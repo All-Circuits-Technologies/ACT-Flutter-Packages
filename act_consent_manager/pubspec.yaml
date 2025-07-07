@@ -6,6 +6,14 @@ name: act_consent_manager
 description: "This package contains useful methods and classes to manage user consents."
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ">=3.3.2 <4.0.0"
   flutter: ">=1.17.0"

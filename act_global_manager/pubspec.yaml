@@ -10,6 +10,16 @@ description: This package contains the default global_manager which has to be ex
 
 # Project configuration
 publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

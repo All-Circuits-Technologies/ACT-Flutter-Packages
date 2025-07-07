@@ -6,6 +6,12 @@ name: act_splash_screen_manager
 description: Useful package to support native splash screens in mobile applications
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  web:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

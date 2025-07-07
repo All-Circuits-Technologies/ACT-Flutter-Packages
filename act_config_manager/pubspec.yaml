@@ -9,6 +9,15 @@ name: act_config_manager
 description: This package contains methods to manage config variables.
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"
@@ -36,6 +45,9 @@ dependencies:
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
+
+  act_platform_manager:
+    path: ../act_platform_manager
 
   # Contains utilities for Dart
   act_yaml_utility:

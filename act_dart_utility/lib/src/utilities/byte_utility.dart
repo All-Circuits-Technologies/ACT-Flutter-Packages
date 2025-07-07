@@ -44,10 +44,16 @@ abstract class ByteUtility {
   static const int maxInt32 = 0x7FFFFFFF;
 
   /// The minimum value a signed integer of 64bits can have
-  static const int minInt64 = -maxInt64 - 1;
+  ///
+  /// This is a BigInt, which is needed by the web platform. The web platform only supports integers
+  /// with 32bits. In other platforms, integers are 64 bits.
+  static final minInt64 = -maxInt64 - BigInt.one;
 
   /// The maximum value a signed integer of 64bits can have
-  static const int maxInt64 = 0x7FFFFFFFFFFFFFFF;
+  ///
+  /// This is a BigInt, which is needed by the web platform. The web platform only supports integers
+  /// with 32bits. In other platforms, integers are 64 bits.
+  static final maxInt64 = BigInt.parse("0x7FFFFFFFFFFFFFFF");
 
   /// The minimum value an unsigned integer can have
   static const int minUInt = 0;

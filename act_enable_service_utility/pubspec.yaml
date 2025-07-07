@@ -7,6 +7,14 @@ name: act_enable_service_utility
 description: The package contains utility classes to manage the enabling of services
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

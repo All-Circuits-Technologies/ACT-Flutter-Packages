@@ -6,6 +6,15 @@ name: act_shared_auth_ui
 description: This package completes the act_shared_auth and offers widgets, blocs, page, etc.
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

@@ -193,10 +193,17 @@ sealed class NumUtility {
     }
 
     final newValue = value * math.pow(10, powerOfTenCoeff);
+    if (!newValue.isFinite) {
+      loggerManager.w("We can't convert a double which is not finite: $value");
+      return null;
+    }
 
-    if (!newValue.isFinite || newValue > ByteUtility.maxInt64) {
-      loggerManager.w("We can't convert a double which is greater than the max value of an int64; "
-          "the given value: $value, the power of ten: $powerOfTenCoeff");
+    // It's relevant to test newValue against a BigInt because newValue is a double; therefore,
+    // there will be an approximation.
+    final bigIntValue = BigInt.from(newValue);
+    if (bigIntValue > ByteUtility.maxInt64 || bigIntValue < ByteUtility.minInt64) {
+      loggerManager.w("We can't convert a double which is outside the range of an int64; the "
+          "given value: $value, the power of ten: $powerOfTenCoeff");
       return null;
     }
 

@@ -6,6 +6,15 @@ name: act_amplify_core
 description: "This is the package to manage amplify with our ACT libs"
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ">=3.3.2 <4.0.0"
   flutter: ">=1.17.0"

@@ -6,6 +6,14 @@ name: act_aws_iot_core
 description: "Package to interact with aws iot core using amplify credentials"
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ">=3.3.2 <4.0.0"
   flutter: ">=1.17.0"

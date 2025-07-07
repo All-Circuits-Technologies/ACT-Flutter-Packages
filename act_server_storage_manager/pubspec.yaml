@@ -6,6 +6,14 @@ name: act_server_storage_manager
 description: "Act server storage manager package."
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ^3.5.3
   flutter: ">=1.17.0"

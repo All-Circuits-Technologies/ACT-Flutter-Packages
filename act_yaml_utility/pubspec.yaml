@@ -6,6 +6,15 @@ name: act_yaml_utility
 description: This contains utility classes to manage YAML
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.4.3 <4.0.0'
   flutter: ">=1.17.0"

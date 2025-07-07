@@ -7,6 +7,15 @@ description: This package contains the common elements to connect to OAuth 2.0 c
   Providers.
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ^3.7.2
   flutter: ">=1.17.0"

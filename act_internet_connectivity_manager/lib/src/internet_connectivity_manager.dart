@@ -4,11 +4,11 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_internet_connectivity_manager/src/platform_deps/internet_test.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/foundation.dart';
@@ -142,19 +142,7 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
     var constantValue = false;
 
     while (!constantValue) {
-      var connection = false;
-
-      var listAddresses = <InternetAddress>[];
-
-      try {
-        listAddresses = await InternetAddress.lookup(_serverTestFqdn);
-      } catch (error) {
-        connection = false;
-      }
-
-      if (listAddresses.isNotEmpty && listAddresses[0].rawAddress.isNotEmpty) {
-        connection = true;
-      }
+      final connection = await InternetTest.requestFqdnAndTestIfConnectionOk(fqdn: _serverTestFqdn);
 
       resultValues.add(connection);
 

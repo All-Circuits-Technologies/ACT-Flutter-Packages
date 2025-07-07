@@ -6,3 +6,4 @@
 library;
 
 export 'src/platform_manager.dart';
+export 'src/platforms_deps/act_platform.dart';

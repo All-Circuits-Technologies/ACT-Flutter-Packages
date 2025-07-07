@@ -6,6 +6,15 @@ name: act_jwt_utilities
 description: Contains useful classes to manage JWT in mobile app
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.2 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

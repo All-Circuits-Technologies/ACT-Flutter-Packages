@@ -3,13 +3,13 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:act_config_manager/src/data/config_constants.dart' as config_constants;
 import 'package:act_config_manager/src/models/env_config_mapping_model.dart';
 import 'package:act_config_manager/src/types/env_type.dart';
 import 'package:act_config_manager/src/utilities/env_config_mapping_utility.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -37,7 +37,8 @@ sealed class ConfigFromEnvUtility {
 
     final mappingModels = await EnvConfigMappingUtility.fromAssetBundle(
         _getConfigFilePath(configPath, config_constants.envConfigMappingFileName));
-    final platformEnv = Platform.environment;
+    final platformEnv = ActPlatform.environment;
+
     final dotEnv = (await _loadDotEnvFromAsset(configPath)) ?? {};
 
     for (final envMapModel in mappingModels) {

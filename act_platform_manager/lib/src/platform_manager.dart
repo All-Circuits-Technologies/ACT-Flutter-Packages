@@ -3,9 +3,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'dart:io';
-
 import 'package:act_abstract_manager/act_abstract_manager.dart';
+import 'package:act_platform_manager/src/platforms_deps/act_platform.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 
 /// Builder for creating the PlatformManager
@@ -39,10 +38,10 @@ class PlatformManager extends AbsWithLifeCycle {
   }
 
   /// True if the current platform is Android
-  bool get isAndroid => Platform.isAndroid;
+  bool get isAndroid => ActPlatform.isAndroid;
 
   /// True if the current platform is iOS
-  bool get isIos => Platform.isIOS;
+  bool get isIos => ActPlatform.isIos;
 
   /// Getter of Platform version
   int? get version => _sdkVersion;

@@ -23,7 +23,7 @@ enum OcsigenWiFiUrc with MixinHaloType {
   lostConnection(rawValue: 0x04),
 
   /// The URC status is unknown
-  unknown(rawValue: ByteUtility.maxInt64);
+  unknown(rawValue: ByteUtility.maxInt32);
 
   /// The raw value linked to the enum
   @override

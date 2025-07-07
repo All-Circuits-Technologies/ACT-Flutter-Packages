@@ -49,7 +49,7 @@ enum HaloCmdId with MixinHaloType {
   /// This means that the command is unknown.
   ///
   /// This value can't be sent to/by the Firmware
-  unknown(rawValue: ByteUtility.maxInt64);
+  unknown(rawValue: ByteUtility.maxInt32);
 
   /// This defines the read pull cmd raw value
   static const int _readPullValue = 0x00;

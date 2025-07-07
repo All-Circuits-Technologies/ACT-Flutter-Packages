@@ -6,6 +6,15 @@ name: act_ocsigen_halo_manager
 description: This is the manager for the OCSIGEN implementation of HALO
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

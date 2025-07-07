@@ -6,6 +6,14 @@ name: act_amplify_api
 description: This is the package used to add api support to the mobile app
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: '>=3.4.3 <4.0.0'
   flutter: ">=1.17.0"

@@ -6,6 +6,15 @@ name: act_shared_auth
 description: This contains generic and shared elements for authentication services.
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

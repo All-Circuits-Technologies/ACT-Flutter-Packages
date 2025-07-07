@@ -7,6 +7,14 @@ name: act_ble_manager
 description: This package contains the base for Bluetooth Low Energy
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: '>=3.0.0 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"

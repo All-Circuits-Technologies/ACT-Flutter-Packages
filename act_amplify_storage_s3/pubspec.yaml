@@ -6,6 +6,14 @@ name: act_amplify_storage_s3
 description: "This package is a wrapper around the Amplify Storage S3 plugin."
 publish_to: none
 
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
 environment:
   sdk: ">=3.4.0 <4.0.0"
   flutter: ">=1.17.0"

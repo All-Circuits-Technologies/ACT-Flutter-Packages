@@ -97,13 +97,17 @@ abstract class GlobalManager {
     );
   }
 
-  /// The [init] function is called at class constructor to init the singletons
+  /// {@template act_global_manager.GlobalManager.init}
+  /// The [init] function is called at class constructor to register the managers
+  /// {@endtemplate}
   @protected
   @mustCallSuper
   void init();
 
+  /// {@template act_global_manager.GlobalManager.allReadyBeforeView}
   /// The [allReadyBeforeView] method has to be called before creating the
   /// first widget
+  /// {@endtemplate}
   @mustCallSuper
   Future<void> allReadyBeforeView() async {
     await managers.allReady();
@@ -117,6 +121,7 @@ abstract class GlobalManager {
     _packageInfo = await PackageInfo.fromPlatform();
   }
 
+  /// {@template act_global_manager.GlobalManager.initInFirstView}
   /// The [initInFirstView] method is used to init what need to be init with
   /// managers and the MaterialApp context
   ///
@@ -124,6 +129,7 @@ abstract class GlobalManager {
   ///
   /// The method returns false if it has already been initialized or
   /// true if it's the first call
+  /// {@endtemplate}
   @mustCallSuper
   bool initInFirstView(BuildContext context) {
     if (_state.index >= _GlobalManagerState.initForWidget.index) {
@@ -142,13 +148,17 @@ abstract class GlobalManager {
     return true;
   }
 
+  /// {@template act_global_manager.GlobalManager.initScreen}
   /// The [initScreen] method is used to init the screen
   /// Possibly used with ScreenUtil plugin and add the instance to managers
+  /// {@endtemplate}
   @mustCallSuper
   void initScreen(BuildContext context) {}
 
+  /// {@template act_global_manager.GlobalManager.dispose}
   /// The [dispose] method is used to dispose all the managers
   /// It has to be called in the main app dispose method
+  /// {@endtemplate}
   @mustCallSuper
   Future<void> dispose() async {
     _defaultLogger.i("Disposing the global manager and managers");
