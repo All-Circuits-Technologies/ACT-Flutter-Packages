@@ -16,6 +16,9 @@ class SingleExpandableChildScrollView extends StatelessWidget {
   /// This is the scroll physics to set on the scroll view
   final ScrollPhysics? physics;
 
+  /// This is the scroll direction of the scroll view
+  final Axis scrollDirection;
+
   /// The expandable child
   final Widget child;
 
@@ -24,12 +27,14 @@ class SingleExpandableChildScrollView extends StatelessWidget {
     super.key,
     this.controller,
     this.physics,
+    this.scrollDirection = Axis.vertical,
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
         builder: (context, constraints) => SingleChildScrollView(
+          scrollDirection: scrollDirection,
           controller: controller,
           physics: physics,
           child: ConstrainedBox(
