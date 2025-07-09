@@ -17,6 +17,9 @@ class OptionalSingleChildScrollView extends StatelessWidget {
   /// This is the scroll physics to set on the scroll view
   final ScrollPhysics? physics;
 
+  /// This is the scroll direction of the scroll view
+  final Axis scrollDirection;
+
   /// Widget to optionally embed within a scroll view
   final Widget child;
 
@@ -26,6 +29,7 @@ class OptionalSingleChildScrollView extends StatelessWidget {
     required this.scrollViewType,
     this.controller,
     this.physics,
+    this.scrollDirection = Axis.vertical,
     required this.child,
   });
 
@@ -35,11 +39,13 @@ class OptionalSingleChildScrollView extends StatelessWidget {
         SingleChildScrollViewType.noScroll => child,
         SingleChildScrollViewType.scroll => SingleChildScrollView(
             controller: controller,
+            scrollDirection: scrollDirection,
             physics: physics,
             child: child,
           ),
         SingleChildScrollViewType.expandedScroll => SingleExpandableChildScrollView(
             controller: controller,
+            scrollDirection: scrollDirection,
             physics: physics,
             child: child,
           ),
