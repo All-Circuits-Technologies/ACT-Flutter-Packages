@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_internet_connectivity_manager/src/mixins/mixin_internet_test_config.dart';
 import 'package:act_internet_connectivity_manager/src/platform_deps/internet_test.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
@@ -15,11 +16,17 @@ import 'package:flutter/foundation.dart';
 
 /// Builder to use with derived class in order to create an InternetConnectivityManager with the
 /// right type
+///
+/// This is useful if you want to create another [InternetConnectivityManager] to test the
+/// connectivity to a server in addition to test for internet.
+///
+/// If you don't want to test internet but another server instead, don't use this builder and just
+/// use the [MixinInternetTestConfig] mixin for the config manager.
 @protected
 abstract class AbstractInternetDerivedBuilder<T extends InternetConnectivityManager>
     extends AbsManagerBuilder<T> {
   /// Class constructor with the class construction
-  AbstractInternetDerivedBuilder({
+  const AbstractInternetDerivedBuilder({
     required ClassFactory<T> factory,
   }) : super(factory);
 
@@ -30,25 +37,23 @@ abstract class AbstractInternetDerivedBuilder<T extends InternetConnectivityMana
 }
 
 /// Builder for creating the InternetConnectivityManager
-class InternetConnectivityBuilder
+class InternetConnectivityBuilder<C extends MixinInternetTestConfig>
     extends AbstractInternetDerivedBuilder<InternetConnectivityManager> {
   /// Class constructor
-  InternetConnectivityBuilder() : super(factory: InternetConnectivityManager.new);
+  InternetConnectivityBuilder()
+      : super(
+            factory: () => InternetConnectivityManager(
+                  configGetter: globalGetIt().get<C>,
+                ));
+
+  /// List of manager dependencies
+  @override
+  @mustCallSuper
+  Iterable<Type> dependsOn() => [...super.dependsOn(), C];
 }
 
 /// Service to check connection to internet
 class InternetConnectivityManager extends AbsWithLifeCycle {
-  /// This defines a period for retesting internet connection and verify if the internet connection
-  /// is constant
-  static const _testPeriod = Duration(milliseconds: 300);
-
-  /// This defines the number of time we want to have a stable internet connection "status" when
-  /// testing the connection with a period (defined here: [_testPeriod])
-  static const _constantValueNb = 3;
-
-  /// This is the default server FQDN to test, in order to verify if we have internet, or not
-  static const _defaultServerFqdnToTest = "www.google.com";
-
   /// This is how we'll allow subscribing to connection changes
   final StreamController<bool> _connectionCtrl;
 
@@ -61,6 +66,10 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   /// This is the FQDN to test, in order to know we don't have internet for now
   late final String _serverTestFqdn;
 
+  /// This is the restartable timer used to restart the connection test, if the periodic
+  /// verification has been enabled
+  ProgressingRestartableTimer? _restartableTimer;
+
   /// Consent values getter
   bool get hasConnection => _connectionValue;
 
@@ -70,28 +79,69 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   /// flutter_connectivity
   final Connectivity _connectivity;
 
+  /// This is the getter of the config manager
+  final MixinInternetTestConfig Function() _configGetter;
+
   /// Class constructor
-  InternetConnectivityManager()
-      : _connectionCtrl = StreamController<bool>.broadcast(),
+  InternetConnectivityManager({
+    required MixinInternetTestConfig Function() configGetter,
+  })  : _connectionCtrl = StreamController<bool>.broadcast(),
         _connectionValue = true,
         _connectivity = Connectivity(),
         _lockUtility = LockUtility(),
+        _configGetter = configGetter,
+        _restartableTimer = null,
         super();
 
   /// Init manager
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
+
     _serverTestFqdn = await getTheServerFqdnToTest();
 
     _connectivity.onConnectivityChanged.listen(_connectionChange);
+
+    if (await isPeriodicVerificationEnable()) {
+      _restartableTimer = ProgressingRestartableTimer.expFactor(
+        await getPeriodicVerificationMinDuration(),
+        _checkConnection,
+        maxDuration: await getPeriodicVerificationMaxDuration(),
+        waitNextRestartToStart: true,
+      );
+    }
 
     await _checkConnection();
   }
 
   /// Get the server FQDN to test and verify if we are connected to internet
   @protected
-  Future<String> getTheServerFqdnToTest() async => _defaultServerFqdnToTest;
+  Future<String> getTheServerFqdnToTest() async => _configGetter().serverFqdnToTest.load();
+
+  /// Get the period for retesting internet connection and verify if the internet connection
+  /// is constant
+  @protected
+  Future<Duration> getTestPeriod() async => _configGetter().testPeriod.load();
+
+  /// Get the number of time we want to have a stable internet connection "status" when testing the
+  /// connection with a period
+  @protected
+  Future<int> getConstantValueNb() async => _configGetter().constantValueNb.load();
+
+  /// Returns true if the periodic verification is enabled
+  @protected
+  Future<bool> isPeriodicVerificationEnable() async =>
+      _configGetter().periodicVerificationEnable.load();
+
+  /// Returns the max duration of the periodic verification
+  @protected
+  Future<Duration> getPeriodicVerificationMaxDuration() async =>
+      _configGetter().periodicVerificationMaxDuration.load();
+
+  /// Returns the min duration of the periodic verification
+  @protected
+  Future<Duration> getPeriodicVerificationMinDuration() async =>
+      _configGetter().periodicVerificationMinDuration.load();
 
   /// Called when the connectivity status has changed
   Future<void> _connectionChange(List<ConnectivityResult> result) async {
@@ -116,14 +166,14 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
       connection = await _testInternet();
     }
 
-    appLogger().d("Internet connection is : ${connection ? "up" : "down"}");
-
     if (_connectionValue != connection) {
+      appLogger().d("Internet connection is : ${connection ? "up" : "down"}");
       _connectionValue = connection;
       _connectionCtrl.add(connection);
     }
 
     entity.freeLock();
+    _restartableTimer?.restart();
     return connection;
   }
 
@@ -138,6 +188,9 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
     // When an update is detected, it may takes time to detect the network update, that's why we
     // wait for a constant value in order to validate the current state
 
+    final constantValueNb = await getConstantValueNb();
+    final testPeriod = await getTestPeriod();
+
     final resultValues = <bool>[];
     var constantValue = false;
 
@@ -146,7 +199,7 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
 
       resultValues.add(connection);
 
-      if (resultValues.length > _constantValueNb) {
+      if (resultValues.length > constantValueNb) {
         resultValues.removeAt(0);
 
         constantValue = true;
@@ -158,7 +211,7 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
       }
 
       if (!constantValue) {
-        await Future.delayed(_testPeriod);
+        await Future.delayed(testPeriod);
       }
     }
 
@@ -168,6 +221,8 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   @override
   Future<void> disposeLifeCycle() async {
     await _connectionCtrl.close();
+    _restartableTimer?.cancel();
+    _restartableTimer = null;
     await super.disposeLifeCycle();
   }
 }

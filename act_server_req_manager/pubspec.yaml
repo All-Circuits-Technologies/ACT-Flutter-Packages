@@ -12,6 +12,7 @@ platforms:
   ios:
   linux:
   macos:
+  web:
   windows:
 
 environment:
@@ -31,6 +32,9 @@ dependencies:
   # Easily create managers
   act_abstract_manager:
     path: ../act_abstract_manager
+
+  act_dart_utility:
+    path: ../act_dart_utility
 
   # Default global manager
   act_global_manager:

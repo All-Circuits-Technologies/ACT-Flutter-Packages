@@ -16,7 +16,7 @@ typedef ActLogsErrorCallback = void Function(Object exception, StackTrace stackT
 /// Builder for creating the LoggerManager
 class LoggerBuilder<C extends MixinLoggerConfig> extends AbsManagerBuilder<LoggerManager> {
   /// A factory to create a manager instance
-  LoggerBuilder() : super(_LoggerManagerPriv<C>.new);
+  const LoggerBuilder() : super(_LoggerManagerPriv<C>.new);
 
   /// List of manager dependence
   @override

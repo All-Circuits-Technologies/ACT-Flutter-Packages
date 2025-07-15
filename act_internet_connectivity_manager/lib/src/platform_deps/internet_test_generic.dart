@@ -4,9 +4,10 @@
 
 library;
 
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_internet_connectivity_manager/src/constants/internet_constants.dart'
     as internet_constants;
-import 'package:http/http.dart' as http show head;
+import 'package:http/http.dart' as http;
 
 /// This method tests if the device is connected to the internet.
 ///
@@ -19,8 +20,9 @@ Future<bool> requestFqdnAndTestIfConnectionOk({
   try {
     await http.head(Uri.http(fqdn)).timeout(internet_constants.requestTimeout);
     connection = true;
-  } catch (_) {
+  } catch (error) {
     // An error occurred
+    appLogger().t("An error occurred when tried to test internet: $error");
   }
 
   return connection;

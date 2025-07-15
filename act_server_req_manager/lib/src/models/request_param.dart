@@ -53,6 +53,39 @@ class RequestParam extends Equatable {
     this.expectedMimeType,
   }) : headers = headers ?? <String, String>{};
 
+  /// Creates a copy of this [RequestParam] with the given parameters.
+  RequestParam copyWith({
+    HttpMethods? httpMethod,
+    String? relativeRoute,
+    Map<String, String>? headers,
+    Map<String, String>? routeParams,
+    bool forceRouteParams = false,
+    Map<String, dynamic>? queryParameters,
+    bool forceQueryParameters = false,
+    // We want to explicitly write the dynamic type here
+    // ignore: avoid_annotating_with_dynamic
+    dynamic body,
+    bool forceBody = false,
+    Encoding? encoding,
+    bool forceEncoding = false,
+    Duration? timeout,
+    bool forceTimeout = false,
+    MimeTypes? expectedMimeType,
+    bool forceExpectedMimeType = false,
+  }) =>
+      RequestParam(
+        httpMethod: httpMethod ?? this.httpMethod,
+        relativeRoute: relativeRoute ?? this.relativeRoute,
+        headers: headers ?? this.headers,
+        routeParams: routeParams ?? (forceRouteParams ? null : this.routeParams),
+        queryParameters: queryParameters ?? (forceQueryParameters ? null : this.queryParameters),
+        body: body ?? (forceBody ? null : this.body),
+        encoding: encoding ?? (forceEncoding ? null : this.encoding),
+        timeout: timeout ?? (forceTimeout ? null : this.timeout),
+        expectedMimeType:
+            expectedMimeType ?? (forceExpectedMimeType ? null : this.expectedMimeType),
+      );
+
   @override
   List<Object?> get props => [
         httpMethod,

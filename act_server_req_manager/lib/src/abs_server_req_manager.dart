@@ -14,6 +14,7 @@ import 'package:act_server_req_manager/src/models/requester_config.dart';
 import 'package:act_server_req_manager/src/models/server_urls.dart';
 import 'package:act_server_req_manager/src/server_requester.dart';
 import 'package:act_server_req_manager/src/types/login_fail_policy.dart';
+import 'package:act_server_req_manager/src/types/mime_types.dart';
 import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:act_server_req_manager/src/utilities/url_format_utility.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,8 +23,9 @@ import 'package:http/http.dart';
 /// Builder of the [AbsServerReqManager] manager
 abstract class AbsServerReqBuilder<T extends AbsServerReqManager> extends AbsManagerBuilder<T> {
   /// Class constructor
-  AbsServerReqBuilder(super.factory);
+  const AbsServerReqBuilder(super.factory);
 
+  /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }
@@ -107,11 +109,9 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
     await _serverRequester.initAfterView(context);
   }
 
+  /// {@template act_server_req_manager.AbsServerReqManager.executeRequest}
   /// This method requests the third server and manages the login (if it exists and if it's
   /// necessary).
-  ///
-  /// The method is protected to force to create a specific method for our usage, in order to
-  /// avoid to have to give each template each time we want to request the third server.
   ///
   /// [requestParam] is the request to execute on the third server.
   /// If [ifExistUseAuth] is equals to true and the linked login class exists, we will try to use
@@ -122,11 +122,14 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// is not used and the request won't be repeated.
   /// [retryTimeout] defines the timeout to wait between each retry. If no timeout is given, no wait
   /// is done.
-  Future<RequestResponse<RespBody>> executeRequest<RespBody>({
+  /// If given, [parseRespBody] is used to parse the response body.
+  /// {@endtemplate}
+  Future<RequestResponse<ParsedRespBody>> executeRequest<ParsedRespBody, RespBody>({
     required RequestParam requestParam,
     bool ifExistUseAuth = true,
     int retryRequestIfErrorNb = 0,
     Duration? retryTimeout,
+    ParsedRespBody? Function(RespBody body)? parseRespBody,
   }) async {
     var retryRequestNb = 0;
     var loginRetryNb = 0;
@@ -134,7 +137,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
 
     var globalResult = RequestStatus.globalError;
     Response? response;
-    RespBody? castedBody;
+    ParsedRespBody? castedBody;
 
     while (globalResult != RequestStatus.success && retryRequestNb <= retryRequestIfErrorNb) {
       // We reset the previous specific error
@@ -162,7 +165,11 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
 
       if (loginResult == RequestStatus.success) {
         (globalResult, response, castedBody) =
-            (await _serverRequester.executeRequestWithoutAuth<RespBody>(requestParam)).toPatterns();
+            (await _serverRequester.executeRequestWithoutAuth<ParsedRespBody, RespBody>(
+          requestParam: requestParam,
+          parseRespBody: parseRespBody,
+        ))
+                .toPatterns();
 
         if (localAbsServerLogin != null &&
             localAbsServerLogin.loginFailPolicy == LoginFailPolicy.retryOnceIfLoginFails &&
@@ -183,11 +190,73 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
     return RequestResponse(status: globalResult, response: response, castedBody: castedBody);
   }
 
+  /// {@macro act_server_req_manager.AbsServerReqManager.executeRequest}
+  ///
+  /// This method can be used when we expect that the response body has a MIME type, for instance: a
+  /// JSON object or array.
+  Future<RequestResponse<RespBody>> executeRequestWithMimeRespBody<RespBody>({
+    required RequestParam requestParam,
+    bool ifExistUseAuth = true,
+    int retryRequestIfErrorNb = 0,
+    Duration? retryTimeout,
+  }) async =>
+      executeRequest<RespBody, RespBody>(
+          requestParam: requestParam,
+          ifExistUseAuth: ifExistUseAuth,
+          retryRequestIfErrorNb: retryRequestIfErrorNb,
+          retryTimeout: retryTimeout);
+
+  /// {@macro act_server_req_manager.AbsServerReqManager.executeRequest}
+  ///
+  /// This method can be used when we know we will receive a JSON object as response and we want to
+  /// parse the JSON object to a particular class.
+  Future<RequestResponse<RespBody>> executeRequestWithJsonObjRespBody<RespBody>({
+    required RequestParam requestParam,
+    bool ifExistUseAuth = true,
+    int retryRequestIfErrorNb = 0,
+    Duration? retryTimeout,
+    required RespBody? Function(Map<String, dynamic> body) parseRespBody,
+  }) async =>
+      executeRequest<RespBody, Map<String, dynamic>>(
+        requestParam: requestParam.copyWith(
+          expectedMimeType: MimeTypes.json,
+        ),
+        ifExistUseAuth: ifExistUseAuth,
+        retryRequestIfErrorNb: retryRequestIfErrorNb,
+        retryTimeout: retryTimeout,
+        parseRespBody: parseRespBody,
+      );
+
+  /// {@macro act_server_req_manager.AbsServerReqManager.executeRequest}
+  ///
+  /// This method can be used when we know we will receive a JSON array as response and we want to
+  /// parse the JSON array to a particular class.
+  Future<RequestResponse<RespBody>> executeRequestWithJsonArrayRespBody<RespBody>({
+    required RequestParam requestParam,
+    bool ifExistUseAuth = true,
+    int retryRequestIfErrorNb = 0,
+    Duration? retryTimeout,
+    required RespBody? Function(List<dynamic> body) parseRespBody,
+  }) async =>
+      executeRequest<RespBody, List<dynamic>>(
+        requestParam: requestParam.copyWith(
+          expectedMimeType: MimeTypes.json,
+        ),
+        ifExistUseAuth: ifExistUseAuth,
+        retryRequestIfErrorNb: retryRequestIfErrorNb,
+        retryTimeout: retryTimeout,
+        parseRespBody: parseRespBody,
+      );
+
+  /// {@template act_server_req_manager.AbsServerReqManager.getRequesterConfig}
   /// The method returns the requester configuration to apply
+  /// {@endtemplate}
   @protected
   Future<RequesterConfig> getRequesterConfig();
 
+  /// {@template act_server_req_manager.AbsServerReqManager.createServerLogin}
   /// Create the server login
+  /// {@endtemplate}
   @protected
   Future<T> createServerLogin(ServerRequester serverRequester);
 

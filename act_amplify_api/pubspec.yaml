@@ -39,6 +39,9 @@ dependencies:
   act_config_manager:
     path: ../act_config_manager
 
+  act_dart_utility:
+    path: ../act_dart_utility
+
   # Default global manager
   act_global_manager:
     path: ../act_global_manager

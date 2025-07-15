@@ -8,5 +8,4 @@ export 'package:amplify_flutter/amplify_flutter.dart' show AWSHttpResponse, Http
 
 export 'src/amplify_api_service.dart';
 export 'src/mixins/mixin_amplify_api_config.dart';
-export 'src/types/server_response_status.dart';
 export 'src/utility/http_response_utility.dart';

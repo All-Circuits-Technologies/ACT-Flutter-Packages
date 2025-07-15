@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:act_amplify_api/src/types/server_response_status.dart';
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 

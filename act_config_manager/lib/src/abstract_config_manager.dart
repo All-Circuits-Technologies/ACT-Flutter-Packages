@@ -17,7 +17,7 @@ import 'package:flutter/widgets.dart';
 /// Builder for creating the ConfigManager
 abstract class AbstractConfigBuilder<T extends AbstractConfigManager> extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
-  AbstractConfigBuilder(super.factory);
+  const AbstractConfigBuilder(super.factory);
 
   /// List of manager dependence
   @override
