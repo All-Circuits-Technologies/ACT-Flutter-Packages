@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_server_req_manager/act_server_req_manager.dart';
-import 'package:act_server_req_manager/src/models/requester_server_url_config.dart';
 import 'package:act_server_req_manager/src/models/server_urls.dart';
 
 /// Contains useful methods to format and cast the [Uri] from server urls
@@ -17,8 +16,7 @@ sealed class UrlFormatUtility {
     required ServerUrls serverUrls,
   }) {
     var relRoutePath = requestParam.relativeRoute;
-    final urlBase =
-        serverUrls.byRelRoute[relRoutePath] ?? serverUrls.defaultUrl;
+    final urlBase = serverUrls.byRelRoute[relRoutePath] ?? serverUrls.defaultUrl;
 
     if (requestParam.routeParams != null) {
       for (final param in requestParam.routeParams!.entries) {
@@ -52,9 +50,7 @@ sealed class UrlFormatUtility {
     }
 
     return Uri(
-      scheme: config.isUsingSsl
-          ? ServerReqConstants.httpsScheme
-          : ServerReqConstants.httpScheme,
+      scheme: config.isUsingSsl ? ServerReqConstants.httpsScheme : ServerReqConstants.httpScheme,
       host: config.hostname,
       port: config.port,
       path: basePathCleaned,

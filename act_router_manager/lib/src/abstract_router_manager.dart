@@ -30,7 +30,7 @@ typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
 /// Builder for creating the AbstractGorouterManager
 class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsManagerBuilder<M> {
   /// Class constructor with the class construction
-  AbstractRouterBuilder({
+  const AbstractRouterBuilder({
     required ClassFactory<M> factory,
   }) : super(factory);
 

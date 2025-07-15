@@ -114,10 +114,10 @@ abstract class AbsJwtLogin<T extends TokenAnswer> extends AbsServerLogin {
       return RequestStatus.globalError;
     }
 
-    final response = await serverRequester.executeRequestWithoutAuth(loginRequest);
+    final response = await serverRequester.executeRequestWithoutAuth(requestParam: loginRequest);
 
     if (response.status != RequestStatus.success) {
-      logsHelper.w("A problem occurred when tried to login to the app");
+      logsHelper.w("A problem occurred when trying to log in to the app");
       return response.status;
     }
 

@@ -50,8 +50,10 @@ class ServerRequester extends AbsWithLifeCycle {
   }
 
   /// This method requests the third server without managing the login
-  Future<RequestResponse<RespBody>> executeRequestWithoutAuth<RespBody>(
-      RequestParam requestParam) async {
+  Future<RequestResponse<ParsedRespBody>> executeRequestWithoutAuth<ParsedRespBody, RespBody>({
+    required RequestParam requestParam,
+    ParsedRespBody? Function(RespBody body)? parseRespBody,
+  }) async {
     final urlToRequest = UrlFormatUtility.formatFullUrl(
       requestParam: requestParam,
       serverUrls: _serverUrls,
@@ -91,11 +93,12 @@ class ServerRequester extends AbsWithLifeCycle {
       return const RequestResponse(status: RequestStatus.globalError);
     }
 
-    return BodyFormatUtility.formatResponse(
+    return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
       requestParam: requestParam,
       responseReceived: response,
       logsHelper: logsHelper,
       urlToRequest: urlToRequest,
+      parseRespBody: parseRespBody,
     );
   }
 

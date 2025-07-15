@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:convert';
-import 'dart:io';
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_req_manager/src/models/converted_body.dart';
 import 'package:act_server_req_manager/src/models/request_param.dart';
@@ -92,14 +92,15 @@ sealed class BodyFormatUtility {
 
   /// Format a response [RequestResponse] from a [Response] received and the request [RequestParam]
   /// info
-  static RequestResponse<Body> formatResponse<Body>({
+  static RequestResponse<ParsedBody> formatResponse<ParsedBody, RespBody>({
     required RequestParam requestParam,
     required Response responseReceived,
     required Uri urlToRequest,
+    required ParsedBody? Function(RespBody body)? parseRespBody,
     required LogsHelper logsHelper,
   }) {
-    if (responseReceived.statusCode < HttpStatus.ok ||
-        responseReceived.statusCode >= HttpStatus.multipleChoices) {
+    if (responseReceived.statusCode < ServerResponseStatus.ok.httpStatus! ||
+        responseReceived.statusCode >= ServerResponseStatus.multipleChoices.httpStatus!) {
       logsHelper.t("The response received isn't ok, http status: ${responseReceived.statusCode}, "
           "reason phrase: ${responseReceived.reasonPhrase}");
 
@@ -113,14 +114,14 @@ sealed class BodyFormatUtility {
 
       var result = RequestStatus.globalError;
 
-      if (responseReceived.statusCode == HttpStatus.unauthorized) {
+      if (responseReceived.statusCode == ServerResponseStatus.unauthorized.httpStatus!) {
         result = RequestStatus.loginError;
       }
 
-      return RequestResponse<Body>(status: result, response: responseReceived);
+      return RequestResponse<ParsedBody>(status: result, response: responseReceived);
     }
 
-    final (result, body) = _parseResponseBody<Body>(
+    final result = _parseResponseBody<RespBody>(
       requestParam: requestParam,
       responseReceived: responseReceived,
       logsHelper: logsHelper,
@@ -128,21 +129,34 @@ sealed class BodyFormatUtility {
 
     var finalResult = RequestStatus.success;
 
-    if (!result) {
-      logsHelper.w("An error occurred when tried to parse body from response of request: "
+    if (!result.isOk) {
+      logsHelper.w("An error occurred when trying to parse body from response of request: "
           "$urlToRequest");
       finalResult = RequestStatus.globalError;
     }
 
-    return RequestResponse<Body>(
+    ParsedBody? parsedBody;
+    if (result.body != null) {
+      if (parseRespBody != null) {
+        parsedBody = parseRespBody(result.body as RespBody);
+      } else if (result.body is ParsedBody) {
+        parsedBody = result.body as ParsedBody;
+      } else {
+        logsHelper.w("The received body type: $RespBody, hasn't the same type as the parsed body: "
+            "$ParsedBody, but you haven't set a parse method (and the body isn't null)");
+        finalResult = RequestStatus.globalError;
+      }
+    }
+
+    return RequestResponse<ParsedBody>(
       status: finalResult,
       response: responseReceived,
-      castedBody: body,
+      castedBody: parsedBody,
     );
   }
 
   /// Parse and cast the response body of [Response] to the expected body type
-  static (bool, Body?) _parseResponseBody<Body>({
+  static ({bool isOk, Body? body}) _parseResponseBody<Body>({
     required RequestParam requestParam,
     required Response responseReceived,
     required LogsHelper logsHelper,
@@ -159,7 +173,7 @@ sealed class BodyFormatUtility {
 
     if (responseType == MimeTypes.empty) {
       // Nothing to do
-      return (true, body);
+      return (isOk: true, body: body);
     }
 
     try {
@@ -189,6 +203,6 @@ sealed class BodyFormatUtility {
           "type: $responseType, error: $error");
     }
 
-    return ((body != null), body);
+    return (isOk: (body != null), body: body);
   }
 }

@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'dart:io';
-
 /// The response status after a server request
 ///
 /// The enum contains two kinds of values:
@@ -13,28 +11,38 @@ import 'dart:io';
 ///
 /// The first elements are linked to one of the generic or group statuses.
 enum ServerResponseStatus {
+  /// This is a `Continue` status with code: 100
+  continue_(100, genericSuccess),
+
   /// This is a `OK` status with code: 200
-  ok(HttpStatus.ok, genericSuccess),
+  ok(200, genericSuccess),
+
+  /// This is a `Multiple choices` status with code: 300
+  multipleChoices(300, genericSuccess),
 
   /// This is a `Bad Request` status with code: 400
-  badRequest(HttpStatus.badRequest, genericClientError),
+  badRequest(400, genericClientError),
+
+  /// This is a `Unauthorized` status with code: 401
+  unauthorized(401, genericClientError),
 
   /// This is a `Payment Required` status with code: 402
-  paymentRequired(HttpStatus.paymentRequired, genericClientError),
+  paymentRequired(402, genericClientError),
 
   /// This is a `Forbidden` status with code: 403
-  forbidden(HttpStatus.forbidden, genericClientError),
+  forbidden(403, genericClientError),
 
   /// This is a `Not Found` status with code: 404
-  notFound(HttpStatus.notFound, genericClientError),
+  notFound(404, genericClientError),
 
   /// This is a `Too Early` status with code: 425
-  ///
-  /// Too early doesn't exist in the [HttpStatus] values
   tooEarly(425, genericClientError),
 
   /// This is a `Internal Server Error` status with code: 500
-  internalServerError(HttpStatus.internalServerError, genericServerError),
+  internalServerError(500, genericServerError),
+
+  /// This is a `Network connect timeout error` status with code: 599
+  networkConnectTimeoutError(599, genericServerError),
 
   /// This enum represents all the 2xx statuses for success
   genericSuccess.generic(isOk: true),
@@ -99,16 +107,18 @@ enum ServerResponseStatus {
       }
     }
 
-    if (HttpStatus.continue_ <= httpStatus && httpStatus < HttpStatus.multipleChoices) {
+    if (ServerResponseStatus.continue_.httpStatus! <= httpStatus &&
+        httpStatus < ServerResponseStatus.multipleChoices.httpStatus!) {
       return ServerResponseStatus.genericSuccess;
     }
 
-    if (HttpStatus.badRequest <= httpStatus && httpStatus < HttpStatus.internalServerError) {
+    if (ServerResponseStatus.badRequest.httpStatus! <= httpStatus &&
+        httpStatus < ServerResponseStatus.internalServerError.httpStatus!) {
       return ServerResponseStatus.genericClientError;
     }
 
-    if (HttpStatus.internalServerError <= httpStatus &&
-        httpStatus <= HttpStatus.networkConnectTimeoutError) {
+    if (ServerResponseStatus.internalServerError.httpStatus! <= httpStatus &&
+        httpStatus <= ServerResponseStatus.networkConnectTimeoutError.httpStatus!) {
       return ServerResponseStatus.genericServerError;
     }
 

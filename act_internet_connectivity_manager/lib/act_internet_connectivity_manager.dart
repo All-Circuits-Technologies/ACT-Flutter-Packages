@@ -7,3 +7,4 @@ library;
 
 export 'src/internet_connectivity_manager.dart';
 export 'src/internet_stream_observer.dart';
+export 'src/mixins/mixin_internet_test_config.dart';

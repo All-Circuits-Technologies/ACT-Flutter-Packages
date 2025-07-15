@@ -17,6 +17,7 @@ export 'src/shared_watcher.dart';
 export 'src/stream_observer.dart';
 export 'src/timers/progressing_restartable_timer.dart';
 export 'src/timers/restartable_timer.dart';
+export 'src/types/server_response_status.dart';
 export 'src/types/status_with_result.dart';
 export 'src/utilities/assets_bundle_utility.dart';
 export 'src/utilities/async_utility.dart';
