@@ -42,9 +42,8 @@ sealed class ConfigFromEnvUtility {
     final dotEnv = (await _loadDotEnvFromAsset(configPath)) ?? {};
 
     for (final envMapModel in mappingModels) {
-      final envValue = _parseFromDotEnv(dotEnv, envMapModel) ??
-          _parseFromBuildEnv(envMapModel) ??
-          _parseFromRuntimeEnv(platformEnv, envMapModel);
+      final envValue =
+          _parseFromDotEnv(dotEnv, envMapModel) ?? _parseFromRuntimeEnv(platformEnv, envMapModel);
 
       if (envValue == null) {
         // Nothing to do
@@ -79,25 +78,6 @@ sealed class ConfigFromEnvUtility {
     }
 
     return _parseEnv(model, mapEnv[model.envKey]!);
-  }
-
-  /// This method parses a value from the build environment variables.
-  ///
-  /// This method returns null if the env isn't found or if a problem occurred.
-  static dynamic _parseFromBuildEnv(EnvConfigMappingModel model) {
-    // We explicitly search for environment variable in the app to manage it with the config
-    // manager.
-    // ignore: do_not_use_environment
-    if (!bool.hasEnvironment(model.envKey)) {
-      return null;
-    }
-
-    // We explicitly search for environment variable in the app to manage it with the config
-    // manager.
-    // ignore: do_not_use_environment
-    final value = String.fromEnvironment(model.envKey);
-
-    return _parseEnv(model, value);
   }
 
   /// The method parses the string value from the [model] type
