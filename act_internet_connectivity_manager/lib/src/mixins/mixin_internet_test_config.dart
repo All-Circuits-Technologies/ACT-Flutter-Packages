@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_dart_utility/act_dart_utility.dart' show DurationUtility;
 import 'package:act_internet_connectivity_manager/src/constants/internet_constants.dart'
     as internet_constants;
 
@@ -18,7 +19,7 @@ mixin MixinInternetTestConfig on AbstractConfigManager {
   /// is constant
   final testPeriod = const NotNullParserConfigVar<Duration, int>(
     "internetConnectivity.testPeriodInMs",
-    parser: _parseMsDuration,
+    parser: DurationUtility.parseFromMilliseconds,
     defaultValue: internet_constants.defaultTestPeriod,
   );
 
@@ -37,36 +38,14 @@ mixin MixinInternetTestConfig on AbstractConfigManager {
   /// internet
   final periodicVerificationMaxDuration = const NotNullParserConfigVar<Duration, int>(
       "internetConnectivity.periodicVerification.maxDurationInS",
-      parser: _parseSecDuration,
+      parser: DurationUtility.parseFromSeconds,
       defaultValue: internet_constants.defaultPeriodicVerificationMaxDuration);
 
   /// This is the periodic verification min duration to wait before checking again if we have
   /// internet
   final periodicVerificationMinDuration = const NotNullParserConfigVar<Duration, int>(
     "internetConnectivity.periodicVerification.minDurationInS",
-    parser: _parseSecDuration,
+    parser: DurationUtility.parseFromSeconds,
     defaultValue: internet_constants.defaultPeriodicVerificationMinDuration,
   );
-
-  /// Parse the given [durationInS] to a [Duration] object.
-  ///
-  /// If the [durationInS] is negative, it returns null.
-  static Duration? _parseSecDuration(int durationInS) {
-    if (durationInS < 0) {
-      return null;
-    }
-
-    return Duration(seconds: durationInS);
-  }
-
-  /// Parse the given [durationInMs] to a [Duration] object.
-  ///
-  /// If the [durationInMs] is negative, it returns null.
-  static Duration? _parseMsDuration(int durationInMs) {
-    if (durationInMs < 0) {
-      return null;
-    }
-
-    return Duration(milliseconds: durationInMs);
-  }
 }

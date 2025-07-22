@@ -12,6 +12,8 @@ library;
 export 'src/errors/act_singleton_not_created_error.dart';
 export 'src/errors/act_unsupported_type_error.dart';
 export 'src/mixins/mixin_result_status.dart';
+export 'src/mixins/mixin_string_value_type.dart';
+export 'src/mixins/mixin_unique_value_type.dart';
 export 'src/models/num_boundaries.dart';
 export 'src/shared_watcher.dart';
 export 'src/stream_observer.dart';
