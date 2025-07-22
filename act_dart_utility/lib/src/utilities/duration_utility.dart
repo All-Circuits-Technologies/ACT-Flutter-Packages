@@ -15,4 +15,26 @@ class DurationUtility {
 
     return '$minutes:$seconds';
   }
+
+  /// Create a new [Duration] thanks to the given [seconds]
+  ///
+  /// This is useful for casting method which only expects one parameter
+  static Duration? parseFromSeconds(int seconds) {
+    if (seconds < 0) {
+      return null;
+    }
+
+    return Duration(seconds: seconds);
+  }
+
+  /// Create a new [Duration] thanks to the given [milliseconds]
+  ///
+  /// This is useful for casting method which only expects one parameter
+  static Duration? parseFromMilliseconds(int milliseconds) {
+    if (milliseconds < 0) {
+      return null;
+    }
+
+    return Duration(milliseconds: milliseconds);
+  }
 }
