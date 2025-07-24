@@ -11,6 +11,7 @@ library;
 
 export 'src/errors/act_singleton_not_created_error.dart';
 export 'src/errors/act_unsupported_type_error.dart';
+export 'src/mixins/mixin_comparable_object_attribute.dart';
 export 'src/mixins/mixin_result_status.dart';
 export 'src/mixins/mixin_string_value_type.dart';
 export 'src/mixins/mixin_unique_value_type.dart';
@@ -33,6 +34,7 @@ export 'src/utilities/iterable_utility.dart';
 export 'src/utilities/json_utility.dart';
 export 'src/utilities/list_utility.dart';
 export 'src/utilities/lock_utility.dart';
+export 'src/utilities/loop_utility.dart';
 export 'src/utilities/map_utility.dart';
 export 'src/utilities/num_utility.dart';
 export 'src/utilities/string_utility.dart';

@@ -5,6 +5,9 @@
 
 /// Contains utility methods linked to the usage of DateTime
 abstract class DateTimeUtility {
+  /// The constructed [DateTime] represents 1970-01-01T00:00:00Z (so in UTC)
+  static final epoch = DateTime.utc(1970);
+
   /// Create a [DateTime] from [millisecondsSinceEpoch]. Returns null if the value given isn't in
   /// the expected range.
   ///

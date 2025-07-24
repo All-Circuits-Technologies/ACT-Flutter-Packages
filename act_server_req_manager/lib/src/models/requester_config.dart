@@ -29,6 +29,11 @@ class RequesterConfig extends Equatable {
   /// The default timeout for all the request done to the server
   final Duration defaultTimeout;
 
+  /// The maximum number of parallel requests that can be done at the same time
+  ///
+  /// If null, there is no limit on the number of parallel requests.
+  final int? maxParallelRequestsNb;
+
   /// Class constructor
   const RequesterConfig({
     required this.loggerEnabled,
@@ -37,6 +42,7 @@ class RequesterConfig extends Equatable {
     this.parentLogsHelper,
     required this.defaultServerInfo,
     this.serverInfoByUrl,
+    this.maxParallelRequestsNb,
   });
 
   @override
@@ -46,5 +52,6 @@ class RequesterConfig extends Equatable {
         parentLogsHelper,
         defaultServerInfo,
         serverInfoByUrl,
+        maxParallelRequestsNb,
       ];
 }
