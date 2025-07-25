@@ -8,7 +8,13 @@ import 'dart:async';
 
 /// Represents a lock
 class LockEntity {
+  /// This is the completer to use
+  ///
+  /// If null, there is nothing to wait
   Completer<void>? _lock;
+
+  /// This is the future to wait the lock completion
+  Future<void>? _future;
 
   /// Default constructor
   LockEntity();
@@ -36,10 +42,24 @@ class LockEntity {
 ///
 /// The lock utility works with the await mechanism
 class LockUtility {
+  /// The default maximum number of parallel requests that can be done at the same time before
+  /// locking.
+  static const defaultMaxParallelRequestsNb = 1;
+
+  /// The maximum number of parallel requests that can be done at the same time before locking.
+  final int maxParallelRequestsNb;
+
+  /// This is the lock entity used to manage the lock
   final LockEntity _lockEntity;
 
+  /// This is the current number of parallel requests that are currently running
+  int _currentParallelNb;
+
   /// Class constructor
-  LockUtility() : _lockEntity = LockEntity();
+  LockUtility({
+    this.maxParallelRequestsNb = defaultMaxParallelRequestsNb,
+  })  : _currentParallelNb = 0,
+        _lockEntity = LockEntity();
 
   /// Test if the lock is currently locked
   bool get isLocked => _lockEntity.isLocked;
@@ -59,12 +79,12 @@ class LockUtility {
   /// [criticalSection].
   ///
   /// This is useful to be sure we never forget to free the lock
-  Future<T> protectLock<T>(Future<T> Function() criticalSection) async {
-    final entity = (await waitAndOrLock())!;
+  Future<T> protectLock<T>(Future<T> Function() criticalSection, {bool onlyWait = false}) async {
+    final entity = (await waitAndOrLock(onlyWait: onlyWait));
     try {
       return await criticalSection();
     } finally {
-      entity.freeLock();
+      entity?.freeLock();
     }
   }
 
@@ -76,15 +96,25 @@ class LockUtility {
   ///
   /// If [onlyWait] equals to true, the method will return null
   Future<LockEntity?> waitAndOrLock({bool onlyWait = false}) async {
-    if (_lockEntity.isLocked) {
-      await _lockEntity._lock?.future;
+    // If multiple elements wait the current completer, the first one which is released from lock
+    // will create a new completer. Therefore, we have to test that the lock entity is no more
+    // locked before continuing
+    while (_lockEntity.isLocked) {
+      await _lockEntity._future;
     }
 
     if (onlyWait) {
       return null;
     }
 
-    _lockEntity._lock = Completer<void>();
+    ++_currentParallelNb;
+    if (_currentParallelNb >= maxParallelRequestsNb) {
+      final completer = Completer<void>();
+      _lockEntity._lock = completer;
+      // When the completer is ended we decrement the number of current parallel requests.
+      // We do that before releasing the others
+      _lockEntity._future = completer.future.then((value) => --_currentParallelNb);
+    }
 
     return _lockEntity;
   }

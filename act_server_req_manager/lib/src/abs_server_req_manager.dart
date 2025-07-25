@@ -88,6 +88,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
       logsHelper: _logsHelper,
       serverUrls: _serverUrls,
       defaultTimeout: config.defaultTimeout,
+      maxParallelRequestsNb: config.maxParallelRequestsNb,
     );
 
     await _serverRequester.initLifeCycle();
@@ -248,6 +249,30 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
         parseRespBody: parseRespBody,
       );
 
+  /// {@macro act_server_req_manager.AbsServerReqManager.executeRequest}
+  ///
+  /// This method can be used when we know we will receive a JSON array as response and we want to
+  /// parse the JSON array to a particular class list.
+  Future<RequestResponse<List<RespBody>>> executeRequestWithJsonObjArrayRespBody<RespBody>({
+    required RequestParam requestParam,
+    bool ifExistUseAuth = true,
+    int retryRequestIfErrorNb = 0,
+    Duration? retryTimeout,
+    required RespBody? Function(Map<String, dynamic> body) parseRespBody,
+  }) async =>
+      executeRequest<List<RespBody>, List<dynamic>>(
+        requestParam: requestParam.copyWith(
+          expectedMimeType: MimeTypes.json,
+        ),
+        ifExistUseAuth: ifExistUseAuth,
+        retryRequestIfErrorNb: retryRequestIfErrorNb,
+        retryTimeout: retryTimeout,
+        parseRespBody: (bodyList) => _parseJsonObjectArray(
+          jsonArray: bodyList,
+          parseRespBody: parseRespBody,
+        ),
+      );
+
   /// {@template act_server_req_manager.AbsServerReqManager.getRequesterConfig}
   /// The method returns the requester configuration to apply
   /// {@endtemplate}
@@ -259,6 +284,31 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// {@endtemplate}
   @protected
   Future<T> createServerLogin(ServerRequester serverRequester);
+
+  /// Parse a JSON object to a [RespBody] object
+  ///
+  /// This method is used to parse a JSON array which contains JSON object
+  static List<RespBody>? _parseJsonObjectArray<RespBody>({
+    required List<dynamic> jsonArray,
+    required RespBody? Function(Map<String, dynamic> body) parseRespBody,
+  }) {
+    final tmpList = <RespBody>[];
+    for (final obj in jsonArray) {
+      if (obj is! Map<String, dynamic>) {
+        appLogger().w("The element in the list isn't a JSON object");
+        return null;
+      }
+
+      final tmpParsed = parseRespBody(obj);
+      if (tmpParsed == null) {
+        appLogger().w("The JSON object in the received array isn't the type we expect");
+        return null;
+      }
+
+      tmpList.add(tmpParsed);
+    }
+    return tmpList;
+  }
 
   /// The dispose method
   @override
