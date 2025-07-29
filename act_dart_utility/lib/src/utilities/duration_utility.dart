@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 /// Utility class for [Duration] objects.
-class DurationUtility {
+sealed class DurationUtility {
   /// Convenient getter to get a formatted duration string as m:ss
   static String? formatMinSec(Duration? duration) {
     if (duration == null) {
