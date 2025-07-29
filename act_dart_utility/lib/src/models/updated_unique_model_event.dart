@@ -27,10 +27,9 @@ class UpdatedUniqueModelEvent<M extends MixinUniqueModel> extends Equatable {
   }) : previousUniqueId = null;
 
   /// Used as constructor when an object is updated
-  const UpdatedUniqueModelEvent.objectUpdated({
-    required String this.previousUniqueId,
+  UpdatedUniqueModelEvent.objectUpdated({
     required M this.current,
-  });
+  }) : previousUniqueId = current.uniqueId;
 
   /// Used as constructor when an object is deleted
   const UpdatedUniqueModelEvent.objectDeleted({
