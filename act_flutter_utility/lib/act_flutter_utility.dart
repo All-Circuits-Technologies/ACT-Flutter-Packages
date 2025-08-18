@@ -26,7 +26,6 @@ export 'src/widget/act_visibility_detector.dart';
 export 'src/widget/action_error_retry/action_error_retry_theme.dart';
 export 'src/widget/action_error_retry/action_error_retry_widget.dart';
 export 'src/widget/banner_info/banner_information_display.dart';
-export 'src/widget/dropdown/dropdown_menu_form_field.dart';
 export 'src/widget/env_banner.dart';
 export 'src/widget/list_view/draggable_and_scrollable_list_view.dart';
 export 'src/widget/list_view/scrollable_reorderable_list_view.dart';
