@@ -17,8 +17,8 @@ mixin MixinExtendsEnum on Enum {
   /// {@template MixinExtendsEnum.getAllColumns}
   /// Get all the columns of the [sharedEnums] and adds the [specificEnums] in it.
   ///
-  /// Be careful: if B is something else than a strict [Enum], B must be a Mixin and have to be
-  /// shared between the two enums list: [sharedEnums] and [specificEnums]
+  /// Be careful: if B is something else than a strict [Enum], B must be a Mixin and has to be
+  /// used with the two enums list: [sharedEnums] and [specificEnums]
   ///
   /// Unfortunately, there is no way to verify that C also inherit from B; therefore, you have to
   /// verify it yourself before calling this method.
