@@ -47,7 +47,7 @@ abstract class AbstractMusicSoundHelper<T> {
     if (_filesList == null) {
       _filesList = [];
 
-      for (final sound in this.musicSounds.values) {
+      for (final sound in musicSounds.values) {
         _filesList!.add(sound.filePath);
       }
     }

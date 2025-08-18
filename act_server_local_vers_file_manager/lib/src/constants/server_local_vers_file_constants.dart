@@ -10,7 +10,7 @@ library;
 const localeCodesSep = "_";
 
 /// Name of stamp file used to hold current active version of a versioned file
-const currentVersionStampFileName = "current";
+const currentVersionStampFileName = "current.txt";
 
 /// This defines a function to parse a version string into a file name.
 typedef VersionToFileNameParser = String Function(String version);
