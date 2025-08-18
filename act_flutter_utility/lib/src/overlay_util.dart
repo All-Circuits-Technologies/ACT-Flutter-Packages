@@ -4,6 +4,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/cupertino.dart';
 
@@ -94,8 +96,7 @@ class _OverlayContainer extends StatefulWidget {
 }
 
 /// State of the overlay container
-class _OverlayContainerState extends State<_OverlayContainer>
-    with TickerProviderStateMixin {
+class _OverlayContainerState extends State<_OverlayContainer> with TickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
   late bool first;
@@ -127,7 +128,7 @@ class _OverlayContainerState extends State<_OverlayContainer>
   @override
   Widget build(BuildContext context) {
     if (first) {
-      _controller.forward();
+      unawaited(_controller.forward());
     }
 
     return FadeTransition(
