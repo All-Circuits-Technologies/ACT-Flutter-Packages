@@ -23,6 +23,8 @@ export 'src/types/banner_information_type.dart';
 export 'src/types/single_child_scroll_view_type.dart';
 export 'src/url_launcher_utility.dart';
 export 'src/widget/act_visibility_detector.dart';
+export 'src/widget/action_error_retry/action_error_retry_theme.dart';
+export 'src/widget/action_error_retry/action_error_retry_widget.dart';
 export 'src/widget/banner_info/banner_information_display.dart';
 export 'src/widget/env_banner.dart';
 export 'src/widget/list_view/draggable_and_scrollable_list_view.dart';
