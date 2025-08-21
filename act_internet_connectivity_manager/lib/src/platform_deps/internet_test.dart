@@ -11,8 +11,8 @@ sealed class InternetTest {
   /// This method tests if the device is connected to the internet.
   ///
   /// To do so, it requests a distant server and returns true if the distant server responds
-  static Future<bool> requestFqdnAndTestIfConnectionOk({
-    required String fqdn,
+  static Future<bool> requestUriAndTestIfConnectionOk({
+    required Uri uri,
   }) async =>
-      internet_test.requestFqdnAndTestIfConnectionOk(fqdn: fqdn);
+      internet_test.requestUriAndTestIfConnectionOk(uri: uri);
 }

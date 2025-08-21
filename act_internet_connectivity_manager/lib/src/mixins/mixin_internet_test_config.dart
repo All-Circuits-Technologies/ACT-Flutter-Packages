@@ -11,9 +11,10 @@ import 'package:act_internet_connectivity_manager/src/constants/internet_constan
 /// InternetConnectivityManager
 mixin MixinInternetTestConfig on AbstractConfigManager {
   /// This is the server FDQN to use when we try to connect to internet
-  final serverFqdnToTest = const NotNullableConfigVar<String>(
-      "internetConnectivity.serverFqdnToTest",
-      defaultValue: internet_constants.defaultServerFqdnToTest);
+  final serverUriToTest = NotNullParserConfigVar<Uri, String>(
+      "internetConnectivity.serverUriToTest",
+      parser: Uri.tryParse,
+      defaultValue: internet_constants.defaultServerUriToTest);
 
   /// This defines a period for retesting internet connection and verify if the internet connection
   /// is constant

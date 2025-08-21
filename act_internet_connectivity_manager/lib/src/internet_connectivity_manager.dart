@@ -63,8 +63,8 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   /// The current connection value
   bool _connectionValue;
 
-  /// This is the FQDN to test, in order to know we don't have internet for now
-  late final String _serverTestFqdn;
+  /// This is the uri to test, in order to know we don't have internet for now
+  late final Uri _serverTestUri;
 
   /// This is the restartable timer used to restart the connection test, if the periodic
   /// verification has been enabled
@@ -98,7 +98,7 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    _serverTestFqdn = await getTheServerFqdnToTest();
+    _serverTestUri = await getTheServerUriToTest();
 
     _connectivity.onConnectivityChanged.listen(_connectionChange);
 
@@ -114,31 +114,43 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
     await _checkConnection();
   }
 
-  /// Get the server FQDN to test and verify if we are connected to internet
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.getTheServerUriToTest}
+  /// Get the server Uri to test and verify if we are connected to internet
+  /// {@endtemplate}
   @protected
-  Future<String> getTheServerFqdnToTest() async => _configGetter().serverFqdnToTest.load();
+  Future<Uri> getTheServerUriToTest() async => _configGetter().serverUriToTest.load();
 
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.getTestPeriod}
   /// Get the period for retesting internet connection and verify if the internet connection
   /// is constant
+  /// {@endtemplate}
   @protected
   Future<Duration> getTestPeriod() async => _configGetter().testPeriod.load();
 
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.getConstantValueNb}
   /// Get the number of time we want to have a stable internet connection "status" when testing the
   /// connection with a period
+  /// {@endtemplate}
   @protected
   Future<int> getConstantValueNb() async => _configGetter().constantValueNb.load();
 
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.isPeriodicVerificationEnable}
   /// Returns true if the periodic verification is enabled
+  /// {@endtemplate}
   @protected
   Future<bool> isPeriodicVerificationEnable() async =>
       _configGetter().periodicVerificationEnable.load();
 
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.getPeriodicVerificationMaxDuration}
   /// Returns the max duration of the periodic verification
+  /// {@endtemplate}
   @protected
   Future<Duration> getPeriodicVerificationMaxDuration() async =>
       _configGetter().periodicVerificationMaxDuration.load();
 
+  /// {@template act_internet_connectivity_manager.InternetConnectivityManager.getPeriodicVerificationMinDuration}
   /// Returns the min duration of the periodic verification
+  /// {@endtemplate}
   @protected
   Future<Duration> getPeriodicVerificationMinDuration() async =>
       _configGetter().periodicVerificationMinDuration.load();
@@ -195,7 +207,7 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
     var constantValue = false;
 
     while (!constantValue) {
-      final connection = await InternetTest.requestFqdnAndTestIfConnectionOk(fqdn: _serverTestFqdn);
+      final connection = await InternetTest.requestUriAndTestIfConnectionOk(uri: _serverTestUri);
 
       resultValues.add(connection);
 

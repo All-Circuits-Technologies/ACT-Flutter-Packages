@@ -12,13 +12,13 @@ import 'package:http/http.dart' as http;
 /// This method tests if the device is connected to the internet.
 ///
 /// To do so, it requests a distant server and returns true if the distant server responds
-Future<bool> requestFqdnAndTestIfConnectionOk({
-  required String fqdn,
+Future<bool> requestUriAndTestIfConnectionOk({
+  required Uri uri,
 }) async {
   var connection = false;
 
   try {
-    await http.head(Uri.http(fqdn)).timeout(internet_constants.requestTimeout);
+    await http.head(uri).timeout(internet_constants.requestTimeout);
     connection = true;
   } catch (error) {
     // An error occurred
