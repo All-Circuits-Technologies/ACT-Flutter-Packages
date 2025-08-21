@@ -12,14 +12,15 @@ import 'package:act_internet_connectivity_manager/src/constants/internet_constan
 /// This method tests if the device is connected to the internet.
 ///
 /// To do so, it requests a distant server and returns true if the distant server responds
-Future<bool> requestFqdnAndTestIfConnectionOk({
-  required String fqdn,
+Future<bool> requestUriAndTestIfConnectionOk({
+  required Uri uri,
 }) async {
   var connection = false;
   var listAddresses = <InternetAddress>[];
 
   try {
-    listAddresses = await InternetAddress.lookup(fqdn).timeout(internet_constants.requestTimeout);
+    listAddresses =
+        await InternetAddress.lookup(uri.host).timeout(internet_constants.requestTimeout);
   } catch (error) {
     // An error occurred
   }

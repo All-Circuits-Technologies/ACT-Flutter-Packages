@@ -34,10 +34,17 @@ abstract class AbsServerReqBuilder<T extends AbsServerReqManager> extends AbsMan
 ///
 /// A login process may be added to it, if the third server needs a login to execute requests
 abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLifeCycle {
+  /// {@template act_server_req_manager.AbsServerReqManager.serverUrls}
   /// This contains the base of all URL to request the server: the default one and the overrided
   /// URLs depending of the relative routes
   /// The server URLs are formatted liked that: http(s)://{hostname}:{port}/{baseUrl}
+  /// {@endtemplate}
   late final ServerUrls _serverUrls;
+
+  /// Getter of the [_serverUrls]
+  ///
+  /// {@macro act_server_req_manager.AbsServerReqManager.serverUrls}
+  ServerUrls get serverUrls => _serverUrls;
 
   /// This is the logs helper linked to the request manager
   late final LogsHelper _logsHelper;

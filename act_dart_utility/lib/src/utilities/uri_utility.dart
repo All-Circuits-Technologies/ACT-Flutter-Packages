@@ -7,6 +7,9 @@ sealed class UriUtility {
   /// Default path separator to build uri paths.
   static const pathSeparator = '/';
 
+  /// This is the https scheme
+  static const httpsScheme = "https";
+
   /// Constructs a path from the given segments and replaces any parameters in the path.
   ///
   /// The [segments] parameter is a required list of strings that represent the parts of the path.
@@ -51,4 +54,25 @@ sealed class UriUtility {
 
     return Uri.encodeFull(path);
   }
+
+  /// Create a new [Uri] object based on the [reference] given, and append the [segmentsToAppend] to
+  /// the pathSegments of [reference].
+  static Uri appendPathSegmentsToUri(
+      {required Uri reference, required List<String> segmentsToAppend}) {
+    final tmpSegments = List<String>.from(reference.pathSegments);
+    tmpSegments.addAll(segmentsToAppend);
+
+    return Uri(
+      scheme: reference.scheme,
+      userInfo: reference.userInfo,
+      host: reference.host,
+      port: reference.port,
+      pathSegments: tmpSegments,
+      queryParameters: reference.queryParametersAll,
+      fragment: reference.fragment,
+    );
+  }
+
+  /// The method test if the uri scheme is equals to [httpsScheme]
+  static bool isHttpsUri(Uri uri) => uri.isScheme(httpsScheme);
 }

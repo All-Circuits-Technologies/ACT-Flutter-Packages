@@ -7,8 +7,8 @@ library;
 /// This is the request timeout to know if we have lost internet
 const requestTimeout = Duration(seconds: 15);
 
-/// This is the default server FQDN to test, in order to verify if we have internet, or not
-const defaultServerFqdnToTest = "www.google.com";
+/// This is the default server Uri to test, in order to verify if we have internet, or not
+final defaultServerUriToTest = Uri.https("www.google.com");
 
 /// This defines a period for retesting internet connection and verify if the internet connection
 /// is constant
