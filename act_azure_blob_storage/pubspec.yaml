@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2024 All Circuits Technologies <dev@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_azure_blob_storage
+description: "This package is a wrapper around Azure Blob Storage to interact with Azure storage solutions."
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
+environment:
+  sdk: ">=3.4.0 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  azure_storage_blobs: ^2.0.0
+
+  equatable: ^2.0.7
+
+  http: ^1.0.0
+
+  path_provider: ^2.1.5
+
+  # Contains the structure to create services and managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Contains the logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Storage manager with the AbstractStorageService that this package
+  # will implement
+  act_server_storage_manager:
+    path: ../act_server_storage_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
