@@ -3,12 +3,13 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_server_storage_manager/act_server_storage_manager.dart';
-import 'package:azure_storage_blobs/azure_storage_blobs.dart';
+import 'package:azblob/azblob.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as path;
@@ -26,7 +27,7 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
   late final LogsHelper _logsHelper;
 
   /// Azure Blob Storage client
-  late final BlobServiceClient _blobServiceClient;
+  late final AzureStorage _azureStorage;
 
   /// The name of the container to use
   final String containerName;
@@ -47,7 +48,7 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
     _logsHelper = LogsHelper(appLogger(), _logsCategory);
     
     // Initialize Azure Blob Storage client
-    _blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+    _azureStorage = AzureStorage.parse(connectionString);
   }
 
   /// List all files in a given path
@@ -59,38 +60,33 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
     bool recursiveSearch = false,
   }) async {
     try {
-      final containerClient = _blobServiceClient.getBlobContainerClient(containerName);
-      
-      // Normalize the search path - remove leading/trailing slashes and ensure it ends with /
-      String prefix = searchPath.trim();
-      if (prefix.startsWith('/')) {
-        prefix = prefix.substring(1);
-      }
-      if (prefix.isNotEmpty && !prefix.endsWith('/')) {
-        prefix = '$prefix/';
-      }
-
-      final List<StorageFile> storageFiles = [];
-      
-      // List blobs with the given prefix
-      await for (final blobItem in containerClient.listBlobs(prefix: prefix)) {
-        // If not recursive search, skip files in subdirectories
-        if (!recursiveSearch && prefix.isNotEmpty) {
-          final relativePath = blobItem.name.substring(prefix.length);
-          if (relativePath.contains('/')) {
-            continue;
-          }
+      // Normalize the search path - ensure it starts with container name
+      String fullPath = '/$containerName';
+      if (searchPath.isNotEmpty) {
+        String normalizedPath = searchPath.trim();
+        if (normalizedPath.startsWith('/')) {
+          normalizedPath = normalizedPath.substring(1);
         }
-
-        storageFiles.add(StorageFile(
-          path: blobItem.name,
-          lastModified: blobItem.properties.lastModified,
-          size: blobItem.properties.contentLength?.toInt(),
-          eTag: blobItem.properties.eTag,
-        ));
+        if (!normalizedPath.endsWith('/') && normalizedPath.isNotEmpty) {
+          normalizedPath = '$normalizedPath/';
+        }
+        fullPath = '$fullPath/$normalizedPath';
       }
 
-      // Apply pagination manually since Azure SDK doesn't directly support limit
+      // Call Azure Blob Storage list API
+      final response = await _azureStorage.listBlobsRaw(fullPath);
+      
+      if (response.statusCode != 200) {
+        final errorMessage = await response.stream.bytesToString();
+        _logsHelper.e('Error listing blobs: ${response.statusCode} - $errorMessage');
+        return (result: _parseHttpStatusCode(response.statusCode), page: null);
+      }
+
+      // Parse XML response
+      final xmlContent = await response.stream.bytesToString();
+      final storageFiles = _parseListBlobsXml(xmlContent, searchPath, recursiveSearch);
+
+      // Apply pagination manually since Azure API doesn't directly support our pagination model
       final int actualPageSize = pageSize ?? MixinStorageService.defaultPageSize;
       final int startIndex = nextToken != null ? int.tryParse(nextToken) ?? 0 : 0;
       final int endIndex = (startIndex + actualPageSize).clamp(0, storageFiles.length);
@@ -113,7 +109,7 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
   }
 
   /// Download a file from a given path and save it in the specified directory.
-  /// The [path] of the file must be given from the root of the container and the [onProgress] 
+  /// The [filePath] of the file must be given from the root of the container and the [onProgress] 
   /// callback can be passed to track the download progress.
   @override
   Future<({StorageRequestResult result, File? file})> getFile(
@@ -125,32 +121,47 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
       // getDownloadsDirectory might raise a MissingPlatformDirectoryException
       directory ??= await MixinStorageService.getDownloadsDirectory();
 
-      // Normalize the file path - remove leading slash
-      String normalizedPath = filePath.trim();
-      if (normalizedPath.startsWith('/')) {
-        normalizedPath = normalizedPath.substring(1);
+      // Normalize the file path - ensure it starts with container name
+      String fullPath = '/$containerName';
+      if (filePath.isNotEmpty) {
+        String normalizedPath = filePath.trim();
+        if (normalizedPath.startsWith('/')) {
+          normalizedPath = normalizedPath.substring(1);
+        }
+        fullPath = '$fullPath/$normalizedPath';
       }
 
-      final containerClient = _blobServiceClient.getBlobContainerClient(containerName);
-      final blobClient = containerClient.getBlobClient(normalizedPath);
-
       // Create the local file path
-      final fileName = path.basename(normalizedPath);
+      final fileName = path.basename(filePath);
       final localFilePath = path.join(directory.path, fileName);
       final intermediateDirectory = path.dirname(localFilePath);
 
       // Create the intermediate directory if needed
       await Directory(intermediateDirectory).create(recursive: true);
 
-      // Get blob properties to get the size for progress tracking
-      final blobProperties = await blobClient.getProperties();
-      final int? totalBytes = blobProperties.contentLength?.toInt();
-
       // Download the blob
-      final downloadResponse = await blobClient.download();
+      final response = await _azureStorage.getBlob(fullPath);
+      
+      if (response.statusCode != 200) {
+        final errorMessage = await response.stream.bytesToString();
+        _logsHelper.e('Error downloading blob: ${response.statusCode} - $errorMessage');
+        
+        onProgress?.call(TransferProgress(
+          bytesTransferred: 0,
+          totalBytes: -1,
+          transferStatus: TransferStatus.failure,
+        ));
+        
+        return (result: _parseHttpStatusCode(response.statusCode), file: null);
+      }
+
       final localFile = File(localFilePath);
       final sink = localFile.openWrite();
 
+      // Get content length from headers for progress tracking
+      final contentLengthHeader = response.headers['content-length'];
+      final int? totalBytes = contentLengthHeader != null ? int.tryParse(contentLengthHeader) : null;
+      
       int bytesTransferred = 0;
       
       onProgress?.call(TransferProgress(
@@ -159,7 +170,7 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
         transferStatus: TransferStatus.inProgress,
       ));
 
-      await for (final chunk in downloadResponse) {
+      await for (final chunk in response.stream) {
         sink.add(chunk);
         bytesTransferred += chunk.length;
         
@@ -202,19 +213,20 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
     String fileId,
   ) async {
     try {
-      // Normalize the file path - remove leading slash
-      String normalizedPath = fileId.trim();
-      if (normalizedPath.startsWith('/')) {
-        normalizedPath = normalizedPath.substring(1);
+      // Normalize the file path - ensure it starts with container name
+      String fullPath = '/$containerName';
+      if (fileId.isNotEmpty) {
+        String normalizedPath = fileId.trim();
+        if (normalizedPath.startsWith('/')) {
+          normalizedPath = normalizedPath.substring(1);
+        }
+        fullPath = '$fullPath/$normalizedPath';
       }
 
-      final containerClient = _blobServiceClient.getBlobContainerClient(containerName);
-      final blobClient = containerClient.getBlobClient(normalizedPath);
-
       // Generate a SAS URL with read permissions valid for 1 hour
-      final sasUri = blobClient.generateSasUri(
-        permissions: BlobSasPermissions()..read = true,
-        expiresOn: DateTime.now().add(const Duration(hours: 1)),
+      final sasUri = await _azureStorage.getBlobLink(
+        fullPath,
+        expiry: DateTime.now().add(const Duration(hours: 1)),
       );
 
       _logsHelper.d('Generated download URL for file $fileId: $sasUri');
@@ -226,6 +238,83 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
     }
   }
 
+  /// Parse the list blobs XML response to extract file information
+  List<StorageFile> _parseListBlobsXml(String xmlContent, String searchPath, bool recursiveSearch) {
+    final List<StorageFile> storageFiles = [];
+    
+    // Basic XML parsing - in a production environment, you'd want to use a proper XML parser
+    final blobRegex = RegExp(r'<Blob>.*?</Blob>', dotAll: true);
+    final nameRegex = RegExp(r'<Name>(.*?)</Name>');
+    final lastModifiedRegex = RegExp(r'<Last-Modified>(.*?)</Last-Modified>');
+    final contentLengthRegex = RegExp(r'<Content-Length>(\d+)</Content-Length>');
+    final eTagRegex = RegExp(r'<Etag>(.*?)</Etag>');
+
+    final blobMatches = blobRegex.allMatches(xmlContent);
+    
+    for (final match in blobMatches) {
+      final blobXml = match.group(0)!;
+      
+      final nameMatch = nameRegex.firstMatch(blobXml);
+      if (nameMatch == null) continue;
+      
+      String blobName = nameMatch.group(1)!;
+      
+      // Remove container prefix if present
+      if (blobName.startsWith('$containerName/')) {
+        blobName = blobName.substring(containerName.length + 1);
+      }
+      
+      // Filter based on search path and recursive search
+      if (searchPath.isNotEmpty) {
+        String normalizedSearchPath = searchPath.trim();
+        if (normalizedSearchPath.startsWith('/')) {
+          normalizedSearchPath = normalizedSearchPath.substring(1);
+        }
+        if (!normalizedSearchPath.endsWith('/') && normalizedSearchPath.isNotEmpty) {
+          normalizedSearchPath = '$normalizedSearchPath/';
+        }
+        
+        if (!blobName.startsWith(normalizedSearchPath)) {
+          continue;
+        }
+        
+        // If not recursive search, skip files in subdirectories
+        if (!recursiveSearch) {
+          final relativePath = blobName.substring(normalizedSearchPath.length);
+          if (relativePath.contains('/')) {
+            continue;
+          }
+        }
+      }
+
+      final lastModifiedMatch = lastModifiedRegex.firstMatch(blobXml);
+      final contentLengthMatch = contentLengthRegex.firstMatch(blobXml);
+      final eTagMatch = eTagRegex.firstMatch(blobXml);
+
+      storageFiles.add(StorageFile(
+        path: blobName,
+        lastModified: lastModifiedMatch != null ? DateTime.tryParse(lastModifiedMatch.group(1)!) : null,
+        size: contentLengthMatch != null ? int.tryParse(contentLengthMatch.group(1)!) : null,
+        eTag: eTagMatch?.group(1),
+      ));
+    }
+
+    return storageFiles;
+  }
+
+  /// Parse HTTP status code to storage request result
+  static StorageRequestResult _parseHttpStatusCode(int statusCode) {
+    switch (statusCode) {
+      case 401:
+      case 403:
+        return StorageRequestResult.accessDenied;
+      case 404:
+        return StorageRequestResult.ioError;
+      default:
+        return StorageRequestResult.genericError;
+    }
+  }
+
   /// Parse the exception to return the right result
   static StorageRequestResult _parseException(Exception e) {
     if (e is MissingPlatformDirectoryException) {
@@ -233,7 +322,7 @@ class AzureBlobStorageService extends AbsWithLifeCycle with MixinStorageService 
     }
 
     // Azure-specific exceptions
-    if (e is BlobStorageException) {
+    if (e is AzureStorageException) {
       switch (e.statusCode) {
         case 401:
         case 403:

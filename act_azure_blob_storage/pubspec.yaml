@@ -22,7 +22,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  azure_storage_blobs: ^2.0.0
+  azblob: ^4.1.0
 
   equatable: ^2.0.7
 
