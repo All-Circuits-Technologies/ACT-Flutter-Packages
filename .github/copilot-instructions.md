@@ -7,7 +7,7 @@ Always follow these instructions first and fallback to search or bash commands o
 ### Essential Setup Commands
 - Install Flutter SDK (required for all operations):
   ```bash
-  # Method 1: Clone Flutter (most reliable)
+  # Method 1: Clone Flutter (most reliable when network allows)
   cd /tmp && git clone --depth 1 --branch stable https://github.com/flutter/flutter.git
   export PATH=/tmp/flutter/bin:$PATH
   # Add to your shell profile: echo 'export PATH=/tmp/flutter/bin:$PATH' >> ~/.bashrc
@@ -15,8 +15,9 @@ Always follow these instructions first and fallback to search or bash commands o
   # Method 2: Use package manager (if snap is available)
   sudo snap install flutter --classic
   
-  # Verify installation
+  # Verify installation - CRITICAL: Network restrictions may cause failures
   flutter doctor  # NEVER CANCEL: Takes 3-5 minutes on first run. Set timeout to 10+ minutes.
+  # If "dart-sdk-linux-x64.zip corrupt" error occurs, network restrictions are blocking downloads
   ```
 - Install mono_repo (monorepo management tool):
   ```bash
@@ -26,6 +27,7 @@ Always follow these instructions first and fallback to search or bash commands o
   ```bash
   # Use the provided script to install all package dependencies
   ./tool/pub_get_all.sh  # NEVER CANCEL: Takes 10-15 minutes for all 52 packages. Set timeout to 30+ minutes.
+  # View script help: ./tool/pub_get_all.sh --help  # This works without Flutter
   ```
 
 ### Core Analysis and Validation Commands
@@ -174,7 +176,11 @@ PKGS="$(find . -name 'mono_pkg.yaml' | sed 's|./||; s|/mono_pkg.yaml||' | tr '\n
 - **CI generation fails**: Ensure each package has valid `mono_pkg.yaml`
 - **Network timeouts**: Use longer timeouts for all package operations
 - **Script permission denied**: Run `chmod +x ./tool/ci.sh` to make CI script executable
-- **Flutter download fails**: Try alternative installation methods or check network restrictions
+- **Flutter download fails**: 
+  * Network restrictions may prevent downloading Dart SDK components
+  * Try alternative installation methods (snap, apt, or pre-downloaded archives)
+  * In restricted environments, request network access to: storage.googleapis.com
+- **"dart-sdk-linux-x64.zip corrupt" error**: Network/firewall blocking Flutter SDK downloads
 
 ## Repository Statistics
 - **Total packages**: 52 Flutter packages
