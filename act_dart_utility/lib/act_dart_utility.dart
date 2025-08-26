@@ -18,6 +18,7 @@ export 'src/mixins/mixin_string_value_type.dart';
 export 'src/mixins/mixin_unique_model.dart';
 export 'src/mixins/mixin_unique_value_type.dart';
 export 'src/models/num_boundaries.dart';
+export 'src/models/updated_model_event.dart';
 export 'src/models/updated_unique_model_event.dart';
 export 'src/models/value_keeper.dart';
 export 'src/shared_watcher.dart';

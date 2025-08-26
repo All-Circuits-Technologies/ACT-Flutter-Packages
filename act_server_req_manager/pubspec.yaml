@@ -29,6 +29,8 @@ dependencies:
   # Future-based API for HTTP requests
   http: ^1.4.0
 
+  mutex: ^3.1.0
+
   # Easily create managers
   act_abstract_manager:
     path: ../act_abstract_manager
