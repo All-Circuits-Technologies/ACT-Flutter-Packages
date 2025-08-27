@@ -18,6 +18,7 @@ class PngAsset implements GraphicalAsset {
   Widget getWidget({
     double? width,
     double? height,
+    Color? color,
   }) {
     final devicePixelRatio =
         WidgetsBinding.instance.platformDispatcher.implicitView?.devicePixelRatio ?? 1;
@@ -28,6 +29,7 @@ class PngAsset implements GraphicalAsset {
         (height != null) ? (height * devicePixelRatio).toInt() : null,
         AssetImage(path),
       ),
+      color: color,
       fit: BoxFit.contain,
       height: height,
       width: width,
