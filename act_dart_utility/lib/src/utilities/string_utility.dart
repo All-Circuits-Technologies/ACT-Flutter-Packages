@@ -28,6 +28,11 @@ abstract class StringUtility {
   /// See also [isValidEmail].
   static final emailAddressRegexp = RegExp(r'^[^@ ]+@[^@ ]+$');
 
+  /// IPV4 validation regexp
+  ///
+  /// See also [isValidIpv4].
+  static final ipv4Regexp = RegExp(r'^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)(\.(?!$)|$)){4}$');
+
   /// Sanitize a MAC address
   ///
   /// Returns a properly formated MAC address (such as "00:01:20:0A:BB:CC")
@@ -43,6 +48,11 @@ abstract class StringUtility {
   ///
   /// See [emailAddressRegexp] for acceptance criteria
   static bool isValidEmail(String string) => emailAddressRegexp.hasMatch(string);
+
+  /// Check if given string represents a valid ipv4 address
+  ///
+  /// See [ipv4Regexp] for acceptance criteria
+  static bool isValidIpv4(String string) => ipv4Regexp.hasMatch(string);
 
   /// Useful method to parse a string value to the wanted type
   ///
