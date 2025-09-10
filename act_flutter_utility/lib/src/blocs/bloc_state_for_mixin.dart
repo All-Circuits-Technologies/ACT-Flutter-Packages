@@ -19,7 +19,9 @@ abstract class BlocStateForMixin<S extends BlocStateForMixin<S>> extends Equatab
   @protected
   S copyWith();
 
+  /// {@template act_flutter_utility.BlocStateForMixin.props}
   /// Empty [props] getter to force the [mustCallSuper] annotation.
+  /// {@endtemplate}
   @override
   @mustCallSuper
   List<Object?> get props => [];

@@ -16,6 +16,7 @@ export 'src/graphical_assets/png_asset.dart';
 export 'src/graphical_assets/svg_asset.dart';
 export 'src/models/act_tab_bar_config.dart';
 export 'src/models/banner_information_model.dart';
+export 'src/models/extended_text_style.dart';
 export 'src/models/text_span_config.dart';
 export 'src/overlay_util.dart';
 export 'src/text_utility.dart';

@@ -11,7 +11,9 @@ abstract class BlocEventForMixin extends Equatable {
   /// Class constructor.
   const BlocEventForMixin();
 
+  /// {@template act_flutter_utility.BlocEventForMixin.props}
   /// Force the implementation of the props getter.
+  /// {@endtemplate}
   @override
   @mustCallSuper
   List<Object?> get props => [];

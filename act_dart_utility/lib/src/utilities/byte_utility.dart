@@ -16,14 +16,26 @@ abstract class ByteUtility {
   /// The bytes number in an unsigned integer of 64bits
   static const int bytesNbUInt64 = 8;
 
+  /// The bits number in an unsigned integer of 64bits
+  static const int bitsNbUint64 = _nbOfBitsInByte * bytesNbUInt64;
+
   /// The bytes number in an unsigned integer of 32bits
   static const int bytesNbUInt32 = 4;
+
+  /// The bits number in an unsigned integer of 32bits
+  static const int bitsNbUint32 = _nbOfBitsInByte * bytesNbUInt32;
 
   /// The bytes number in an unsigned integer of 16bits
   static const int bytesNbUInt16 = 2;
 
+  /// The bits number in an unsigned integer of 16bits
+  static const int bitsNbUint16 = _nbOfBitsInByte * bytesNbUInt16;
+
   /// The bytes number in an unsigned integer of 8bits
   static const int bytesNbUInt8 = 1;
+
+  /// The bits number in an unsigned integer of 8bits
+  static const int bitsNbUint8 = _nbOfBitsInByte * bytesNbUInt8;
 
   /// The minimum value a signed integer of 8bits can have
   static const int minInt8 = -maxInt8 - 1;
