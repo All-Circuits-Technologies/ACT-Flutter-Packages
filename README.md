@@ -35,7 +35,7 @@ To install it globally, you have to call:
 ## Packages list
 
 | Package                                                                   | Description                                                                                                    | Version |
-|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------|---------|
+| ------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------- |
 | [act_abs_peripherals_manager](act_abs_peripherals_manager/)               | Contains useful elements for managing peripherals such as BLE, WiFi, location, etc.                            |         |
 | [act_abstract_manager](act_abstract_manager/)                             | This package contains the base for all the managers                                                            |         |
 | [act_amplify_api](act_amplify_api/)                                       | This is the package used to add api support to the mobile app                                                  |         |
@@ -87,6 +87,7 @@ To install it globally, you have to call:
 | [act_thingsboard_client](act_thingsboard_client/)                         | Helpful package to use the Thingsboard client with app                                                         |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers. |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                         |         |
+| [act_web_socket_manager](act_web_socket_manager/)                         | This package contains the WebSocket manager                                                                    |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
 To generate this list, you can call:
