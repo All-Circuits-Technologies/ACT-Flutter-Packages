@@ -10,6 +10,15 @@ sealed class UriUtility {
   /// This is the https scheme
   static const httpsScheme = "https";
 
+  /// This is the http scheme
+  static const httpScheme = "http";
+
+  /// This is the wss scheme
+  static const wssScheme = "wss";
+
+  /// This is the ws scheme
+  static const wsScheme = "ws";
+
   /// Constructs a path from the given segments and replaces any parameters in the path.
   ///
   /// The [segments] parameter is a required list of strings that represent the parts of the path.
@@ -57,8 +66,10 @@ sealed class UriUtility {
 
   /// Create a new [Uri] object based on the [reference] given, and append the [segmentsToAppend] to
   /// the pathSegments of [reference].
-  static Uri appendPathSegmentsToUri(
-      {required Uri reference, required List<String> segmentsToAppend}) {
+  static Uri appendPathSegmentsToUri({
+    required Uri reference,
+    required List<String> segmentsToAppend,
+  }) {
     final tmpSegments = List<String>.from(reference.pathSegments);
     tmpSegments.addAll(segmentsToAppend);
 
