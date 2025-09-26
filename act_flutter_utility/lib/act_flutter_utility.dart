@@ -9,6 +9,7 @@ library;
 export 'src/blocs/bloc_event_for_mixin.dart';
 export 'src/blocs/bloc_for_mixin.dart';
 export 'src/blocs/bloc_state_for_mixin.dart';
+export 'src/blocs/mixin_generic_loading_state.dart';
 export 'src/colors_util.dart';
 export 'src/graphical_assets/graphical_asset.dart';
 export 'src/graphical_assets/icon_asset.dart';
