@@ -6,7 +6,7 @@ import 'package:act_local_storage_manager/src/mixins/mixin_parser_storage_item.d
 import 'package:act_local_storage_manager/src/models/shared_preferences_item.dart';
 import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 
-/// [SecretItemWithParser] wraps a single secret of type T, providing strongly-typed read
+/// [SharedPrefsItemWithParser] wraps a single secret of type T, providing strongly-typed read
 /// and write helpers.
 ///
 /// If you don't want to keep those data secret, please consider to use `SharedPreferencesItem`.
