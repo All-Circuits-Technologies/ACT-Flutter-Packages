@@ -28,14 +28,20 @@ abstract class AbsServerLogin {
     this.loginFailPolicy = LoginFailPolicy.errorIfLoginFails,
   });
 
+  /// {@template act_server_req_manager.AbsServerLogin.initLogin}
   /// This methods may be used by derived classes to initialize async login
+  /// {@endtemplate}
   Future<bool> initLogin() async => true;
 
+  /// {@template act_server_req_manager.AbsServerLogin.manageLogInWithRequest}
   /// This methods manages the login to the third server if it's needed. It also adds to the
   /// request all the authentication information which are asked by the third server.
-  Future<RequestStatus> manageLogin(RequestParam requestParam);
+  /// {@endtemplate}
+  Future<RequestStatus> manageLogInWithRequest(RequestParam requestParam);
 
+  /// {@template act_server_req_manager.AbsServerLogin.clearLogins}
   /// Clear the logins
+  /// {@endtemplate}
   @mustCallSuper
   Future<void> clearLogins();
 }

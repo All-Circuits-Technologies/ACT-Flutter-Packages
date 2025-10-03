@@ -87,6 +87,7 @@ To install it globally, you have to call:
 | [act_thingsboard_client](act_thingsboard_client/)                         | Helpful package to use the Thingsboard client with app                                                         |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers. |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                         |         |
+| [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                            |         |
 | [act_web_socket_manager](act_web_socket_manager/)                         | This package contains the WebSocket manager                                                                    |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
