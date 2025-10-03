@@ -11,13 +11,12 @@ import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_local_storage_manager/src/models/shared_preferences_item.dart';
 import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 /// Builder for creating the PropertiesManager
 abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
     extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
-  AbstractPropertiesBuilder(super.factory);
+  const AbstractPropertiesBuilder(super.factory);
 
   /// List of manager dependence
   @override
@@ -46,15 +45,11 @@ abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
       : isFirstStart = true,
         super();
 
-  /// Init the manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-
-    // We need to create the shared preferences singleton and properties singleton first, because
-    // they will be used in the next load method
-    final prefs = await SharedPreferences.getInstance();
-    PropertiesSingleton.createInstance(prefs);
+    PropertiesSingleton.createInstance();
 
     try {
       isFirstStart = (await _isFirstStart.load()) ?? isFirstStart;
@@ -70,6 +65,8 @@ abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
     }
   }
 
+  /// {@template act_local_storage_manager.AbstractPropertiesManager.deleteAll}
   /// Delete all stored properties.
-  Future<void> deleteAll() async => PropertiesSingleton.instance.prefs.clear();
+  /// {@endtemplate}
+  Future<void> deleteAll() async => PropertiesSingleton.instance.deleteAll();
 }

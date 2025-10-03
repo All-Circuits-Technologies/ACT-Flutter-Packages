@@ -17,7 +17,7 @@ import 'package:act_server_req_manager/src/types/login_fail_policy.dart';
 import 'package:act_server_req_manager/src/types/mime_types.dart';
 import 'package:act_server_req_manager/src/types/request_status.dart';
 import 'package:act_server_req_manager/src/utilities/url_format_utility.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 /// Builder of the [AbsServerReqManager] manager
@@ -56,7 +56,6 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   late final T _absServerLogin;
 
   /// {@macro act_server_req_manager.AbsServerReqManager.absServerLogin}
-  @protected
   T get absServerLogin => _absServerLogin;
 
   /// This is the server request linked to requester manager, it allows to request the third server
@@ -100,9 +99,12 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
 
     await _serverRequester.initLifeCycle();
 
-    _absServerLogin = await createServerLogin(_serverRequester);
+    _absServerLogin = await createServerLogin(
+      serverRequester: _serverRequester,
+      parentLogsHelper: _logsHelper,
+    );
 
-    if (_absServerLogin != null && !(await _absServerLogin!.initLogin())) {
+    if (!(await _absServerLogin!.initLogin())) {
       throw Exception("An error occurred when tried to init the abs server login");
     }
   }
@@ -155,7 +157,7 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
       var loginResult = RequestStatus.success;
 
       if (ifExistUseAuth && localAbsServerLogin != null) {
-        loginResult = await localAbsServerLogin.manageLogin(requestParam);
+        loginResult = await localAbsServerLogin.manageLogInWithRequest(requestParam);
 
         if (loginResult != RequestStatus.success) {
           globalResult = RequestStatus.loginError;
@@ -290,7 +292,10 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
   /// Create the server login
   /// {@endtemplate}
   @protected
-  Future<T> createServerLogin(ServerRequester serverRequester);
+  Future<T> createServerLogin({
+    required ServerRequester serverRequester,
+    required LogsHelper parentLogsHelper,
+  });
 
   /// Parse a JSON object to a [RespBody] object
   ///

@@ -12,7 +12,7 @@ import 'package:flutter/foundation.dart';
 /// Builder of the [AbsAuthManager] manager
 abstract class AbsAuthBuilder<T extends AbsAuthManager> extends AbsManagerBuilder<T> {
   /// Class constructor
-  AbsAuthBuilder(super.factory);
+  const AbsAuthBuilder(super.factory);
 
   /// {@macro act_abstract_manager.AbsManagerBuilder.dependsOn}
   @override
