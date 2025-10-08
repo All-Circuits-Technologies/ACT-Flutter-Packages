@@ -57,6 +57,8 @@ abstract class StringUtility {
   /// Useful method to parse a string value to the wanted type
   ///
   /// The method returns null if the parsing has failed or if the value given is null
+  ///
+  /// The supported types are: `double`, `int`, `String` and `bool`.
   static T? parseStrValue<T>(String? value) {
     if (value == null) {
       return null;
@@ -81,5 +83,46 @@ abstract class StringUtility {
     }
 
     return castedValue as T?;
+  }
+
+  /// Useful method to cast a value to a string
+  ///
+  /// Returns a record with:
+  /// - isOk: true if the cast succeeded, false otherwise
+  /// - value: the string value if the cast succeeded, null otherwise
+  ///
+  /// The supported types are: `double`, `int`, `String` and `bool`.
+  static ({bool isOk, String? value}) castToString<T>(T? value) {
+    if (value == null) {
+      // Nothing more to do than return a null element
+      return (isOk: true, value: null);
+    }
+
+    String? valueStr;
+    switch (T) {
+      case const (bool):
+        valueStr = (value as bool).toString();
+        break;
+      case const (int):
+        valueStr = (value as int).toString();
+        break;
+      case const (double):
+        valueStr = (value as double).toString();
+        break;
+      case const (String):
+        valueStr = value as String;
+        break;
+      default:
+        // The type isn't supported
+        valueStr = null;
+        break;
+    }
+
+    if (valueStr == null) {
+      // A problem occurred
+      return (isOk: false, value: null);
+    }
+
+    return (isOk: true, value: valueStr);
   }
 }

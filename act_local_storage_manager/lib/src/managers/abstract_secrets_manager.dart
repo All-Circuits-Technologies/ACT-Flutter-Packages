@@ -5,19 +5,15 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// Builder for creating the SecretsManager
-abstract class AbstractSecretsBuilder<
-    P extends AbstractPropertiesManager,
-    E extends MixinStoresConf,
-    T extends AbstractSecretsManager<P, E>> extends AbsManagerBuilder<T> {
+abstract class AbstractSecretsBuilder<P extends AbstractPropertiesManager,
+    E extends MixinStoresConf, T extends AbstractSecretsManager> extends AbsManagerBuilder<T> {
   /// A factory to create a manager instance
-  AbstractSecretsBuilder(super.factory);
+  const AbstractSecretsBuilder(super.factory);
 
   /// List of manager dependence
   @override
@@ -36,28 +32,33 @@ abstract class AbstractSecretsBuilder<
 /// -----------------------------
 ///
 /// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
-abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
-    E extends MixinStoresConf> extends AbsWithLifeCycle {
+abstract class AbstractSecretsManager extends AbsWithLifeCycle {
+  /// This is the getter used to access the [AbstractPropertiesManager] of the project
+  final AbstractPropertiesManager Function() propertiesGetter;
+
+  /// This is the getter used to access the config manager of the project, which implements the
+  /// [MixinStoresConf] mixin.
+  final MixinStoresConf Function() confGetter;
+
   /// Builds an instance of [AbstractSecretsManager].
   ///
   /// You may want to use created instance as a singleton
   /// in order to save memory.
-  AbstractSecretsManager() : super();
+  const AbstractSecretsManager({
+    required this.propertiesGetter,
+    required this.confGetter,
+  }) : super();
 
-  /// Init the manager
+  /// {@macro act_abstract_manager.AbsWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    SecretsSingleton.createInstance(const FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
-      ),
-    ));
+    SecretsSingleton.createInstance();
 
-    final isFirstStart = globalGetIt().get<P>().isFirstStart;
+    final isFirstStart = propertiesGetter().isFirstStart;
 
-    final isNeededToDeleteAll = globalGetIt().get<E>().cleanSecretStorageWhenReinstall.load();
+    final isNeededToDeleteAll = confGetter().cleanSecretStorageWhenReinstall.load();
 
     // Check if app has already been run
     if (isFirstStart && isNeededToDeleteAll) {
@@ -70,5 +71,5 @@ abstract class AbstractSecretsManager<P extends AbstractPropertiesManager,
   /// Delete all stored secrets.
   ///
   /// Can throw a `PlatformException`.
-  Future<void> deleteAll() async => SecretsSingleton.instance.secureStorage.deleteAll();
+  Future<void> deleteAll() async => SecretsSingleton.instance.deleteAll();
 }

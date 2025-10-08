@@ -24,16 +24,19 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   /// This is the current auth status
   AuthStatus _authStatus = AuthStatus.signedOut;
 
+  /// {@template act_shared_auth.MixinAuthRedirectService.getAuthenticationManagerFromGlobal}
   /// Get the authentication manager used on the project
+  /// {@endtemplate}
   @protected
   AbsAuthManager getAuthenticationManagerFromGlobal();
 
+  /// {@template act_shared_auth.MixinAuthRedirectService.getSignInPage}
   /// Get the route of the sign in page used in the application
+  /// {@endtemplate}
   @protected
   T getSignInPage();
 
-  /// This method has to be called to initialize the redirect service.
-  /// When the class is no more used don't forget to call [closeRedirectService] method.
+  /// {@macro act_router_manager.MixinRedirectService.initRedirectService}
   @override
   Future<bool> initRedirectService() async {
     // First call super method, if not null, we don't go further
@@ -75,15 +78,7 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     unawaited(routerManager.pushAndRemoveUntilFirstRoute(_signInRoute));
   }
 
-  /// This method is called when we want to go to a specific view and ask if it's ok or if we want
-  /// to redirect.
-  /// If the function returns null, it means that there is nothing to do
-  /// If the function returns a non null route:
-  ///   - it means that we want to redirect to this page,
-  ///   - be aware that the new view replaces the one wanted (therefore, the route tested won't be
-  ///     built and displayed),
-  ///   - this method will be recalled with the new view we ask (so be careful to not create
-  ///     infinite redirection)
+  /// {@macro act_router_manager.MixinRedirectService.onRedirect}
   ///
   /// If the super class has already required a view, this service don't go further. We consider
   /// that the order of the mixins is also the order of priority
@@ -108,8 +103,7 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     return _signInRoute;
   }
 
-  /// This method has to be called to close the redirect service. It will unregister the router
-  /// redirection.
+  /// {@macro act_router_manager.MixinRedirectService.closeRedirectService}
   @override
   Future<void> closeRedirectService() async {
     await super.closeRedirectService();

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_jwt_utilities/src/constants/jwt_keys_constant.dart' as jwt_keys_constant;
 import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
@@ -27,8 +28,11 @@ sealed class JwtParserUtility {
   /// A JWT may not a have an expiration date, in that case, we consider the JWT as valid.
   ///
   /// Return true if the token is valid.
-  static bool isTokenValid(JWT jwt) {
-    final expResult = getExpiration(jwt);
+  ///
+  /// If [isTsInSeconds] is equals to true, it means that all the timestamps are in seconds.
+  /// If [isTsInSeconds] is equals to false, it means that all the timestamps are in milliseconds.
+  static bool isTokenValid(JWT jwt, {bool isTsInSeconds = true}) {
+    final expResult = getExpiration(jwt: jwt, isTsInSeconds: isTsInSeconds);
     if (!expResult.isOk) {
       appLogger().w(
           "A problem occurred when tried to get the expiration date time from the token, we can't "
@@ -50,7 +54,10 @@ sealed class JwtParserUtility {
   /// `exp` equals to null.
   ///
   /// Returns true in `isOk` parameter if no problem occurred
-  static ({bool isOk, DateTime? exp}) getExpiration(JWT jwt) {
+  ///
+  /// If [isTsInSeconds] is equals to true, it means that all the timestamps are in seconds.
+  /// If [isTsInSeconds] is equals to false, it means that all the timestamps are in milliseconds.
+  static ({bool isOk, DateTime? exp}) getExpiration({required JWT jwt, bool isTsInSeconds = true}) {
     final payload = jwt.payload;
     if (payload is! Map<String, dynamic>) {
       appLogger().w("The JWT payload isn't a map, we can't get the expiration dateTime");
@@ -68,7 +75,12 @@ sealed class JwtParserUtility {
       return const (isOk: false, exp: null);
     }
 
-    return (isOk: true, exp: DateTime.fromMillisecondsSinceEpoch(expirationTs, isUtc: true));
+    return (
+      isOk: true,
+      exp: isTsInSeconds
+          ? DateTimeUtility.fromSecondsSinceEpochUtc(expirationTs)
+          : DateTimeUtility.fromMillisecondsSinceEpochUtc(expirationTs)
+    );
   }
 
   /// Test if the given token is a valid JWT and not expired.
@@ -105,7 +117,11 @@ sealed class JwtParserUtility {
   ///
   /// If the [token] is valid but it doesn't contain an expiration date, the `isOk` element will be
   /// equal to true and `exp` equals to null.
-  static ({bool isOk, DateTime? exp}) getExpirationFromString(String token) {
+  ///
+  /// If [isTsInSeconds] is equals to true, it means that all the timestamps are in seconds.
+  /// If [isTsInSeconds] is equals to false, it means that all the timestamps are in milliseconds.
+  static ({bool isOk, DateTime? exp}) getExpirationFromString(String token,
+      {bool isTsInSeconds = true}) {
     final jwt = tryToParseToken(token);
     if (jwt == null) {
       // The token parsing has failed
@@ -113,6 +129,6 @@ sealed class JwtParserUtility {
       return const (isOk: false, exp: null);
     }
 
-    return getExpiration(jwt);
+    return getExpiration(jwt: jwt, isTsInSeconds: isTsInSeconds);
   }
 }

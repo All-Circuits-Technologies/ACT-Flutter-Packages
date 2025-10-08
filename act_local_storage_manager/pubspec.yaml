@@ -26,6 +26,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  equatable: ^2.0.7
+
   # Store/Load data in secure storage
   flutter_secure_storage: ^9.2.4
 

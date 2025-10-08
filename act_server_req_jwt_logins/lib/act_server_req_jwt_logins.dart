@@ -4,10 +4,9 @@
 
 library;
 
+export 'package:act_shared_auth/act_shared_auth.dart' show AuthToken, AuthTokens;
 export 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart' show JWT;
 
 export 'src/abs_jwt_login.dart';
 export 'src/abs_refresh_jwt_login.dart';
-export 'src/models/refresh_token_answer.dart';
-export 'src/models/token_answer.dart';
-export 'src/models/token_info.dart';
+export 'src/mixins/mixin_auth_storage_jwt_login.dart';

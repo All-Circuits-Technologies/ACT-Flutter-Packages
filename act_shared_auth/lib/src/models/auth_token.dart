@@ -64,7 +64,9 @@ class AuthToken extends Equatable {
       json: json,
       key: _expirationKey,
       canBeUndefined: true,
-      castValueFunc: (toCast) => DateTime.fromMillisecondsSinceEpoch(toCast, isUtc: true),
+      // Because the toJson method store an expiration time in milliseconds, the fromJson must also
+      // parse it in milliseconds
+      castValueFunc: DateTimeUtility.fromMillisecondsSinceEpochUtc,
       loggerManager: appLogger(),
     );
 
@@ -82,13 +84,16 @@ class AuthToken extends Equatable {
   /// Parse the [token] as JWT and get the info from it.
   ///
   /// If the [token] is not a JWT, the method will return null.
-  static AuthToken? fromJwtToken(String token) {
+  ///
+  /// If [isTsInSeconds] is equals to true, it means that all the timestamps are in seconds.
+  /// If [isTsInSeconds] is equals to false, it means that all the timestamps are in milliseconds.
+  static AuthToken? fromJwtToken(String token, {bool isTsInSeconds = true}) {
     final jwt = JwtParserUtility.tryToParseToken(token);
     if (jwt == null) {
       return null;
     }
 
-    final expResult = JwtParserUtility.getExpiration(jwt);
+    final expResult = JwtParserUtility.getExpiration(jwt: jwt);
     if (!expResult.isOk) {
       return null;
     }
