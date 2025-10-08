@@ -44,17 +44,21 @@ abstract class AbstractJwtHandler {
     return initHandlerImpl();
   }
 
+  /// {@template act_jwt_utilities.AbstractJwtHandler.initHandlerImpl}
   /// This method is called to init the JWT handler
   ///
   /// This is the implementation of the [initHandler] method
   ///
   /// Returns true if no problem occurred
+  /// {@endtemplate}
   @protected
   Future<bool> initHandlerImpl();
 
+  /// {@template act_jwt_utilities.AbstractJwtHandler.getJwtOptions}
   /// Get the options linked to the JWT
   ///
   /// Returns the JWT options set by the derived class
+  /// {@endtemplate}
   @protected
   Future<JwtOptions> getJwtOptions();
 
@@ -68,11 +72,13 @@ abstract class AbstractJwtHandler {
     _privateKey = privateKey;
   }
 
+  /// {@template act_jwt_utilities.AbstractJwtHandler.testSignAndVerify}
   /// Validate if the handler sign and verify methods are working
   ///
   /// The method isn't class if [_publicKey] or [_privateKey] aren't defined
   ///
   /// Returns true if the test has succeeded
+  /// {@endtemplate}
   Future<bool> testSignAndVerify();
 
   /// This is the implementation of the method: [testSignAndVerify]
