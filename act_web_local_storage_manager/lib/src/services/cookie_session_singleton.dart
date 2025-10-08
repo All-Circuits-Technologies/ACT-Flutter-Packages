@@ -53,7 +53,7 @@ class CookieSessionSingleton extends AbsWithLifeCycle
   @override
   bool isReadValueValid({required String? value}) =>
       // We know that the super isReadValue tests for nullity
-      super.isReadValueValid(value: value) && value!.isEmpty;
+      super.isReadValueValid(value: value) && value!.isNotEmpty;
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
   @override
@@ -100,6 +100,7 @@ class CookieSessionSingleton extends AbsWithLifeCycle
 
       final cookieValueParts = cookie.split(_cookieValueSeparator);
       cookieValue = cookieValueParts[1];
+      break;
     }
 
     return cookieValue;
