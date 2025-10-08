@@ -80,16 +80,16 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
   Future<T?> load<T>({required String key, Object? extra}) async {
     switch (T) {
       case const (bool):
-        return _getElement<bool, bool>(key: key, prefsGetter: _prefs.getBool) as T?;
+        return (await _getElement<bool, bool>(key: key, prefsGetter: _prefs.getBool)) as T?;
       case const (int):
-        return _getElement<int, int>(key: key, prefsGetter: _prefs.getInt) as T?;
+        return (await _getElement<int, int>(key: key, prefsGetter: _prefs.getInt)) as T?;
       case const (double):
-        return _getElement<double, double>(key: key, prefsGetter: _prefs.getDouble) as T?;
+        return (await _getElement<double, double>(key: key, prefsGetter: _prefs.getDouble)) as T?;
       case const (String):
-        return _getElement<String, String>(key: key, prefsGetter: _prefs.getString) as T?;
+        return (await _getElement<String, String>(key: key, prefsGetter: _prefs.getString)) as T?;
       case const (List<String>):
-        return _getElement<List<String>, List<String>>(key: key, prefsGetter: _prefs.getStringList)
-            as T?;
+        return (await _getElement<List<String>, List<String>>(
+            key: key, prefsGetter: _prefs.getStringList)) as T?;
 
       default:
         // An unsupported T item was added to PropertiesManager.
