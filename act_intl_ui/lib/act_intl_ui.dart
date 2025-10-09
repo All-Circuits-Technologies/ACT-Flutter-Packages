@@ -5,4 +5,10 @@
 
 library;
 
+export 'src/blocs/get_wanted_locale/get_wanted_locale_events.dart';
+export 'src/blocs/get_wanted_locale/mixin_get_wanted_locale_bloc.dart';
+export 'src/blocs/get_wanted_locale/mixin_get_wanted_locale_state.dart';
+export 'src/blocs/set_wanted_locale/mixin_set_wanted_locale_bloc.dart';
+export 'src/blocs/set_wanted_locale/mixin_set_wanted_locale_state.dart';
+export 'src/blocs/set_wanted_locale/set_wanted_locale_events.dart';
 export 'src/widgets/translated_html_text.dart';
