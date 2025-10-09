@@ -46,7 +46,7 @@ class LocalesManager extends AbsWithLifeCycle {
   /// This is how we'll allow subscribing to connection changes
   final StreamController<Locale> _currentLocaleCtrl;
 
-  /// This is the stream controller used to set the give the current wanted locale wanted by user
+  /// This is the stream controller linked to the wanted locale
   final StreamController<Locale?> _wantedLocaleCtrl;
 
   /// This function is used to get the list of supported locales in the app
