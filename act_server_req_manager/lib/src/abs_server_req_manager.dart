@@ -181,14 +181,15 @@ abstract class AbsServerReqManager<T extends AbsServerLogin?> extends AbsWithLif
         ))
                 .toPatterns();
 
-        if (localAbsServerLogin != null &&
-            localAbsServerLogin.loginFailPolicy == LoginFailPolicy.retryOnceIfLoginFails &&
-            globalResult == RequestStatus.loginError &&
-            loginRetryNb == 0) {
-          // We clear the login info
+        if (localAbsServerLogin != null && globalResult == RequestStatus.loginError) {
+          // We receive a login error, our logins aren't correct, we clear them
           await localAbsServerLogin.clearLogins();
-          loginRetryNb++;
-          retryRequestNb--;
+
+          if (localAbsServerLogin.loginFailPolicy == LoginFailPolicy.retryOnceIfLoginFails &&
+              loginRetryNb == 0) {
+            loginRetryNb++;
+            retryRequestNb--;
+          }
         }
       }
 
