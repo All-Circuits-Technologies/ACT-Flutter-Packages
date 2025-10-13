@@ -25,6 +25,10 @@ abstract class AbsJwtLogin extends AbsServerLogin {
   /// The token is inserted in the value each time '{token}' is encountered
   final String headerAuthValueFormatted;
 
+  /// If true, the expiration date of the token is verified each time a request is made to the
+  /// server. If false, the expiration date isn't verified and the token may fails at any time.
+  final bool verifyTokenExpirationDate;
+
   /// The tokens to use in order to request the server
   AuthTokens? _tokensInfo;
 
@@ -41,6 +45,7 @@ abstract class AbsJwtLogin extends AbsServerLogin {
     super.loginFailPolicy,
     this.headerAuthKey = ServerReqConstants.authorizationHeader,
     this.headerAuthValueFormatted = AuthConstants.authBearer,
+    this.verifyTokenExpirationDate = true,
   })  : _tokensInfo = null,
         _newTokensCtrl = StreamController.broadcast();
 
@@ -127,7 +132,8 @@ abstract class AbsJwtLogin extends AbsServerLogin {
   /// token may fails at any time.
   /// {@endtemplate}
   @protected
-  static bool verifyTokenInfo(AuthToken? tokenInfo) => tokenInfo != null && tokenInfo.isValid;
+  bool verifyTokenInfo(AuthToken? tokenInfo) =>
+      tokenInfo != null && tokenInfo.isValid(testExpiration: verifyTokenExpirationDate);
 
   /// {@template act_server_req_jwt_logins.AbsJwtLogin.manageLogInToServer}
   /// This manages the logIn into the server via the given login request

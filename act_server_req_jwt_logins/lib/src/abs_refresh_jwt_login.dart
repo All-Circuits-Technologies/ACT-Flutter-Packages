@@ -16,6 +16,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin {
     super.loginFailPolicy,
     super.headerAuthKey,
     super.headerAuthValueFormatted,
+    super.verifyTokenExpirationDate,
   });
 
   /// {@template act_server_req_jwt_logins.AbsRefreshJwtLogin.getRefreshRequest}
@@ -35,7 +36,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin {
   @protected
   @override
   Future<bool> managedIntermediateProcess() async {
-    if (!AbsJwtLogin.verifyTokenInfo(tokensInfo?.refreshToken)) {
+    if (!verifyTokenInfo(tokensInfo?.refreshToken)) {
       logsHelper.i("The refresh token is valid, we can't try to get tokens");
       return false;
     }

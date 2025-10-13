@@ -48,9 +48,19 @@ class AuthToken extends Equatable {
 
   /// Check if the token is valid or not
   ///
-  /// If [expiration] is not null, the method verifies if the date is outdated.
-  bool get isValid =>
-      raw.isNotEmpty && (expiration == null || (expiration!.compareTo(DateTime.now().toUtc()) > 0));
+  /// If [expiration] is not null and [testExpiration] is equals to true, the method verifies if
+  /// the date is outdated.
+  bool isValid({bool testExpiration = true}) {
+    if (raw.isEmpty) {
+      return false;
+    }
+
+    if (testExpiration && expiration != null) {
+      return expiration!.compareTo(DateTime.now().toUtc()) > 0;
+    }
+
+    return true;
+  }
 
   /// Parse the auth token from a JSON object
   static AuthToken? fromJson(Map<String, dynamic> json) {
