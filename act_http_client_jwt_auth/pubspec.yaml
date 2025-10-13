@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-name: act_thingsboard_client
-description: Helpful package to use the Thingsboard client with app
+name: act_http_client_jwt_auth
+description: Contains specific server authentication to work with JWT
 publish_to: none
 
 # This package supports all platforms listed below.
@@ -16,32 +16,21 @@ platforms:
   windows:
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=3.0.2 <4.0.0'
   flutter: ">=3.0.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  thingsboard_client:
-    git:
-      url: https://github.com/benoit-rolandeau-act/dart_thingsboard_client.git
-      ref: fix-tb-storage-interface
+  dart_jsonwebtoken: ^3.2.0
 
   # Help to implement value based equality without explicit override
   equatable: ^2.0.7
 
-  mutex: ^3.1.0
-
-  # Flutter AC Technologies dependencies
+  # Easily create managers
   act_abstract_manager:
     path: ../act_abstract_manager
-
-  act_config_manager:
-    path: ../act_config_manager
-
-  act_dart_utility:
-    path: ../act_dart_utility
 
   # Default global manager
   act_global_manager:
@@ -49,9 +38,6 @@ dependencies:
 
   act_http_client_manager:
     path: ../act_http_client_manager
-
-  act_local_storage_manager:
-    path: ../act_local_storage_manager
 
   # Logger manager
   act_logger_manager:
@@ -66,3 +52,4 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^5.0.0
+

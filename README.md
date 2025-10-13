@@ -75,11 +75,11 @@ To install it globally, you have to call:
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                |         |
 | [act_qr_code](act_qr_code/)                                               | This package contains a QR Code widget ready to use                                                            |         |
 | [act_router_manager](act_router_manager/)                                 | This package contains a router manager.                                                                        |         |
-| [act_server_local_vers_file_manager](act_server_local_vers_file_manager/) | Act server localized and versioned file manager.                                                               |         |
-| [act_server_req_jwt_logins](act_server_req_jwt_logins/)                   | Contains specific server logins to work with JWT                                                               |         |
-| [act_server_req_manager](act_server_req_manager/)                         | Useful to request third servers                                                                                |         |
-| [act_server_storage_manager](act_server_storage_manager/)                 | Act server storage manager package.                                                                            |         |
-| [act_server_storage_ui](act_server_storage_ui/)                           | Contains helpful widgets to work with act_server_storage_manager                                               |         |
+| [act_server_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act server localized and versioned file manager.                                                               |         |
+| [act_server_req_jwt_logins](act_http_client_jwt_auth/)                   | Contains specific server logins to work with JWT                                                               |         |
+| [act_server_req_manager](act_http_client_manager/)                         | Useful to request third servers                                                                                |         |
+| [act_server_storage_manager](act_remote_storage_manager/)                 | Act server storage manager package.                                                                            |         |
+| [act_server_storage_ui](act_remote_storage_ui/)                           | Contains helpful widgets to work with act_server_storage_manager                                               |         |
 | [act_shared_auth](act_shared_auth/)                                       | This contains generic and shared elements for authentication services.                                         |         |
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.              |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                               |         |
@@ -88,7 +88,7 @@ To install it globally, you have to call:
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers. |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                         |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                            |         |
-| [act_web_socket_manager](act_web_socket_manager/)                         | This package contains the WebSocket manager                                                                    |         |
+| [act_web_socket_manager](act_websocket_client_manager/)                         | This package contains the WebSocket manager                                                                    |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
 To generate this list, you can call:

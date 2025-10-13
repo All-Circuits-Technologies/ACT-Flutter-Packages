@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_websocket_client_manager
+description: This package contains the WebSocket client manager
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  equatable: ^2.0.7
+
+  mutex: ^3.1.0
+
+  web_socket_channel: ^3.0.3
+
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_global_manager:
+    path: ../act_global_manager
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
