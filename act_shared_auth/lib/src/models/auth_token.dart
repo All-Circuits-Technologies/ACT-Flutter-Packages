@@ -55,8 +55,11 @@ class AuthToken extends Equatable {
       return false;
     }
 
-    if (testExpiration && expiration != null) {
-      return expiration!.compareTo(DateTime.now().toUtc()) > 0;
+    if (testExpiration &&
+        expiration != null &&
+        expiration!.compareTo(DateTime.now().toUtc()) <= 0) {
+      // The JWT has expired
+      return false;
     }
 
     return true;
