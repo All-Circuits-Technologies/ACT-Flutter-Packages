@@ -4,8 +4,8 @@
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_req_manager/act_server_req_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client/src/act_tb_storage.dart';
