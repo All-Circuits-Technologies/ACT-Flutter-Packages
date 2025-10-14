@@ -52,4 +52,11 @@ mixin MixinAuthStorageJwtLogin on AbsJwtLogin {
       await storageService?.storeTokens(tokens: authTokens);
     }
   }
+
+  /// {@macro act_server_req_jwt_logins.AbsJwtLogin.clearLogins}
+  @override
+  Future<void> clearLogins() async {
+    await super.clearLogins();
+    await storageService?.clearTokens();
+  }
 }

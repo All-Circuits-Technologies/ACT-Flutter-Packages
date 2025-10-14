@@ -228,11 +228,11 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
 
     String? validToken;
     String? validRefreshToken;
-    if (tokens.accessToken != null && tokens.accessToken!.isValid) {
+    if (tokens.accessToken != null && tokens.accessToken!.isValid()) {
       validToken = tokens.accessToken!.raw;
     }
 
-    if (tokens.refreshToken != null && tokens.refreshToken!.isValid) {
+    if (tokens.refreshToken != null && tokens.refreshToken!.isValid()) {
       validRefreshToken = tokens.refreshToken!.raw;
     }
 

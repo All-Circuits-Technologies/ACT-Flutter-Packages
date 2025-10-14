@@ -207,7 +207,8 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   @override
   Future<bool> isUserSigned() => _mutex.protect(() async {
     final isUserSigned =
-        (_authTokens.accessToken?.isValid ?? false) || (_authTokens.refreshToken?.isValid ?? false);
+        (_authTokens.accessToken?.isValid() ?? false) ||
+        (_authTokens.refreshToken?.isValid() ?? false);
     if (!isUserSigned) {
       // If the token and the refresh token are expired, we consider that we are signed out
       setAuthStatus(AuthStatus.signedOut);
@@ -219,11 +220,11 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
   Future<AuthTokens?> getTokens() => _mutex.protect(() async {
-    if (_authTokens.accessToken?.isValid ?? false) {
+    if (_authTokens.accessToken?.isValid() ?? false) {
       return _authTokens;
     }
 
-    if (_authTokens.refreshToken == null || !_authTokens.refreshToken!.isValid) {
+    if (_authTokens.refreshToken == null || !_authTokens.refreshToken!.isValid()) {
       // There is no valid access and refresh token
       return null;
     }
