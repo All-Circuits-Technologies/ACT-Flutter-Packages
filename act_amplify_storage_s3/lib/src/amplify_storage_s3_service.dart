@@ -7,7 +7,7 @@ import 'dart:io';
 
 import 'package:act_amplify_core/act_amplify_core.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_server_storage_manager/act_server_storage_manager.dart';
+import 'package:act_remote_storage_manager/act_remote_storage_manager.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_storage_s3/amplify_storage_s3.dart';
 import 'package:path_provider/path_provider.dart';
@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 /// This service manages the Amplify Storage S3 part of Amplify
 ///
 /// This Storage regroups multiple method to interact with S3 storage. It implements the
-/// [MixinStorageService] therefore it can be used with the [AbsServerStorageManager] which provides
+/// [MixinStorageService] therefore it can be used with the [AbsRemoteStorageManager] which provides
 /// an optional cache system.
 class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService {
   /// Logs category for the amplify storage s3 service

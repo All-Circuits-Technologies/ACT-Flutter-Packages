@@ -58,6 +58,8 @@ To install it globally, you have to call:
 | [act_halo_abstract](act_halo_abstract/)                                   | Contains the abstract and shared elements to manager the HALO protocol                                         |         |
 | [act_halo_ble_layer](act_halo_ble_layer/)                                 | This is the BLE hardware layer for the HALO protocol                                                           |         |
 | [act_halo_manager](act_halo_manager/)                                     | This is the manager for the HALO protocol                                                                      |         |
+| [act_http_client_jwt_auth](act_http_client_jwt_auth/)                     | Contains specific server authentication to work with JWT                                                       |         |
+| [act_http_client_manager](act_http_client_manager/)                       | Useful to request third HTTP servers                                                                           |         |
 | [act_internet_connectivity_manager](act_internet_connectivity_manager/)   | The package contains the internet connectivity manager to know when we are connected to internet, or not.      |         |
 | [act_intl](act_intl/)                                                     | This package contains non-graphical utilities classes linked to translations.                                  |         |
 | [act_intl_ui](act_intl_ui/)                                               | This package contains graphical helpers linked to translations.                                                |         |
@@ -74,12 +76,10 @@ To install it globally, you have to call:
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                          |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                |         |
 | [act_qr_code](act_qr_code/)                                               | This package contains a QR Code widget ready to use                                                            |         |
+| [act_remote_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act remote localized and versioned file manager.                                                               |         |
+| [act_remote_storage_manager](act_remote_storage_manager/)                 | This package contains the remote storage manager, which can be used to get files from a remote server.         |         |
+| [act_remote_storage_ui](act_remote_storage_ui/)                           | Contains helpful widgets to work with act_remote_storage_manager                                               |         |
 | [act_router_manager](act_router_manager/)                                 | This package contains a router manager.                                                                        |         |
-| [act_server_local_vers_file_manager](act_server_local_vers_file_manager/) | Act server localized and versioned file manager.                                                               |         |
-| [act_server_req_jwt_logins](act_server_req_jwt_logins/)                   | Contains specific server logins to work with JWT                                                               |         |
-| [act_server_req_manager](act_server_req_manager/)                         | Useful to request third servers                                                                                |         |
-| [act_server_storage_manager](act_server_storage_manager/)                 | Act server storage manager package.                                                                            |         |
-| [act_server_storage_ui](act_server_storage_ui/)                           | Contains helpful widgets to work with act_server_storage_manager                                               |         |
 | [act_shared_auth](act_shared_auth/)                                       | This contains generic and shared elements for authentication services.                                         |         |
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.              |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                               |         |
@@ -88,7 +88,7 @@ To install it globally, you have to call:
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers. |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                         |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                            |         |
-| [act_web_socket_manager](act_web_socket_manager/)                         | This package contains the WebSocket manager                                                                    |         |
+| [act_websocket_client_manager](act_websocket_client_manager/)             | This package contains the WebSocket client manager                                                             |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
 To generate this list, you can call:
