@@ -4,14 +4,11 @@
 
 import 'dart:convert';
 
-import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_http_client_manager/src/constants/server_req_constants.dart';
 import 'package:act_http_client_manager/src/models/converted_body.dart';
 import 'package:act_http_client_manager/src/models/request_param.dart';
 import 'package:act_http_client_manager/src/models/request_response.dart';
-import 'package:act_http_client_manager/src/types/http_methods.dart';
-import 'package:act_http_client_manager/src/types/mime_types.dart';
 import 'package:act_http_client_manager/src/types/request_status.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
@@ -30,16 +27,16 @@ sealed class BodyFormatUtility {
       return null;
     }
 
-    final request = Request(requestParam.httpMethod.str, urlToRequest);
+    final request = Request(requestParam.httpMethod.stringValue, urlToRequest);
 
     request.headers.addAll(requestParam.headers);
 
     // We had guessed the body content type and we set it in the request
     if (convertedBody.contentType != MimeTypes.empty &&
-        !request.headers.containsKey(ServerReqConstants.contentTypeHeader)) {
+        !request.headers.containsKey(HeaderConstants.contentTypeHeaderKey)) {
       logsHelper.d("We had guessed the content type: ${convertedBody.contentType.str}, and we set "
           "it in the request header");
-      request.headers[ServerReqConstants.contentTypeHeader] = convertedBody.contentType.str;
+      request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType.str;
     }
 
     switch (convertedBody.contentType) {
@@ -163,8 +160,8 @@ sealed class BodyFormatUtility {
   }) {
     var responseType = requestParam.expectedMimeType ?? MimeTypes.empty;
 
-    if (!responseReceived.headers.containsKey(ServerReqConstants.contentTypeHeader) &&
-        !responseReceived.headers.containsKey(ServerReqConstants.contentTypeHeader.toLowerCase())) {
+    if (!responseReceived.headers.containsKey(HeaderConstants.contentTypeHeaderKey) &&
+        !responseReceived.headers.containsKey(HeaderConstants.contentTypeHeaderKey.toLowerCase())) {
       // There is no content type
       responseType = MimeTypes.empty;
     }

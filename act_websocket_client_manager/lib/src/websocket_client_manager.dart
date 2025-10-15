@@ -235,7 +235,9 @@ class WebsocketClientManager extends AbsWithLifeCycle {
       logsHelper.t(message);
     }
 
-    await Future.wait(_managerConfig.msgParsers.map((parser) => parser.onMessageReceived(message)));
+    await Future.wait(
+      _managerConfig.msgParsers.map((parser) => parser.onRawMessageReceived(message)),
+    );
     _receivedMsgCtrl.add(message);
   }
 

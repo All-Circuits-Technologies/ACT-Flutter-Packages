@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_http_client_manager/src/models/server_urls.dart';
 
@@ -50,7 +51,7 @@ sealed class UrlFormatUtility {
     }
 
     return Uri(
-      scheme: config.isUsingSsl ? ServerReqConstants.httpsScheme : ServerReqConstants.httpScheme,
+      scheme: config.isUsingSsl ? UriUtility.httpsScheme : UriUtility.httpScheme,
       host: config.hostname,
       port: config.port,
       path: basePathCleaned,

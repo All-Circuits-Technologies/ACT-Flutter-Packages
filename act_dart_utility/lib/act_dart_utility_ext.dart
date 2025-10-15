@@ -11,3 +11,4 @@ export 'src/extensions/iterable_extension.dart';
 export 'src/extensions/list_extension.dart';
 export 'src/extensions/map_extension.dart';
 export 'src/extensions/string_extension.dart';
+export 'src/extensions/string_list_extension.dart';

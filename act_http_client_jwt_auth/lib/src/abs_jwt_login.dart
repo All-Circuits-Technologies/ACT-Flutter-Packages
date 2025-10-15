@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:act_http_client_manager/act_http_client_manager.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -43,8 +44,8 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
     required super.serverRequester,
     required super.logsHelper,
     super.loginFailPolicy,
-    this.headerAuthKey = ServerReqConstants.authorizationHeader,
-    this.headerAuthValueFormatted = AuthConstants.authBearer,
+    this.headerAuthKey = HeaderConstants.authorizationHeaderKey,
+    this.headerAuthValueFormatted = HeaderConstants.authBearer,
     this.verifyTokenExpirationDate = true,
   })  : _tokensInfo = null,
         _newTokensCtrl = StreamController.broadcast();
@@ -197,7 +198,7 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
   /// This method adds the token into the headers of the future request
   void _formatHeaderWithToken(RequestParam futureRequestParam, String token) {
     futureRequestParam.headers[headerAuthKey] = headerAuthValueFormatted.replaceAll(
-      AuthConstants.tokenBearerKey,
+      HeaderConstants.tokenBearerKey,
       token,
     );
   }

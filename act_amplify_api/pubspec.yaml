@@ -46,6 +46,9 @@ dependencies:
   act_global_manager:
     path: ../act_global_manager
 
+  act_http_core:
+    path: ../act_http_core
+
   # This is the logger manager
   act_logger_manager:
     path: ../act_logger_manager

@@ -4,8 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:act_http_client_manager/src/types/http_methods.dart';
-import 'package:act_http_client_manager/src/types/mime_types.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:equatable/equatable.dart';
 
 /// Contains all the needed parameters to request a distant url

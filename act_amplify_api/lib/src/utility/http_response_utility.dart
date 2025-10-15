@@ -4,8 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 
 /// Contains utility methods to help the management of the [AWSHttpResponse] class

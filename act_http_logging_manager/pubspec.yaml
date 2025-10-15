@@ -1,0 +1,30 @@
+name: act_http_logging_manager
+description: This package contains the HTTP logging manager
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  equatable: ^2.0.7
+
+  # Flutter AC Technologies dependencies
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

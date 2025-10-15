@@ -9,6 +9,9 @@ import 'package:dart_jsonwebtoken/dart_jsonwebtoken.dart';
 
 /// Contains useful methods to manage JWT tokens
 sealed class JwtParserUtility {
+  /// This is the separator between the bearer key and the token value
+  static const jwtBearerValueSeparator = " ";
+
   /// Try to parse a JWT token from the given [token] string
   ///
   /// Returns null if a problem occurred in the process
@@ -130,5 +133,28 @@ sealed class JwtParserUtility {
     }
 
     return getExpiration(jwt: jwt, isTsInSeconds: isTsInSeconds);
+  }
+
+  /// Extract the JWT token from the given [headerValue].
+  ///
+  /// It doesn't verify the validity of the token.
+  ///
+  /// The method returns null if the token value can't be retrieved.
+  static String? extractJwtFromHeaderValue({
+    required String headerValue,
+    required String bearerKey,
+  }) {
+    if (!headerValue.startsWith(bearerKey)) {
+      // The header value doesn't start with the bearer key
+      return null;
+    }
+
+    final tmpValues = headerValue.split(jwtBearerValueSeparator);
+    if (tmpValues.length != 2) {
+      // The header value doesn't contain the token value
+      return null;
+    }
+
+    return tmpValues[1];
   }
 }
