@@ -13,7 +13,7 @@ import 'package:act_http_client_manager/src/models/requester_config.dart';
 import 'package:act_http_client_manager/src/models/server_urls.dart';
 import 'package:act_http_client_manager/src/server_requester.dart';
 import 'package:act_http_client_manager/src/types/login_fail_policy.dart';
-import 'package:act_http_client_manager/src/types/mime_types.dart';
+import 'package:act_http_core/src/types/mime_types.dart';
 import 'package:act_http_client_manager/src/types/request_status.dart';
 import 'package:act_http_client_manager/src/utilities/url_format_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';

@@ -8,10 +8,13 @@ import 'package:act_dart_utility/src/utilities/string_utility.dart';
 // Do not implement smart stuff here. Implement them as static methods within [StringUtility]
 // and mirror them here.
 
-/// This [String] extension helps checking common forms inputted values such as emails
+/// This [String] extension adds [StringUtility] methods to the [String] class.
 extension ActCommonFormsStringChecks on String {
   /// Does string represents a valid email address
   ///
   /// See [StringUtility.emailAddressRegexp] for acceptance criteria
   bool get isValidEmail => StringUtility.isValidEmail(this);
+
+  /// {@macro act_dart_utility.StringUtility.splitWithoutEmpty}
+  List<String> splitWithoutEmpty(Pattern pattern) => StringUtility.splitWithoutEmpty(this, pattern);
 }

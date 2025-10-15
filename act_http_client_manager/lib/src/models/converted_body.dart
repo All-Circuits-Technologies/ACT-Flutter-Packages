@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:act_http_client_manager/src/types/mime_types.dart';
+import 'package:act_http_core/src/types/mime_types.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:equatable/equatable.dart';
 

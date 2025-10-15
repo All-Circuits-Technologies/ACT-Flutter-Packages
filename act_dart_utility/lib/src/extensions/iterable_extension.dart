@@ -8,8 +8,8 @@ import 'package:act_dart_utility/src/utilities/iterable_utility.dart';
 // Do not implement smart stuff here. Implement them as static methods within [IterableUtility]
 // and mirror them here.
 
-/// This [Iterable] extension helps finding element(s) inside Iterables
-extension ActIterableLookup<T> on Iterable<T> {
+/// This [Iterable] extension adds [IterableUtility] methods to all iterables
+extension ActIterableExtension<T> on Iterable<T> {
   /// Return first item of current collection matching a given [predicate], null otherwise
   T? firstWhereOrNull(bool Function(T element) predicate) =>
       IterableUtility.firstWhereOrNull(this, predicate);

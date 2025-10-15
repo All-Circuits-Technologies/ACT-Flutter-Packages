@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_websocket_client_manager/src/mixins/mixin_ws_msg_parser_service.dart';
+import 'package:act_websocket_core/act_websocket_core.dart';
 import 'package:equatable/equatable.dart';
 
 /// This is the config of the WebSocket client manager

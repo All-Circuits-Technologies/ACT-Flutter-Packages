@@ -4,7 +4,8 @@
 
 import 'dart:convert';
 
-import 'package:act_http_client_manager/src/constants/auth_constants.dart';
+import 'package:act_http_core/act_http_core.dart';
+import 'package:act_http_core/src/constants/header_constants.dart';
 
 /// This pseudo-class contains authentication format utility functions.
 sealed class AuthFormatUtility {
@@ -15,15 +16,12 @@ sealed class AuthFormatUtility {
     required String username,
     required String password,
   }) {
-    final toEncode = "$username${AuthConstants.credsSeparator}$password";
+    final toEncode = "$username${HeaderConstants.credsSeparator}$password";
     final encoded = base64Encode(toEncode.codeUnits);
 
     return (
-      key: AuthConstants.authorizationKey,
-      value: AuthConstants.authBasic.replaceFirst(
-        AuthConstants.credsBasicKey,
-        encoded,
-      ),
+      key: HeaderConstants.authorizationHeaderKey,
+      value: HeaderConstants.authBasic.replaceFirst(HeaderConstants.credsBasicKey, encoded),
     );
   }
 }

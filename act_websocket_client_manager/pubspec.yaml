@@ -44,6 +44,9 @@ dependencies:
   act_logger_manager:
     path: ../act_logger_manager
 
+  act_websocket_core:
+    path: ../act_websocket_core
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
