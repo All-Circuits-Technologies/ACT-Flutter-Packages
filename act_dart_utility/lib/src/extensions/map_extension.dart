@@ -4,8 +4,12 @@
 
 import 'package:act_dart_utility/src/utilities/map_utility.dart';
 
+// Note to developers:
+// Do not implement smart stuff here. Implement them as static methods within [StringUtility]
+// and mirror them here.
+
 /// This [Map] extension helps finding [MapUtility] methods inside Map
-extension ActMapLookup<K, V> on Map<K, V> {
+extension ActMapExtension<K, V> on Map<K, V> {
   /// Return a copy of this map
   Map<K, V> copy() => MapUtility.copy(this);
 

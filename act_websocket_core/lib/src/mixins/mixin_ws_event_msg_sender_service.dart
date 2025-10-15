@@ -5,17 +5,13 @@
 import 'dart:convert';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_websocket_client_manager/act_websocket_client_manager.dart';
-import 'package:flutter/foundation.dart';
+import 'package:act_websocket_core/src/mixins/mixin_ws_event_msg_parser_service.dart';
+import 'package:act_websocket_core/src/mixins/mixin_ws_msg_sender_service.dart';
 
 /// This is is the WebSocket message parser used to send event message
-mixin MixinWsSendEventParserService<Event extends MixinStringValueType>
-    on AbsWsEventMsgParser<Event> {
-  /// This is the WebSocket manager linked to the parser
-  @protected
-  WebsocketClientManager get wsManager;
-
-  /// {@template act_websocket_client_manager.MixinWsSendEventParserService.sendMessage}
+mixin MixinWsEventMsgSenderService<Event extends MixinStringValueType>
+    on MixinWsMsgSenderService, MixinWsEventMsgParserService<Event> {
+  /// {@template act_websocket_core.MixinWsEventMsgSenderService.sendMessage}
   /// Send event message through the WebSocket.
   ///
   /// Return false, if the WebSocket isn't connected.
@@ -38,6 +34,6 @@ mixin MixinWsSendEventParserService<Event extends MixinStringValueType>
       return false;
     }
 
-    return wsManager.sendMessage(strMsg);
+    return sendRawMessage(strMsg);
   }
 }

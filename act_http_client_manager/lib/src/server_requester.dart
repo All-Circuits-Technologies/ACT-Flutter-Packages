@@ -6,7 +6,8 @@ import 'dart:async';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_http_client_manager/src/constants/server_req_constants.dart';
+import 'package:act_http_client_manager/src/constants/server_req_constants.dart'
+    as server_req_constants;
 import 'package:act_http_client_manager/src/models/request_param.dart';
 import 'package:act_http_client_manager/src/models/request_response.dart';
 import 'package:act_http_client_manager/src/models/server_urls.dart';
@@ -72,7 +73,7 @@ class ServerRequester extends AbsWithLifeCycle {
           return const RequestResponse(status: RequestStatus.globalError);
         }
 
-        logsHelper.d("Request the server: ${requestParam.httpMethod.str} - $urlToRequest");
+        logsHelper.d("Request the server: ${requestParam.httpMethod.stringValue} - $urlToRequest");
 
         var timeout = defaultTimeout;
 
@@ -110,7 +111,7 @@ class ServerRequester extends AbsWithLifeCycle {
     _closeClientTimer?.cancel();
 
     _client ??= Client();
-    _closeClientTimer = Timer(ServerReqConstants.clientSessionDuration, _closeClient);
+    _closeClientTimer = Timer(server_req_constants.clientSessionDuration, _closeClient);
     return _client!;
   }
 

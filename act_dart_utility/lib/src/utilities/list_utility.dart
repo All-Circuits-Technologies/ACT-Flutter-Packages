@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
 // SPDX-FileCopyrightText: 2023 - 2024 Anthony Loiseau <anthony.loiseau@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2023 - 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_dart_utility/src/utilities/iterable_utility.dart';
 
 /// Helpful class to manage lists
 sealed class ListUtility {
