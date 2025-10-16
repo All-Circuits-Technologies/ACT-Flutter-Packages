@@ -60,6 +60,8 @@ To install it globally, you have to call:
 | [act_halo_manager](act_halo_manager/)                                     | This is the manager for the HALO protocol                                                                      |         |
 | [act_http_client_jwt_auth](act_http_client_jwt_auth/)                     | Contains specific server authentication to work with JWT                                                       |         |
 | [act_http_client_manager](act_http_client_manager/)                       | Useful to request third HTTP servers                                                                           |         |
+| [act_http_core](act_http_core/)                                           | This package contains the core HTTP functionalities                                                            |         |
+| [act_http_logging_manager](act_http_logging_manager/)                     | This package contains the HTTP logging manager                                                                 |         |
 | [act_internet_connectivity_manager](act_internet_connectivity_manager/)   | The package contains the internet connectivity manager to know when we are connected to internet, or not.      |         |
 | [act_intl](act_intl/)                                                     | This package contains non-graphical utilities classes linked to translations.                                  |         |
 | [act_intl_ui](act_intl_ui/)                                               | This package contains graphical helpers linked to translations.                                                |         |
@@ -89,6 +91,7 @@ To install it globally, you have to call:
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                         |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                            |         |
 | [act_websocket_client_manager](act_websocket_client_manager/)             | This package contains the WebSocket client manager                                                             |         |
+| [act_websocket_core](act_websocket_core/)                                 | This package contains the shared WebSocket classes between server and client                                   |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
 To generate this list, you can call:
