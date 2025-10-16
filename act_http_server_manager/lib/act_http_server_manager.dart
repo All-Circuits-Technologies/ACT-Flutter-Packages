@@ -5,7 +5,7 @@
 library;
 
 export 'package:shelf/shelf.dart' show Request, Response;
-export 'package:shelf_router/shelf_router.dart' show Router;
+export 'package:shelf_router/shelf_router.dart' show Router, RouterParams;
 
 export 'src/abs_http_server_manager.dart';
 export 'src/mixins/mixin_from_config_http_server_manager.dart';
