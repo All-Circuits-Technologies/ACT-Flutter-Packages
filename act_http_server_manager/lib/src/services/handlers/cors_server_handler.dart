@@ -82,17 +82,28 @@ class CorsServerHandler extends AbsServerHandler {
     }
 
     final httpRouteListening = HttpRouteListeningId.fromRequest(request: request);
+    var routeFoundAndNotManaged = false;
     for (final route in _listeningRoutes) {
-      if (route.uniqueKey == httpRouteListening.uniqueKey) {
-        // The path is already managed, we don't anything else
+      if (route.route != httpRouteListening.route) {
+        // Nothing more to do
+        continue;
+      }
+
+      if (route.method == HttpMethods.options) {
+        // The path is already managed by an API service, we don't do anything else
+        routeFoundAndNotManaged = false;
         break;
       }
 
-      if (route.route == httpRouteListening.route && !route.method!.isSafe) {
-        // The request isn't safe and the route is managed by the server; therefore, the client
-        // has requested the server with an OPTIONS request to get the CORS info
-        return (forceResponse: _addCorsHeaders(Response.ok(null)), overrideRequest: null);
-      }
+      // The route is managed by the server; therefore, the client has requested the server with
+      // an OPTIONS request to get the CORS info
+      //
+      // We don't return here, because an OPTIONS request on the same route may exist.
+      routeFoundAndNotManaged = true;
+    }
+
+    if (routeFoundAndNotManaged) {
+      return (forceResponse: _addCorsHeaders(Response.ok(null)), overrideRequest: null);
     }
 
     return (forceResponse: null, overrideRequest: null);
