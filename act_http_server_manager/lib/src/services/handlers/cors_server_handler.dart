@@ -84,7 +84,7 @@ class CorsServerHandler extends AbsServerHandler {
     final httpRouteListening = HttpRouteListeningId.fromRequest(request: request);
     var routeFoundAndNotManaged = false;
     for (final route in _listeningRoutes) {
-      if (route.route != httpRouteListening.route) {
+      if (!route.isSamePathSegments(httpRouteListening.pathSegments)) {
         // Nothing more to do
         continue;
       }
