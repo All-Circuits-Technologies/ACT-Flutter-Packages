@@ -32,25 +32,25 @@ sealed class BodyFormatUtility {
     request.headers.addAll(requestParam.headers);
 
     // We had guessed the body content type and we set it in the request
-    if (convertedBody.contentType != MimeTypes.empty &&
+    if (convertedBody.contentType != HttpMimeTypes.empty &&
         !request.headers.containsKey(HeaderConstants.contentTypeHeaderKey)) {
-      logsHelper.d("We had guessed the content type: ${convertedBody.contentType.str}, and we set "
-          "it in the request header");
-      request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType.str;
+      logsHelper.d("We had guessed the content type: ${convertedBody.contentType.stringValue}, and "
+          "we set it in the request header");
+      request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType.stringValue;
     }
 
     switch (convertedBody.contentType) {
-      case MimeTypes.json:
-      case MimeTypes.plainText:
+      case HttpMimeTypes.json:
+      case HttpMimeTypes.plainText:
         request.body = convertedBody.body! as String;
         break;
-      case MimeTypes.multipartFormData:
+      case HttpMimeTypes.multipartFormData:
         request.bodyBytes = convertedBody.body! as Uint8List;
         break;
-      case MimeTypes.formUrlEncoded:
+      case HttpMimeTypes.formUrlEncoded:
         request.bodyFields = convertedBody.body! as Map<String, String>;
         break;
-      case MimeTypes.empty:
+      case HttpMimeTypes.empty:
         // Nothing to do
         break;
     }
@@ -158,40 +158,40 @@ sealed class BodyFormatUtility {
     required Response responseReceived,
     required LogsHelper logsHelper,
   }) {
-    var responseType = requestParam.expectedMimeType ?? MimeTypes.empty;
+    var responseType = requestParam.expectedMimeType ?? HttpMimeTypes.empty;
 
     if (!responseReceived.headers.containsKey(HeaderConstants.contentTypeHeaderKey) &&
         !responseReceived.headers.containsKey(HeaderConstants.contentTypeHeaderKey.toLowerCase())) {
       // There is no content type
-      responseType = MimeTypes.empty;
+      responseType = HttpMimeTypes.empty;
     }
 
     Body? body;
 
-    if (responseType == MimeTypes.empty) {
+    if (responseType == HttpMimeTypes.empty) {
       // Nothing to do
       return (isOk: true, body: body);
     }
 
     try {
       switch (responseType) {
-        case MimeTypes.json:
+        case HttpMimeTypes.json:
           body = jsonDecode(responseReceived.body) as Body;
           break;
 
-        case MimeTypes.formUrlEncoded:
+        case HttpMimeTypes.formUrlEncoded:
           body = Uri.splitQueryString(responseReceived.body) as Body;
           break;
 
-        case MimeTypes.multipartFormData:
+        case HttpMimeTypes.multipartFormData:
           body = responseReceived.bodyBytes as Body;
           break;
 
-        case MimeTypes.plainText:
+        case HttpMimeTypes.plainText:
           body = responseReceived.body as Body;
           break;
 
-        case MimeTypes.empty:
+        case HttpMimeTypes.empty:
           // Already managed in previous test
           break;
       }

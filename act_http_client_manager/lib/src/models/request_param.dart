@@ -37,7 +37,7 @@ class RequestParam extends Equatable {
   final Duration? timeout;
 
   /// The expected MIME type of the request response (in case the request is a success)
-  final MimeTypes? expectedMimeType;
+  final HttpMimeTypes? expectedMimeType;
 
   /// Class constructor
   RequestParam({
@@ -69,7 +69,7 @@ class RequestParam extends Equatable {
     bool forceEncoding = false,
     Duration? timeout,
     bool forceTimeout = false,
-    MimeTypes? expectedMimeType,
+    HttpMimeTypes? expectedMimeType,
     bool forceExpectedMimeType = false,
   }) =>
       RequestParam(

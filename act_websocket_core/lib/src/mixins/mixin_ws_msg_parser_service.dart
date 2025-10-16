@@ -10,7 +10,6 @@ mixin MixinWsMsgParserService on AbsWithLifeCycle {
   /// {@template act_websocket_core.MixinWsMsgParserService.onRawMessageReceived}
   /// Called when a new message is received from the WebSocket channel
   /// {@endtemplate}
-  @protected
   @mustCallSuper
   // The message received can be string or binaries
   // ignore: avoid_annotating_with_dynamic

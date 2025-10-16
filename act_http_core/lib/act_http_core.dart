@@ -6,6 +6,6 @@ library;
 
 export 'src/constants/header_constants.dart';
 export 'src/types/http_methods.dart';
-export 'src/types/mime_types.dart';
+export 'src/types/http_mime_types.dart';
 export 'src/types/server_response_status.dart';
 export 'src/utilities/auth_format_utility.dart';

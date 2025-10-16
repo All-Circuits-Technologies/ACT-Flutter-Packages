@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:act_http_core/src/types/mime_types.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:equatable/equatable.dart';
 
@@ -14,8 +14,8 @@ class ConvertedBody extends Equatable {
   /// The converted body and usable by the external http lib
   final Object? body;
 
-  /// The [MimeTypes] of the body
-  final MimeTypes contentType;
+  /// The [HttpMimeTypes] of the body
+  final HttpMimeTypes contentType;
 
   /// Default class constructor
   const ConvertedBody({
@@ -26,28 +26,28 @@ class ConvertedBody extends Equatable {
   /// Creates a string body
   const ConvertedBody.string({
     required String this.body,
-  }) : contentType = MimeTypes.plainText;
+  }) : contentType = HttpMimeTypes.plainText;
 
   /// Creates a formUrlEncoded body
   const ConvertedBody.formUrlEncoded({
     required Map<String, String> this.body,
-  }) : contentType = MimeTypes.formUrlEncoded;
+  }) : contentType = HttpMimeTypes.formUrlEncoded;
 
   /// Creates a multipart form data body, from an [Uint8List]
   const ConvertedBody.multipartFormData({
     required Uint8List this.body,
-  }) : contentType = MimeTypes.multipartFormData;
+  }) : contentType = HttpMimeTypes.multipartFormData;
 
   /// Creates a multipart form data body, from an int [List]
   ConvertedBody.multipartFormDataIntList({
     required List<int> body,
-  })  : contentType = MimeTypes.multipartFormData,
+  })  : contentType = HttpMimeTypes.multipartFormData,
         body = Uint8List.fromList(body);
 
   /// Creates an empty body
   const ConvertedBody.empty()
       : body = null,
-        contentType = MimeTypes.empty;
+        contentType = HttpMimeTypes.empty;
 
   /// Try to parse a json object to a json encoded [String]
   static ConvertedBody? tryParseJson(
@@ -68,7 +68,7 @@ class ConvertedBody extends Equatable {
       return null;
     }
 
-    return ConvertedBody(body: bodyStr, contentType: MimeTypes.json);
+    return ConvertedBody(body: bodyStr, contentType: HttpMimeTypes.json);
   }
 
   @override

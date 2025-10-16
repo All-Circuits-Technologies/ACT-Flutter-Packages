@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'dart:io';
-
 import 'package:act_http_server_manager/src/services/handlers/abs_server_handler.dart';
 import 'package:shelf/shelf.dart';
 
