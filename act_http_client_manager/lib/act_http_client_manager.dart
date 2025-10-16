@@ -4,6 +4,7 @@
 
 library;
 
+export 'package:act_http_core/act_http_core.dart' show HttpMethods;
 export 'package:http/http.dart' show Response;
 
 export 'src/abs_http_client_login.dart';
