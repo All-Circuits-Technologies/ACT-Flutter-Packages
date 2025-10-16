@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_http_server_manager
+description: This package contains the HTTP server manager
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  equatable: ^2.0.7
+
+  # Help to create and compose web servers
+  shelf: ^1.4.2
+
+  # This package offers a request router for Shelf, matching request to handlers using route
+  # patterns.
+  shelf_router: ^1.1.4
+
+  uuid: ^4.5.1
+
+  # Flutter AC Technologies dependencies
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  # Extend Dart functionalities
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  act_http_core:
+    path: ../act_http_core
+
+  act_http_logging_manager:
+    path: ../act_http_logging_manager
+
+  act_jwt_utilities:
+    path: ../act_jwt_utilities
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
