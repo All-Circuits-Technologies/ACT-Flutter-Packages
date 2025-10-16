@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
 name: act_http_logging_manager
 description: This package contains the HTTP logging manager
 publish_to: none
