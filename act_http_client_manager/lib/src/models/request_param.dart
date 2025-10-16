@@ -4,8 +4,7 @@
 
 import 'dart:convert';
 
-import 'package:act_http_client_manager/src/types/http_methods.dart';
-import 'package:act_http_client_manager/src/types/mime_types.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:equatable/equatable.dart';
 
 /// Contains all the needed parameters to request a distant url
@@ -38,7 +37,7 @@ class RequestParam extends Equatable {
   final Duration? timeout;
 
   /// The expected MIME type of the request response (in case the request is a success)
-  final MimeTypes? expectedMimeType;
+  final HttpMimeTypes? expectedMimeType;
 
   /// Class constructor
   RequestParam({
@@ -70,7 +69,7 @@ class RequestParam extends Equatable {
     bool forceEncoding = false,
     Duration? timeout,
     bool forceTimeout = false,
-    MimeTypes? expectedMimeType,
+    HttpMimeTypes? expectedMimeType,
     bool forceExpectedMimeType = false,
   }) =>
       RequestParam(

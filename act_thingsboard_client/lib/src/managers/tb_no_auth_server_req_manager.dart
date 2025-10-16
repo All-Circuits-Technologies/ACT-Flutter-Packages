@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -79,7 +80,7 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
       throw Exception("The Thingsboard hostname hasn't been given");
     }
 
-    final uri = Uri(port: port, host: hostname, scheme: ServerReqConstants.httpsScheme);
+    final uri = Uri(port: port, host: hostname, scheme: UriUtility.httpsScheme);
 
     _tbClient = ThingsboardClient(uri.toString(), storage: _tbStorage);
 
