@@ -10,49 +10,32 @@ import 'package:shelf/shelf.dart';
 
 /// This class is used to identify a listening http route
 class HttpRouteListeningId extends Equatable {
+  /// This is the character used to identify the start of an id key in a path segment
+  static const idKeyInPathStartChar = "<";
+
+  /// This is the character used to identify the end of an id key in a path segment
+  static const idKeyInPathEndChar = ">";
+
   /// Used when the method is unknown
   static const unknownMethod = "UNKNOWN";
-
-  /// This is a unique key for this route listening
-  final String uniqueKey;
 
   /// This is the method
   final HttpMethods? method;
 
   /// This is the path segments of the route
-  final String route;
+  final List<String> pathSegments;
 
   /// Class constructor
-  const HttpRouteListeningId._({
-    required this.uniqueKey,
-    required this.method,
-    required this.route,
-  });
+  const HttpRouteListeningId._({required this.method, required this.pathSegments});
 
   /// Creates a new [HttpRouteListeningId] from the given [method] and [relativeRoute]
   factory HttpRouteListeningId.fromRouteListening({
     required HttpMethods method,
     required String relativeRoute,
   }) {
-    var route = relativeRoute;
-    var offset = 0;
-    final length = route.length;
-    var end = length;
-    if (route.startsWith(UriUtility.pathSeparator)) {
-      offset = 1;
-    }
+    final pathSegments = StringListUtility.trim(relativeRoute.split(UriUtility.pathSeparator));
 
-    if (route.endsWith(UriUtility.pathSeparator)) {
-      end -= 1;
-    }
-
-    route = route.substring(offset, end);
-
-    return HttpRouteListeningId._(
-      uniqueKey: _generateKey(method: method, route: route),
-      method: method,
-      route: route,
-    );
+    return HttpRouteListeningId._(method: method, pathSegments: pathSegments);
   }
 
   /// Creates a new [HttpRouteListeningId] from the given [request]
@@ -62,20 +45,49 @@ class HttpRouteListeningId extends Equatable {
       appLogger().w("The request method: ${request.method} isn't known, we can't parse it");
     }
     final pathSegments = StringListUtility.trim(request.url.pathSegments);
-    final route = pathSegments.join(UriUtility.pathSeparator);
 
-    return HttpRouteListeningId._(
-      uniqueKey: _generateKey(method: parsedMethod, route: route),
-      method: parsedMethod,
-      route: route,
-    );
+    return HttpRouteListeningId._(method: parsedMethod, pathSegments: pathSegments);
   }
 
-  /// Generate a unique key for this route listening
-  static String _generateKey({required HttpMethods? method, required String route}) =>
-      "${method?.stringValue ?? unknownMethod} - $route";
+  /// Test if the current path segments are the same as the [otherPathSegments] given
+  ///
+  /// If one path has an id key and the other not, we consider the paths as identical.
+  /// For instance: `/api/item/<itemId>` and `/api/item/123` are considered identical
+  bool isSamePathSegments(List<String> otherPathSegments) {
+    final currLength = pathSegments.length;
+    if (otherPathSegments.length != currLength) {
+      return false;
+    }
+
+    for (var idx = 0; idx < currLength; ++idx) {
+      final elem = pathSegments[idx];
+      final otherElem = otherPathSegments[idx];
+
+      if (_testIfPathSegmentIsAnIdKey(elem) || _testIfPathSegmentIsAnIdKey(otherElem)) {
+        // We don't test further: one path as an id key
+        continue;
+      }
+
+      if (elem != otherElem) {
+        // The element is different; therefore, the paths are not identical
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /// Test if the given [pathSegment] is an id key
+  static bool _testIfPathSegmentIsAnIdKey(String pathSegment) {
+    final length = pathSegment.length;
+    if (length < 2) {
+      return false;
+    }
+
+    return pathSegment[0] == idKeyInPathStartChar && pathSegment[length - 1] == idKeyInPathEndChar;
+  }
 
   /// Model properties
   @override
-  List<Object?> get props => [uniqueKey];
+  List<Object?> get props => [method, ...pathSegments];
 }
