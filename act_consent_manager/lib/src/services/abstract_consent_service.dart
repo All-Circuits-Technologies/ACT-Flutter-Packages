@@ -188,20 +188,19 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   /// Fetch the latest available version of the consent.
   /// {@endtemplate}
   @protected
-  Future<StatusWithNotNullValueResult<ConsentLoadStatus, String>> loadLatestVersion();
+  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadLatestVersion();
 
   /// {@template act_consent_manager.AbstractConsentService.loadConsentText}
   /// Fetch the text of the consent.
   /// {@endtemplate}
   @protected
-  Future<StatusWithNotNullValueResult<ConsentLoadStatus, String>> loadConsentText(String version);
+  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadConsentText(String version);
 
   /// {@template act_consent_manager.AbstractConsentService.loadUserConsentData}
   /// Get (from a server or a local storage) the [ConsentDataModel] of the user.
   /// {@endtemplate}
   @protected
-  Future<StatusWithNullableValueResult<ConsentLoadStatus, ConsentDataModel<T>>>
-      loadUserConsentData();
+  Future<ResultWithStatus<ConsentLoadStatus, ConsentDataModel<T>>> loadUserConsentData();
 
   /// {@template act_consent_manager.AbstractConsentService.saveConsentData}
   /// Save the [ConsentDataModel] of the user in a server or a local storage.

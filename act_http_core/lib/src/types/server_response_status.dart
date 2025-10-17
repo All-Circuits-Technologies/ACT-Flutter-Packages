@@ -12,36 +12,68 @@
 /// The first elements are linked to one of the generic or group statuses.
 enum ServerResponseStatus {
   /// This is a `Continue` status with code: 100
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/100
   continue_(100, genericSuccess),
 
   /// This is a `OK` status with code: 200
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/200
   ok(200, genericSuccess),
 
   /// This is a `Multiple choices` status with code: 300
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/300
   multipleChoices(300, genericSuccess),
 
   /// This is a `Bad Request` status with code: 400
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/400
   badRequest(400, genericClientError),
 
   /// This is a `Unauthorized` status with code: 401
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/401
   unauthorized(401, genericClientError),
 
   /// This is a `Payment Required` status with code: 402
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/402
   paymentRequired(402, genericClientError),
 
   /// This is a `Forbidden` status with code: 403
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/403
   forbidden(403, genericClientError),
 
   /// This is a `Not Found` status with code: 404
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/404
   notFound(404, genericClientError),
 
+  /// This is a `Conflict` status with code: 409
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/409
+  conflict(409, genericClientError),
+
+  /// This is a `Locked` status with code: 423
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/423
+  locked(423, genericClientError),
+
   /// This is a `Too Early` status with code: 425
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/425
   tooEarly(425, genericClientError),
 
   /// This is a `Internal Server Error` status with code: 500
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/500
   internalServerError(500, genericServerError),
 
   /// This is a `Network connect timeout error` status with code: 599
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/599
   networkConnectTimeoutError(599, genericServerError),
 
   /// This enum represents all the 2xx statuses for success
@@ -82,17 +114,14 @@ enum ServerResponseStatus {
   ServerResponseStatus get linkedGeneric => _linkedGeneric ?? this;
 
   /// Class constructor when the error is linked to a http status
-  const ServerResponseStatus(
-    int this.httpStatus,
-    ServerResponseStatus this._linkedGeneric,
-  ) : _isOk = null;
+  const ServerResponseStatus(int this.httpStatus, ServerResponseStatus this._linkedGeneric)
+    : _isOk = null;
 
   /// Class constructor for the generic errors
-  const ServerResponseStatus.generic({
-    bool isOk = false,
-  })  : _isOk = isOk,
-        httpStatus = null,
-        _linkedGeneric = null;
+  const ServerResponseStatus.generic({bool isOk = false})
+    : _isOk = isOk,
+      httpStatus = null,
+      _linkedGeneric = null;
 
   /// Parse the error from the http status
   ///

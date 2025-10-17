@@ -4,9 +4,13 @@
 
 /// Mixin to add a `isSuccess` getter to an enum and a `canBeRetried` getter
 mixin MixinResultStatus on Enum {
+  /// {@template act_dart_utility.MixinResultStatus.isSuccess}
   /// Getter to know if the request is a success
+  /// {@endtemplate}
   bool get isSuccess;
 
+  /// {@template act_dart_utility.MixinResultStatus.canBeRetried}
   /// Getter to know if the request can be tried/retried
+  /// {@endtemplate}
   bool get canBeRetried;
 }
