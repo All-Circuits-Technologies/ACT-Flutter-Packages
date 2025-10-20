@@ -13,9 +13,9 @@ import 'package:act_http_client_manager/src/models/requester_config.dart';
 import 'package:act_http_client_manager/src/models/server_urls.dart';
 import 'package:act_http_client_manager/src/server_requester.dart';
 import 'package:act_http_client_manager/src/types/login_fail_policy.dart';
-import 'package:act_http_client_manager/src/types/mime_types.dart';
 import 'package:act_http_client_manager/src/types/request_status.dart';
 import 'package:act_http_client_manager/src/utilities/url_format_utility.dart';
+import 'package:act_http_core/act_http_core.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
@@ -230,7 +230,7 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
   }) async =>
       executeRequest<RespBody, Map<String, dynamic>>(
         requestParam: requestParam.copyWith(
-          expectedMimeType: MimeTypes.json,
+          expectedMimeType: HttpMimeTypes.json,
         ),
         ifExistUseAuth: ifExistUseAuth,
         retryRequestIfErrorNb: retryRequestIfErrorNb,
@@ -251,7 +251,7 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
   }) async =>
       executeRequest<RespBody, List<dynamic>>(
         requestParam: requestParam.copyWith(
-          expectedMimeType: MimeTypes.json,
+          expectedMimeType: HttpMimeTypes.json,
         ),
         ifExistUseAuth: ifExistUseAuth,
         retryRequestIfErrorNb: retryRequestIfErrorNb,
@@ -272,7 +272,7 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
   }) async =>
       executeRequest<List<RespBody>, List<dynamic>>(
         requestParam: requestParam.copyWith(
-          expectedMimeType: MimeTypes.json,
+          expectedMimeType: HttpMimeTypes.json,
         ),
         ifExistUseAuth: ifExistUseAuth,
         retryRequestIfErrorNb: retryRequestIfErrorNb,

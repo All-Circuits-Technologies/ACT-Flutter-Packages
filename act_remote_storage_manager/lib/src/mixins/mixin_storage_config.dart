@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_remote_storage_manager/src/constants/default_remote_storage_constants.dart'
-    as default_server_storage_constants;
+import 'package:act_dart_utility/act_dart_utility.dart';
 
 /// This mixin has to be applied in the ConfigManager of the main app and provides configuration
 /// for the storage manager.
@@ -18,7 +17,7 @@ mixin MixinStorageConfig on AbstractConfigManager {
   /// Allows to override the storage manager default path separator
   final storagePathSeparator = const NotNullableConfigVar<String>(
     "storage.pathSeparator",
-    defaultValue: default_server_storage_constants.storagePathSep,
+    defaultValue: UriUtility.pathSeparator,
   );
 
   /// Allows to override the storage manager stale period
