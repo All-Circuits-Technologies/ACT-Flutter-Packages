@@ -8,8 +8,8 @@ import 'package:act_dart_utility/src/utilities/list_utility.dart';
 // Do not implement smart stuff here. Implement them as static methods within [ListUtility]
 // and mirror them here.
 
-/// This [List] extension helps generating lists results
-extension ActListGen<T> on List<T> {
+/// This [List] extension adds [ListUtility] methods to the [List] class.
+extension ActListExtension<T> on List<T> {
   /// Return a copy of current list
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.

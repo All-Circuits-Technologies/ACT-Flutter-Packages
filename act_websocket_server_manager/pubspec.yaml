@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-name: act_websocket_client_manager
-description: This package contains the WebSocket client manager
+name: act_websocket_server_manager
+description: This package contains the WebSocket server manager
 publish_to: none
 
 # This package supports all platforms listed below.
@@ -12,7 +12,6 @@ platforms:
   ios:
   linux:
   macos:
-  web:
   windows:
 
 environment:
@@ -25,7 +24,9 @@ dependencies:
 
   equatable: ^2.0.7
 
-  mutex: ^3.1.0
+  shelf_web_socket: ^3.0.0
+
+  uuid: ^4.5.1
 
   web_socket_channel: ^3.0.3
 
@@ -40,6 +41,12 @@ dependencies:
 
   act_global_manager:
     path: ../act_global_manager
+
+  act_http_logging_manager:
+    path: ../act_http_logging_manager
+
+  act_http_server_manager:
+    path: ../act_http_server_manager
 
   act_logger_manager:
     path: ../act_logger_manager

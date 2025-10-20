@@ -93,6 +93,7 @@ To install it globally, you have to call:
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                            |         |
 | [act_websocket_client_manager](act_websocket_client_manager/)             | This package contains the WebSocket client manager                                                             |         |
 | [act_websocket_core](act_websocket_core/)                                 | This package contains the shared WebSocket classes between server and client                                   |         |
+| [act_websocket_server_manager](act_websocket_server_manager/)             | This package contains the WebSocket server manager                                                             |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                   |         |
 
 To generate this list, you can call:

@@ -125,4 +125,16 @@ abstract class StringUtility {
 
     return (isOk: true, value: valueStr);
   }
+
+  /// {@template act_dart_utility.StringUtility.splitWithoutEmpty}
+  /// Split a string with a [pattern] and remove all the empty elements
+  ///
+  /// For instance, splitting "a,,b,c" with "," will return ["a", "b", "c"]
+  /// while the normal split would return ["a", "", "b", "c"]
+  /// {@endtemplate}
+  static List<String> splitWithoutEmpty(String value, Pattern pattern) {
+    final elements = value.split(pattern);
+    elements.removeWhere((element) => element.isEmpty);
+    return elements;
+  }
 }
