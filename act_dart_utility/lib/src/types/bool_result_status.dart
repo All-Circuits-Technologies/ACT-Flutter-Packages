@@ -25,4 +25,16 @@ enum BoolResultStatus with MixinResultStatus {
     required this.isSuccess,
     required this.canBeRetried,
   });
+
+  /// Convert a boolean result to a BoolResultStatus
+  // We keep the positional parameter to easily convert the result of a method
+  // ignore: avoid_positional_boolean_parameters
+  static BoolResultStatus convertBoolReturn(bool boolResult) =>
+      boolResult ? BoolResultStatus.success : BoolResultStatus.error;
+
+  /// Convert an asynchronous boolean result to a BoolResultStatus
+  static Future<BoolResultStatus> convertAsyncBoolReturn(Future<bool> boolPromise) async {
+    final result = await boolPromise;
+    return convertBoolReturn(result);
+  }
 }
