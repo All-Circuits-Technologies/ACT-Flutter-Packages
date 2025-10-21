@@ -34,6 +34,7 @@ export 'src/timers/restartable_timer.dart';
 export 'src/types/bool_result_status.dart';
 export 'src/utilities/assets_bundle_utility.dart';
 export 'src/utilities/async_utility.dart';
+export 'src/utilities/base64_utility.dart';
 export 'src/utilities/bool_helper.dart';
 export 'src/utilities/byte_utility.dart';
 export 'src/utilities/crypto_utility.dart';

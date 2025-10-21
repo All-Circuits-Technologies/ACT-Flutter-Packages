@@ -17,4 +17,7 @@ extension ActCommonFormsStringChecks on String {
 
   /// {@macro act_dart_utility.StringUtility.splitWithoutEmpty}
   List<String> splitWithoutEmpty(Pattern pattern) => StringUtility.splitWithoutEmpty(this, pattern);
+
+  /// {@macro act_dart_utility.StringUtility.fromAsciiToHex}
+  String fromAsciiToHex() => StringUtility.fromAsciiToHex(this);
 }

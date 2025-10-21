@@ -3,6 +3,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:typed_data' show Uint8List;
+
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_dart_utility/src/errors/act_unsupported_type_error.dart';
 import 'package:act_dart_utility/src/utilities/bool_helper.dart';
 
@@ -136,5 +139,13 @@ abstract class StringUtility {
     final elements = value.split(pattern);
     elements.removeWhere((element) => element.isEmpty);
     return elements;
+  }
+
+  /// {@template act_dart_utility.StringUtility.fromAsciiToHex}
+  /// Convert an ASCII string to a HEX string
+  /// {@endtemplate}
+  static String fromAsciiToHex(String ascii) {
+    final bytes = Uint8List.fromList(ascii.codeUnits);
+    return ByteUtility.toHex(bytes);
   }
 }

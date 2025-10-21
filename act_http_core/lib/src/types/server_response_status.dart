@@ -21,6 +21,16 @@ enum ServerResponseStatus {
   /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/200
   ok(200, genericSuccess),
 
+  /// This is a `Created` status with code: 201
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/201
+  created(201, genericSuccess),
+
+  /// This is a `No content` status with code: 204
+  ///
+  /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/204
+  noContent(204, genericSuccess),
+
   /// This is a `Multiple choices` status with code: 300
   ///
   /// For more details, read: https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/300

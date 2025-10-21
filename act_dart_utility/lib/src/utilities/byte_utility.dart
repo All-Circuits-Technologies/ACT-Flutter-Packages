@@ -365,4 +365,8 @@ abstract class ByteUtility {
 
     return true;
   }
+
+  /// Transform the given [bytes] to a hexadecimal string
+  static String toHex(Uint8List bytes) =>
+      bytes.map((byte) => byte.toRadixString(bitsNbUint16).padLeft(2, "0")).join();
 }
