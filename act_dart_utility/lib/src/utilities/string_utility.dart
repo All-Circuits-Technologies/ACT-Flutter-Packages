@@ -5,9 +5,9 @@
 
 import 'dart:typed_data' show Uint8List;
 
-import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_dart_utility/src/errors/act_unsupported_type_error.dart';
 import 'package:act_dart_utility/src/utilities/bool_helper.dart';
+import 'package:act_dart_utility/src/utilities/byte_utility.dart';
 
 /// This class provides a set of [String] helpers, not provided by Dart.
 ///
