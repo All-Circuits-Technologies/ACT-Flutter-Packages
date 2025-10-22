@@ -156,6 +156,6 @@ abstract class StringUtility {
   /// {@endtemplate}
   static String fromUtf16ToHex(String utf16Str) {
     final bytes = Uint16List.fromList(utf16Str.codeUnits);
-    return ByteUtility.fromUin16ToHex(bytes);
+    return ByteUtility.fromUint16ToHex(bytes);
   }
 }

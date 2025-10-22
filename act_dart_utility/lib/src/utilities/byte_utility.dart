@@ -374,6 +374,6 @@ abstract class ByteUtility {
       bytes.map((byte) => byte.toRadixString(hexRadix).padLeft(2, "0")).join();
 
   /// Transform the given Uint16List [bytes] to a hexadecimal string
-  static String fromUin16ToHex(Uint16List bytes) =>
+  static String fromUint16ToHex(Uint16List bytes) =>
       bytes.map((byte) => byte.toRadixString(hexRadix).padLeft(4, "0")).join();
 }
