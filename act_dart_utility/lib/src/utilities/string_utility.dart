@@ -3,8 +3,11 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:typed_data' show Uint16List, Uint8List;
+
 import 'package:act_dart_utility/src/errors/act_unsupported_type_error.dart';
 import 'package:act_dart_utility/src/utilities/bool_helper.dart';
+import 'package:act_dart_utility/src/utilities/byte_utility.dart';
 
 /// This class provides a set of [String] helpers, not provided by Dart.
 ///
@@ -136,5 +139,23 @@ abstract class StringUtility {
     final elements = value.split(pattern);
     elements.removeWhere((element) => element.isEmpty);
     return elements;
+  }
+
+  /// {@template act_dart_utility.StringUtility.fromAsciiToHex}
+  /// Convert an ASCII string to a HEX string
+  ///
+  /// The method doesn't test the validity of the ASCII string.
+  /// {@endtemplate}
+  static String fromAsciiToHex(String ascii) {
+    final bytes = Uint8List.fromList(ascii.codeUnits);
+    return ByteUtility.toHex(bytes);
+  }
+
+  /// {@template act_dart_utility.StringUtility.fromUtf16ToHex}
+  /// Convert an UTF-16 string to a HEX string
+  /// {@endtemplate}
+  static String fromUtf16ToHex(String utf16Str) {
+    final bytes = Uint16List.fromList(utf16Str.codeUnits);
+    return ByteUtility.fromUint16ToHex(bytes);
   }
 }
