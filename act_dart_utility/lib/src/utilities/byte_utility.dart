@@ -79,6 +79,9 @@ abstract class ByteUtility {
   /// The maximum value an unsigned integer of 32bits can have
   static const int maxUInt32 = 0xFFFFFFFF;
 
+  /// The hexadecimal radix
+  static const int hexRadix = 16;
+
   /// Convert the given [number] to a LSB byte list
   ///
   /// Because in dart an integer is a signed 64bits, you have to gives the final [bytesNb] you want
@@ -366,7 +369,11 @@ abstract class ByteUtility {
     return true;
   }
 
-  /// Transform the given [bytes] to a hexadecimal string
+  /// Transform the given Uint8List [bytes] to a hexadecimal string
   static String toHex(Uint8List bytes) =>
-      bytes.map((byte) => byte.toRadixString(bitsNbUint16).padLeft(2, "0")).join();
+      bytes.map((byte) => byte.toRadixString(hexRadix).padLeft(2, "0")).join();
+
+  /// Transform the given Uint16List [bytes] to a hexadecimal string
+  static String fromUin16ToHex(Uint16List bytes) =>
+      bytes.map((byte) => byte.toRadixString(hexRadix).padLeft(4, "0")).join();
 }
