@@ -100,7 +100,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
 
   /// {@macro act_websocket_core.MixinWsMsgParserService.sendRawMessage}
   @override
-  // The message received can be string or binaries
+  // The message to send can be string or binaries
   // ignore: avoid_annotating_with_dynamic
   Future<bool> sendRawMessage(dynamic message) async {
     if (isClosed) {

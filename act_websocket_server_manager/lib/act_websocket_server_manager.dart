@@ -9,6 +9,7 @@ export 'package:web_socket_channel/web_socket_channel.dart' show WebSocketChanne
 export 'src/abs_websocket_server_manager.dart';
 export 'src/mixins/mixin_from_config_ws_server_manager.dart';
 export 'src/mixins/mixin_websocket_server_config.dart';
+export 'src/mixins/mixin_ws_event_api_service.dart';
 export 'src/models/websocket_server_config.dart';
 export 'src/services/abs_websocket_api_service.dart';
 export 'src/services/abs_websocket_channel_service.dart';
