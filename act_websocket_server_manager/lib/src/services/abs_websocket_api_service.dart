@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_http_logging_manager/act_http_logging_manager.dart';
 import 'package:act_http_server_manager/act_http_server_manager.dart';
 import 'package:act_websocket_server_manager/src/models/websocket_server_config.dart';
@@ -11,12 +12,18 @@ import 'package:shelf_web_socket/shelf_web_socket.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// This is the abstract class for WebSocket API services
-abstract class AbsWebsocketApiService extends AbsApiService {
+abstract class AbsWebsocketApiService<ChService extends AbsWebsocketChannelService>
+    extends AbsApiService {
   /// The WebSocket server config
   late final WebsocketServerConfig wsConfig;
 
   /// The map of all the WebSocket channel services
-  final Map<String, AbsWebsocketChannelService> _channelServices;
+  final Map<String, ChService> _channelServices;
+
+  /// Get the map of all the WebSocket channel services.
+  ///
+  /// Each service is linked to a connected client.
+  Map<String, ChService> get channelServices => _channelServices;
 
   /// Class constructor
   ///
@@ -26,6 +33,15 @@ abstract class AbsWebsocketApiService extends AbsApiService {
     required super.config,
     super.serviceRelativePath,
   }) : _channelServices = {};
+
+  /// Send a raw message to all connected WebSocket clients
+  ///
+  /// The method returns true if all messages were sent successfully
+  // The message to send can be string or binaries
+  // ignore: avoid_annotating_with_dynamic
+  Future<bool> sendRawMessageToAll(dynamic message) async => FutureUtility.waitGlobalBooleanSuccess(
+    _channelServices.values.map((service) => service.sendRawMessage(message)),
+  );
 
   /// {@template act_websocket_server_manager.AbsWebsocketService.getWsConfig}
   /// Get the WebSocket server config
@@ -39,7 +55,7 @@ abstract class AbsWebsocketApiService extends AbsApiService {
   /// The method [onClose] has to be called when the WebSocket is closed, to free the resources.
   /// {@endtemplate}
   @protected
-  Future<AbsWebsocketChannelService> createChannelService({
+  Future<ChService> createChannelService({
     required HttpLoggingManager httpLoggingManager,
     required WebSocketChannel channel,
     required String? subProtocol,
