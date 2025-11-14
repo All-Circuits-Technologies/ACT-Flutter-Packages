@@ -26,6 +26,7 @@ class CorsServerHandler extends AbsServerHandler {
     HeaderConstants.originHeaderKey,
     HeaderConstants.xRequestedWithHeaderKey,
     HeaderConstants.contentTypeHeaderKey,
+    HeaderConstants.contentDispositionHeaderKey,
     HeaderConstants.acceptHeaderKey,
     HeaderConstants.authorizationHeaderKey,
   ].join(_allowValuesSeparator);

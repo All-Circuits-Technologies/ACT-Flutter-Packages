@@ -48,13 +48,14 @@ sealed class ConfigFromYamlUtility {
       String configPath, Environment toLoad) async {
     final configFilePath = _getConfigFilePath(configPath, toLoad);
 
-    final (result, content) = await YamlFromAssets.loadYaml(configFilePath, cache: false);
+    final result = await YamlFromAssets.loadYaml(configFilePath, cache: false);
 
-    if (result == AssetsBundleResult.genericError) {
+    if (result.status == AssetsBundleResult.genericError) {
       throw Exception("An error occurred when tried to load the yaml config file: $configFilePath");
     }
 
-    if (result == AssetsBundleResult.notFound || content == null) {
+    final content = result.data;
+    if (result.status == AssetsBundleResult.notFound || content == null) {
       return {};
     }
 

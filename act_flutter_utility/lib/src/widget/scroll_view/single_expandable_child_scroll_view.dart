@@ -39,11 +39,16 @@ class SingleExpandableChildScrollView extends StatelessWidget {
           physics: physics,
           child: ConstrainedBox(
             constraints: BoxConstraints(
-              minHeight: constraints.maxHeight,
+              minHeight: (scrollDirection == Axis.vertical) ? constraints.maxHeight : 0,
+              minWidth: (scrollDirection == Axis.horizontal) ? constraints.maxWidth : 0,
             ),
-            child: IntrinsicHeight(
-              child: child,
-            ),
+            child: (scrollDirection == Axis.vertical)
+                ? IntrinsicHeight(
+                    child: child,
+                  )
+                : IntrinsicWidth(
+                    child: child,
+                  ),
           ),
         ),
       );

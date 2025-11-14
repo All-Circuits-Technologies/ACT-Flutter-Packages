@@ -21,12 +21,11 @@ sealed class AssetsBundleUtility {
   /// Load the content of a file stored in the assets bundle. The content is returned as a String.
   ///
   /// If the first part of the method result is [AssetsBundleResult.ok], the second part isn't null.
-  static Future<(AssetsBundleResult, String?)> loadStringFromAssetBundle(
+  static Future<({AssetsBundleResult status, String? data})> loadStringFromAssetBundle(
     String key, {
     bool cache = true,
   }) async {
     String? fileContent;
-
     try {
       fileContent = await rootBundle.loadString(
         key,
@@ -34,9 +33,34 @@ sealed class AssetsBundleUtility {
       );
     } catch (error) {
       // The file doesn't exist or a problem occurred
-      return (AssetsBundleResult.notFound, fileContent);
     }
 
-    return (AssetsBundleResult.ok, fileContent);
+    if (fileContent == null) {
+      return (status: AssetsBundleResult.notFound, data: null);
+    }
+
+    return (status: AssetsBundleResult.ok, data: fileContent);
+  }
+
+  /// Load the content of a file stored in the assets bundle. The content is returned as a
+  /// Uint8List.
+  ///
+  /// If the first part of the method result is [AssetsBundleResult.ok], the second part isn't null.
+  static Future<({AssetsBundleResult status, Uint8List? data})> loadBinaryFromAssetBundle(
+    String key, {
+    bool cache = true,
+  }) async {
+    ByteData? byteData;
+    try {
+      byteData = await rootBundle.load(key);
+    } catch (error) {
+      // The file doesn't exist or a problem occurred
+    }
+
+    if (byteData == null) {
+      return (status: AssetsBundleResult.notFound, data: null);
+    }
+
+    return (status: AssetsBundleResult.ok, data: byteData.buffer.asUint8List());
   }
 }

@@ -51,6 +51,7 @@ To install it globally, you have to call:
 | [act_dart_utility](act_dart_utility/)                                     | This package contains useful methods and classes which extends dart functionality.                             |         |
 | [act_enable_service_utility](act_enable_service_utility/)                 | The package contains utility classes to manage the enabling of services                                        |         |
 | [act_entity](act_entity/)                                                 | This package contains the entity base class for models.                                                        |         |
+| [act_file_transfer_manager](act_file_transfer_manager/)                   | A Flutter package for managing file transfers.                                                                 |         |
 | [act_firebase_core](act_firebase_core/)                                   | This is the main package to manage firebase with our ACT libs                                                  |         |
 | [act_firebase_crash](act_firebase_crash/)                                 | A new Flutter package project.                                                                                 |         |
 | [act_flutter_utility](act_flutter_utility/)                               | This package contains useful methods and classes which extends flutter functionality.                          |         |
