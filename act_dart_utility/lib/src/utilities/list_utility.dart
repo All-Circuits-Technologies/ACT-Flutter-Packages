@@ -212,4 +212,87 @@ sealed class ListUtility {
     tmpList.addAll(listToAdd);
     return tmpList;
   }
+
+  /// {@template act_dart_utility.ListUtility.indexesWhere}
+  /// Returns the list of indexes where the [test] function returns true.
+  ///
+  /// The search starts at the given [start] index.
+  ///
+  /// If [start] is negative, the search starts at index 0.
+  /// If [start] is greater than the list length, an empty list is returned.
+  /// If [maxCount] is greater than 0, the method stops the search when the number of found indexes
+  /// reaches the [maxCount].
+  /// {@endtemplate}
+  static List<int> indexesWhere<T>(
+    List<T> list,
+    bool Function(T element) test, {
+    int start = 0,
+    int maxCount = -1,
+  }) {
+    final length = list.length;
+    if (maxCount == 0 || length == 0 || start >= length) {
+      return [];
+    }
+
+    final indexes = <int>[];
+    var tmpStart = start;
+    if (start < 0) {
+      tmpStart = 0;
+    }
+
+    for (var idx = tmpStart; idx < length; ++idx) {
+      final element = list[idx];
+      if (test(element)) {
+        indexes.add(idx);
+      }
+
+      if (maxCount > 0 && indexes.length >= maxCount) {
+        break;
+      }
+    }
+
+    return indexes;
+  }
+
+  /// {@template act_dart_utility.ListUtility.lastIndexesWhere}
+  /// Returns the list of indexes where the [test] function returns true.
+  ///
+  /// The search starts at the given [start] index and goes backward.
+  ///
+  /// If [start] is null, the search starts at the last index of the list.
+  /// If [start] is greater than the list length, the search starts at the last index of the list.
+  /// If [start] is negative, an empty list is returned.
+  /// If [maxCount] is greater than 0, the method stops the search when the number of found indexes
+  /// reaches the [maxCount].
+  /// {@endtemplate}
+  static List<int> lastIndexesWhere<T>(
+    List<T> list,
+    bool Function(T element) test, {
+    int? start,
+    int maxCount = -1,
+  }) {
+    final length = list.length;
+    if (maxCount == 0 || length == 0 || (start != null && start < 0)) {
+      return [];
+    }
+
+    final indexes = <int>[];
+    var tmpStart = start ?? length - 1;
+    if (tmpStart >= length) {
+      tmpStart = length - 1;
+    }
+
+    for (var idx = tmpStart; idx >= 0; --idx) {
+      final element = list[idx];
+      if (test(element)) {
+        indexes.add(idx);
+      }
+
+      if (maxCount > 0 && indexes.length >= maxCount) {
+        break;
+      }
+    }
+
+    return indexes;
+  }
 }

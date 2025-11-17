@@ -8,12 +8,14 @@ import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:flutter/foundation.dart';
 
+/// {@template act_shared_auth.MixinAuthStatusCallback.presentation}
 /// Manage listening on [authStatus] stream and call [onAuthStatusUpdated] when the value is updated
 ///
 /// [initUpdate] has to be called at the start of the class to listen the stream update.
 /// [disposeUpdate] has to be called at the end of class life to cancel the subscription on the
 /// stream.
-mixin MixinAuthStatusManagerCallback<AuthManager extends AbsAuthManager> {
+/// {@endtemplate}
+mixin MixinAuthStatusCallback<AuthManager extends AbsAuthManager> {
   /// This is the subscription linked to the auth status stream
   late final StreamSubscription _authStatusSub;
 
@@ -27,12 +29,13 @@ mixin MixinAuthStatusManagerCallback<AuthManager extends AbsAuthManager> {
         globalGetIt().get<AuthManager>().authService.authStatusStream.listen(onAuthStatusUpdated);
   }
 
-  /// {@template MixinAuthStatusManagerCallback.onAuthStatusUpdated}
+  /// {@template act_shared_auth.MixinAuthStatusCallback.onAuthStatusUpdated}
   /// Called when the [AuthStatus] has been updated
   ///
   /// This can be overridden by derived class to be advertised on [AuthStatus] update
   /// {@endtemplate}
   @protected
+  @mustCallSuper
   Future<void> onAuthStatusUpdated(AuthStatus status) async {}
 
   /// To call at the end of class life to cancel the subscription on the stream
