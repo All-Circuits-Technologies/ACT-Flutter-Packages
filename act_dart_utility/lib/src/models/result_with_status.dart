@@ -19,8 +19,15 @@ class ResultWithStatus<Status extends MixinResultStatus, Value> extends Equatabl
   /// Value is null if status is an error
   final Value? value;
 
+  /// True if the status indicates a success
+  ///
   /// The overall status of the request is only defined by the [status] value
   bool get isSuccess => status.isSuccess;
+
+  /// True if the status indicates an error
+  ///
+  /// The overall status of the request is only defined by the [status] value
+  bool get isError => !status.isSuccess;
 
   /// The request can be retried if the status says so
   bool get canBeRetried => status.canBeRetried;

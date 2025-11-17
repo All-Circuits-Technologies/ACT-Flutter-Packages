@@ -21,7 +21,7 @@ sealed class BodyFormatUtility {
     required LogsHelper logsHelper,
     required Uri urlToRequest,
   }) {
-    final convertedBody = _convertRequestBody(body: requestParam.body, logsHelper: logsHelper);
+    final convertedBody = _convertRequestBody(requestParam: requestParam, logsHelper: logsHelper);
 
     if (convertedBody == null) {
       return null;
@@ -45,6 +45,7 @@ sealed class BodyFormatUtility {
         request.body = convertedBody.body! as String;
         break;
       case HttpMimeTypes.multipartFormData:
+      case HttpMimeTypes.csvText:
         request.bodyBytes = convertedBody.body! as Uint8List;
         break;
       case HttpMimeTypes.formUrlEncoded:
@@ -62,29 +63,118 @@ sealed class BodyFormatUtility {
   ///
   /// Also returns the mime type linked to body converted
   static ConvertedBody? _convertRequestBody({
-    // We use a dynamic value here because we get it from a json
+    required RequestParam requestParam,
+    required LogsHelper logsHelper,
+  }) {
+    final requestBody = requestParam.body;
+    var requestMimeType = requestParam.requestMimeType;
+
+    if (requestMimeType == null) {
+      final bodyType = HttpBodyTypes.tryToGuessBodyType(requestBody);
+      if (bodyType == null) {
+        logsHelper.w("We can't guess the body type for the given body, the type is: "
+            "${requestBody.runtimeType} and it's unknown");
+        return null;
+      }
+
+      requestMimeType = HttpMimeTypes.getDefaultValueByBodyType(bodyType);
+    }
+
+    return _tryToConvertRequestBodyFromMimeType(
+      requestMimeType: requestMimeType,
+      body: requestBody,
+      logsHelper: logsHelper,
+    );
+  }
+
+  /// Try to convert the request body from the given mime type
+  ///
+  /// Returns `null` if the body type is not valid for the given mime type
+  static ConvertedBody? _tryToConvertRequestBodyFromMimeType({
+    required HttpMimeTypes requestMimeType,
+    // We can't avoid dynamic here because we want to accept any type of body
     // ignore: avoid_annotating_with_dynamic
     required dynamic body,
     required LogsHelper logsHelper,
   }) {
-    ConvertedBody? convertedBody;
+    var requestBody = body;
 
-    if (body == null) {
-      // There is nothing to send
-      convertedBody = const ConvertedBody.empty();
-    } else if (body is String) {
-      convertedBody = ConvertedBody.string(body: body);
-    } else if (body is Map<String, String>) {
-      convertedBody = ConvertedBody.formUrlEncoded(body: body);
-    } else if (body is Uint8List) {
-      convertedBody = ConvertedBody.multipartFormData(body: body);
-    } else if (body is List<int>) {
-      convertedBody = ConvertedBody.multipartFormDataIntList(body: body);
-    } else {
-      convertedBody = ConvertedBody.tryParseJson(body, logsHelper: logsHelper);
+    // In the switch we only manage the validation of the body type and conversion if needed
+    switch (requestMimeType) {
+      case HttpMimeTypes.empty:
+        // Nothing to send; we set body to null in order to avoid any problems
+        requestBody = null;
+        break;
+
+      case HttpMimeTypes.multipartFormData:
+      case HttpMimeTypes.csvText:
+        if (requestBody is! Uint8List && requestBody is! List<int>) {
+          logsHelper.w("We expect to have an Uint8List or List<int> body for the request "
+              "$requestMimeType MIME type");
+          return null;
+        }
+
+        if (requestBody is List<int>) {
+          requestBody = Uint8List.fromList(requestBody);
+        }
+        break;
+
+      case HttpMimeTypes.formUrlEncoded:
+        if (requestBody is! Map<String, String>) {
+          logsHelper.w(
+              "We expect to have a Map<String, String> body for the request $requestMimeType MIME "
+              "type");
+          return null;
+        }
+        break;
+
+      case HttpMimeTypes.plainText:
+        if (requestBody is! String) {
+          logsHelper
+              .w("We expect to have a String body for the request $requestMimeType MIME type");
+          return null;
+        }
+        break;
+
+      case HttpMimeTypes.json:
+        if (requestBody is! Map<String, dynamic> &&
+            requestBody is! List<dynamic> &&
+            requestBody is! String) {
+          logsHelper
+              .w("We expect to have a String, Map<String, dynamic> or List<dynamic> body for the "
+                  "request $requestMimeType MIME type");
+          return null;
+        }
+
+        var anErrorOccurred = false;
+        if (requestBody is String) {
+          // We try to decode it to verify if the JSON is valid
+          try {
+            jsonDecode(requestBody);
+          } catch (error) {
+            logsHelper.w(
+                "We expect to have a valid JSON String body for the request $requestMimeType MIME "
+                "type, error when decoding: $error");
+            anErrorOccurred = true;
+          }
+        } else {
+          try {
+            requestBody = jsonEncode(requestBody);
+          } catch (error) {
+            logsHelper
+                .w("We expect to have a valid JSON body for the request $requestMimeType MIME "
+                    "type, error when encoding: $error");
+            return null;
+          }
+        }
+
+        if (anErrorOccurred) {
+          return null;
+        }
+        break;
     }
 
-    return convertedBody;
+    return ConvertedBody(body: requestBody, contentType: requestMimeType);
   }
 
   /// Format a response [RequestResponse] from a [Response] received and the request [RequestParam]
@@ -170,7 +260,7 @@ sealed class BodyFormatUtility {
 
     if (responseType == HttpMimeTypes.empty) {
       // Nothing to do
-      return (isOk: true, body: body);
+      return (isOk: true, body: null);
     }
 
     try {
@@ -184,6 +274,7 @@ sealed class BodyFormatUtility {
           break;
 
         case HttpMimeTypes.multipartFormData:
+        case HttpMimeTypes.csvText:
           body = responseReceived.bodyBytes as Body;
           break;
 

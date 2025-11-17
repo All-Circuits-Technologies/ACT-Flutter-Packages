@@ -1,0 +1,45 @@
+# SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_file_transfer_manager
+description: A Flutter package for managing file transfers.
+publish_to: none
+
+environment:
+  sdk: ^3.9.2
+  flutter: ">=1.17.0"
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  file_saver: ^0.3.1
+
+  file_selector: ^1.0.4
+
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_global_manager:
+    path: ../act_global_manager
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

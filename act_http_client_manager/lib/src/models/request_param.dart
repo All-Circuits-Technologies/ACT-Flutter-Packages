@@ -36,6 +36,11 @@ class RequestParam extends Equatable {
   /// The max timeout of the request, if not given, the default timeout is used
   final Duration? timeout;
 
+  /// The MIME type of the request
+  ///
+  /// If null, we try to guess the MIM type
+  final HttpMimeTypes? requestMimeType;
+
   /// The expected MIME type of the request response (in case the request is a success)
   final HttpMimeTypes? expectedMimeType;
 
@@ -49,6 +54,7 @@ class RequestParam extends Equatable {
     this.body,
     this.encoding,
     this.timeout,
+    this.requestMimeType,
     this.expectedMimeType,
   }) : headers = headers ?? <String, String>{};
 
@@ -69,6 +75,8 @@ class RequestParam extends Equatable {
     bool forceEncoding = false,
     Duration? timeout,
     bool forceTimeout = false,
+    HttpMimeTypes? requestMimeType,
+    bool forceRequestMimeType = false,
     HttpMimeTypes? expectedMimeType,
     bool forceExpectedMimeType = false,
   }) =>
@@ -81,6 +89,7 @@ class RequestParam extends Equatable {
         body: body ?? (forceBody ? null : this.body),
         encoding: encoding ?? (forceEncoding ? null : this.encoding),
         timeout: timeout ?? (forceTimeout ? null : this.timeout),
+        requestMimeType: requestMimeType ?? (forceRequestMimeType ? null : this.requestMimeType),
         expectedMimeType:
             expectedMimeType ?? (forceExpectedMimeType ? null : this.expectedMimeType),
       );
@@ -94,6 +103,7 @@ class RequestParam extends Equatable {
         queryParameters,
         body,
         encoding,
+        requestMimeType,
         expectedMimeType,
       ];
 }

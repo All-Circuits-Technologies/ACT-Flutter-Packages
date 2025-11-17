@@ -16,13 +16,14 @@ sealed class EnvConfigMappingUtility {
   /// If a problem occurred when loading the env config mapping file, an exception is raised. If the
   /// file is not found, the method returns an empty list.
   static Future<List<EnvConfigMappingModel>> fromAssetBundle(String path) async {
-    final (result, content) = await YamlFromAssets.loadYaml(path, cache: false);
+    final result = await YamlFromAssets.loadYaml(path, cache: false);
 
-    if (result == AssetsBundleResult.genericError) {
+    if (result.status == AssetsBundleResult.genericError) {
       throw Exception("An error occurred when tried to load the environment config mapping file");
     }
 
-    if (result == AssetsBundleResult.notFound || content == null) {
+    final content = result.data;
+    if (result.status == AssetsBundleResult.notFound || content == null) {
       // No need to go further
       return [];
     }
