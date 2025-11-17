@@ -96,4 +96,25 @@ extension ActListExtension<T> on List<T> {
         listToAdd,
         start,
       );
+
+  /// {@macro act_dart_utility.ListUtility.indexesWhere}
+  List<int> indexesWhere(
+    bool Function(T element) test, {
+    int start = 0,
+    int maxCount = -1,
+  }) =>
+      ListUtility.indexesWhere(this, test, start: start, maxCount: maxCount);
+
+  /// {@macro act_dart_utility.ListUtility.lastIndexesWhere}
+  List<int> lastIndexesWhere(
+    bool Function(T element) test, {
+    int? start,
+    int maxCount = -1,
+  }) =>
+      ListUtility.lastIndexesWhere(
+        this,
+        test,
+        start: start,
+        maxCount: maxCount,
+      );
 }
