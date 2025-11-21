@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_minio_manager/src/mixins/mixin_minio_config.dart';
 import 'package:equatable/equatable.dart';
+import 'package:logger/logger.dart';
 
 /// Configuration model for MinIO connection
 class MinioConfigModel extends Equatable {
@@ -58,25 +58,29 @@ class MinioConfigModel extends Equatable {
 
     final endpoint = configManager.minioEndpoint.load();
     if (endpoint == null) {
-      appLogger().f('MinioConfigModel: The endpoint is not set in the configuration');
+      Logger()
+          .f('MinioConfigModel: The endpoint is not set in the configuration');
       return null;
     }
 
     final accessKey = configManager.minioAccessKey.load();
     if (accessKey == null) {
-      appLogger().f('MinioConfigModel: The accessKey is not set in the configuration');
+      Logger()
+          .f('MinioConfigModel: The accessKey is not set in the configuration');
       return null;
     }
 
     final secretKey = configManager.minioSecretKey.load();
     if (secretKey == null) {
-      appLogger().f('MinioConfigModel: The secretKey is not set in the configuration');
+      Logger()
+          .f('MinioConfigModel: The secretKey is not set in the configuration');
       return null;
     }
 
     final bucket = configManager.minioBucket.load();
     if (bucket == null) {
-      appLogger().f('MinioConfigModel: The bucket is not set in the configuration');
+      Logger()
+          .f('MinioConfigModel: The bucket is not set in the configuration');
       return null;
     }
 

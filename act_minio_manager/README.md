@@ -13,6 +13,13 @@ This package provides a manager and service to interact with MinIO object storag
 - **MinIO Manager**: Manages the MinIO client lifecycle and configuration
 - **MinIO Storage Service**: Implements the `MixinStorageService` interface for storage operations
 - **Configuration Integration**: Uses `act_config_manager` for MinIO credentials and endpoint configuration
+- **File Operations**:
+  - List files with recursive search support
+  - Download files with progress tracking
+  - Upload files with progress tracking
+  - Generate presigned download URLs (5-minute expiry)
+  - Delete single or multiple objects
+- **Error Handling**: Proper error mapping to `StorageRequestResult` enum values
 
 ## Usage
 
@@ -56,9 +63,13 @@ final storageService = globalGetIt().get<MyMinioManager>().storageService;
 // List files in a bucket path
 final result = await storageService.listFiles(
   'my-folder/',
-  pageSize: 50,
   recursiveSearch: true,
 );
+
+if (result.result == StorageRequestResult.success) {
+  final files = result.page?.items ?? [];
+  print('Found ${files.length} files');
+}
 
 // Download a file
 final downloadResult = await storageService.getFile(
@@ -68,10 +79,44 @@ final downloadResult = await storageService.getFile(
   },
 );
 
-// Get a presigned download URL
+if (downloadResult.result == StorageRequestResult.success) {
+  print('Downloaded to: ${downloadResult.file?.path}');
+}
+
+// Upload a file
+final uploadResult = await storageService.putFile(
+  'my-folder/uploaded-file.pdf',
+  File('/path/to/local/file.pdf'),
+  metadata: {'content-type': 'application/pdf'},
+  onProgress: (progress) {
+    print('Upload progress: ${progress.bytesTransferred}/${progress.totalBytes}');
+  },
+);
+
+if (uploadResult.result == StorageRequestResult.success) {
+  print('Uploaded with ETag: ${uploadResult.etag}');
+}
+
+// Get a presigned download URL (valid for 5 minutes)
 final urlResult = await storageService.getDownloadUrl(
   'my-folder/my-file.pdf',
 );
+
+if (urlResult.result == StorageRequestResult.success) {
+  print('Download URL: ${urlResult.downloadUrl}');
+}
+
+// Delete a single object
+final deleteResult = await storageService.removeObject(
+  'my-folder/file-to-delete.pdf',
+);
+
+// Delete multiple objects
+final bulkDeleteResult = await storageService.removeObjects([
+  'my-folder/file1.pdf',
+  'my-folder/file2.pdf',
+  'my-folder/file3.pdf',
+]);
 ```
 
 ## Dependencies

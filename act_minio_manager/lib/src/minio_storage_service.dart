@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:act_abstract_manager/act_abstract_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -67,20 +68,19 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     bool recursiveSearch = false,
   }) async {
     try {
-      _logsHelper.d('Listing files in path: $searchPath (recursive: $recursiveSearch)');
+      _logsHelper.d(
+          'Listing files in path: $searchPath (recursive: $recursiveSearch)');
 
-      // MinIO's listObjects method doesn't support pagination in the same way,
-      // so we'll list all objects and handle pagination manually if needed
-      final objects = await _minioClient
-          .listObjects(
-            config.bucket,
-            prefix: searchPath,
-            recursive: recursiveSearch,
-          )
-          .toList();
+      // Use listAllObjects to get all objects at once
+      // MinIO's listObjects returns Stream<ListObjectsResult> where each result contains List<Object>
+      final result = await _minioClient.listAllObjects(
+        config.bucket,
+        prefix: searchPath,
+        recursive: recursiveSearch,
+      );
 
-      // Convert MinIO objects to StorageFile objects
-      final storageFiles = objects
+      // Convert MinIO Object instances to StorageFile objects
+      final storageFiles = result.objects
           .map((obj) => StorageFile(
                 path: obj.key ?? '',
                 lastModified: obj.lastModified,
@@ -89,12 +89,10 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
               ))
           .toList();
 
-      // For simplicity, we're not implementing pagination with MinIO
-      // as it doesn't have built-in pagination support like S3
+      // Note: MinIO doesn't have built-in pagination like S3 with continuation tokens
+      // For large buckets, consider using the streaming listObjects method instead
       final storagePage = StoragePage(
         items: storageFiles,
-        nextPageToken: null,
-        hasNextPage: false,
       );
 
       _logsHelper.d('Listed ${storageFiles.length} files in path: $searchPath');
@@ -124,7 +122,8 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
 
       // Create the file path
       final filepath = '${directory.path}/$path';
-      final intermediateDirectory = filepath.substring(0, filepath.lastIndexOf('/'));
+      final intermediateDirectory =
+          filepath.substring(0, filepath.lastIndexOf('/'));
 
       // Create the intermediate directory if needed
       await Directory(intermediateDirectory).create(recursive: true);
@@ -197,7 +196,8 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
 
       return (result: StorageRequestResult.success, downloadUrl: url);
     } on MinioError catch (e) {
-      _logsHelper.e('MinIO error while getting download URL for file $fileId: $e');
+      _logsHelper
+          .e('MinIO error while getting download URL for file $fileId: $e');
       return (result: _parseMinioError(e), downloadUrl: null);
     } on Exception catch (e) {
       _logsHelper.e('Error while getting download URL for file $fileId: $e');
@@ -216,12 +216,109 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     }
   }
 
+  /// Upload a file to MinIO storage
+  ///
+  /// Returns the ETag of the uploaded object on success
+  Future<({StorageRequestResult result, String? etag})> putFile(
+    String objectPath,
+    File file, {
+    Map<String, String>? metadata,
+    void Function(TransferProgress)? onProgress,
+  }) async {
+    try {
+      _logsHelper.d('Uploading file to: $objectPath');
+
+      final fileSize = await file.length();
+      final stream = file.openRead().cast<Uint8List>();
+
+      var bytesTransferred = 0;
+      var trackedStream = stream;
+
+      if (onProgress != null) {
+        trackedStream = stream.map((chunk) {
+          bytesTransferred += chunk.length;
+          onProgress(TransferProgress(
+            totalBytes: fileSize,
+            bytesTransferred: bytesTransferred,
+            transferStatus: TransferStatus.inProgress,
+          ));
+          return chunk;
+        });
+      }
+
+      final etag = await _minioClient.putObject(
+        config.bucket,
+        objectPath,
+        trackedStream,
+        size: fileSize,
+        metadata: metadata,
+      );
+
+      if (onProgress != null) {
+        onProgress(TransferProgress(
+          totalBytes: fileSize,
+          bytesTransferred: fileSize,
+          transferStatus: TransferStatus.success,
+        ));
+      }
+
+      _logsHelper.d('Successfully uploaded file to: $objectPath');
+
+      return (result: StorageRequestResult.success, etag: etag);
+    } on MinioError catch (e) {
+      _logsHelper.e('MinIO error while uploading file to $objectPath: $e');
+      return (result: _parseMinioError(e), etag: null);
+    } on Exception catch (e) {
+      _logsHelper.e('Error while uploading file to $objectPath: $e');
+      return (result: StorageRequestResult.genericError, etag: null);
+    }
+  }
+
+  /// Delete an object from MinIO storage
+  Future<StorageRequestResult> removeObject(String objectPath) async {
+    try {
+      _logsHelper.d('Removing object: $objectPath');
+
+      await _minioClient.removeObject(config.bucket, objectPath);
+
+      _logsHelper.d('Successfully removed object: $objectPath');
+
+      return StorageRequestResult.success;
+    } on MinioError catch (e) {
+      _logsHelper.e('MinIO error while removing object $objectPath: $e');
+      return _parseMinioError(e);
+    } on Exception catch (e) {
+      _logsHelper.e('Error while removing object $objectPath: $e');
+      return StorageRequestResult.genericError;
+    }
+  }
+
+  /// Delete multiple objects from MinIO storage
+  Future<StorageRequestResult> removeObjects(List<String> objectPaths) async {
+    try {
+      _logsHelper.d('Removing ${objectPaths.length} objects');
+
+      await _minioClient.removeObjects(config.bucket, objectPaths);
+
+      _logsHelper.d('Successfully removed ${objectPaths.length} objects');
+
+      return StorageRequestResult.success;
+    } on MinioError catch (e) {
+      _logsHelper.e('MinIO error while removing objects: $e');
+      return _parseMinioError(e);
+    } on Exception catch (e) {
+      _logsHelper.e('Error while removing objects: $e');
+      return StorageRequestResult.genericError;
+    }
+  }
+
   /// Parse MinIO errors and convert them to StorageRequestResult
   StorageRequestResult _parseMinioError(MinioError error) {
     // Check for common MinIO error codes
     if (error.message?.contains('NoSuchKey') == true ||
         error.message?.contains('NoSuchBucket') == true) {
-      return StorageRequestResult.notFound;
+      // Map not found to ioError as there's no notFound in the enum
+      return StorageRequestResult.ioError;
     }
 
     if (error.message?.contains('AccessDenied') == true ||
@@ -230,11 +327,7 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
       return StorageRequestResult.accessDenied;
     }
 
-    if (error.message?.contains('Network') == true ||
-        error.message?.contains('Connection') == true) {
-      return StorageRequestResult.networkError;
-    }
-
+    // Network errors are mapped to genericError
     return StorageRequestResult.genericError;
   }
 
