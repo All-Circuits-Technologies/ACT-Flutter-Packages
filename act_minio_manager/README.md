@@ -35,7 +35,6 @@ The package uses the `act_config_manager` to retrieve MinIO configuration. Add t
 | `minio.secretKey`      | `string` | MinIO secret key                                 |
 | `minio.bucket`         | `string` | Default bucket name                              |
 | `minio.useSSL`         | `bool`   | Use SSL for connections (default: true)          |
-| `minio.region`         | `string` | MinIO region (optional, default: "us-east-1")    |
 
 ### Manager Setup
 

@@ -12,9 +12,6 @@ class MinioConfigModel extends Equatable {
   /// Default port for MinIO connections
   static const _defaultPort = 9000;
 
-  /// Default region
-  static const _defaultRegion = 'us-east-1';
-
   /// Default SSL setting
   static const _defaultUseSSL = true;
 
@@ -36,9 +33,6 @@ class MinioConfigModel extends Equatable {
   /// Whether to use SSL for connections
   final bool useSSL;
 
-  /// The MinIO region
-  final String region;
-
   /// Class constructor
   const MinioConfigModel._({
     required this.endpoint,
@@ -47,7 +41,6 @@ class MinioConfigModel extends Equatable {
     required this.secretKey,
     required this.bucket,
     required this.useSSL,
-    required this.region,
   });
 
   /// Get the MinIO configuration from the ConfigManager
@@ -86,7 +79,6 @@ class MinioConfigModel extends Equatable {
 
     final port = configManager.minioPort.load() ?? _defaultPort;
     final useSSL = configManager.minioUseSSL.load() ?? _defaultUseSSL;
-    final region = configManager.minioRegion.load() ?? _defaultRegion;
 
     return MinioConfigModel._(
       endpoint: endpoint,
@@ -95,7 +87,6 @@ class MinioConfigModel extends Equatable {
       secretKey: secretKey,
       bucket: bucket,
       useSSL: useSSL,
-      region: region,
     );
   }
 
@@ -108,6 +99,5 @@ class MinioConfigModel extends Equatable {
         secretKey,
         bucket,
         useSSL,
-        region,
       ];
 }

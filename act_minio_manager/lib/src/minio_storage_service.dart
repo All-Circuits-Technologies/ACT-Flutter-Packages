@@ -53,7 +53,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
       accessKey: config.accessKey,
       secretKey: config.secretKey,
       useSSL: config.useSSL,
-      region: config.region,
     );
 
     _logsHelper.i('MinIO storage service initialized successfully');

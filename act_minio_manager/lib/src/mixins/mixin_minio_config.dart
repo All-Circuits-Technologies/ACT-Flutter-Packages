@@ -35,9 +35,4 @@ mixin MixinMinioConfig on AbstractConfigManager {
   final minioUseSSL = const ConfigVar<bool>(
     "minio.useSSL",
   );
-
-  /// The MinIO region (optional, default: "us-east-1")
-  final minioRegion = const ConfigVar<String>(
-    "minio.region",
-  );
 }
