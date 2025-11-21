@@ -1,0 +1,11 @@
+# SPDX-FileCopyrightText: 2025 Théo Magne <theo.magne@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+sdk:
+  - stable
+
+stages:
+  - analyze:
+      - group:
+          - analyze: --fatal-infos .
