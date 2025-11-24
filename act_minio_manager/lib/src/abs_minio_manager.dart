@@ -10,14 +10,14 @@ import 'package:act_minio_manager/src/mixins/mixin_minio_config.dart';
 import 'package:act_minio_manager/src/models/minio_config_model.dart';
 import 'package:flutter/foundation.dart';
 
-/// Builder class to create a [MinioManager] instance.
+/// Builder class to create a [AbsMinioManager] instance.
 ///
 /// The [ConfigManager] type must extend [MixinMinioConfig] to provide
 /// the necessary MinIO configuration variables.
-class MinioBuilder<T extends MinioManager<ConfigManager>,
+abstract class AbsMinioBuilder<T extends AbsMinioManager<ConfigManager>,
     ConfigManager extends MixinMinioConfig> extends AbsManagerBuilder<T> {
   /// Class constructor
-  MinioBuilder(super.factory);
+  AbsMinioBuilder(super.factory);
 
   @override
   @mustCallSuper
@@ -31,7 +31,7 @@ class MinioBuilder<T extends MinioManager<ConfigManager>,
 ///
 /// This manager handles the lifecycle of the MinIO storage service and
 /// provides access to it for storage operations.
-abstract class MinioManager<ConfigManager extends MixinMinioConfig>
+abstract class AbsMinioManager<ConfigManager extends MixinMinioConfig>
     extends AbsWithLifeCycle {
   /// Class logger category
   static const String _minioManagerLogCategory = 'minio';
@@ -44,7 +44,7 @@ abstract class MinioManager<ConfigManager extends MixinMinioConfig>
   late final MinioStorageService storageService;
 
   /// Class constructor
-  MinioManager();
+  AbsMinioManager();
 
   /// Initialize the MinIO manager and storage service
   @override
