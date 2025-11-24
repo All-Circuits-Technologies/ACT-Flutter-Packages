@@ -17,6 +17,7 @@ export 'src/models/request_param.dart';
 export 'src/models/request_response.dart';
 export 'src/models/requester_config.dart';
 export 'src/models/requester_server_url_config.dart';
+export 'src/models/server_urls.dart';
 export 'src/server_requester.dart';
 export 'src/types/login_fail_policy.dart';
 export 'src/types/request_status.dart';
