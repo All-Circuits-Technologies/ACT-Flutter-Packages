@@ -3,9 +3,9 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_minio_manager/src/mixins/mixin_minio_config.dart';
 import 'package:equatable/equatable.dart';
-import 'package:logger/logger.dart';
 
 /// Configuration model for MinIO connection
 class MinioConfigModel extends Equatable {
@@ -46,34 +46,35 @@ class MinioConfigModel extends Equatable {
   /// Get the MinIO configuration from the ConfigManager
   ///
   /// Returns null if any required configuration is missing
-  static MinioConfigModel? get<ConfigManager extends MixinMinioConfig>() {
+  static MinioConfigModel? get<ConfigManager extends MixinMinioConfig>(
+      {LogsHelper? logsHelper}) {
     final configManager = globalGetIt().get<ConfigManager>();
 
     final endpoint = configManager.minioEndpoint.load();
     if (endpoint == null) {
-      Logger()
-          .f('MinioConfigModel: The endpoint is not set in the configuration');
+      logsHelper
+          ?.f('MinioConfigModel: The endpoint is not set in the configuration');
       return null;
     }
 
     final accessKey = configManager.minioAccessKey.load();
     if (accessKey == null) {
-      Logger()
-          .f('MinioConfigModel: The accessKey is not set in the configuration');
+      logsHelper?.f(
+          'MinioConfigModel: The accessKey is not set in the configuration');
       return null;
     }
 
     final secretKey = configManager.minioSecretKey.load();
     if (secretKey == null) {
-      Logger()
-          .f('MinioConfigModel: The secretKey is not set in the configuration');
+      logsHelper?.f(
+          'MinioConfigModel: The secretKey is not set in the configuration');
       return null;
     }
 
     final bucket = configManager.minioBucket.load();
     if (bucket == null) {
-      Logger()
-          .f('MinioConfigModel: The bucket is not set in the configuration');
+      logsHelper
+          ?.f('MinioConfigModel: The bucket is not set in the configuration');
       return null;
     }
 

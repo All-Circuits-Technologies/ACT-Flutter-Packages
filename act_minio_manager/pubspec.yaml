@@ -29,9 +29,6 @@ dependencies:
 
   mutex: ^3.1.0
 
-  # Logger for direct logging
-  logger: ^2.0.0
-
   # Contains the structure to create services and managers
   act_abstract_manager:
     path: ../act_abstract_manager

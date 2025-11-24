@@ -60,7 +60,7 @@ abstract class MinioManager<ConfigManager extends MixinMinioConfig>
     logsHelper.d('Starting MinIO manager...');
 
     // Get the MinIO configuration from the config manager
-    final config = MinioConfigModel.get<ConfigManager>();
+    final config = MinioConfigModel.get<ConfigManager>(logsHelper: logsHelper);
     if (config == null) {
       throw Exception('Missing mandatory configuration for the MinioManager');
     }
