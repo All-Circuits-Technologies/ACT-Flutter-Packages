@@ -25,30 +25,39 @@ This package provides a manager and service to interact with MinIO object storag
 
 ### Configuration
 
-The package uses the `act_config_manager` to retrieve MinIO configuration. Add the following configuration variables to your config:
+The package uses the `act_config_manager` to retrieve MinIO configuration. Add the following
+configuration to your config file:
 
-| Key                    | Type     | Description                                      |
-| ---------------------- | -------- | ------------------------------------------------ |
-| `minio.endpoint`       | `string` | MinIO server endpoint (e.g., "play.min.io")      |
-| `minio.port`           | `int`    | MinIO server port (default: 9000)                |
-| `minio.accessKey`      | `string` | MinIO access key                                 |
-| `minio.secretKey`      | `string` | MinIO secret key                                 |
-| `minio.bucket`         | `string` | Default bucket name                              |
-| `minio.useSSL`         | `bool`   | Use SSL for connections (default: true)          |
+```yaml
+minio:
+  endpoint: "play.min.io"      # MinIO server endpoint (required)
+  port: 9000                   # MinIO server port (optional, defaults to 9000)
+  accessKey: "your-access-key" # MinIO access key (required)
+  secretKey: "your-secret-key" # MinIO secret key (required)
+  bucket: "your-bucket"        # Default bucket name (required)
+  useSSL: true                 # Use SSL for connections (optional, defaults to true)
+```
+
+The configuration is automatically parsed into a `MinioConfigModel` using the `NotNullParserConfigVar`
+from the config manager.
 
 ### Manager Setup
 
-Create a concrete implementation of `MinioManager`:
+Create a concrete implementation of `AbsMinioManager`:
 
 ```dart
-class MyMinioManager extends MinioManager<MyConfigManager> {
+class MyMinioManager extends AbsMinioManager<MyConfigManager> {
   MyMinioManager();
 }
 
 // Register in your app
-final minioBuilder = MinioBuilder<MyMinioManager, MyConfigManager>(
+final minioBuilder = MyMinioBuilder<MyMinioManager, MyConfigManager>(
   () => MyMinioManager(),
 );
+
+class MyMinioBuilder extends AbsMinioBuilder<MyMinioManager, MyConfigManager> {
+  MyMinioBuilder(super.factory);
+}
 ```
 
 ### Using the Storage Service

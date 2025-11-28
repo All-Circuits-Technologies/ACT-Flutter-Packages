@@ -118,8 +118,8 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     // TODO(aloiseau): Avoid file collision in local download area
     //    by either prepending a service-dedicated top folder into dlDirPath
     //    or by inserting a root or fileUri hash into dlDirPath or instead of fileId below
-    final dlFilepath = '${directory.path}/$fileId';
-    final dlDirPath = dlFilepath.substring(0, dlFilepath.lastIndexOf('/'));
+    final dlFilepath = path.join(directory.path, fileId);
+    final dlDirPath = path.dirname(dlFilepath);
 
     // Create destination folder if needed
     try {
@@ -217,7 +217,8 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     String? nextToken,
     bool recursiveSearch = false,
   }) async =>
-      throw UnsupportedError("HTTP features no generic directory listing command");
+      throw UnsupportedError(
+          "HTTP features no generic directory listing command");
 
   /// Tell if given [fileUri] (typically a download URI) appears safe or not
   ///
@@ -266,7 +267,8 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   }
 
   /// Convert a full download HTTP response code to a StorageRequestResult
-  static StorageRequestResult _parseHttpResponseCode(int code) => switch (code) {
+  static StorageRequestResult _parseHttpResponseCode(int code) =>
+      switch (code) {
         // We may want we use http_status or http_status_code package one day
         200 => StorageRequestResult.success,
         401 => StorageRequestResult.accessDenied,
@@ -279,7 +281,8 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
         HttpException _ => StorageRequestResult.ioError, // Closed by peer
         MissingPlatformDirectoryException _ => StorageRequestResult.ioError,
         HandshakeException _ => StorageRequestResult.ioError, // TLS issue
-        SocketException _ => StorageRequestResult.ioError, // Hostname resolution failed
+        SocketException _ =>
+          StorageRequestResult.ioError, // Hostname resolution failed
         _ => StorageRequestResult.genericError,
       };
 }

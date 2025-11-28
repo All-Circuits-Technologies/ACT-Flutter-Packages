@@ -3,36 +3,29 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_minio_manager/src/models/minio_config_model.dart';
 
 /// Mixin to add MinIO configuration variables to the ConfigManager
 mixin MixinMinioConfig on AbstractConfigManager {
-  /// The MinIO server endpoint (e.g., "play.min.io")
-  final minioEndpoint = const ConfigVar<String>(
-    "minio.endpoint",
+  /// MinIO configuration parsed from a Map structure
+  ///
+  /// Expected configuration structure:
+  /// ```yaml
+  /// minio:
+  ///   endpoint: "play.min.io"      # required
+  ///   port: 9000                   # optional, defaults to 9000
+  ///   accessKey: "your-access-key" # required
+  ///   secretKey: "your-secret-key" # required
+  ///   bucket: "your-bucket"        # required
+  ///   useSSL: true                 # optional, defaults to true
+  /// ```
+  final minioConfig = const NotNullParserConfigVar<MinioConfigModel,
+      Map<String, dynamic>>.crashIfNull(
+    "minio",
+    parser: _parseMinioConfig,
   );
 
-  /// The MinIO server port (default: 9000)
-  final minioPort = const ConfigVar<int>(
-    "minio.port",
-  );
-
-  /// The MinIO access key for authentication
-  final minioAccessKey = const ConfigVar<String>(
-    "minio.accessKey",
-  );
-
-  /// The MinIO secret key for authentication
-  final minioSecretKey = const ConfigVar<String>(
-    "minio.secretKey",
-  );
-
-  /// The default bucket name to use
-  final minioBucket = const ConfigVar<String>(
-    "minio.bucket",
-  );
-
-  /// Whether to use SSL for connections (default: true)
-  final minioUseSSL = const ConfigVar<bool>(
-    "minio.useSSL",
-  );
+  /// Parser function for MinIO configuration
+  static MinioConfigModel? _parseMinioConfig(Map<String, dynamic> map) =>
+      MinioConfigModel.fromMap(map);
 }

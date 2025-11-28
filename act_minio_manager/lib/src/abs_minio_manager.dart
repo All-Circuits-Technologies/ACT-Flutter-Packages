@@ -14,7 +14,7 @@ import 'package:flutter/foundation.dart';
 ///
 /// The [ConfigManager] type must extend [MixinMinioConfig] to provide
 /// the necessary MinIO configuration variables.
-abstract class AbsMinioBuilder<T extends AbsMinioManager<ConfigManager>,
+abstract class AbsMinioBuilder<T extends AbsMinioManager,
     ConfigManager extends MixinMinioConfig> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsMinioBuilder(super.factory);
@@ -31,8 +31,7 @@ abstract class AbsMinioBuilder<T extends AbsMinioManager<ConfigManager>,
 ///
 /// This manager handles the lifecycle of the MinIO storage service and
 /// provides access to it for storage operations.
-abstract class AbsMinioManager<ConfigManager extends MixinMinioConfig>
-    extends AbsWithLifeCycle {
+abstract class AbsMinioManager extends AbsWithLifeCycle {
   /// Class logger category
   static const String _minioManagerLogCategory = 'minio';
 
@@ -57,10 +56,12 @@ abstract class AbsMinioManager<ConfigManager extends MixinMinioConfig>
       logsCategory: _minioManagerLogCategory,
     );
 
-    logsHelper.d('Starting MinIO manager...');
-
     // Get the MinIO configuration from the config manager
-    final config = MinioConfigModel.get<ConfigManager>(logsHelper: logsHelper);
+    final configManager = getConfigManager();
+    final config = MinioConfigModel.getFromConfigManager(
+      configManager: configManager,
+      logsHelper: logsHelper,
+    );
     if (config == null) {
       throw Exception('Missing mandatory configuration for the MinioManager');
     }
@@ -76,6 +77,10 @@ abstract class AbsMinioManager<ConfigManager extends MixinMinioConfig>
 
     logsHelper.i('MinIO manager started successfully');
   }
+
+  /// Get the configuration manager instance
+  @protected
+  MixinMinioConfig getConfigManager();
 
   /// Dispose the MinIO storage service
   @override

@@ -73,6 +73,7 @@ To install it globally, you have to call:
 | [act_local_storage_manager](act_local_storage_manager/)                   | This package contains two managers to store properties and secrets                                             |         |
 | [act_location_manager](act_location_manager/)                             | This package is useful to get location from phones                                                             |         |
 | [act_logger_manager](act_logger_manager/)                                 | This package contains a logger manager for your app                                                            |         |
+| [act_minio_manager](act_minio_manager/)                                   | This package contains the MinIO storage manager, which can be used to get files from a MinIO server.           |         |
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                  |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.              |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.   |         |

@@ -18,8 +18,8 @@ import 'package:flutter/material.dart';
 
 /// Abstract class for a storage manager builder. It specifies the other managers that the storage
 /// manager depends on.
-abstract class AbsRemoteStorageBuilder<T extends AbsRemoteStorageManager>
-    extends AbsManagerBuilder<T> {
+abstract class AbsRemoteStorageBuilder<C extends MixinStorageConfig,
+    T extends AbsRemoteStorageManager> extends AbsManagerBuilder<T> {
   /// Class constructor
   AbsRemoteStorageBuilder(super.factory);
 
@@ -30,12 +30,14 @@ abstract class AbsRemoteStorageBuilder<T extends AbsRemoteStorageManager>
   @mustCallSuper
   Iterable<Type> dependsOn() => [
         LoggerManager,
+        C,
       ];
 }
 
 /// Abstract class for a storage manager. It provides a set of methods to interact with a storage
 /// service and a cache service.
-abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends AbsWithLifeCycle {
+abstract class AbsRemoteStorageManager<C extends MixinStorageConfig>
+    extends AbsWithLifeCycle {
   /// logs helper category
   static const String _storageManagerLogCategory = 'storage';
 
@@ -91,7 +93,8 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
         cacheConfig: CacheStorageConfig(
           key: configManager.storageCacheKeyConf.load(),
           stalePeriod: configManager.storageCacheStalePeriodConf.load(),
-          maxNbOfCachedObjects: configManager.storageCacheNumberOfObjectsCached.load(),
+          maxNbOfCachedObjects:
+              configManager.storageCacheNumberOfObjectsCached.load(),
         ),
       );
 
@@ -102,7 +105,8 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
   }
 
   /// Get the path separator used by the storage service.
-  String getPathSeparator() => globalGetIt().get<C>().storagePathSeparator.load();
+  String getPathSeparator() =>
+      globalGetIt().get<C>().storagePathSeparator.load();
 
   /// Get a file based on a [fileId]. Set [useCache] to true to use the cache if available.
   Future<({StorageRequestResult result, File? file})> getFile(
@@ -114,7 +118,8 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
     }
 
     if (useCache && _cacheService == null) {
-      _logsHelper.w('Trying to use cache but no cache service is available, ignoring cache.');
+      _logsHelper.w(
+          'Trying to use cache but no cache service is available, ignoring cache.');
     }
 
     return _storageService.getFile(fileId);
@@ -125,7 +130,8 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
   ///
   /// This is only relevant if you use the cache service (if not, nothing is done).
   /// {@endtemplate}
-  Future<void> clearFileFromCache(String fileId) async => _cacheService?.clearFileFromCache(fileId);
+  Future<void> clearFileFromCache(String fileId) async =>
+      _cacheService?.clearFileFromCache(fileId);
 
   /// List all the files in a given [searchPath].
   Future<({StorageRequestResult result, StoragePage? page})> listFiles(
@@ -179,7 +185,8 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
       );
 
       // Check if the result is valid and if the page is not null
-      if (filesResult.result != StorageRequestResult.success || filesResult.page == null) {
+      if (filesResult.result != StorageRequestResult.success ||
+          filesResult.page == null) {
         return (result: filesResult.result, page: null);
       }
 

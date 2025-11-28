@@ -10,6 +10,7 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_minio_manager/src/models/minio_config_model.dart';
 import 'package:act_remote_storage_manager/act_remote_storage_manager.dart';
 import 'package:minio/minio.dart';
+import 'package:path/path.dart' as p;
 
 /// Service that provides MinIO storage operations
 ///
@@ -44,8 +45,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    _logsHelper.d('Initializing MinIO storage service...');
-
     // Create the MinIO client
     _minioClient = Minio(
       endPoint: config.endpoint,
@@ -54,8 +53,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
       secretKey: config.secretKey,
       useSSL: config.useSSL,
     );
-
-    _logsHelper.i('MinIO storage service initialized successfully');
   }
 
   /// {@macro act_remote_storage_manager.MixinStorageService.listFiles}
@@ -67,9 +64,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     bool recursiveSearch = false,
   }) async {
     try {
-      _logsHelper.d(
-          'Listing files in path: $searchPath (recursive: $recursiveSearch)');
-
       // Use listAllObjects to get all objects at once
       // MinIO's listObjects returns Stream<ListObjectsResult> where each result contains List<Object>
       final result = await _minioClient.listAllObjects(
@@ -94,8 +88,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
         items: storageFiles,
       );
 
-      _logsHelper.d('Listed ${storageFiles.length} files in path: $searchPath');
-
       return (result: StorageRequestResult.success, page: storagePage);
     } on MinioError catch (e) {
       _logsHelper.e('MinIO error while listing files in path $searchPath: $e');
@@ -114,15 +106,12 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     void Function(TransferProgress)? onProgress,
   }) async {
     try {
-      _logsHelper.d('Downloading file: $path');
-
       // Get the download directory
       directory ??= await MixinStorageService.getDownloadsDirectory();
 
       // Create the file path
-      final filepath = '${directory.path}/$path';
-      final intermediateDirectory =
-          filepath.substring(0, filepath.lastIndexOf('/'));
+      final filepath = p.join(directory.path, path);
+      final intermediateDirectory = p.dirname(filepath);
 
       // Create the intermediate directory if needed
       await Directory(intermediateDirectory).create(recursive: true);
@@ -164,8 +153,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
         ));
       }
 
-      _logsHelper.d('Successfully downloaded file: $path');
-
       return (result: StorageRequestResult.success, file: file);
     } on MinioError catch (e) {
       _logsHelper.e('MinIO error while downloading file $path: $e');
@@ -182,16 +169,12 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     String fileId,
   ) async {
     try {
-      _logsHelper.d('Getting download URL for file: $fileId');
-
       // Generate a presigned URL for the object
       final url = await _minioClient.presignedGetObject(
         config.bucket,
         fileId,
         expires: _defaultUrlExpiry.inSeconds,
       );
-
-      _logsHelper.d('Successfully generated download URL for file: $fileId');
 
       return (result: StorageRequestResult.success, downloadUrl: url);
     } on MinioError catch (e) {
@@ -225,8 +208,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
     void Function(TransferProgress)? onProgress,
   }) async {
     try {
-      _logsHelper.d('Uploading file to: $objectPath');
-
       final fileSize = await file.length();
       final stream = file.openRead().cast<Uint8List>();
 
@@ -261,8 +242,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
         ));
       }
 
-      _logsHelper.d('Successfully uploaded file to: $objectPath');
-
       return (result: StorageRequestResult.success, etag: etag);
     } on MinioError catch (e) {
       _logsHelper.e('MinIO error while uploading file to $objectPath: $e');
@@ -276,11 +255,7 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
   /// Delete an object from MinIO storage
   Future<StorageRequestResult> removeObject(String objectPath) async {
     try {
-      _logsHelper.d('Removing object: $objectPath');
-
       await _minioClient.removeObject(config.bucket, objectPath);
-
-      _logsHelper.d('Successfully removed object: $objectPath');
 
       return StorageRequestResult.success;
     } on MinioError catch (e) {
@@ -295,11 +270,7 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
   /// Delete multiple objects from MinIO storage
   Future<StorageRequestResult> removeObjects(List<String> objectPaths) async {
     try {
-      _logsHelper.d('Removing ${objectPaths.length} objects');
-
       await _minioClient.removeObjects(config.bucket, objectPaths);
-
-      _logsHelper.d('Successfully removed ${objectPaths.length} objects');
 
       return StorageRequestResult.success;
     } on MinioError catch (e) {
@@ -333,7 +304,6 @@ class MinioStorageService extends AbsWithLifeCycle with MixinStorageService {
   /// {@macro act_abstract_manager.AbsWithLifeCycle.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
-    _logsHelper.d('Disposing MinIO storage service...');
     await super.disposeLifeCycle();
   }
 }

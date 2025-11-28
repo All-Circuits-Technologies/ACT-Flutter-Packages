@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_minio_manager/src/mixins/mixin_minio_config.dart';
 import 'package:equatable/equatable.dart';
@@ -43,52 +42,71 @@ class MinioConfigModel extends Equatable {
     required this.useSSL,
   });
 
+  /// Parse MinIO configuration from a Map
+  ///
+  /// Expected map structure:
+  /// ```dart
+  /// {
+  ///   'endpoint': 'play.min.io',      // required
+  ///   'port': 9000,                   // optional, defaults to 9000
+  ///   'accessKey': 'your-access-key', // required
+  ///   'secretKey': 'your-secret-key', // required
+  ///   'bucket': 'your-bucket',        // required
+  ///   'useSSL': true,                 // optional, defaults to true
+  /// }
+  /// ```
+  ///
+  /// Returns null if any required field is missing or has an invalid type
+  static MinioConfigModel? fromMap(Map<String, dynamic> map) {
+    try {
+      final endpoint = map['endpoint'] as String?;
+      if (endpoint == null) {
+        return null;
+      }
+
+      final accessKey = map['accessKey'] as String?;
+      if (accessKey == null) {
+        return null;
+      }
+
+      final secretKey = map['secretKey'] as String?;
+      if (secretKey == null) {
+        return null;
+      }
+
+      final bucket = map['bucket'] as String?;
+      if (bucket == null) {
+        return null;
+      }
+
+      final port = map['port'] as int? ?? _defaultPort;
+      final useSSL = map['useSSL'] as bool? ?? _defaultUseSSL;
+
+      return MinioConfigModel._(
+        endpoint: endpoint,
+        port: port,
+        accessKey: accessKey,
+        secretKey: secretKey,
+        bucket: bucket,
+        useSSL: useSSL,
+      );
+    } catch (e) {
+      // Type casting error or other parsing error
+      return null;
+    }
+  }
+
   /// Get the MinIO configuration from the ConfigManager
   ///
   /// Returns null if any required configuration is missing
-  static MinioConfigModel? get<ConfigManager extends MixinMinioConfig>(
-      {LogsHelper? logsHelper}) {
-    final configManager = globalGetIt().get<ConfigManager>();
-
-    final endpoint = configManager.minioEndpoint.load();
-    if (endpoint == null) {
-      logsHelper
-          ?.f('MinioConfigModel: The endpoint is not set in the configuration');
+  static MinioConfigModel? getFromConfigManager(
+      {required MixinMinioConfig configManager, LogsHelper? logsHelper}) {
+    try {
+      return configManager.minioConfig.load();
+    } catch (e) {
+      logsHelper?.f('MinioConfigModel: Failed to load configuration: $e');
       return null;
     }
-
-    final accessKey = configManager.minioAccessKey.load();
-    if (accessKey == null) {
-      logsHelper?.f(
-          'MinioConfigModel: The accessKey is not set in the configuration');
-      return null;
-    }
-
-    final secretKey = configManager.minioSecretKey.load();
-    if (secretKey == null) {
-      logsHelper?.f(
-          'MinioConfigModel: The secretKey is not set in the configuration');
-      return null;
-    }
-
-    final bucket = configManager.minioBucket.load();
-    if (bucket == null) {
-      logsHelper
-          ?.f('MinioConfigModel: The bucket is not set in the configuration');
-      return null;
-    }
-
-    final port = configManager.minioPort.load() ?? _defaultPort;
-    final useSSL = configManager.minioUseSSL.load() ?? _defaultUseSSL;
-
-    return MinioConfigModel._(
-      endpoint: endpoint,
-      port: port,
-      accessKey: accessKey,
-      secretKey: secretKey,
-      bucket: bucket,
-      useSSL: useSSL,
-    );
   }
 
   /// Properties of the model
