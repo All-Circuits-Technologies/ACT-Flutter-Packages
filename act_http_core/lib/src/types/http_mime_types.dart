@@ -25,6 +25,12 @@ enum HttpMimeTypes with MixinStringValueType {
     bodyType: HttpBodyTypes.mapStringString,
   ),
 
+  /// This is an application octet stream mime type
+  applicationOctetStream(
+    stringValueOverride: "application/octet-stream",
+    bodyType: HttpBodyTypes.binary,
+  ),
+
   /// This is a multipart form data mime type
   multipartFormData(stringValueOverride: "multipart/form-data", bodyType: HttpBodyTypes.binary);
 
@@ -44,7 +50,8 @@ enum HttpMimeTypes with MixinStringValueType {
     HttpBodyTypes.string => HttpMimeTypes.plainText,
     HttpBodyTypes.json => HttpMimeTypes.json,
     HttpBodyTypes.mapStringString => HttpMimeTypes.formUrlEncoded,
-    HttpBodyTypes.binary => HttpMimeTypes.multipartFormData,
+    HttpBodyTypes.binary => HttpMimeTypes.applicationOctetStream,
+    HttpBodyTypes.files => HttpMimeTypes.multipartFormData,
   };
 
   /// Parse the [HttpMimeTypes] from the [value] given.

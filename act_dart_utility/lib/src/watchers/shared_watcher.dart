@@ -1,6 +1,4 @@
-// SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -48,14 +46,20 @@ abstract class SharedWatcher<T extends SharedHandler> {
   @protected
   WatcherState get state => (_handlerNb == 0) ? WatcherState.sleep : WatcherState.awake;
 
+  /// {@template act_dart_utility.SharedWatcher.generateHandler}
   /// Generate a handler to use with the watcher
+  /// {@endtemplate}
   T generateHandler();
 
+  /// {@template act_dart_utility.SharedWatcher.atFirstHandler}
   /// Called when there is no handler and one is created
+  /// {@endtemplate}
   @protected
   Future<void> atFirstHandler() async {}
 
+  /// {@template act_dart_utility.SharedWatcher.whenNoMoreHandler}
   /// Called when the last handler is closed
+  /// {@endtemplate}
   @protected
   Future<void> whenNoMoreHandler() async {}
 

@@ -9,3 +9,4 @@ export 'package:file_selector/file_selector.dart' show XFile;
 export 'src/constants/file_extensions.dart';
 export 'src/file_saver_manager.dart';
 export 'src/file_selector_manager.dart';
+export 'src/utilities/x_file_utilities.dart';

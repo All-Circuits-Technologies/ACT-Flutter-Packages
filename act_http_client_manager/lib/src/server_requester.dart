@@ -32,11 +32,12 @@ class ServerRequester extends AbsWithLifeCycle {
   /// The lock utility is used when there is a max parallel requests number
   final LockUtility? _lockUtility;
 
+  /// The on release watcher, this is used to watch when the requester is released and close the
+  /// client if needed
+  late final OnReleaseWatcher _onReleaseWatcher;
+
   /// The current opened client to request the server with
   Client? _client;
-
-  /// The timeout used to close the client when no more requests are done
-  Timer? _closeClientTimer;
 
   /// Class constructor
   ///
@@ -50,74 +51,76 @@ class ServerRequester extends AbsWithLifeCycle {
   })  : _serverUrls = serverUrls,
         _lockUtility = (maxParallelRequestsNb != null)
             ? LockUtility(maxParallelRequestsNb: maxParallelRequestsNb)
-            : null;
+            : null {
+    _onReleaseWatcher = OnReleaseWatcher(
+      thresholdDuration: server_req_constants.clientSessionDuration,
+      callback: _closeClient,
+    );
+  }
 
   /// This method requests the third server without managing the login
   Future<RequestResponse<ParsedRespBody>> executeRequestWithoutAuth<ParsedRespBody, RespBody>({
     required RequestParam requestParam,
     ParsedRespBody? Function(RespBody body)? parseRespBody,
   }) =>
-      _wrapRequestWithLock(() async {
-        final urlToRequest = UrlFormatUtility.formatFullUrl(
-          requestParam: requestParam,
-          serverUrls: _serverUrls,
-        );
+      _wrapRequestWithLock(() async => _onReleaseWatcher.supervise(() async {
+            final urlToRequest = UrlFormatUtility.formatFullUrl(
+              requestParam: requestParam,
+              serverUrls: _serverUrls,
+            );
 
-        final request = BodyFormatUtility.formatRequest(
-          requestParam: requestParam,
-          logsHelper: logsHelper,
-          urlToRequest: urlToRequest,
-        );
+            final request = BodyFormatUtility.formatRequest(
+              requestParam: requestParam,
+              logsHelper: logsHelper,
+              urlToRequest: urlToRequest,
+            );
 
-        if (request == null) {
-          return const RequestResponse(status: RequestStatus.globalError);
-        }
+            if (request == null) {
+              return const RequestResponse(status: RequestStatus.globalError);
+            }
 
-        logsHelper.d("Request the server: ${requestParam.httpMethod.stringValue} - $urlToRequest");
+            logsHelper
+                .d("Request the server: ${requestParam.httpMethod.stringValue} - $urlToRequest");
 
-        var timeout = defaultTimeout;
+            var timeout = defaultTimeout;
 
-        if (requestParam.timeout != null && requestParam.timeout != Duration.zero) {
-          timeout = requestParam.timeout!;
-        }
+            if (requestParam.timeout != null && requestParam.timeout != Duration.zero) {
+              timeout = requestParam.timeout!;
+            }
 
-        final client = _createOrGetClient();
-        Response? response;
+            final client = _createOrGetClient();
+            Response? response;
 
-        try {
-          final streamedResponse = await client.send(request).timeout(timeout);
-          response = await Response.fromStream(streamedResponse);
-        } catch (error) {
-          _closeClient();
-          logsHelper.e("An error occurred when requesting a server on uri: $urlToRequest, "
-              "error: $error");
-        }
+            try {
+              final streamedResponse = await client.send(request).timeout(timeout);
+              response = await Response.fromStream(streamedResponse);
+            } catch (error) {
+              _closeClient();
+              logsHelper.e("An error occurred when requesting a server on uri: $urlToRequest, "
+                  "error: $error");
+            }
 
-        if (response == null) {
-          return const RequestResponse(status: RequestStatus.globalError);
-        }
+            if (response == null) {
+              return const RequestResponse(status: RequestStatus.globalError);
+            }
 
-        return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
-          requestParam: requestParam,
-          responseReceived: response,
-          logsHelper: logsHelper,
-          urlToRequest: urlToRequest,
-          parseRespBody: parseRespBody,
-        );
-      });
+            return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
+              requestParam: requestParam,
+              responseReceived: response,
+              logsHelper: logsHelper,
+              urlToRequest: urlToRequest,
+              parseRespBody: parseRespBody,
+            );
+          }));
 
   /// Get the current opened client or create a new one
   Client _createOrGetClient() {
-    _closeClientTimer?.cancel();
-
     _client ??= Client();
-    _closeClientTimer = Timer(server_req_constants.clientSessionDuration, _closeClient);
     return _client!;
   }
 
   /// Close the http client
   void _closeClient() {
-    _closeClientTimer?.cancel();
     _client?.close();
     _client = null;
   }
