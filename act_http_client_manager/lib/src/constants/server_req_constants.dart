@@ -5,4 +5,4 @@
 library;
 
 /// This defines the timeout of a client session duration
-const clientSessionDuration = Duration(seconds: 2);
+const clientSessionDuration = Duration(seconds: 15);

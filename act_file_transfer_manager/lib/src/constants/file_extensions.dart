@@ -16,6 +16,9 @@ sealed class FileExtensions {
   /// This is the file extension for XML files
   static const String xml = 'xml';
 
+  /// This is the file extension for the rauc binary file
+  static const String raucBinary = "raucb";
+
   /// Returns the file extension with a leading dot.
   static String getFileExtensionWithDot(String extension) => '.$extension';
 }

@@ -27,7 +27,11 @@ sealed class BodyFormatUtility {
       return null;
     }
 
-    final request = Request(requestParam.httpMethod.stringValue, urlToRequest);
+    final request = _createAndFormatRequest(
+      convertedBody: convertedBody,
+      httpMethod: requestParam.httpMethod,
+      urlToRequest: urlToRequest,
+    );
 
     request.headers.addAll(requestParam.headers);
 
@@ -39,24 +43,59 @@ sealed class BodyFormatUtility {
       request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType.stringValue;
     }
 
-    switch (convertedBody.contentType) {
-      case HttpMimeTypes.json:
-      case HttpMimeTypes.plainText:
-        request.body = convertedBody.body! as String;
-        break;
-      case HttpMimeTypes.multipartFormData:
-      case HttpMimeTypes.csvText:
-        request.bodyBytes = convertedBody.body! as Uint8List;
-        break;
-      case HttpMimeTypes.formUrlEncoded:
-        request.bodyFields = convertedBody.body! as Map<String, String>;
-        break;
-      case HttpMimeTypes.empty:
-        // Nothing to do
-        break;
+    return request;
+  }
+
+  /// Tries to guess the body type based on its runtime type
+  /// Returns null if the body type is not recognized
+  // The body is of unknown type that's why is of dynamic type
+  // ignore: avoid_annotating_with_dynamic
+  static HttpBodyTypes? tryToGuessBodyType(dynamic body) {
+    // We use a for and a switch to be sure we receive an error if we add a new type and don't
+    // handle it here
+    for (final value in HttpBodyTypes.values) {
+      switch (value) {
+        case HttpBodyTypes.none:
+          if (body == null) {
+            return HttpBodyTypes.none;
+          }
+          break;
+        case HttpBodyTypes.string:
+          if (body is String) {
+            return HttpBodyTypes.string;
+          }
+          break;
+        case HttpBodyTypes.binary:
+          if (body is Uint8List || body is List<int>) {
+            return HttpBodyTypes.binary;
+          }
+          break;
+        case HttpBodyTypes.mapStringString:
+          if (body is Map<String, String>) {
+            return HttpBodyTypes.mapStringString;
+          }
+          break;
+        case HttpBodyTypes.json:
+          if (body is Map<String, dynamic> || body is List<dynamic>) {
+            return HttpBodyTypes.json;
+          }
+          break;
+        case HttpBodyTypes.files:
+          if (body is MultipartFile) {
+            return HttpBodyTypes.files;
+          }
+
+          if (body is List<dynamic>) {
+            final allAreFiles = body.every((element) => element is MultipartFile);
+            if (allAreFiles) {
+              return HttpBodyTypes.files;
+            }
+          }
+          break;
+      }
     }
 
-    return request;
+    return null;
   }
 
   /// The methods parses the body given and parse it to manageable type for the external http lib
@@ -70,7 +109,7 @@ sealed class BodyFormatUtility {
     var requestMimeType = requestParam.requestMimeType;
 
     if (requestMimeType == null) {
-      final bodyType = HttpBodyTypes.tryToGuessBodyType(requestBody);
+      final bodyType = tryToGuessBodyType(requestBody);
       if (bodyType == null) {
         logsHelper.w("We can't guess the body type for the given body, the type is: "
             "${requestBody.runtimeType} and it's unknown");
@@ -107,6 +146,24 @@ sealed class BodyFormatUtility {
         break;
 
       case HttpMimeTypes.multipartFormData:
+        if (requestBody is MultipartFile) {
+          // We convert it to a list
+          requestBody = [requestBody];
+          break;
+        }
+
+        if (requestBody is List<dynamic>) {
+          final allAreFiles = requestBody.every((element) => element is MultipartFile);
+          if (allAreFiles) {
+            // Nothing to do
+            break;
+          }
+        }
+
+        logsHelper.w("We expect to have a MultipartFile or List<MultipartFile> body for the "
+            "request $requestMimeType MIME type");
+        return null;
+      case HttpMimeTypes.applicationOctetStream:
       case HttpMimeTypes.csvText:
         if (requestBody is! Uint8List && requestBody is! List<int>) {
           logsHelper.w("We expect to have an Uint8List or List<int> body for the request "
@@ -274,6 +331,7 @@ sealed class BodyFormatUtility {
           break;
 
         case HttpMimeTypes.multipartFormData:
+        case HttpMimeTypes.applicationOctetStream:
         case HttpMimeTypes.csvText:
           body = responseReceived.bodyBytes as Body;
           break;
@@ -292,5 +350,45 @@ sealed class BodyFormatUtility {
     }
 
     return (isOk: (body != null), body: body);
+  }
+
+  /// Create and format a [BaseRequest] from the converted body, http method and url given
+  static BaseRequest _createAndFormatRequest({
+    required ConvertedBody convertedBody,
+    required HttpMethods httpMethod,
+    required Uri urlToRequest,
+  }) {
+    BaseRequest request;
+
+    final contentType = convertedBody.contentType;
+    if (contentType == HttpMimeTypes.multipartFormData) {
+      final tmpMultiRequest = MultipartRequest(httpMethod.stringValue, urlToRequest);
+      tmpMultiRequest.files.addAll(convertedBody.body! as List<MultipartFile>);
+      request = tmpMultiRequest;
+    } else {
+      final tmpRequest = Request(httpMethod.stringValue, urlToRequest);
+      switch (contentType) {
+        case HttpMimeTypes.json:
+        case HttpMimeTypes.plainText:
+          tmpRequest.body = convertedBody.body! as String;
+          break;
+        case HttpMimeTypes.applicationOctetStream:
+        case HttpMimeTypes.csvText:
+          tmpRequest.bodyBytes = convertedBody.body! as Uint8List;
+          break;
+        case HttpMimeTypes.formUrlEncoded:
+          tmpRequest.bodyFields = convertedBody.body! as Map<String, String>;
+          break;
+        case HttpMimeTypes.empty:
+          // Nothing to do
+          break;
+        case HttpMimeTypes.multipartFormData:
+          // Already managed
+          break;
+      }
+      request = tmpRequest;
+    }
+
+    return request;
   }
 }

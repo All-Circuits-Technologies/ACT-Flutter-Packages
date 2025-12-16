@@ -5,7 +5,7 @@
 library;
 
 export 'package:act_http_core/act_http_core.dart' show HttpMethods;
-export 'package:http/http.dart' show Response;
+export 'package:http/http.dart' show MediaType, MultipartFile, Response;
 
 export 'src/abs_http_client_login.dart';
 export 'src/abs_http_client_manager.dart';
@@ -18,6 +18,7 @@ export 'src/models/request_response.dart';
 export 'src/models/requester_config.dart';
 export 'src/models/requester_server_url_config.dart';
 export 'src/server_requester.dart';
+export 'src/types/http_mime_types_client_ext.dart';
 export 'src/types/login_fail_policy.dart';
 export 'src/types/request_status.dart';
 export 'src/types/request_status_ext_auth.dart';

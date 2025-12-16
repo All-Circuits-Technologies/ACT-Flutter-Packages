@@ -29,6 +29,8 @@ dependencies:
 
   mutex: ^3.1.0
 
+  path: ^1.9.1
+
   # Logger manager
   act_logger_manager:
     path: ../act_logger_manager
