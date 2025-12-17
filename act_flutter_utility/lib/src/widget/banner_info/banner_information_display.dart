@@ -95,6 +95,7 @@ class BannerInformationDisplay extends StatelessWidget {
 
                   return Container(
                     padding: padding,
+                    alignment: Alignment.centerLeft,
                     constraints: BoxConstraints(
                       minHeight: minHeight,
                     ),
