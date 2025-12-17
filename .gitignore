@@ -35,6 +35,8 @@
 .pub/
 /build/
 
+pubspec.lock
+
 devtools_options.yaml
 
 # Web related
