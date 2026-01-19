@@ -16,8 +16,11 @@ enum HttpMimeTypes with MixinStringValueType {
   /// This is a plain text mime type
   plainText(stringValueOverride: "text/plain", bodyType: HttpBodyTypes.string),
 
-  /// This is a json mime types
+  /// This is a json mime type
   json(stringValueOverride: "application/json", bodyType: HttpBodyTypes.json),
+
+  /// This is an application gzip mime type
+  gzip(stringValueOverride: "application/gzip", bodyType: HttpBodyTypes.binary),
 
   /// This is a form url encoded mime type
   formUrlEncoded(

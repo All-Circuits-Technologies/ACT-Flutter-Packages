@@ -19,6 +19,15 @@ sealed class FileExtensions {
   /// This is the file extension for the rauc binary file
   static const String raucBinary = "raucb";
 
+  /// This is the file extension for tar files
+  static const String tar = "tar";
+
+  /// This is the file extension for gz files
+  static const String gz = "gz";
+
+  /// This is the file extension for tar.gz files
+  static const String tarGz = "$tar.$gz";
+
   /// Returns the file extension with a leading dot.
   static String getFileExtensionWithDot(String extension) => '.$extension';
 }
