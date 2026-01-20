@@ -4,8 +4,12 @@
 
 /// Contains constants for HTTP header keys and values
 sealed class HeaderConstants {
-  /// Separator used in header values to separate multiple values
-  static const headerValueSeparator = "; ";
+  /// This is the character separator used in header values to separate multiple values
+  static const headerValueSeparatorChar = ";";
+
+  /// Separator used in header values to separate multiple values, which is more cleaner than
+  /// [headerValueSeparatorChar]
+  static const headerValueSeparator = "$headerValueSeparatorChar ";
 
   /// This is the separator between property and its value in header value
   static const propertySeparatorInHeaderValue = "=";
@@ -55,6 +59,9 @@ sealed class HeaderConstants {
 
   /// This is the `filename` key for the `Content-Disposition` header
   static const contentDispositionFilenameKey = "filename";
+
+  /// This is the `filename*` key for the `Content-Disposition` header
+  static const contentDispositionFilenameEncodingKey = "filename*";
 
   /// This is the `Origin` key, to add it in headers
   static const originHeaderKey = "Origin";
