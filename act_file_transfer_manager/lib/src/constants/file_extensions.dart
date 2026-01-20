@@ -28,6 +28,9 @@ sealed class FileExtensions {
   /// This is the file extension for tar.gz files
   static const String tarGz = "$tar.$gz";
 
+  /// This is the file extension for tgz files (tgz is a common shorthand for tar.gz)
+  static const String tgz = "tgz";
+
   /// Returns the file extension with a leading dot.
   static String getFileExtensionWithDot(String extension) => '.$extension';
 }
