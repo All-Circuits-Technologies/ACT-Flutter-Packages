@@ -20,6 +20,11 @@ import 'package:http/http.dart';
 /// We can request the server through this requester. This doesn't manage the login (it's done by
 /// the manager)
 class ServerRequester extends AbsWithLifeCycle {
+  /// This the error message when the client failed to be fetched
+  ///
+  /// We write it in lower case to make the comparison easier
+  static const failedToFetchClientMsg = "failed to fetch";
+
   /// The logs helper linked to the requester
   final LogsHelper logsHelper;
 
@@ -90,18 +95,21 @@ class ServerRequester extends AbsWithLifeCycle {
 
             final client = _createOrGetClient();
             Response? response;
+            RequestStatus? errorStatus;
 
             try {
               final streamedResponse = await client.send(request).timeout(timeout);
               response = await Response.fromStream(streamedResponse);
             } catch (error) {
+              errorStatus = _guessRequestErrorStatus(error);
+
               _closeClient();
               logsHelper.e("An error occurred when requesting a server on uri: $urlToRequest, "
                   "error: $error");
             }
 
-            if (response == null) {
-              return const RequestResponse(status: RequestStatus.globalError);
+            if (errorStatus != null || response == null) {
+              return RequestResponse(status: errorStatus ?? RequestStatus.globalError);
             }
 
             return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
@@ -134,6 +142,22 @@ class ServerRequester extends AbsWithLifeCycle {
     }
 
     return _lockUtility!.protectLock(criticalSection);
+  }
+
+  /// Try to guess the request error status from the error object
+  RequestStatus _guessRequestErrorStatus(Object error) {
+    if (error is TimeoutException) {
+      return RequestStatus.timeoutError;
+    }
+
+    if (error is ClientException) {
+      final errorMsg = error.message.toLowerCase();
+      if (errorMsg.contains(failedToFetchClientMsg)) {
+        return RequestStatus.failedToFetchError;
+      }
+    }
+
+    return RequestStatus.globalError;
   }
 
   /// Call to dispose the requester

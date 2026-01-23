@@ -10,6 +10,12 @@ enum RequestStatus {
   /// The request fails with a login error
   loginError,
 
+  /// The request fails with a timeout error
+  timeoutError,
+
+  /// The request fails because we failed to fetch the server
+  failedToFetchError,
+
   /// The request fails with a global error
   globalError;
 
