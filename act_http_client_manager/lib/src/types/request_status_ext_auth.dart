@@ -11,6 +11,8 @@ extension RequestStatusExtAuth on RequestStatus {
   AuthSignInStatus get signInStatus => switch (this) {
         RequestStatus.success => AuthSignInStatus.done,
         RequestStatus.loginError => AuthSignInStatus.sessionExpired,
+        RequestStatus.failedToFetchError => AuthSignInStatus.genericError,
+        RequestStatus.timeoutError => AuthSignInStatus.genericError,
         RequestStatus.globalError => AuthSignInStatus.genericError,
       };
 }
