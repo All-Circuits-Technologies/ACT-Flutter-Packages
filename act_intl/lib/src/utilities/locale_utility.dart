@@ -20,13 +20,22 @@ sealed class LocaleUtility {
   /// but which is discouraged outside debug usage, and to toLanguageTag which use a hyphen
   /// separator.
   ///
-  /// If you are fine with hyphen separator, you should better use toLanguageTag directly.
+  /// But it lets you choose the separator you want. By default it uses the BCP47 standard (so the
+  /// same as toLanguageTag).
   ///
   /// See also [bcp47CodesSeparator] and [underscoreSeparator] constants.
   ///
   /// Note: Resulted string case is identical to toLanguageTag result case.
-  static String localeToString({required Locale locale, required String separator}) =>
-      locale.toLanguageTag().replaceAll(bcp47CodesSeparator, separator);
+  static String localeToString({required Locale locale, String separator = bcp47CodesSeparator}) {
+    final langTag = locale.toLanguageTag();
+
+    if (separator == bcp47CodesSeparator) {
+      // Nothing more to do
+      return langTag;
+    }
+
+    return langTag.replaceAll(bcp47CodesSeparator, separator);
+  }
 
   /// Convert a Locale [string] (such as "fr_fr" or "fr-fr") to a [Locale].
   ///

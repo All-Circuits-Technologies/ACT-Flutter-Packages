@@ -72,6 +72,16 @@ class LocalesManager extends AbsWithLifeCycle {
   /// to be ended.
   Locale get currentLocale => _currentLocale;
 
+  /// This is the current locale of the application, formatted for date formatting.
+  ///
+  /// DateFormat in Intl package requires locale in the format "en_US" instead of "en-US". This
+  /// method provides the current locale in the correct format for date formatting.
+  ///
+  /// If you want to be sure that the locale is set, you should wait for the [initAfterView] method
+  /// to be ended.
+  String get currentLocaleStrForDateFormat => LocaleUtility.localeToString(
+      locale: _currentLocale, separator: LocaleUtility.underscoreSeparator);
+
   /// This is the locale wanted by the user
   ///
   /// {@template act_intl.LocalesManager.wantedLocale.brief}
