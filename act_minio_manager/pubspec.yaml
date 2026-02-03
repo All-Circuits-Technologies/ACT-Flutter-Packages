@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2025 Théo Magne <theo.magne@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_minio_manager
+description: "This package provides a manager and service to interact with MinIO object storage."
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  windows:
+
+environment:
+  sdk: ">=3.3.2 <4.0.0"
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # MinIO client library
+  minio: ^3.5.8
+
+  equatable: ^2.0.7
+
+  mutex: ^3.1.0
+
+  # Contains the structure to create services and managers
+  act_abstract_manager:
+    path: ../act_abstract_manager
+
+  # Config manager for MinIO credentials
+  act_config_manager:
+    path: ../act_config_manager
+
+  # Dart utility
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Contains the logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Storage manager with the MixinStorageService
+  act_remote_storage_manager:
+    path: ../act_remote_storage_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
