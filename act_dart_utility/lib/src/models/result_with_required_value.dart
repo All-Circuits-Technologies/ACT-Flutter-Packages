@@ -4,6 +4,7 @@
 
 import 'package:act_dart_utility/src/mixins/mixin_result_status.dart';
 import 'package:act_dart_utility/src/models/result_with_status.dart';
+import 'package:act_dart_utility/src/models/status_with_extra_info.dart';
 
 /// This class is similar to [ResultWithStatus] but the value is
 /// not supposed to be null. Therefore the request is a success only if the
@@ -16,5 +17,12 @@ class ResultWithRequiredValue<Status extends MixinResultStatus, Value>
   bool get isSuccess => super.isSuccess && value != null;
 
   /// Class constructor
-  const ResultWithRequiredValue({required super.status, super.value});
+  const ResultWithRequiredValue({required super.status, super.value, super.extraInfo});
+
+  /// Class constructor to create a [ResultWithRequiredValue] from a [StatusWithExtraInfo] and a
+  /// value
+  ResultWithRequiredValue.fromStatus({
+    required super.statusWitExtraInfo,
+    super.value,
+  }) : super.fromStatus();
 }
