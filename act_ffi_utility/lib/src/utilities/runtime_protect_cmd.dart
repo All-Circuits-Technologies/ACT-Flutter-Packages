@@ -31,9 +31,7 @@ sealed class RuntimeProtectCmd {
     T Function() cmd, {
     required T defaultValue,
     String? description,
-  }) =>
-      RuntimeProtectCmd.protect<T>(cmd, description: description) ??
-      defaultValue;
+  }) => RuntimeProtectCmd.protect<T>(cmd, description: description) ?? defaultValue;
 
   /// {@macro act_ffi_utility.RuntimeProtectCmd.protect}
   ///
@@ -70,7 +68,44 @@ sealed class RuntimeProtectCmd {
     T Function(RuntimeCallocRegister register) cmd, {
     required T defaultValue,
     String? description,
-  }) =>
-      RuntimeProtectCmd.protectWithCalloc<T>(cmd, description: description) ??
+  }) => RuntimeProtectCmd.protectWithCalloc<T>(cmd, description: description) ?? defaultValue;
+
+  /// {@template act_ffi_utility.RuntimeProtectCmd.protectAsync}
+  /// Async variant of [protect]. Safely calls an async runtime command,
+  /// catching any exceptions.
+  /// {@endtemplate}
+  ///
+  /// {@macro act_ffi_utility.RuntimeProtectCmd.protectWithCalloc}
+  static Future<T?> protectAsyncWithCalloc<T>(
+    Future<T> Function(RuntimeCallocRegister register) cmd, {
+    String? description,
+  }) async {
+    final register = RuntimeCallocRegister();
+    T? result;
+    try {
+      result = await cmd(register);
+    } catch (error) {
+      appLogger().w(
+        "An exception occurred during an async runtime command call with calloc"
+        "${description != null ? ' ($description)' : ''}: $error",
+      );
+    }
+
+    register.freeAll();
+
+    return result;
+  }
+
+  /// {@macro act_ffi_utility.RuntimeProtectCmd.protectAsync}
+  ///
+  /// {@macro act_ffi_utility.RuntimeProtectCmd.protectWithCalloc}
+  ///
+  /// Call [protectAsyncWithCalloc] and returns [defaultValue] if an exception occurs.
+  static Future<T> protectAsyncWithCallocAndDefault<T>(
+    Future<T> Function(RuntimeCallocRegister register) cmd, {
+    required T defaultValue,
+    String? description,
+  }) async =>
+      await RuntimeProtectCmd.protectAsyncWithCalloc<T>(cmd, description: description) ??
       defaultValue;
 }
