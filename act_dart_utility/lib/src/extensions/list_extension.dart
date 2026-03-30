@@ -96,6 +96,17 @@ extension ActListExtension<T> on List<T> {
         start,
       );
 
+  /// {@macro act_dart_utility.ListUtility.indexWhereOrNull}
+  int? indexWhereOrNull(bool Function(T element) test, {int start = 0}) =>
+      ListUtility.indexWhereOrNull<T>(this, test, start: start);
+
+  /// {@macro act_dart_utility.ListUtility.indexWhereOrDefault}
+  int indexWhereOrDefault(bool Function(T element) test,
+          {int start = 0,
+          int defaultValue = ListUtility.defaultIndexOfValueNotFound}) =>
+      ListUtility.indexWhereOrDefault<T>(this, test,
+          start: start, defaultValue: defaultValue);
+
   /// {@macro act_dart_utility.ListUtility.indexesWhere}
   List<int> indexesWhere(
     bool Function(T element) test, {

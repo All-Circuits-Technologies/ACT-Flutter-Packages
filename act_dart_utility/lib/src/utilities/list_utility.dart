@@ -8,6 +8,9 @@ import 'package:act_dart_utility/src/utilities/iterable_utility.dart';
 
 /// Helpful class to manage lists
 sealed class ListUtility {
+  /// This value is used when a method returns an index but the value is not found in the list.
+  static const int defaultIndexOfValueNotFound = -1;
+
   /// {@template act_dart_utility.ListUtility.copy}
   /// Return a copy of [list]
   ///
@@ -21,8 +24,7 @@ sealed class ListUtility {
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
   /// {@endtemplate}
-  static List<T> copyWithoutValue<T>(List<T> list, T? value,
-          {bool growable = true}) =>
+  static List<T> copyWithoutValue<T>(List<T> list, T? value, {bool growable = true}) =>
       IterableUtility.copyWithoutValue(list, value).toList(growable: growable);
 
   /// {@template act_dart_utility.ListUtility.copyWithoutValues}
@@ -30,18 +32,15 @@ sealed class ListUtility {
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
   /// {@endtemplate}
-  static List<T> copyWithoutValues<T>(List<T> list, List<T> values,
-          {bool growable = true}) =>
-      IterableUtility.copyWithoutValues(list, values)
-          .toList(growable: growable);
+  static List<T> copyWithoutValues<T>(List<T> list, List<T> values, {bool growable = true}) =>
+      IterableUtility.copyWithoutValues(list, values).toList(growable: growable);
 
   /// {@template act_dart_utility.ListUtility.getListsIntersection}
   /// Only returns the elements which are contained in all the given lists
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
   /// {@endtemplate}
-  static List<T> getListsIntersection<T>(List<List<T>> elements,
-      {bool growable = true}) {
+  static List<T> getListsIntersection<T>(List<List<T>> elements, {bool growable = true}) {
     if (elements.isEmpty) {
       return [];
     }
@@ -49,8 +48,7 @@ sealed class ListUtility {
     return elements
         .fold<Set<T>>(
           elements.first.toSet(),
-          (previousValue, element) =>
-              previousValue.intersection(element.toSet()),
+          (previousValue, element) => previousValue.intersection(element.toSet()),
         )
         .toList(
           growable: growable,
@@ -64,8 +62,7 @@ sealed class ListUtility {
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
   static List<T> interleave<T>(List<T> list, T interleave,
           {bool addLeft = false, bool addRight = false}) =>
-      interleaveWithBuilder(list, () => interleave,
-          addLeft: addLeft, addRight: addRight);
+      interleaveWithBuilder(list, () => interleave, addLeft: addLeft, addRight: addRight);
 
   /// {@template act_dart_utility.ListUtility.interleaveWithBuilder}
   /// Return a given [list] with built interleaves inserted between each [list] item.
@@ -78,8 +75,7 @@ sealed class ListUtility {
   /// If the list is empty, the method will return an empty list, even if [addLeft] and/or
   /// [addRight] are true.
   /// {@endtemplate}
-  static List<T> interleaveWithBuilder<T>(
-      List<T> list, T Function() interleaveBuilder,
+  static List<T> interleaveWithBuilder<T>(List<T> list, T Function() interleaveBuilder,
       {bool addLeft = false, bool addRight = false}) {
     if (list.isEmpty) {
       return [];
@@ -87,9 +83,8 @@ sealed class ListUtility {
 
     final newList = list.fold(
       <T>[if (addLeft) interleaveBuilder()],
-      (previousValue, element) => previousValue.isEmpty
-          ? [element]
-          : [...previousValue, interleaveBuilder(), element],
+      (previousValue, element) =>
+          previousValue.isEmpty ? [element] : [...previousValue, interleaveBuilder(), element],
     );
 
     if (addRight) {
@@ -102,8 +97,7 @@ sealed class ListUtility {
   /// {@template act_dart_utility.ListUtility.testIfAtLeastOneIsInList}
   /// Test if at least one element of [atLeastOne] list is contained in the [globalList] list
   /// {@endtemplate}
-  static bool testIfAtLeastOneIsInList<T>(
-          List<T> atLeastOne, List<T> globalList) =>
+  static bool testIfAtLeastOneIsInList<T>(List<T> atLeastOne, List<T> globalList) =>
       IterableUtility.testIfAtLeastOneIsInCollection(atLeastOne, globalList);
 
   /// {@template act_dart_utility.ListUtility.testIfListIsInList}
@@ -153,8 +147,7 @@ sealed class ListUtility {
   /// - If [length] is null or overflow the list length with [start], the list length will be used.
   /// - If [length] is negative, an empty list will be returned.
   /// {@endtemplate}
-  static List<T> safeSublistFromLength<T>(List<T> list, int start,
-          [int? length]) =>
+  static List<T> safeSublistFromLength<T>(List<T> list, int start, [int? length]) =>
       safeSublist(list, start, (length != null) ? start + length : null);
 
   /// {@template act_dart_utility.ListUtility.distinct}
@@ -171,8 +164,7 @@ sealed class ListUtility {
 
     if (getUniqueElem != null) {
       final uniqueElements = <Y>{};
-      tmpList
-          .retainWhere((element) => uniqueElements.add(getUniqueElem(element)));
+      tmpList.retainWhere((element) => uniqueElements.add(getUniqueElem(element)));
     } else {
       final uniqueElements = <T>{};
       tmpList.retainWhere(uniqueElements.add);
@@ -208,10 +200,7 @@ sealed class ListUtility {
   /// {@endtemplate}
   static void moveElement<T>(List<T> list, int currentIdx, int targetedIdx) {
     final length = list.length;
-    if (currentIdx < 0 ||
-        currentIdx >= length ||
-        targetedIdx < 0 ||
-        targetedIdx > length) {
+    if (currentIdx < 0 || currentIdx >= length || targetedIdx < 0 || targetedIdx > length) {
       return;
     }
 
@@ -234,8 +223,7 @@ sealed class ListUtility {
   /// elements of [listToAdd] will be appended to the list.
   /// If [start] is greater than the [globalList] length, the method will return an empty list.
   /// {@endtemplate}
-  static List<T> appendOrReplace<T>(List<T> globalList, List<T> listToAdd,
-      [int? start]) {
+  static List<T> appendOrReplace<T>(List<T> globalList, List<T> listToAdd, [int? start]) {
     if (start != null && start > globalList.length) {
       return const [];
     }
@@ -249,6 +237,43 @@ sealed class ListUtility {
 
     tmpList.addAll(listToAdd);
     return tmpList;
+  }
+
+  /// {@template act_dart_utility.ListUtility.indexWhereOrNull}
+  /// Returns the index of the first element in [list] that satisfies the given [test], or null if
+  /// no such element is found.
+  /// {@endtemplate}
+  static int? indexWhereOrNull<T>(List<T> list, bool Function(T element) test, {int start = 0}) {
+    final tmpStart = _safeGetStartIndexForList(list: list, start: start);
+    if (tmpStart == null) {
+      return null;
+    }
+
+    final indexFound = list.indexWhere(test, tmpStart);
+    if (indexFound == defaultIndexOfValueNotFound) {
+      return null;
+    }
+
+    return indexFound;
+  }
+
+  /// {@template act_dart_utility.ListUtility.indexWhereOrDefault}
+  /// Returns the index of the first element in [list] that satisfies the given [test], or a default
+  /// value if no such element is found.
+  /// {@endtemplate}
+  static int indexWhereOrDefault<T>(List<T> list, bool Function(T element) test,
+      {int start = 0, int defaultValue = defaultIndexOfValueNotFound}) {
+    final tmpStart = _safeGetStartIndexForList(list: list, start: start);
+    if (tmpStart == null) {
+      return defaultValue;
+    }
+
+    final indexFound = list.indexWhere(test, tmpStart);
+    if (indexFound == defaultIndexOfValueNotFound) {
+      return defaultValue;
+    }
+
+    return indexFound;
   }
 
   /// {@template act_dart_utility.ListUtility.indexesWhere}
@@ -268,15 +293,12 @@ sealed class ListUtility {
     int maxCount = -1,
   }) {
     final length = list.length;
-    if (maxCount == 0 || length == 0 || start >= length) {
+    final tmpStart = _safeGetStartIndexForList(list: list, start: start);
+    if (maxCount == 0 || length == 0 || tmpStart == null) {
       return [];
     }
 
     final indexes = <int>[];
-    var tmpStart = start;
-    if (start < 0) {
-      tmpStart = 0;
-    }
 
     for (var idx = tmpStart; idx < length; ++idx) {
       final element = list[idx];
@@ -332,5 +354,21 @@ sealed class ListUtility {
     }
 
     return indexes;
+  }
+
+  /// This method is used to get a safe start index for a list based on the given [start] index.
+  /// If the [start] index is negative, it returns 0.
+  /// If the [start] index is greater or equal than the list length, it returns null.
+  /// Otherwise, it returns the [start] index as it is.
+  static int? _safeGetStartIndexForList<T>({required List<T> list, required int start}) {
+    if (start >= list.length) {
+      return null;
+    }
+
+    if (start < 0) {
+      return 0;
+    }
+
+    return start;
   }
 }

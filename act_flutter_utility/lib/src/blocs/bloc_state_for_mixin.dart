@@ -19,6 +19,13 @@ abstract class BlocStateForMixin<S extends BlocStateForMixin<S>> extends Equatab
   @protected
   S copyWith();
 
+  /// {@template act_flutter_utility.BlocStateForMixin.dispose}
+  /// This method is called when the bloc is closed. It can be used to dispose resources used by
+  /// the state.
+  /// {@endtemplate}
+  @mustCallSuper
+  Future<void> dispose() async {}
+
   /// {@template act_flutter_utility.BlocStateForMixin.props}
   /// Empty [props] getter to force the [mustCallSuper] annotation.
   /// {@endtemplate}

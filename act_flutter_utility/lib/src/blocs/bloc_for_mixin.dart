@@ -7,7 +7,7 @@ import 'package:act_flutter_utility/src/blocs/bloc_state_for_mixin.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-/// This bloc is usefull when you want to create a bloc with mixin.
+/// This bloc is useful when you want to create a bloc with mixin.
 abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEventForMixin, S> {
   /// Constructor for the bloc.
   BlocForMixin(super.initialState) {
@@ -22,4 +22,16 @@ abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEve
   /// {@endtemplate}
   @mustCallSuper
   void registerMixinEvents() {}
+
+  /// {@template act_flutter_utility.BlocForMixin.close}
+  /// This is the close method of the bloc.
+  /// {@endtemplate}
+  ///
+  /// We override the close method to call the dispose method of the state, which can be used to
+  /// dispose resources used by the state.
+  @override
+  Future<void> close() async {
+    await state.dispose();
+    return super.close();
+  }
 }
