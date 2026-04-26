@@ -6,6 +6,7 @@
 
 import 'dart:async';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/src/types/global_manager_state.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -17,7 +18,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 GetIt globalGetIt() => AbsGlobalManager.instance!.managers;
 
 /// The [appLogger] function is used to shortcut access to the default logger
-LoggerManager appLogger() => AbsGlobalManager.instance!.defaultLogger;
+MixinActLogger appLogger() => AbsGlobalManager.instance!.defaultLogger;
 
 /// The [AbsGlobalManager] is used to store the Application managers
 ///
@@ -49,7 +50,7 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   final isReleaseMode = kReleaseMode;
 
   /// This is the default logger to use in the app
-  LoggerManager? _defaultLogger;
+  final MixinActLogger defaultLogger;
 
   /// This is the list of states of the global manager
   late final List<Enum> _globalManagerStates;
@@ -59,9 +60,6 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
 
   /// The information contained in the pubspec.yaml of the mobile application
   late PackageInfo _packageInfo;
-
-  /// Get the default logger value
-  LoggerManager get defaultLogger => _defaultLogger!;
 
   /// Get the app package info
   PackageInfo get packageInfo => _packageInfo;
@@ -73,8 +71,11 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   /// {@template act_global_manager.AbsGlobalManager.create}
   /// The create constructor is used to construct the singleton instance
   /// {@endtemplate}
-  AbsGlobalManager.create()
+  AbsGlobalManager.create({LogsLevel defaultMinLevel = LogsLevel.warn})
       : _currentState = GlobalManagerState.created,
+        defaultLogger = LoggerManager.getSafeLogger(
+          defaultMinLevel: defaultMinLevel,
+        ),
         _registeredManagers = [];
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
@@ -114,19 +115,11 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
 
   /// {@template act_global_manager.AbsGlobalManager.registerManagerAsync}
   /// This method is used to register asynchronously the app managers
-  ///
-  /// If the manager you want to register is the Logger Manager, this registers the
-  /// [_defaultLogger].
   /// {@endtemplate}
   @protected
   void registerManagerAsync<T extends AbsWithLifeCycle>(AbsLifeCycleFactory<T> builder) {
     Future<T> asyncFactory() async {
       final manager = await builder.asyncFactory();
-
-      if (T == LoggerManager) {
-        AbsGlobalManager.instance!._defaultLogger = manager as LoggerManager;
-      }
-
       _registeredManagers.add(manager);
 
       return manager;
@@ -149,7 +142,7 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
     final stateIndex = _globalManagerStates.indexOf(state);
 
     if (stateIndex == -1) {
-      logErrorAsYouCan("The state $state is not in the list of global manager states, it will be "
+      defaultLogger.e("The state $state is not in the list of global manager states, it will be "
           "considered as already reached");
       return false;
     }
@@ -164,25 +157,13 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
     return true;
   }
 
-  /// This method is used to log an error as you can, even if the logger manager is not yet
-  /// initialized
-  @protected
-  void logErrorAsYouCan(Object error) {
-    if (_defaultLogger == null) {
-      debugPrint("Error: $error");
-      return;
-    }
-
-    _defaultLogger!.e(error);
-  }
-
   /// {@template act_global_manager.AbsGlobalManager.disposeLifeCycle}
   /// The [disposeLifeCycle] method is used to dispose all the managers
   /// It has to be called in the main app dispose method
   /// {@endtemplate}
   @override
   Future<void> disposeLifeCycle() async {
-    _defaultLogger?.i("Disposing the global manager and managers");
+    defaultLogger.i("Disposing the global manager and managers");
     await Future.wait(_registeredManagers.map((manager) => manager.disposeLifeCycle()));
 
     await super.disposeLifeCycle();

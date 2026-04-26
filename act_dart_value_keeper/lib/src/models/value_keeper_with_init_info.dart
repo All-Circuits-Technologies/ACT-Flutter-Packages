@@ -4,7 +4,7 @@
 
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
 
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
 /// This class also save the information if the value has been explicitly initialized, or not
 class ValueKeeperWithInitInfo<T> extends ValueKeeperWithNullInit<T> {
@@ -14,7 +14,7 @@ class ValueKeeperWithInitInfo<T> extends ValueKeeperWithNullInit<T> {
   /// Returns true if the value has been explicitly initialized at least once
   bool get hasBeenInitialized => _hasBeenInitialized;
 
-  /// {@macro act_dart_utility.ValueKeeper.value.setter}
+  /// {@macro act_dart_value_keeper.ValueKeeper.value.setter}
   @override
   set value(T newValue) {
     if (!_hasBeenInitialized) {

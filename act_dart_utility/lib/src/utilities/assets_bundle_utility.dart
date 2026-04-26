@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:flutter/services.dart';
 
 /// This is the result of the load string method from assets bundle
@@ -13,7 +14,7 @@ enum AssetsBundleResult {
   notFound,
 
   /// A generic error occurred
-  genericError;
+  genericError,
 }
 
 /// This class contains useful methods to manage files stored in the assets bundle
@@ -24,15 +25,17 @@ sealed class AssetsBundleUtility {
   static Future<({AssetsBundleResult status, String? data})> loadStringFromAssetBundle(
     String key, {
     bool cache = true,
+    MixinActLogger? logger,
   }) async {
     String? fileContent;
     try {
-      fileContent = await rootBundle.loadString(
-        key,
-        cache: cache,
-      );
+      fileContent = await rootBundle.loadString(key, cache: cache);
     } catch (error) {
-      // The file doesn't exist or a problem occurred
+      logger?.w(
+        "The string file with key '$key' hasn't been found in the assets bundle or a problem "
+        "occurred while loading it",
+        error,
+      );
     }
 
     if (fileContent == null) {
@@ -49,12 +52,17 @@ sealed class AssetsBundleUtility {
   static Future<({AssetsBundleResult status, Uint8List? data})> loadBinaryFromAssetBundle(
     String key, {
     bool cache = true,
+    MixinActLogger? logger,
   }) async {
     ByteData? byteData;
     try {
       byteData = await rootBundle.load(key);
     } catch (error) {
-      // The file doesn't exist or a problem occurred
+      logger?.w(
+        "The binary file with key '$key' hasn't been found in the assets bundle or a problem "
+        "occurred while loading it",
+        error,
+      );
     }
 
     if (byteData == null) {

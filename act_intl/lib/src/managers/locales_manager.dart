@@ -24,7 +24,7 @@ class LocalesManagerBuilder<P extends MixinLocaleProperties>
               propertiesGetter: globalGetIt().get<P>,
             ));
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, P];
 }
@@ -147,7 +147,7 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory);
+    _logsHelper = LogsHelper(category: _logsCategory);
     supportedLocales = _getSupportedLocales();
     await _initWantedLocale();
   }

@@ -25,16 +25,15 @@ dependencies:
 
   uuid: ^4.5.1
 
-  # Flutter AC Technologies dependencies
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
   # Extend Dart functionalities
   act_dart_utility:
     path: ../act_dart_utility
+
+  act_foundation:
+    path: ../act_foundation
 
   # Default global manager
   act_global_manager:
@@ -48,6 +47,10 @@ dependencies:
 
   act_jwt_utilities:
     path: ../act_jwt_utilities
+
+  # Flutter AC Technologies dependencies
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

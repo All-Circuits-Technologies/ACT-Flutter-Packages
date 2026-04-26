@@ -65,7 +65,7 @@ class AuthTokens extends Equatable {
       key: _accessTokenKey,
       canBeUndefined: true,
       castValueFunc: AuthToken.fromJson,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     final refreshTokenResult = JsonUtility.getOneElement<AuthToken, Map<String, dynamic>>(
@@ -73,14 +73,14 @@ class AuthTokens extends Equatable {
       key: _refreshTokenKey,
       canBeUndefined: true,
       castValueFunc: AuthToken.fromJson,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     final idTokenResult = JsonUtility.getOnePrimaryElement<String>(
       json: json,
       key: _idTokenKey,
       canBeUndefined: true,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (!accessTokenResult.isOk || !refreshTokenResult.isOk || !idTokenResult.isOk) {

@@ -11,7 +11,6 @@ import 'package:act_aws_iot_core/src/models/aws_iot_shadows_config_model.dart';
 import 'package:act_aws_iot_core/src/services/aws_iot_mqtt_service.dart';
 import 'package:act_aws_iot_core/src/services/aws_iot_shadows_service.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_internet_connectivity_manager/act_internet_connectivity_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -77,8 +76,7 @@ abstract class AwsIotManager<
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _awsIotManagerLogCategory,
+      category: _awsIotManagerLogCategory,
     );
     logsHelper.d('Starting aws iot services...');
 

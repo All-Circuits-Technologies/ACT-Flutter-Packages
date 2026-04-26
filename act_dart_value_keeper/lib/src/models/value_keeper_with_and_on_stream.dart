@@ -10,48 +10,48 @@ import 'package:act_dart_value_keeper/src/mixins/mixin_value_keeper_with_stream.
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 
-/// {@macro act_dart_utility.ValueTypeIsEqualToSetterValue}
+/// {@macro act_dart_value_keeper.ValueTypeIsEqualToSetterValue}
 ///
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperWithStream}
+/// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperWithAndOnStream<T, Listened> = BaseValueKeeperWithAndOnStream<T, T, Listened>;
 
-/// {@macro act_dart_utility.ValueIsNullableButNotSetter}
+/// {@macro act_dart_value_keeper.ValueIsNullableButNotSetter}
 ///
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperWithStream}
+/// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperWithAndOnStreamAndNullInit<T, Listened> =
     BaseValueKeeperWithAndOnStream<T, T?, Listened>;
 
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperWithStream}
+/// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 ///
-/// {@macro act_dart_utility.SMustBeCastableToT}
+/// {@macro act_dart_value_keeper.SMustBeCastableToT}
 class BaseValueKeeperWithAndOnStream<S extends T, T, Listened> extends BaseValueKeeper<S, T>
     with
         MixinWithLifeCycleDispose,
         MixinValueKeeperWithStream<S, T>,
         MixinValueKeeperOnStreamUpdate<S, T, Listened> {
-  /// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate.parserCallback}
+  /// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate.parserCallback}
   @override
   final S? Function(Listened listenedValue) parserCallback;
 
-  /// {@macro act_dart_utility.MixinValueKeeperWithStream.emitUnchangedValue}
+  /// {@macro act_dart_value_keeper.MixinValueKeeperWithStream.emitUnchangedValue}
   @override
   final bool emitUnchangedValue;
 

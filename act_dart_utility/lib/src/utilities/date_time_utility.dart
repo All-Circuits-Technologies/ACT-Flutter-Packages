@@ -3,6 +3,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
+
 /// Contains utility methods linked to the usage of DateTime
 sealed class DateTimeUtility {
   /// The constructed [DateTime] represents 1970-01-01T00:00:00Z (so in UTC)
@@ -14,19 +16,29 @@ sealed class DateTimeUtility {
   /// This generates an UTC DateTime.
   ///
   /// This is useful for casting method which only expects one parameter
-  static DateTime? fromMillisecondsSinceEpochUtc(int millisecondsSinceEpoch) =>
-      fromMillisecondsSinceEpoch(millisecondsSinceEpoch, isUtc: true);
+  static DateTime? fromMillisecondsSinceEpochUtc(
+    int millisecondsSinceEpoch, {
+    MixinActLogger? logger,
+  }) => fromMillisecondsSinceEpoch(millisecondsSinceEpoch, isUtc: true, logger: logger);
 
   /// Create a [DateTime] from [millisecondsSinceEpoch]. Returns null if the value given isn't in
   /// the expected range.
   ///
   /// This is useful for casting method which only expects one parameter
-  static DateTime? fromMillisecondsSinceEpoch(int millisecondsSinceEpoch, {bool isUtc = false}) {
+  static DateTime? fromMillisecondsSinceEpoch(
+    int millisecondsSinceEpoch, {
+    bool isUtc = false,
+    MixinActLogger? logger,
+  }) {
     DateTime? dateTime;
     try {
       dateTime = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch, isUtc: isUtc);
     } catch (error) {
-      // An error occurred when tried to parse the dateTime from milliseconds since epoch
+      logger?.w(
+        "An error occurred when we tried to parse the dateTime from milliseconds since epoch: "
+        "$millisecondsSinceEpoch, with isUtc: $isUtc",
+        error,
+      );
     }
 
     return dateTime;
@@ -38,19 +50,28 @@ sealed class DateTimeUtility {
   /// This generates an UTC DateTime.
   ///
   /// This is useful for casting method which only expects one parameter
-  static DateTime? fromSecondsSinceEpochUtc(int secondsSinceEpoch) =>
-      fromSecondsSinceEpoch(secondsSinceEpoch, isUtc: true);
+  static DateTime? fromSecondsSinceEpochUtc(int secondsSinceEpoch, {MixinActLogger? logger}) =>
+      fromSecondsSinceEpoch(secondsSinceEpoch, isUtc: true, logger: logger);
 
   /// Create a [DateTime] from [secondsSinceEpoch]. Returns null if the value given isn't in
   /// the expected range.
   ///
   /// This is useful for casting method which only expects one parameter
-  static DateTime? fromSecondsSinceEpoch(int secondsSinceEpoch, {bool isUtc = false}) {
+  static DateTime? fromSecondsSinceEpoch(
+    int secondsSinceEpoch, {
+    bool isUtc = false,
+    MixinActLogger? logger,
+  }) {
     DateTime? dateTime;
     try {
       dateTime = DateTime.fromMillisecondsSinceEpoch(secondsSinceEpoch * 1000, isUtc: isUtc);
     } catch (error) {
       // An error occurred when tried to parse the dateTime from seconds since epoch
+      logger?.w(
+        "An error occurred when we tried to parse the dateTime from seconds since epoch: "
+        "$secondsSinceEpoch, with isUtc: $isUtc",
+        error,
+      );
     }
 
     return dateTime;

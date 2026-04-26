@@ -290,7 +290,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToInt8(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {
@@ -318,7 +318,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToInt16(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {
@@ -346,7 +346,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToInt32(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {
@@ -374,7 +374,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToUInt8(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {
@@ -402,7 +402,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToUInt16(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {
@@ -430,7 +430,7 @@ class HaloPayloadPacket {
     final intValue = NumUtility.convertDoubleToUInt32(
       toSend,
       powerOfTenCoeff,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (intValue == null) {

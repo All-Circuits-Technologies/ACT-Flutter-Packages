@@ -49,7 +49,7 @@ class TbDeviceValues {
     required AbsTbServerReqManager requestManager,
     required this.deviceId,
     required LogsHelper logsHelper,
-  }) : logsHelper = logsHelper.createASubLogsHelper(deviceId) {
+  }) : logsHelper = logsHelper.createSubLogger(subCategory: deviceId) {
     _clientAttributes = TbDeviceAttributes(
       requestManager: requestManager,
       logsHelper: logsHelper,

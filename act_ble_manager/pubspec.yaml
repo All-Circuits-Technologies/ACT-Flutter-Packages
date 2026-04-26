@@ -37,8 +37,8 @@ dependencies:
   act_abs_peripherals_manager:
     path: ../act_abs_peripherals_manager
 
-  act_life_cycle:
-    path: ../act_life_cycle
+  act_app_life_cycle_manager:
+    path: ../act_app_life_cycle_manager
 
   act_config_manager:
     path: ../act_config_manager
@@ -56,8 +56,8 @@ dependencies:
   act_global_manager:
     path: ../act_global_manager
 
-  act_app_life_cycle_manager:
-    path: ../act_app_life_cycle_manager
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_logger_manager:
     path: ../act_logger_manager

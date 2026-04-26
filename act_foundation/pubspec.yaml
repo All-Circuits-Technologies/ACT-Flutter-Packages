@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_foundation
+description: This package provides foundational classes and interfaces for the ACT packages, such as
+  the logger interface and errors.
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=1.17.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+# Because this package is used by all the other ACT packages, we want to limit the dependencies,
+# even external ones. Therefore, think twice before adding a dependency to this package.
+
+# DO NOT ADD DEPENDENCIES TO ACT PACKAGES IN THIS FILE.
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0

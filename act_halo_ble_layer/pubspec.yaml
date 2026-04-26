@@ -32,10 +32,6 @@ dependencies:
 
   uuid: ^4.5.1
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_ble_manager:
     path: ../act_ble_manager
 
@@ -49,6 +45,10 @@ dependencies:
 
   act_halo_abstract:
     path: ../act_halo_abstract
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

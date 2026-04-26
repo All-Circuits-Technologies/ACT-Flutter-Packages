@@ -33,10 +33,6 @@ dependencies:
 
   mutex: ^3.1.0
 
-  # Flutter AC Technologies dependencies
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
@@ -49,6 +45,10 @@ dependencies:
 
   act_http_client_manager:
     path: ../act_http_client_manager
+
+  # Flutter AC Technologies dependencies
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_local_storage_manager:
     path: ../act_local_storage_manager

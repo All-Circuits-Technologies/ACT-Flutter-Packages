@@ -70,7 +70,7 @@ class AuthToken extends Equatable {
     final raw = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _rawKey,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     final expirationResult = JsonUtility.getOneElement<DateTime, int>(
@@ -80,7 +80,7 @@ class AuthToken extends Equatable {
       // Because the toJson method store an expiration time in milliseconds, the fromJson must also
       // parse it in milliseconds
       castValueFunc: DateTimeUtility.fromMillisecondsSinceEpochUtc,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (raw == null || !expirationResult.isOk) {

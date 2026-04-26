@@ -5,9 +5,11 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_firebase_core/act_firebase_core.dart';
 import "package:act_firebase_crash/src/data/firebase_constants.dart" as firebase_constants;
+import 'package:act_firebase_crash/src/loggers/crashlytics_external_logger.dart';
 import 'package:act_firebase_crash/src/mixins/mixin_firebase_crash_conf.dart';
 import 'package:act_firebase_crash/src/models/firebase_crash_debug_config.dart';
 import 'package:act_firebase_crash/src/models/firebase_crash_debug_session_exception.dart';
+import 'package:act_firebase_crash/src/types/crashlytics_logger_types.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -236,34 +238,16 @@ class FirebaseCrashService extends AbsFirebaseService {
 
     if (_crashDebugConfig == null) {
       // We set an empty identifier to remove the existing one
-      loggerManager.removeLogListener(_debugLogs);
+      await loggerManager.removeExternalLogger(CrashlyticsLoggerType.crash);
       await crashlytics.setUserIdentifier("");
     } else if (_crashDebugConfig != null) {
       await crashlytics.setUserIdentifier(_crashDebugConfig!.identifier);
 
       if (!onlyUpdateId) {
-        loggerManager.addLogListener(_debugLogs);
+        await loggerManager.addExternalLogger(CrashlyticsLoggerType.crash,
+            CrashlyticsExternalLogger(crashDebugConfig: _crashDebugConfig!));
       }
     }
-  }
-
-  /// Called when new logs are available if [_enableDataCollection] is equals to true and
-  /// [_crashDebugConfig] is not null.
-  ///
-  /// The log level is compared with the level set in [_crashDebugConfig]
-  Future<void> _debugLogs(LogEvent event) async {
-    if (!_enableDataCollection || _crashDebugConfig == null) {
-      // Nothing to do
-      return;
-    }
-
-    if (event.level.index < _crashDebugConfig!.level.index) {
-      // Nothing to log
-      return;
-    }
-
-    final crashlytics = FirebaseCrashlytics.instance;
-    await crashlytics.log(AppLogPrinter.defaultFormatLogEvent(event));
   }
 
   /// Called when an error crash is recorded

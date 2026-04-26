@@ -26,7 +26,7 @@ abstract class AbstractWebsocketClientDerivedBuilder<T extends WebsocketClientMa
   /// Class constructor with the class construction
   const AbstractWebsocketClientDerivedBuilder({required ClassFactory<T> factory}) : super(factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   @mustCallSuper
   Iterable<Type> dependsOn() => [LoggerManager];
@@ -107,7 +107,7 @@ class WebsocketClientManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: loggerCategory);
+    logsHelper = LogsHelper(category: loggerCategory);
     _managerConfig = await getConfig(logsHelper: logsHelper);
 
     await Future.wait(_managerConfig.msgParsers.map((parser) => parser.initLifeCycle()));

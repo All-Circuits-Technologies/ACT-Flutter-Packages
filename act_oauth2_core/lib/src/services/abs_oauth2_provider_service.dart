@@ -84,7 +84,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     required LogsHelper parentLogsHelper,
     required FlutterAppAuth appAuth,
   }) async {
-    _logsHelper = parentLogsHelper.createASubLogsHelper(_logsCategory);
+    _logsHelper = parentLogsHelper.createSubLogger(subCategory: _logsCategory);
     _appAuth = appAuth;
 
     return initLifeCycle();

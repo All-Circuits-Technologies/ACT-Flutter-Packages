@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_http_core/act_http_core.dart';
 import 'package:act_http_logging_manager/act_http_logging_manager.dart';
 import 'package:act_http_server_manager/src/models/http_request_log.dart';
@@ -14,7 +15,6 @@ import 'package:act_http_server_manager/src/models/http_server_config.dart';
 import 'package:act_http_server_manager/src/services/handlers/abs_server_handler.dart';
 import 'package:act_http_server_manager/src/utilities/server_handler_utility.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -276,7 +276,7 @@ abstract class AbsApiService extends AbsWithLifeCycle {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.warning,
+          logLevel: LogsLevel.warn,
           message: "The json contained in the body couldn't be parsed",
         ),
       );
@@ -313,7 +313,7 @@ abstract class AbsApiService extends AbsWithLifeCycle {
           HttpRequestLog.requestNow(
             requestId: requestId,
             request: request,
-            logLevel: Level.warning,
+            logLevel: LogsLevel.warn,
             message:
                 "The json contained in the body hasn't the expected type: Map<String, dynamic>",
           ),
@@ -327,7 +327,7 @@ abstract class AbsApiService extends AbsWithLifeCycle {
           HttpRequestLog.requestNow(
             requestId: requestId,
             request: request,
-            logLevel: Level.warning,
+            logLevel: LogsLevel.warn,
             message: "One element of the json contained in the body couldn't be parsed",
           ),
         );
@@ -364,7 +364,7 @@ abstract class AbsApiService extends AbsWithLifeCycle {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.error,
+          logLevel: LogsLevel.error,
           message: "A problem occurred when tried to parse the JSON body received: $error",
         ),
       );
@@ -380,7 +380,7 @@ abstract class AbsApiService extends AbsWithLifeCycle {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.warning,
+          logLevel: LogsLevel.warn,
           message: "The json contained in the body hasn't the expected type: $T",
         ),
       );

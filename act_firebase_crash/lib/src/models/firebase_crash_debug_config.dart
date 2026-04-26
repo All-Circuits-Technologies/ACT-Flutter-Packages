@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:equatable/equatable.dart';
 
 /// This is the config linked to the firebase crash debug feature.
@@ -13,12 +13,12 @@ class FirebaseCrashDebugConfig extends Equatable {
   final String identifier;
 
   /// This allows to give a maximum level for the logs to save in the server
-  final Level level;
+  final LogsLevel level;
 
   /// Class constructor
   const FirebaseCrashDebugConfig({
     required this.identifier,
-    this.level = Level.warning,
+    this.level = LogsLevel.warn,
   });
 
   @override

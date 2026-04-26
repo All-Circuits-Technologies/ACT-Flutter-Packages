@@ -5,7 +5,7 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_firebase_core/src/abs_firebase_service.dart';
 import 'package:act_firebase_core/src/models/firebase_manager_config.dart';
-import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -17,7 +17,7 @@ abstract class AbsFirebaseBuilder<T extends AbsFirebaseManager, C extends Abstra
   /// Class constructor
   AbsFirebaseBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, C];
 }
@@ -44,9 +44,8 @@ abstract class AbsFirebaseManager extends AbsWithLifeCycle {
     await super.initLifeCycle();
     final config = await getFirebaseConfig();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _firebaseLogsCategory,
-      enableLog: config.loggerEnabled,
+      category: _firebaseLogsCategory,
+      minLevel: config.loggerEnabled ? null : LogsLevel.off,
     );
 
     await Firebase.initializeApp(

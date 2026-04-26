@@ -72,8 +72,7 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _storageManagerLogCategory,
+      category: _storageManagerLogCategory,
     );
 
     // Get the storage service from the derived class.

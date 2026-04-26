@@ -5,7 +5,7 @@
 
 import 'dart:convert';
 
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// Contains useful methods to manage JSON object
 sealed class JsonUtility {
@@ -23,13 +23,13 @@ sealed class JsonUtility {
     required String key,
     bool canBeUndefined = false,
     T? Function(Y toCast)? castValueFunc,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     final tmpValue = json[key];
 
     if (tmpValue == null) {
       if (!canBeUndefined) {
-        loggerManager.w("The element you want to get from JSON isn't present: $key");
+        logger.w("The element you want to get from JSON isn't present: $key");
       }
 
       return (isOk: canBeUndefined, value: null);
@@ -38,11 +38,11 @@ sealed class JsonUtility {
     final result = _castValueIfNeeded(
       value: tmpValue,
       castValueFunc: castValueFunc,
-      loggerManager: loggerManager,
+      logger: logger,
     );
 
     if (!result.isOk || result.value == null) {
-      loggerManager.w("The cast of the JSON element: $key, failed");
+      logger.w("The cast of the JSON element: $key, failed");
       return (isOk: false, value: null);
     }
 
@@ -59,10 +59,8 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
-    required LoggerManager loggerManager,
-  }) =>
-      getOneElement<T, T>(
-          json: json, key: key, canBeUndefined: canBeUndefined, loggerManager: loggerManager);
+    required MixinActLogger logger,
+  }) => getOneElement<T, T>(json: json, key: key, canBeUndefined: canBeUndefined, logger: logger);
 
   /// Get one element from JSON object
   ///
@@ -77,13 +75,13 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     T? Function(Y toCast)? castValueFunc,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     final result = getOneElement<T, Y>(
       json: json,
       key: key,
       castValueFunc: castValueFunc,
-      loggerManager: loggerManager,
+      logger: logger,
     );
 
     if (!result.isOk) {
@@ -102,9 +100,8 @@ sealed class JsonUtility {
   static T? getNotNullOnePrimaryElement<T>({
     required Map<String, dynamic> json,
     required String key,
-    required LoggerManager loggerManager,
-  }) =>
-      getNotNullOneElement<T, T>(json: json, key: key, loggerManager: loggerManager);
+    required MixinActLogger logger,
+  }) => getNotNullOneElement<T, T>(json: json, key: key, logger: logger);
 
   /// Get a list of elements from JSON object
   ///
@@ -120,33 +117,32 @@ sealed class JsonUtility {
     required String key,
     bool canBeUndefined = false,
     T? Function(Y toCast)? castElemValueFunc,
-    required LoggerManager loggerManager,
-  }) =>
-      getOneElement<List<T>, List<dynamic>>(
-        json: json,
-        key: key,
-        canBeUndefined: canBeUndefined,
-        loggerManager: loggerManager,
-        castValueFunc: (toCast) {
-          final finalList = <T>[];
-          for (final elem in toCast) {
-            final result = _castValueIfNeeded(
-              value: elem,
-              castValueFunc: castElemValueFunc,
-              loggerManager: loggerManager,
-            );
+    required MixinActLogger logger,
+  }) => getOneElement<List<T>, List<dynamic>>(
+    json: json,
+    key: key,
+    canBeUndefined: canBeUndefined,
+    logger: logger,
+    castValueFunc: (toCast) {
+      final finalList = <T>[];
+      for (final elem in toCast) {
+        final result = _castValueIfNeeded(
+          value: elem,
+          castValueFunc: castElemValueFunc,
+          logger: logger,
+        );
 
-            final value = result.value;
-            if (!result.isOk || value == null) {
-              return null;
-            }
+        final value = result.value;
+        if (!result.isOk || value == null) {
+          return null;
+        }
 
-            finalList.add(value);
-          }
+        finalList.add(value);
+      }
 
-          return finalList;
-        },
-      );
+      return finalList;
+    },
+  );
 
   /// Get a list of primary elements (number, String or boolean) from JSON object
   ///
@@ -158,10 +154,8 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
-    required LoggerManager loggerManager,
-  }) =>
-      getElementsList<T, T>(
-          json: json, key: key, canBeUndefined: canBeUndefined, loggerManager: loggerManager);
+    required MixinActLogger logger,
+  }) => getElementsList<T, T>(json: json, key: key, canBeUndefined: canBeUndefined, logger: logger);
 
   /// Get a list of not null elements from JSON object
   ///
@@ -176,13 +170,13 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     T? Function(Y toCast)? castElemValueFunc,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     final result = getElementsList<T, Y>(
       json: json,
       key: key,
       castElemValueFunc: castElemValueFunc,
-      loggerManager: loggerManager,
+      logger: logger,
     );
 
     if (!result.isOk) {
@@ -201,9 +195,8 @@ sealed class JsonUtility {
   static List<T>? getNotNullPrimaryElementsList<T>({
     required Map<String, dynamic> json,
     required String key,
-    required LoggerManager loggerManager,
-  }) =>
-      getNotNullElementsList<T, T>(json: json, key: key, loggerManager: loggerManager);
+    required MixinActLogger logger,
+  }) => getNotNullElementsList<T, T>(json: json, key: key, logger: logger);
 
   /// Get one child JSON object from a given JSON object
   ///
@@ -215,14 +208,13 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
-    required LoggerManager loggerManager,
-  }) =>
-      getOneElement<Map<String, dynamic>, Object?>(
-        json: json,
-        key: key,
-        canBeUndefined: canBeUndefined,
-        loggerManager: loggerManager,
-      );
+    required MixinActLogger logger,
+  }) => getOneElement<Map<String, dynamic>, Object?>(
+    json: json,
+    key: key,
+    canBeUndefined: canBeUndefined,
+    logger: logger,
+  );
 
   /// Get one child JSON object from a given JSON object
   ///
@@ -233,12 +225,12 @@ sealed class JsonUtility {
   static Map<String, dynamic>? getNotNullJsonObject({
     required Map<String, dynamic> json,
     required String key,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     final result = getOneElement<Map<String, dynamic>, Object?>(
       json: json,
       key: key,
-      loggerManager: loggerManager,
+      logger: logger,
     );
 
     if (!result.isOk) {
@@ -258,14 +250,13 @@ sealed class JsonUtility {
     required Map<String, dynamic> json,
     required String key,
     bool canBeUndefined = false,
-    required LoggerManager loggerManager,
-  }) =>
-      getElementsList<Map<String, dynamic>, Object?>(
-        json: json,
-        key: key,
-        canBeUndefined: canBeUndefined,
-        loggerManager: loggerManager,
-      );
+    required MixinActLogger logger,
+  }) => getElementsList<Map<String, dynamic>, Object?>(
+    json: json,
+    key: key,
+    canBeUndefined: canBeUndefined,
+    logger: logger,
+  );
 
   /// Get a list of JSON objects from a given JSON object
   ///
@@ -276,12 +267,12 @@ sealed class JsonUtility {
   static List<Map<String, dynamic>>? getNotNullJsonObjectsList({
     required Map<String, dynamic> json,
     required String key,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     final result = getElementsList<Map<String, dynamic>, Object?>(
       json: json,
       key: key,
-      loggerManager: loggerManager,
+      logger: logger,
     );
 
     if (!result.isOk) {
@@ -294,23 +285,19 @@ sealed class JsonUtility {
   /// Parse the response body to a Json
   static Map<String, dynamic>? parseJsonBodyToObj(
     String? strJson, {
-    required LoggerManager loggerManager,
-  }) =>
-      _parseJsonBody(strJson, loggerManager: loggerManager);
+    required MixinActLogger logger,
+  }) => _parseJsonBody(strJson, logger: logger);
 
   /// Parse the response body to a Json Array
-  static List<dynamic>? parseJsonBodyToArray(
-    String? strJson, {
-    required LoggerManager loggerManager,
-  }) =>
-      _parseJsonBody(strJson, loggerManager: loggerManager);
+  static List<dynamic>? parseJsonBodyToArray(String? strJson, {required MixinActLogger logger}) =>
+      _parseJsonBody(strJson, logger: logger);
 
   /// Parse the response body to a Json Array
   static List<Map<String, dynamic>>? parseJsonArrayBodyToArray(
     String? strJson, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
-    final tmpList = _parseJsonBody<List<dynamic>>(strJson, loggerManager: loggerManager);
+    final tmpList = _parseJsonBody<List<dynamic>>(strJson, logger: logger);
 
     if (tmpList == null) {
       return null;
@@ -319,7 +306,7 @@ sealed class JsonUtility {
     try {
       return List<Map<String, dynamic>>.from(tmpList, growable: false);
     } catch (_) {
-      loggerManager.w("The JSON element hasn't been stored in the Map<String, dynamic> type");
+      logger.w("The JSON element hasn't been stored in the Map<String, dynamic> type");
       return null;
     }
   }
@@ -349,10 +336,7 @@ sealed class JsonUtility {
         continue;
       }
 
-      newJson[overKey] = _mergeJsonValue(
-        baseValue: baseJson[overKey],
-        toOverrideValue: overValue,
-      );
+      newJson[overKey] = _mergeJsonValue(baseValue: baseJson[overKey], toOverrideValue: overValue);
     }
 
     return newJson;
@@ -385,10 +369,7 @@ sealed class JsonUtility {
   }
 
   /// Parse the response body from an object or list to a Json
-  static T? _parseJsonBody<T>(
-    String? strJson, {
-    required LoggerManager loggerManager,
-  }) {
+  static T? _parseJsonBody<T>(String? strJson, {required MixinActLogger logger}) {
     if (strJson == null) {
       return null;
     }
@@ -398,7 +379,7 @@ sealed class JsonUtility {
     try {
       data = jsonDecode(strJson) as T;
     } catch (error) {
-      loggerManager.w("Cannot parse to json, the response body: $strJson, the error: $error");
+      logger.w("Cannot parse to json, the response body: $strJson, the error: $error");
     }
 
     return data;
@@ -412,11 +393,11 @@ sealed class JsonUtility {
     // ignore: avoid_annotating_with_dynamic
     required dynamic value,
     T? Function(Y toCast)? castValueFunc,
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     if (castValueFunc == null) {
       if (value is! T) {
-        loggerManager.w("The JSON element hasn't been stored in the $T type");
+        logger.w("The JSON element hasn't been stored in the $T type");
         return const (isOk: false, value: null);
       }
 
@@ -424,14 +405,16 @@ sealed class JsonUtility {
     }
 
     if (value is! Y) {
-      loggerManager.w("The JSON element hasn't been stored in the $Y type, it can't "
-          "be casted");
+      logger.w(
+        "The JSON element hasn't been stored in the $Y type, it can't "
+        "be casted",
+      );
       return const (isOk: false, value: null);
     }
 
     final castValue = castValueFunc(value);
     if (castValue == null) {
-      loggerManager.w("The cast of the JSON element failed");
+      logger.w("The cast of the JSON element failed");
       return const (isOk: false, value: null);
     }
 

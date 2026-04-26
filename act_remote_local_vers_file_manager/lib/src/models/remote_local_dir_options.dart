@@ -69,21 +69,21 @@ class RemoteLocalDirOptions extends Equatable {
       key: _localesKey,
       canBeUndefined: true,
       castElemValueFunc: (toCast) => LocaleUtility.localeFromString(string: toCast),
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final cacheVersionResult = JsonUtility.getOnePrimaryElement<bool>(
       json: json,
       key: _cacheVersionKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final cacheFileResult = JsonUtility.getOnePrimaryElement<bool>(
       json: json,
       key: _cacheFileKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     if (!localsResult.isOk || !cacheVersionResult.isOk || !cacheFileResult.isOk) {

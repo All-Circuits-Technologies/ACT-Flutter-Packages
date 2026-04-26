@@ -52,7 +52,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   TbStdAuthService()
       : _authStatus = AuthStatus.signedOut,
         _authStatusCtrl = StreamController<AuthStatus>.broadcast(),
-        _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory),
+        _logsHelper = LogsHelper(category: _logsCategory),
         _mutex = Mutex();
 
   /// Init the service

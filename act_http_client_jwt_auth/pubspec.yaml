@@ -28,10 +28,6 @@ dependencies:
   # Help to implement value based equality without explicit override
   equatable: ^2.0.7
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
@@ -41,6 +37,10 @@ dependencies:
 
   act_http_core:
     path: ../act_http_core
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

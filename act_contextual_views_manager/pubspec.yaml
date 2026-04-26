@@ -32,14 +32,14 @@ dependencies:
 
   mutex: ^3.1.0
 
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_flutter_utility:
     path: ../act_flutter_utility
 
   act_global_manager:
     path: ../act_global_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_logger_manager:
     path: ../act_logger_manager

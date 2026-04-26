@@ -27,10 +27,6 @@ dependencies:
 
   firebase_crashlytics: ^4.3.7
 
-  # Contains useful classes to create managers in the app
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
@@ -38,9 +34,16 @@ dependencies:
   act_firebase_core:
     path: ../act_firebase_core
 
+  act_foundation:
+    path: ../act_foundation
+
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
+
+  # Contains useful classes to create managers in the app
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # The logger manager
   act_logger_manager:

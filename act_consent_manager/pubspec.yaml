@@ -22,17 +22,13 @@ dependencies:
   flutter:
     sdk: flutter
 
+  equatable: ^2.0.7
+
   # Create widget from markdown string
   # TODO(brolandeau): the package is discontinued, need to find another one
   flutter_markdown: ^0.7.7+1
 
-  equatable: ^2.0.7
-
   mutex: ^3.1.0
-
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
 
   # Contains dart result class to return status and value of a request
   act_dart_result:
@@ -42,6 +38,10 @@ dependencies:
   act_dart_utility:
     path: ../act_dart_utility
 
+  # Global manager
+  act_global_manager:
+    path: ../act_global_manager
+
   # Internet access
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
@@ -49,17 +49,17 @@ dependencies:
   act_intl:
     path: ../act_intl
 
-  # Authentification lib
-  act_shared_auth:
-    path: ../act_shared_auth
-
-  # Global manager
-  act_global_manager:
-    path: ../act_global_manager
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Loggers
   act_logger_manager:
     path: ../act_logger_manager
+
+  # Authentification lib
+  act_shared_auth:
+    path: ../act_shared_auth
 
 dev_dependencies:
   flutter_test:

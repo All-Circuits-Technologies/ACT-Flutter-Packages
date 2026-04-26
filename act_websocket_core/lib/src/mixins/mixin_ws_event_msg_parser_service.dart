@@ -69,7 +69,7 @@ mixin MixinWsEventMsgParserService<Event extends MixinStringValueType> on MixinW
     var jsonMsg = message;
 
     if (jsonMsg is String) {
-      jsonMsg = JsonUtility.parseJsonBodyToObj(jsonMsg, loggerManager: loggerManager);
+      jsonMsg = JsonUtility.parseJsonBodyToObj(jsonMsg, logger: loggerManager);
     }
 
     if (jsonMsg == null || jsonMsg is! Map<String, dynamic>) {
@@ -83,7 +83,7 @@ mixin MixinWsEventMsgParserService<Event extends MixinStringValueType> on MixinW
     final event = JsonUtility.getNotNullOneElement<Event, String>(
       json: jsonMsg,
       key: eventJsonKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
       castValueFunc: (toCast) =>
           MixinStringValueType.tryToParseFromStringValue(value: toCast, values: eventsList),
     );

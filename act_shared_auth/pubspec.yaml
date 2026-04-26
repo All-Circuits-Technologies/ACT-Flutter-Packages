@@ -25,10 +25,6 @@ dependencies:
 
   equatable: ^2.0.7
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_dart_utility:
     path: ../act_dart_utility
 
@@ -38,6 +34,10 @@ dependencies:
 
   act_jwt_utilities:
     path: ../act_jwt_utilities
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

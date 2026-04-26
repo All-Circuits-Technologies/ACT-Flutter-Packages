@@ -11,5 +11,5 @@ import 'package:act_global_manager/src/services/abs_global_manager.dart';
 /// [MixinUiGlobalManager] by merging them together in one class.
 abstract class AbsUiGlobalManager extends AbsGlobalManager with MixinUiGlobalManager {
   /// {@macro act_global_manager.AbsGlobalManager.create}
-  AbsUiGlobalManager.create() : super.create();
+  AbsUiGlobalManager.create({super.defaultMinLevel}) : super.create();
 }

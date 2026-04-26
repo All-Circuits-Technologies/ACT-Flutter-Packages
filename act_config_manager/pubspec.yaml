@@ -34,17 +34,16 @@ dependencies:
   # Load configuration at runtime from a .env file which can be used throughout the application.
   flutter_dotenv: ^5.2.1
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   # Contains utilities for Dart
   act_dart_utility:
     path: ../act_dart_utility
 
-  # Default global manager
-  act_global_manager:
-    path: ../act_global_manager
+  act_foundation:
+    path: ../act_foundation
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_platform_manager:
     path: ../act_platform_manager

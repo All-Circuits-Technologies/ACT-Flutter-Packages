@@ -31,13 +31,13 @@ class AuthUserIds extends Equatable {
     final username = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _usernameKey,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     final password = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _passwordKey,
-      loggerManager: appLogger(),
+      logger: appLogger(),
     );
 
     if (username == null || password == null) {

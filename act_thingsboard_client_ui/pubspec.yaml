@@ -52,10 +52,6 @@ dependencies:
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
 
-  # Logger manager
-  act_logger_manager:
-    path: ../act_logger_manager
-
   act_thingsboard_client:
     path: ../act_thingsboard_client
 

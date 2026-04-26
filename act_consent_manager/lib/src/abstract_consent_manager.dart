@@ -19,7 +19,7 @@ abstract class AbstractConsentBuilder<T extends AbstractConsentManager>
   /// Class constructor
   AbstractConsentBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   @mustCallSuper
   Iterable<Type> dependsOn() => [LoggerManager, LocalesManager];
@@ -53,8 +53,7 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycleAn
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _consentManagerLogCategory,
+      category: _consentManagerLogCategory,
     );
     final services = await getConsentServices(_logsHelper);
     _services.addAll(services);

@@ -43,9 +43,6 @@ dependencies:
   act_app_life_cycle_manager:
     path: ../act_app_life_cycle_manager
 
-  act_logger_manager:
-    path: ../act_logger_manager
-
 dev_dependencies:
   flutter_test:
     sdk: flutter

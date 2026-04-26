@@ -7,7 +7,7 @@ import 'dart:convert';
 import 'package:act_amplify_core/src/abs_amplify_service.dart';
 import 'package:act_amplify_core/src/models/amplify_manager_config.dart';
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
@@ -45,9 +45,8 @@ abstract class AbsAmplifyManager extends AbsWithLifeCycle {
     await super.initLifeCycle();
     final config = await getAmplifyConfig();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _amplifyLogsCategory,
-      enableLog: config.loggerEnabled,
+      category: _amplifyLogsCategory,
+      minLevel: config.loggerEnabled ? null : LogsLevel.off,
     );
     _services = config.amplifyServices;
 

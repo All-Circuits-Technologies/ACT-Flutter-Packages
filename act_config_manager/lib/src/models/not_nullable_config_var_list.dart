@@ -4,7 +4,6 @@
 
 import 'package:act_config_manager/src/errors/act_config_null_value_error.dart';
 import 'package:act_config_manager/src/models/abs_config_var.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 
 /// [NotNullableConfigVarList] wraps a single config variable of type List\<T\>, providing
 /// strongly-typed read helper.
@@ -37,7 +36,7 @@ class NotNullableConfigVarList<T> extends AbsConfigVar<T> {
   List<T> load() {
     final values = configs.tryToGetList<T>(key) ?? defaultValues;
     if (values == null) {
-      appLogger().e("The value of the config: $key, is null, we can't go further");
+      configs.logger.e("The value of the config: $key, is null, we can't go further");
       throw ActConfigNullValueError(key: key);
     }
 

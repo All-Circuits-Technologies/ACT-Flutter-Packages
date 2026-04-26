@@ -53,9 +53,6 @@ dependencies:
   act_intl:
     path: ../act_intl
 
-  act_logger_manager:
-    path: ../act_logger_manager
-
 # Dependencies used by developer
 dev_dependencies:
   # API to test Flutter applications

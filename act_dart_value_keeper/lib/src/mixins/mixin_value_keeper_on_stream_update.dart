@@ -8,7 +8,7 @@ import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter/foundation.dart';
 
-/// {@template act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@template act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 /// This mixin should be used on ValueKeepers that need to update their value based on a listened
 /// stream.
 /// {@endtemplate}
@@ -17,7 +17,7 @@ mixin MixinValueKeeperOnStreamUpdate<S extends T, T, Listened>
   /// This stream subscription is used to listen to the listened stream, and update the value keeper value
   StreamSubscription<Listened>? _listenedStreamSubscription;
 
-  /// {@template act_dart_utility.MixinValueKeeperOnStreamUpdate.parserCallback}
+  /// {@template act_dart_value_keeper.MixinValueKeeperOnStreamUpdate.parserCallback}
   /// This callback is called when the listened stream emits a new value, to parse it and update
   /// the value of the value keeper.
   ///
@@ -26,7 +26,7 @@ mixin MixinValueKeeperOnStreamUpdate<S extends T, T, Listened>
   /// {@endtemplate}
   S? Function(Listened listenedValue) get parserCallback;
 
-  /// {@template act_dart_utility.MixinValueKeeperOnStreamUpdate.initStreamListener}
+  /// {@template act_dart_value_keeper.MixinValueKeeperOnStreamUpdate.initStreamListener}
   /// This method should be called to initialize the stream listener, and optionally set the initial
   /// value of the value keeper based on the listened stream.
   /// {@endtemplate}

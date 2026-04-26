@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_http_server_manager/src/models/http_request_log.dart';
 import 'package:act_http_server_manager/src/services/handlers/abs_server_handler.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shelf/shelf.dart' show Request, Response;
 import 'package:uuid/uuid.dart';
@@ -30,7 +30,7 @@ class RequestIdServerHandler extends AbsServerHandler {
       HttpRequestLog.requestNow(
         requestId: requestId,
         request: request,
-        logLevel: Level.info,
+        logLevel: LogsLevel.info,
         message: "Received request",
       ),
     );
@@ -50,7 +50,7 @@ class RequestIdServerHandler extends AbsServerHandler {
       HttpRequestLog.requestNow(
         requestId: requestId,
         request: request,
-        logLevel: Level.info,
+        logLevel: LogsLevel.info,
         message: "Responded with status code ${response.statusCode}",
       ),
     );
