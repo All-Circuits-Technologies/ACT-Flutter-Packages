@@ -13,7 +13,7 @@ class LogMessage extends Equatable {
   final List<String> categories;
 
   /// Class constructor
-  LogMessage({
+  const LogMessage({
     required this.message,
     required this.categories,
   });

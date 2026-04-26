@@ -85,7 +85,7 @@ abstract class AbsNativeEventListenerService<
   /// specific action description.
   @protected
   String getDescriptionForRuntimeProtectCmd(String descriptionAction) =>
-      "${logsHelper.categories} - $descriptionAction";
+      "${LogFormatUtility.formatCategories(logsHelper.categories)} - $descriptionAction";
 
   /// Helper to register the native callback in the C library, protected with [RuntimeProtectCmd] to
   /// catch any exceptions and log them.

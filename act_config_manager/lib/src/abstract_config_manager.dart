@@ -80,6 +80,8 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
       configs: finalValue,
     );
     await configs.initLifeCycle();
+
+    _logger.i("Config manager initialized with environment: $env");
   }
 
   /// Called when the manager is disposed

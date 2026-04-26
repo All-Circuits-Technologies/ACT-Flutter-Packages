@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:act_firebase_crash/src/models/firebase_crash_debug_config.dart';
-import 'package:act_foundation/src/types/logs_level.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';

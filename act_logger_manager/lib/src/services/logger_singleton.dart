@@ -44,6 +44,17 @@ class LoggerSingleton {
     return _instance!;
   }
 
+  /// Create the singleton instance if it doesn't exist, or update the log level of the existing
+  /// instance if it already exists.
+  static LoggerSingleton createOrUpdateInstance({required LogsLevel minLevel}) {
+    if (_instance == null) {
+      return createInstance(minLevel: minLevel);
+    }
+
+    _instance!.externalLogger.minLevel = minLevel;
+    return _instance!;
+  }
+
   /// Private class constructor
   LoggerSingleton._(this.externalLogger);
 }

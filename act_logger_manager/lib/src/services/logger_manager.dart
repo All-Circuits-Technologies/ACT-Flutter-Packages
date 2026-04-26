@@ -5,7 +5,9 @@
 
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_logger_manager/src/loggers/helpers/logs_helper.dart';
+import 'package:act_logger_manager/src/mixins/mixin_external_logger.dart';
+import 'package:act_logger_manager/src/mixins/mixin_logger_config.dart';
 import 'package:act_logger_manager/src/services/logger_singleton.dart';
 import 'package:act_logger_manager/src/types/safe_external_loggers.dart';
 import 'package:flutter/foundation.dart';
@@ -37,16 +39,19 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
     required MixinLoggerConfig Function() loggerConfigGetter,
   })  : _loggerConfigGetter = loggerConfigGetter,
         _flutterExceptionHandler = {},
-        _platformErrorCallback = {} {}
+        _platformErrorCallback = {};
 
   /// Init the manager
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    final instance = LoggerSingleton.createInstance(
-      minLevel: _loggerConfigGetter().logLevelEnv.load(),
+    final minLevel = _loggerConfigGetter().logLevelEnv.load();
+
+    final instance = LoggerSingleton.createOrUpdateInstance(
+      minLevel: minLevel,
     );
+
     await instance.externalLogger.initLifeCycle();
 
     _logger = LogsHelper.withExternalLogger(
@@ -195,7 +200,7 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   /// To call in order to dispose the class elements
   @override
   Future<void> disposeLifeCycle() async {
-    await LoggerSingleton.instanceOrNull?.externalLogger.initLifeCycle();
+    await LoggerSingleton.instanceOrNull?.externalLogger.disposeLifeCycle();
 
     await super.disposeLifeCycle();
   }

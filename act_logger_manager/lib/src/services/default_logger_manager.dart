@@ -42,7 +42,7 @@ class DefaultLoggerManager extends LoggerManager {
   }) : super(loggerConfigGetter: loggerConfigGetter);
 
   /// {@macro act_logger_manager.LoggerManager.buildExternalLoggersToReplaceSafeLogger}
-  @protected
+  @override
   Future<Map<Enum, MixinExternalLogger>> buildExternalLoggersToReplaceSafeLogger() async => {
         DefaultExternalLoggers.console:
             ConsoleExternalLogger.fromConfigGetter(configGetter: _loggerDefaultConfig),

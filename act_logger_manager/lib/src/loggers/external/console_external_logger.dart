@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_foundation/src/types/logs_level.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/src/loggers/printers/default_log_printer.dart';
 import 'package:act_logger_manager/src/mixins/mixin_csl_logger_config.dart';
@@ -82,6 +82,7 @@ class ConsoleExternalLogger
     if (configManager != null) {
       final logLevel = configManager.cslLogLevelEnv.load();
       minLevel = logLevel;
+      printLogInRelease = configManager.logPrintInReleaseEnv.load();
     }
   }
 
