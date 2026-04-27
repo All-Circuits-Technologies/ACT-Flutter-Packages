@@ -103,6 +103,7 @@ sealed class StringUtility {
         break;
       case const (bool):
         castedValue = BoolUtility.tryParse(value);
+        break;
       default:
         throw ActUnsupportedTypeError<T>();
     }

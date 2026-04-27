@@ -32,13 +32,12 @@ class LogsHelper with MixinActLogger {
     String? category,
     LogsLevel? minLevel,
     LogsLevel defaultLogLevel = LogsLevel.debug,
-  }) =>
-      LogsHelper.withExternalLogger(
-        externalLogger: LoggerSingleton.instance.externalLogger,
-        category: category,
-        minLevel: minLevel,
-        defaultLogLevel: defaultLogLevel,
-      );
+  }) => LogsHelper.withExternalLogger(
+    externalLogger: LoggerSingleton.instance.externalLogger,
+    category: category,
+    minLevel: minLevel,
+    defaultLogLevel: defaultLogLevel,
+  );
 
   /// Class constructor with external logger
   LogsHelper.withExternalLogger({
@@ -46,7 +45,7 @@ class LogsHelper with MixinActLogger {
     String? category,
     this.minLevel,
     this.defaultLogLevel = LogsLevel.debug,
-  }) : categories = [if (category != null) category];
+  }) : categories = [?category];
 
   /// This constructor is used to create a sub logger from a parent logger.
   LogsHelper.createSubLogger({
@@ -54,13 +53,10 @@ class LogsHelper with MixinActLogger {
     String? subCategory,
     LogsLevel? minLevel,
     LogsLevel? defaultLogLevel,
-  })  : externalLogger = parentLogger.externalLogger,
-        categories = [
-          ...parentLogger.categories,
-          if (subCategory != null) subCategory,
-        ],
-        minLevel = minLevel ?? parentLogger.minLevel,
-        defaultLogLevel = defaultLogLevel ?? parentLogger.defaultLogLevel;
+  }) : externalLogger = parentLogger.externalLogger,
+       categories = [...parentLogger.categories, ?subCategory],
+       minLevel = minLevel ?? parentLogger.minLevel,
+       defaultLogLevel = defaultLogLevel ?? parentLogger.defaultLogLevel;
 
   /// {@macro act_foundation.MixinActLogger.log}
   @override
@@ -73,12 +69,13 @@ class LogsHelper with MixinActLogger {
     }
 
     externalLogger.log(
-        message: message,
-        level: level,
-        error: error,
-        stackTrace: stackTrace,
-        categories: categories,
-        time: DateTime.now());
+      message: message,
+      level: level,
+      error: error,
+      stackTrace: stackTrace,
+      categories: categories,
+      time: DateTime.now(),
+    );
   }
 
   /// {@macro act_foundation.MixinActLogger.logMessages}
@@ -91,31 +88,21 @@ class LogsHelper with MixinActLogger {
 
   /// {@macro act_foundation.MixinActLogger.createAbsSubLogger}
   @override
-  MixinActLogger createAbsSubLogger({required String subCategory}) => createSubLogger(
-        subCategory: subCategory,
-      );
+  MixinActLogger createAbsSubLogger({required String subCategory}) =>
+      createSubLogger(subCategory: subCategory);
 
   /// {@macro act_foundation.MixinActLogger.createAbsSubLogger}
   @override
   MixinActLogger createAbsSubLoggerMinLevel({required String subCategory, LogsLevel? minLevel}) =>
-      createSubLoggerMinLevel(
-        subCategory: subCategory,
-        minLevel: minLevel,
-      );
+      createSubLoggerMinLevel(subCategory: subCategory, minLevel: minLevel);
 
   /// {@macro act_foundation.MixinActLogger.createAbsSubLogger}
-  LogsHelper createSubLogger({required String subCategory}) => LogsHelper.createSubLogger(
-        parentLogger: this,
-        subCategory: subCategory,
-      );
+  LogsHelper createSubLogger({required String subCategory}) =>
+      LogsHelper.createSubLogger(parentLogger: this, subCategory: subCategory);
 
   /// {@macro act_foundation.MixinActLogger.createAbsSubLogger}
   LogsHelper createSubLoggerMinLevel({required String subCategory, LogsLevel? minLevel}) =>
-      LogsHelper.createSubLogger(
-        parentLogger: this,
-        subCategory: subCategory,
-        minLevel: minLevel,
-      );
+      LogsHelper.createSubLogger(parentLogger: this, subCategory: subCategory, minLevel: minLevel);
 
   /// {@macro act_foundation.MixinActLogger.wouldBeLogged}
   @override
@@ -125,10 +112,7 @@ class LogsHelper with MixinActLogger {
       return false;
     }
 
-    return externalLogger.wouldBeLogged(
-      level: level,
-      categories: categories,
-    );
+    return externalLogger.wouldBeLogged(level: level, categories: categories);
   }
 
   /// Test if a message with a given [levelToTest] would be logged by the logger helper, without
