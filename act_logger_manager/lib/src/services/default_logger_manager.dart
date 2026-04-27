@@ -8,7 +8,6 @@ import 'package:act_logger_manager/src/mixins/mixin_default_logger_config.dart';
 import 'package:act_logger_manager/src/mixins/mixin_external_logger.dart';
 import 'package:act_logger_manager/src/services/logger_manager.dart';
 import 'package:act_logger_manager/src/types/default_external_loggers.dart';
-import 'package:flutter/foundation.dart';
 
 /// Builder for creating the LoggerManager
 ///

@@ -29,8 +29,6 @@ class LoggerSingleton {
   final MultiExternalLogger externalLogger;
 
   /// Create the singleton instance.
-  ///
-  /// This method has to be called only once or an exception will be raised.
   static LoggerSingleton createInstance(
       {LogsLevel minLevel = LogsLevel.all, Map<Enum, MixinExternalLogger>? externalLoggers}) {
     if (_instance != null) {

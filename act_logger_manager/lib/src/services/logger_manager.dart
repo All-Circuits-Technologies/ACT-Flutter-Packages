@@ -11,12 +11,11 @@ import 'package:act_logger_manager/src/mixins/mixin_logger_config.dart';
 import 'package:act_logger_manager/src/services/logger_singleton.dart';
 import 'package:act_logger_manager/src/types/safe_external_loggers.dart';
 import 'package:flutter/foundation.dart';
-import 'package:logger/logger.dart';
 
 /// Callback to register when you want to listen for platform errors
 typedef ActLogsErrorCallback = void Function(Object exception, StackTrace stackTrace);
 
-/// This class manages the [Logger] plugin class
+/// This class manages the logging of the app.
 abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   /// This is the logger of the logger manager
   late final LogsHelper _logger;

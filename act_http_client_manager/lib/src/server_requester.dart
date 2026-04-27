@@ -53,10 +53,10 @@ class ServerRequester extends AbsWithLifeCycle {
     required ServerUrls serverUrls,
     required this.defaultTimeout,
     required int? maxParallelRequestsNb,
-  })  : _serverUrls = serverUrls,
-        _lockUtility = (maxParallelRequestsNb != null)
-            ? LockUtility(maxParallelRequestsNb: maxParallelRequestsNb)
-            : null {
+  }) : _serverUrls = serverUrls,
+       _lockUtility = (maxParallelRequestsNb != null)
+           ? LockUtility(maxParallelRequestsNb: maxParallelRequestsNb)
+           : null {
     _onReleaseWatcher = OnReleaseWatcher(
       thresholdDuration: server_req_constants.clientSessionDuration,
       callback: _closeClient,
@@ -67,59 +67,61 @@ class ServerRequester extends AbsWithLifeCycle {
   Future<RequestResponse<ParsedRespBody>> executeRequestWithoutAuth<ParsedRespBody, RespBody>({
     required RequestParam requestParam,
     ParsedRespBody? Function(RespBody body)? parseRespBody,
-  }) =>
-      _wrapRequestWithLock(() async => _onReleaseWatcher.supervise(() async {
-            final urlToRequest = UrlFormatUtility.formatFullUrl(
-              requestParam: requestParam,
-              serverUrls: _serverUrls,
-            );
+  }) => _wrapRequestWithLock(
+    () async => _onReleaseWatcher.supervise(() async {
+      final urlToRequest = UrlFormatUtility.formatFullUrl(
+        requestParam: requestParam,
+        serverUrls: _serverUrls,
+      );
 
-            final request = BodyFormatUtility.formatRequest(
-              requestParam: requestParam,
-              logsHelper: logsHelper,
-              urlToRequest: urlToRequest,
-            );
+      final request = BodyFormatUtility.formatRequest(
+        requestParam: requestParam,
+        logsHelper: logsHelper,
+        urlToRequest: urlToRequest,
+      );
 
-            if (request == null) {
-              return const RequestResponse(status: RequestStatus.globalError);
-            }
+      if (request == null) {
+        return const RequestResponse(status: RequestStatus.globalError);
+      }
 
-            logsHelper
-                .d("Request the server: ${requestParam.httpMethod.stringValue} - $urlToRequest");
+      logsHelper.d("Request the server: ${requestParam.httpMethod.stringValue} - $urlToRequest");
 
-            var timeout = defaultTimeout;
+      var timeout = defaultTimeout;
 
-            if (requestParam.timeout != null && requestParam.timeout != Duration.zero) {
-              timeout = requestParam.timeout!;
-            }
+      if (requestParam.timeout != null && requestParam.timeout != Duration.zero) {
+        timeout = requestParam.timeout!;
+      }
 
-            final client = _createOrGetClient();
-            Response? response;
-            RequestStatus? errorStatus;
+      final client = _createOrGetClient();
+      Response? response;
+      RequestStatus? errorStatus;
 
-            try {
-              final streamedResponse = await client.send(request).timeout(timeout);
-              response = await Response.fromStream(streamedResponse);
-            } catch (error) {
-              errorStatus = _guessRequestErrorStatus(error);
+      try {
+        final streamedResponse = await client.send(request).timeout(timeout);
+        response = await Response.fromStream(streamedResponse);
+      } catch (error) {
+        errorStatus = _guessRequestErrorStatus(error);
 
-              _closeClient();
-              logsHelper.e("An error occurred when requesting a server on uri: $urlToRequest, "
-                  "error: $error");
-            }
+        _closeClient();
+        logsHelper.e(
+          "An error occurred when requesting a server on uri: $urlToRequest, "
+          "error: $error",
+        );
+      }
 
-            if (errorStatus != null || response == null) {
-              return RequestResponse(status: errorStatus ?? RequestStatus.globalError);
-            }
+      if (errorStatus != null || response == null) {
+        return RequestResponse(status: errorStatus ?? RequestStatus.globalError);
+      }
 
-            return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
-              requestParam: requestParam,
-              responseReceived: response,
-              logsHelper: logsHelper,
-              urlToRequest: urlToRequest,
-              parseRespBody: parseRespBody,
-            );
-          }));
+      return BodyFormatUtility.formatResponse<ParsedRespBody, RespBody>(
+        requestParam: requestParam,
+        responseReceived: response,
+        logsHelper: logsHelper,
+        urlToRequest: urlToRequest,
+        parseRespBody: parseRespBody,
+      );
+    }),
+  );
 
   /// Get the current opened client or create a new one
   Client _createOrGetClient() {
@@ -141,7 +143,7 @@ class ServerRequester extends AbsWithLifeCycle {
       return criticalSection();
     }
 
-    return _lockUtility!.protectLock(criticalSection);
+    return _lockUtility.protectLock(criticalSection);
   }
 
   /// Try to guess the request error status from the error object

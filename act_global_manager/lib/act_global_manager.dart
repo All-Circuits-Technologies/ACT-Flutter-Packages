@@ -8,3 +8,5 @@ library;
 export 'src/mixins/mixin_ui_global_manager.dart';
 export 'src/services/abs_global_manager.dart';
 export 'src/services/abs_ui_global_manager.dart';
+export 'src/services/abs_usual_config_manager.dart';
+export 'src/services/ext_default_logger_builder.dart';
