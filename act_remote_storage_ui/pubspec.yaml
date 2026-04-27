@@ -15,24 +15,16 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.5.3
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
     sdk: flutter
 
-  # Provide the configuration for the storage manager
-  act_config_manager:
-    path: ../act_config_manager
-
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
-
-  # Logger manager
-  act_logger_manager:
-    path: ../act_logger_manager
 
   # Storage manager
   act_remote_storage_manager:

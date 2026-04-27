@@ -8,7 +8,6 @@ import 'dart:ffi' as ffi;
 import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_value_keeper/act_dart_value_keeper.dart';
 import 'package:act_ffi_utility/src/utilities/runtime_protect_cmd.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
@@ -50,8 +49,8 @@ abstract class AbsNativeEventListenerService<
     LogsHelper? parentLogsHelper,
     super.emitUnchangedValue = false,
   }) : logsHelper =
-           parentLogsHelper?.createASubLogsHelper(logsCategory) ??
-           LogsHelper(logsManager: globalGetIt().get<LoggerManager>(), logsCategory: logsCategory),
+           parentLogsHelper?.createSubLogger(subCategory: logsCategory) ??
+           LogsHelper(category: logsCategory),
        _registerNativeCallback = registerNativeCallback,
        super(value: null);
 
@@ -86,7 +85,7 @@ abstract class AbsNativeEventListenerService<
   /// specific action description.
   @protected
   String getDescriptionForRuntimeProtectCmd(String descriptionAction) =>
-      "${logsHelper.logsCategory} - $descriptionAction";
+      "${LogFormatUtility.formatCategories(logsHelper.categories)} - $descriptionAction";
 
   /// Helper to register the native callback in the C library, protected with [RuntimeProtectCmd] to
   /// catch any exceptions and log them.

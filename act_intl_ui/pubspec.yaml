@@ -21,8 +21,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 # Project dependencies
 dependencies:
@@ -52,9 +52,6 @@ dependencies:
   # Non-graphical internationalization helpers
   act_intl:
     path: ../act_intl
-
-  act_logger_manager:
-    path: ../act_logger_manager
 
 # Dependencies used by developer
 dev_dependencies:

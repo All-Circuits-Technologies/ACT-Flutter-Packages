@@ -13,8 +13,8 @@ platforms:
   web:
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -25,10 +25,6 @@ dependencies:
   # Easily create managers
   act_life_cycle:
     path: ../act_life_cycle
-
-  # Default global manager
-  act_global_manager:
-    path: ../act_global_manager
 
   # Logger manager
   act_logger_manager:

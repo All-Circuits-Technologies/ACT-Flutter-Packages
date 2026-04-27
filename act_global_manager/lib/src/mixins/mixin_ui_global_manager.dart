@@ -75,9 +75,9 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
     try {
       await initLifeCycle();
     } catch (error) {
-      logErrorAsYouCan(
-          "An error occurred during the initialization of the managers before the view is "
-          "displayed: $error");
+      appLogger()
+          .e("An error occurred during the initialization of the managers before the view is "
+              "displayed: $error");
       fatalErrorWidget = buildFatalErrorPage(error);
       if (fatalErrorWidget == null) {
         rethrow;

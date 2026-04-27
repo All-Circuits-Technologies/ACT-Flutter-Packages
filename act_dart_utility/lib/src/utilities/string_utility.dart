@@ -5,9 +5,9 @@
 
 import 'dart:typed_data' show Uint16List, Uint8List;
 
-import 'package:act_dart_utility/src/errors/act_unsupported_type_error.dart';
 import 'package:act_dart_utility/src/utilities/bool_utility.dart';
 import 'package:act_dart_utility/src/utilities/byte_utility.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// This class provides a set of [String] helpers, not provided by Dart.
 ///
@@ -82,6 +82,8 @@ sealed class StringUtility {
   /// The method returns null if the parsing has failed or if the value given is null
   ///
   /// The supported types are: `double`, `int`, `String` and `bool`.
+  ///
+  /// If the type given isn't supported, an [ActUnsupportedTypeError] will be thrown.
   static T? parseStrValue<T>(String? value) {
     if (value == null) {
       return null;
@@ -101,6 +103,7 @@ sealed class StringUtility {
         break;
       case const (bool):
         castedValue = BoolUtility.tryParse(value);
+        break;
       default:
         throw ActUnsupportedTypeError<T>();
     }

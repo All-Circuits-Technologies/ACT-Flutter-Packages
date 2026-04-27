@@ -19,8 +19,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -32,12 +32,8 @@ dependencies:
 
   path: ^1.9.1
 
-  act_life_cycle:
-    path: ../act_life_cycle
-
-  # Logger manager
-  act_logger_manager:
-    path: ../act_logger_manager
+  act_foundation:
+    path: ../act_foundation
 
 dev_dependencies:
   flutter_test:

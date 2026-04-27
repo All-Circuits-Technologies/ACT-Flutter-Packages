@@ -9,8 +9,6 @@
 /// See also `act_dart_utility_ext` file
 library;
 
-export 'src/errors/act_singleton_not_created_error.dart';
-export 'src/errors/act_unsupported_type_error.dart';
 export 'src/mixins/mixin_comparable_object_attribute.dart';
 export 'src/mixins/mixin_extends_enum.dart';
 export 'src/mixins/mixin_other_to_merge_with_model.dart';

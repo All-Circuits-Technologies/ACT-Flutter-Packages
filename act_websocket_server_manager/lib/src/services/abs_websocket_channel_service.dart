@@ -4,10 +4,10 @@
 
 import 'dart:async';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_logging_manager/act_http_logging_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_websocket_core/act_websocket_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
@@ -68,7 +68,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
         requestId: clientUuid,
         route: "/",
         method: "/",
-        logLevel: Level.debug,
+        logLevel: LogsLevel.debug,
         message: "WebSocket client: $clientUuid start listening",
       ),
     );
@@ -92,7 +92,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
         requestId: clientUuid,
         route: "/",
         method: _receivedMessageLabel,
-        logLevel: Level.trace,
+        logLevel: LogsLevel.trace,
         message: (message is String) ? message : _defaultDisplayedMessage,
       ),
     );
@@ -112,7 +112,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
         requestId: clientUuid,
         route: "/",
         method: _sentMessageLabel,
-        logLevel: Level.trace,
+        logLevel: LogsLevel.trace,
         message: (message is String) ? message : _defaultDisplayedMessage,
       ),
     );
@@ -137,7 +137,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
         requestId: clientUuid,
         route: "/",
         method: _errorMessageLabel,
-        logLevel: Level.warning,
+        logLevel: LogsLevel.warn,
         message: "WebSocket client: $clientUuid an error occurred $error",
       ),
     );
@@ -154,7 +154,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
         requestId: clientUuid,
         route: "/",
         method: "/",
-        logLevel: Level.debug,
+        logLevel: LogsLevel.debug,
         message: "WebSocket client: $clientUuid stop listening",
       ),
     );

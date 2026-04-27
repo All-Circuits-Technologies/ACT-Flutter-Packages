@@ -15,8 +15,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.3.2 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -37,10 +37,6 @@ dependencies:
   mutex: ^3.1.0
 
   uuid: ^4.5.1
-
-  # Contains the structure to create services and managers
-  act_life_cycle:
-    path: ../act_life_cycle
 
   act_amplify_cognito:
     path: ../act_amplify_cognito
@@ -65,6 +61,10 @@ dependencies:
   # Internet access. For ObserverInternet
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
+
+  # Contains the structure to create services and managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Contains the logger manager
   act_logger_manager:

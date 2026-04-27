@@ -16,8 +16,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.4.0 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -32,10 +32,6 @@ dependencies:
 
   equatable: ^2.0.7
 
-  # The abstract manager
-  act_life_cycle:
-    path: ../act_life_cycle
-
   # This contains the amplify core library
   act_amplify_core:
     path: ../act_amplify_core
@@ -47,6 +43,10 @@ dependencies:
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
+
+  # The abstract manager
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # This is the logger manager
   act_logger_manager:

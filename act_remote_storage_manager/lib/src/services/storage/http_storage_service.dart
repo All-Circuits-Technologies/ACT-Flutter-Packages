@@ -5,7 +5,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_remote_storage_manager/src/models/storage_page.dart';
@@ -58,11 +57,10 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     await super.initLifeCycle();
     if (parentLogsHelper == null) {
       _logsHelper = LogsHelper(
-        logsManager: globalGetIt().get<LoggerManager>(),
-        logsCategory: _logsCategory,
+        category: _logsCategory,
       );
     } else {
-      _logsHelper = parentLogsHelper.createASubLogsHelper(_logsCategory);
+      _logsHelper = parentLogsHelper.createSubLogger(subCategory: _logsCategory);
     }
   }
 

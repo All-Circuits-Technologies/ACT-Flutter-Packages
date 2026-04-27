@@ -79,40 +79,40 @@ class DefaultOAuth2Conf extends Equatable {
     final clientId = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _clientIdKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final discoveryUrlResult = JsonUtility.getOnePrimaryElement<String>(
       json: json,
       key: _discoveryUrlKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final issuerResult = JsonUtility.getOnePrimaryElement<String>(
       json: json,
       key: _issuerKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final appAuthRedirectScheme = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _appAuthRedirectSchemeKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final scopes = JsonUtility.getNotNullPrimaryElementsList<String>(
       json: json,
       key: _scopesKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final serviceConfJson = JsonUtility.getJsonObject(
       json: json,
       key: _serviceConfKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     if (clientId == null ||

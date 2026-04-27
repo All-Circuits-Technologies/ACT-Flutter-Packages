@@ -11,8 +11,8 @@ platforms:
   web:
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -20,17 +20,20 @@ dependencies:
 
   web: ^1.1.1
 
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
   act_dart_utility:
     path: ../act_dart_utility
 
+  act_foundation:
+    path: ../act_foundation
+
   act_global_manager:
     path: ../act_global_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_local_storage_manager:
     path: ../act_local_storage_manager

@@ -15,8 +15,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.4.3 <4.0.0"
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -36,9 +36,6 @@ dependencies:
 
   act_global_manager:
     path: ../act_global_manager
-
-  act_logger_manager:
-    path: ../act_logger_manager
 
   act_router_manager:
     path: ../act_router_manager

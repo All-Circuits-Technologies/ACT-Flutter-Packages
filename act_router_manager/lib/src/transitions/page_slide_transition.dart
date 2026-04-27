@@ -20,17 +20,15 @@ class PageSlideTransition extends CustomTransitionPage<void> {
     this.isAlignHorizontal = true,
     required super.child,
   }) : super(
-          transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (_, animation, __, child) => SlideTransition(
-            position: animation.drive(
-              Tween(
-                begin: isAlignHorizontal ? const Offset(1.5, 0) : const Offset(0, 1.5),
-                end: Offset.zero,
-              ).chain(
-                CurveTween(curve: Curves.ease),
-              ),
-            ),
-            child: child,
-          ),
-        );
+         transitionDuration: const Duration(milliseconds: 500),
+         transitionsBuilder: (_, animation, _, child) => SlideTransition(
+           position: animation.drive(
+             Tween(
+               begin: isAlignHorizontal ? const Offset(1.5, 0) : const Offset(0, 1.5),
+               end: Offset.zero,
+             ).chain(CurveTween(curve: Curves.ease)),
+           ),
+           child: child,
+         ),
+       );
 }

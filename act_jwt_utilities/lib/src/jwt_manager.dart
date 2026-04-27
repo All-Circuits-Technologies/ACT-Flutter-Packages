@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_jwt_utilities/src/handlers/abstract_jwt_handler.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -37,8 +36,7 @@ class JwtManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _jwtLogsCategory,
+      category: _jwtLogsCategory,
     );
   }
 

@@ -21,8 +21,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 # Project dependencies
 dependencies:
@@ -36,15 +36,15 @@ dependencies:
   # Small, easy to use and extensible logger
   logger: ^2.5.0
 
+  act_foundation:
+    path: ../act_foundation
+
   # Easily create managers
   act_life_cycle:
     path: ../act_life_cycle
 
   act_config_manager:
     path: ../act_config_manager
-
-  act_global_manager:
-    path: ../act_global_manager
 
 # Dependencies used by developer
 dev_dependencies:

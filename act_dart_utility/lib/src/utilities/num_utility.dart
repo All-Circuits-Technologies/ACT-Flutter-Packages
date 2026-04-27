@@ -5,7 +5,7 @@
 import 'dart:math' as math;
 
 import 'package:act_dart_utility/src/utilities/byte_utility.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// Contains useful methods to extend the management of numbers
 sealed class NumUtility {
@@ -22,15 +22,8 @@ sealed class NumUtility {
   static int? convertDoubleToInt8(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
-  }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt8,
-        true,
-        loggerManager: loggerManager,
-      );
+    required MixinActLogger logger,
+  }) => _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt8, true, logger: logger);
 
   /// This method converts a double to int16 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -45,15 +38,9 @@ sealed class NumUtility {
   static int? convertDoubleToInt16(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt16,
-        true,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt16, true, logger: logger);
 
   /// This method converts a double to int32 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -68,15 +55,9 @@ sealed class NumUtility {
   static int? convertDoubleToInt32(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt32,
-        true,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt32, true, logger: logger);
 
   /// This method converts a double to int64 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -91,15 +72,9 @@ sealed class NumUtility {
   static int? convertDoubleToInt64(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt64,
-        true,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt64, true, logger: logger);
 
   /// This method converts a double to uInt8 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -114,15 +89,9 @@ sealed class NumUtility {
   static int? convertDoubleToUInt8(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt8,
-        false,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt8, false, logger: logger);
 
   /// This method converts a double to uInt16 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -137,15 +106,9 @@ sealed class NumUtility {
   static int? convertDoubleToUInt16(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt16,
-        false,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt16, false, logger: logger);
 
   /// This method converts a double to uInt32 and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -160,15 +123,9 @@ sealed class NumUtility {
   static int? convertDoubleToUInt32(
     double value,
     int powerOfTenCoeff, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) =>
-      _convertDoubleToInt(
-        value,
-        powerOfTenCoeff,
-        ByteUtility.bytesNbUInt32,
-        false,
-        loggerManager: loggerManager,
-      );
+      _convertDoubleToInt(value, powerOfTenCoeff, ByteUtility.bytesNbUInt32, false, logger: logger);
 
   /// This method converts a double to integer and applied a power of ten factor to the double in
   /// order to keep the digits after comma in the integer.
@@ -185,16 +142,16 @@ sealed class NumUtility {
     int powerOfTenCoeff,
     int bytesNb,
     bool isSigned, {
-    required LoggerManager loggerManager,
+    required MixinActLogger logger,
   }) {
     if (!value.isFinite) {
-      loggerManager.w("We can't convert a not finite double to an integer");
+      logger.w("We can't convert a not finite double to an integer");
       return null;
     }
 
     final newValue = value * math.pow(10, powerOfTenCoeff);
     if (!newValue.isFinite) {
-      loggerManager.w("We can't convert a double which is not finite: $value");
+      logger.w("We can't convert a double which is not finite: $value");
       return null;
     }
 
@@ -202,16 +159,20 @@ sealed class NumUtility {
     // there will be an approximation.
     final bigIntValue = BigInt.from(newValue);
     if (bigIntValue > ByteUtility.maxInt64 || bigIntValue < ByteUtility.minInt64) {
-      loggerManager.w("We can't convert a double which is outside the range of an int64; the "
-          "given value: $value, the power of ten: $powerOfTenCoeff");
+      logger.w(
+        "We can't convert a double which is outside the range of an int64; the "
+        "given value: $value, the power of ten: $powerOfTenCoeff",
+      );
       return null;
     }
 
     final intValue = newValue.toInt();
 
     if (!ByteUtility.testNumberLimits(number: intValue, bytesNb: bytesNb, isSigned: isSigned)) {
-      loggerManager.w("The double given: $value (with power of ten: $powerOfTenCoeff), can't be "
-          "set into an integer with bytes number: $bytesNb, and which is signed: $isSigned");
+      logger.w(
+        "The double given: $value (with power of ten: $powerOfTenCoeff), can't be "
+        "set into an integer with bytes number: $bytesNb, and which is signed: $isSigned",
+      );
       return null;
     }
 

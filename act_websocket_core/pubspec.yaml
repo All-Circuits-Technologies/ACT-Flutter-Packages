@@ -7,8 +7,8 @@ description: This package contains the shared WebSocket classes between server a
 publish_to: none
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -16,14 +16,14 @@ dependencies:
 
   web_socket_channel: ^3.0.3
 
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_dart_utility:
     path: ../act_dart_utility
 
   act_global_manager:
     path: ../act_global_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_logger_manager:
     path: ../act_logger_manager

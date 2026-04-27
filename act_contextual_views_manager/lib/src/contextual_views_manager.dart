@@ -56,8 +56,7 @@ class ContextualViewsManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _logsCategory,
+      category: _logsCategory,
     );
 
     await _viewBuilder.initBuilder(

@@ -56,8 +56,7 @@ class LocationManager extends AbstractPeriphManager {
     _initConfig = await getInitConfig();
 
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: logsCategory,
+      category: logsCategory,
     );
 
     // We get init config before calling super init manager, because [_initConfig] is used in

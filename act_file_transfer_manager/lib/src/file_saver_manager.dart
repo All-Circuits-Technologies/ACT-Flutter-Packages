@@ -14,7 +14,7 @@ class FileSaverBuilder extends AbsLifeCycleFactory<FileSaverManager> {
   /// Class constructor
   const FileSaverBuilder() : super(FileSaverManager.new);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }

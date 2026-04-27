@@ -26,7 +26,7 @@ class TbNoAuthServerReqBuilder<C extends MixinThingsboardConf, A extends AbsAuth
               confGetter: globalGetIt().get<C>,
             ));
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [C, LoggerManager];
 }
@@ -67,8 +67,7 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _noAuthTbLogsCategory,
+      category: _noAuthTbLogsCategory,
     );
 
     final confManager = _confGetter();

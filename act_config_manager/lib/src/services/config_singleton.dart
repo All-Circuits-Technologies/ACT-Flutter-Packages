@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/src/data/config_constants.dart' as config_constants;
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 
 /// This singleton is used to load and get the config variables.
@@ -16,31 +17,42 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 /// To use a singleton here simplifies all the process even if it doesn't match the manager design
 /// pattern.
 class ConfigSingleton extends AbsWithLifeCycle {
-  /// The final config values
-  final Map<String, dynamic> _configs;
-
   /// The instance of this singleton
   static ConfigSingleton? _instance;
+
+  /// The logger used to log messages in this package.
+  final MixinActLogger logger;
+
+  /// The final config values
+  final Map<String, dynamic> _configs;
 
   /// Getter to this instance
   ///
   /// This class has to be created by calling [createInstance] before calling this getter
-  static ConfigSingleton get instance => _instance!;
+  static ConfigSingleton get instance {
+    if (_instance == null) {
+      throw ActSingletonNotCreatedError<ConfigSingleton>();
+    }
+
+    return _instance!;
+  }
 
   /// Create the singleton instance.
   ///
   /// This method has to be called only once or an exception will be raised.
-  static ConfigSingleton createInstance(Map<String, dynamic> configs) {
+  static ConfigSingleton createInstance(
+      {required MixinActLogger logger, required Map<String, dynamic> configs}) {
     if (_instance != null) {
-      throw Exception("Configs service has already been created, don't do it again");
+      throw ActSingletonAlreadyCreatedError<ConfigSingleton>();
     }
 
-    _instance = ConfigSingleton._(configs);
+    _instance = ConfigSingleton._(logger: logger, configs: configs);
     return _instance!;
   }
 
   /// Private class constructor
-  ConfigSingleton._(this._configs);
+  ConfigSingleton._({required this.logger, required Map<String, dynamic> configs})
+      : _configs = configs;
 
   /// Load value from config variable.
   ///

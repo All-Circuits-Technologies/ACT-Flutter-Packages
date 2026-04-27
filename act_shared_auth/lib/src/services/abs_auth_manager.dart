@@ -14,7 +14,7 @@ abstract class AbsAuthBuilder<T extends AbsAuthManager> extends AbsLifeCycleFact
   /// Class constructor
   const AbsAuthBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }

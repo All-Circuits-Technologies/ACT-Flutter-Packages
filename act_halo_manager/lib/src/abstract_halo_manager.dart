@@ -14,7 +14,7 @@ abstract class AbstractHaloBuilder<T extends AbstractHaloManager> extends AbsLif
   /// The class constructor
   AbstractHaloBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }

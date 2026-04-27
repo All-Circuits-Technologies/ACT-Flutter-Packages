@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_logging_manager/act_http_logging_manager.dart';
 import 'package:act_http_server_manager/src/models/http_request_log.dart';
@@ -24,7 +25,7 @@ abstract class AbsHttpServerBuilder<M extends AbsHttpServerManager> extends AbsL
   /// Class constructor
   const AbsHttpServerBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, HttpLoggingManager];
 }
@@ -127,7 +128,7 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
       HttpRequestLog.requestNow(
         requestId: "not-found",
         request: request,
-        logLevel: Level.trace,
+        logLevel: LogsLevel.trace,
         message: "The route isn't found",
       ),
     );
@@ -154,7 +155,7 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
         requestId: "server-start: ${config.serverName}",
         route: '/',
         method: '/',
-        logLevel: Level.info,
+        logLevel: LogsLevel.info,
         message: 'Server: ${config.serverName} started on ${server.address.host}:${server.port}',
       ),
     );
@@ -169,7 +170,7 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
         requestId: "server-close: ${_serverConfig.serverName}",
         route: '/',
         method: '/',
-        logLevel: Level.info,
+        logLevel: LogsLevel.info,
         message: 'Server closed on ${server.address.host}:${server.port}',
       ),
     );

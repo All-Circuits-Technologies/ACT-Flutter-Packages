@@ -85,7 +85,7 @@ class AwsIotNamedShadow {
 
     // Create a new LogsHelper instance for the shadow based on it's name
     final sublogerSuffix = '${thingName.toLowerCase()}-${shadowName.toLowerCase()}';
-    final shadowLogger = logsHelper.createASubLogsHelper(sublogerSuffix);
+    final shadowLogger = logsHelper.createSubLogger(subCategory: sublogerSuffix);
 
     return AwsIotNamedShadow._(
       topicNames: topicNames,

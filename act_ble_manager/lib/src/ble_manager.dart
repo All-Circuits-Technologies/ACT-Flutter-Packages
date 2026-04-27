@@ -76,8 +76,7 @@ class BleManager extends AbstractPeriphManager {
     await super.initLifeCycle();
 
     logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: _bleLogCategory,
+      category: _bleLogCategory,
     );
 
     await bleGapService.initLifeCycle();

@@ -4,7 +4,6 @@
 
 import 'package:act_config_manager/src/errors/act_config_null_value_error.dart';
 import 'package:act_config_manager/src/models/abs_parser_config_var.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 
 /// [NotNullParserConfigVar] wraps a single config variable of type T, providing strongly-typed
 /// read helper.
@@ -40,7 +39,7 @@ class NotNullParserConfigVar<ParsedType, StoredType>
   ParsedType load() {
     final value = loadAndParse() ?? defaultValue;
     if (value == null) {
-      appLogger().e("The value of the config: $key, is null, we can't go further");
+      configs.logger.e("The value of the config: $key, is null, we can't go further");
       throw ActConfigNullValueError(key: key);
     }
 

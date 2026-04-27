@@ -112,7 +112,7 @@ mixin MixinAwsIotShadowDoc on Equatable {
   /// Get a json from a string
   @protected
   static Map<String, dynamic>? getJsonFromString(String jsonStr) =>
-      JsonUtility.parseJsonBodyToObj(jsonStr, loggerManager: appLogger());
+      JsonUtility.parseJsonBodyToObj(jsonStr, logger: appLogger());
 
   /// Get the error message of the document
   @protected
@@ -127,7 +127,7 @@ mixin MixinAwsIotShadowDoc on Equatable {
   static int? _getInt(Map<String, dynamic> json, String key) => JsonUtility.getNotNullOneElement(
         json: json,
         key: key,
-        loggerManager: appLogger(),
+        logger: appLogger(),
       );
 
   /// Get a string from a json
@@ -136,7 +136,7 @@ mixin MixinAwsIotShadowDoc on Equatable {
       JsonUtility.getNotNullOneElement(
         json: json,
         key: key,
-        loggerManager: appLogger(),
+        logger: appLogger(),
       );
 
   /// Get a json object from a json
@@ -145,7 +145,7 @@ mixin MixinAwsIotShadowDoc on Equatable {
       JsonUtility.getNotNullJsonObject(
         json: json,
         key: key,
-        loggerManager: appLogger(),
+        logger: appLogger(),
       );
 
   /// Get a nullabel json object from a json
@@ -156,6 +156,6 @@ mixin MixinAwsIotShadowDoc on Equatable {
         json: json,
         key: key,
         canBeUndefined: true,
-        loggerManager: appLogger(),
+        logger: appLogger(),
       );
 }

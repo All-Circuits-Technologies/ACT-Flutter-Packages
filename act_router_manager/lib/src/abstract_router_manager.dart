@@ -34,7 +34,7 @@ class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsLifeCycl
     required ClassFactory<M> factory,
   }) : super(factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [
         LoggerManager,
@@ -81,7 +81,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _logsCategory);
+    _logsHelper = LogsHelper(category: _logsCategory);
   }
 
   /// {@macro act_life_cycle.MixinUiLifeCycle.initAfterManagersAndBeforeViews}

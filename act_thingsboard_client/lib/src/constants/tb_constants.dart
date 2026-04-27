@@ -15,4 +15,4 @@ typedef TbRequestToCall<T> = Future<T> Function(ThingsboardClient tbClient);
 
 /// Get the right log category for the elements in the thingsboard package
 String getTbLogCategory({required String subCategory}) =>
-    "$logRootCategory${LogsHelper.logsCategorySeparator}$subCategory";
+    "$logRootCategory${LogFormatUtility.categorySeparator}$subCategory";

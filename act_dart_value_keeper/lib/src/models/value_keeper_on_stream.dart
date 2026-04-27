@@ -8,34 +8,34 @@ import 'package:act_dart_value_keeper/src/mixins/mixin_value_keeper_on_stream_up
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 
-/// {@macro act_dart_utility.ValueTypeIsEqualToSetterValue}
+/// {@macro act_dart_value_keeper.ValueTypeIsEqualToSetterValue}
 ///
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperOnStream<T, Listened> = BaseValueKeeperOnStream<T, T, Listened>;
 
-/// {@macro act_dart_utility.ValueIsNullableButNotSetter}
+/// {@macro act_dart_value_keeper.ValueIsNullableButNotSetter}
 ///
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperOnStreamWithNullInit<T, Listened> = BaseValueKeeperOnStream<T, T?, Listened>;
 
-/// {@macro act_dart_utility.ValueKeeper}
+/// {@macro act_dart_value_keeper.ValueKeeper}
 ///
-/// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate}
+/// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
 /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
 ///
-/// {@macro act_dart_utility.SMustBeCastableToT}
+/// {@macro act_dart_value_keeper.SMustBeCastableToT}
 class BaseValueKeeperOnStream<S extends T, T, Listened> extends BaseValueKeeper<S, T>
     with MixinWithLifeCycleDispose, MixinValueKeeperOnStreamUpdate<S, T, Listened> {
-  /// {@macro act_dart_utility.MixinValueKeeperOnStreamUpdate.parserCallback}
+  /// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate.parserCallback}
   @override
   final S? Function(Listened listenedValue) parserCallback;
 

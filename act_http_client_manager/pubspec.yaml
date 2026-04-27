@@ -16,8 +16,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.2 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -31,12 +31,11 @@ dependencies:
 
   mutex: ^3.1.0
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_dart_utility:
     path: ../act_dart_utility
+
+  act_foundation:
+    path: ../act_foundation
 
   # Default global manager
   act_global_manager:
@@ -44,6 +43,10 @@ dependencies:
 
   act_http_core:
     path: ../act_http_core
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

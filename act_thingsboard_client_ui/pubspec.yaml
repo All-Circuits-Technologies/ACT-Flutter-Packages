@@ -18,8 +18,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -51,10 +51,6 @@ dependencies:
 
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
-
-  # Logger manager
-  act_logger_manager:
-    path: ../act_logger_manager
 
   act_thingsboard_client:
     path: ../act_thingsboard_client

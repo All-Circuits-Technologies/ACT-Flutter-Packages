@@ -2,12 +2,12 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_http_core/act_http_core.dart';
 import 'package:act_http_server_manager/src/models/http_request_log.dart';
 import 'package:act_http_server_manager/src/services/handlers/abs_server_handler.dart';
 import 'package:act_http_server_manager/src/services/handlers/request_id_server_handler.dart';
 import 'package:act_jwt_utilities/act_jwt_utilities.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:shelf/shelf.dart' show Request, Response;
 
 /// This server handler is used to verify if a JWT is present in the header and if it's valid
@@ -47,7 +47,7 @@ class VerifyJwtAuthServerHandler extends AbsServerHandler {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.trace,
+          logLevel: LogsLevel.trace,
           message: "The request received doesn't contain the expected authentication header",
         ),
       );
@@ -63,7 +63,7 @@ class VerifyJwtAuthServerHandler extends AbsServerHandler {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.trace,
+          logLevel: LogsLevel.trace,
           message:
               "The authentication header doesn't contain the bearer info or the value "
               "isn't well formatted",
@@ -78,7 +78,7 @@ class VerifyJwtAuthServerHandler extends AbsServerHandler {
         HttpRequestLog.requestNow(
           requestId: requestId,
           request: request,
-          logLevel: Level.trace,
+          logLevel: LogsLevel.trace,
           message: "The token isn't valid",
         ),
       );

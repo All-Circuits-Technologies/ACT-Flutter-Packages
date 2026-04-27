@@ -16,7 +16,7 @@ abstract class AbsTbServerReqBuilder<Tb extends AbsTbServerReqManager>
   /// Class constructor
   AbsTbServerReqBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager, TbNoAuthServerReqManager];
 }
@@ -59,8 +59,7 @@ abstract class AbsTbServerReqManager extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     _logsHelper = LogsHelper(
-      logsManager: globalGetIt().get<LoggerManager>(),
-      logsCategory: tb_constants.getTbLogCategory(subCategory: _logCategory),
+      category: tb_constants.getTbLogCategory(subCategory: _logCategory),
     );
 
     _noAuthManager = globalGetIt().get<TbNoAuthServerReqManager>();

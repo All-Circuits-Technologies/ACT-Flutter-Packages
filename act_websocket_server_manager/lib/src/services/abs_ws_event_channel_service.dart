@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_websocket_core/act_websocket_core.dart';
 import 'package:act_websocket_server_manager/src/services/abs_websocket_channel_service.dart';
@@ -43,6 +42,6 @@ abstract class AbsWsEventChannelService<Event extends MixinStringValueType>
     required this.eventsList,
     this.eventJsonKey = MixinWsEventMsgParserService.defaultJsonEventKey,
     this.dataJsonKey = MixinWsEventMsgParserService.defaultJsonDataKey,
-  }) : logsHelper = LogsHelper(logsManager: appLogger(), logsCategory: _eventLogsCategory),
+  }) : logsHelper = LogsHelper(category: _eventLogsCategory),
        eventCallbacks = {};
 }

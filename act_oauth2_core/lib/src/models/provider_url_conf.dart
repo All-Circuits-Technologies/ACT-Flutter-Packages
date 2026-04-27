@@ -43,20 +43,20 @@ class ProviderUrlConf extends Equatable {
     final authorizationEndpoint = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _authorizationEndpointKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final tokenEndpoint = JsonUtility.getNotNullOnePrimaryElement<String>(
       json: json,
       key: _tokenEndpointKey,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     final endSessionEndpointResult = JsonUtility.getOnePrimaryElement<String>(
       json: json,
       key: _endSessionEndpointKey,
       canBeUndefined: true,
-      loggerManager: loggerManager,
+      logger: loggerManager,
     );
 
     if (authorizationEndpoint == null || tokenEndpoint == null || !endSessionEndpointResult.isOk) {

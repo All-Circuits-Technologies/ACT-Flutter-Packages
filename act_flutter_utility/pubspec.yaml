@@ -22,8 +22,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 # Project dependencies
 dependencies:
@@ -63,10 +63,6 @@ dependencies:
   # Help to know the current internet state on the phone (if we can join internet, or not)
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
-
-  # Logger manager
-  act_logger_manager:
-    path: ../act_logger_manager
 
 # Dependencies used by developer
 dev_dependencies:

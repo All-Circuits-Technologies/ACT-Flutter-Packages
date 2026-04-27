@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:equatable/equatable.dart';
 
 /// Contains the log of an http request
@@ -26,7 +26,7 @@ class HttpLog extends Equatable {
   final String method;
 
   /// The log level of the message
-  final Level logLevel;
+  final LogsLevel logLevel;
 
   /// The message of the log
   final String message;
@@ -72,7 +72,7 @@ class HttpLog extends Equatable {
     String? requestId,
     String? route,
     String? method,
-    Level? logLevel,
+    LogsLevel? logLevel,
     String? message,
     String? sourceInfo,
   }) => HttpLog(

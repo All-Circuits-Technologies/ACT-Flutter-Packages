@@ -61,7 +61,7 @@ abstract class ATbTelemetry<T> {
   })  : _values = {},
         _currentlySubscribed = [],
         _updateMutex = Mutex(),
-        _logsHelper = logsHelper.createASubLogsHelper(telemetryName),
+        _logsHelper = logsHelper.createSubLogger(subCategory: telemetryName),
         _updatedTelemetry = StreamController.broadcast(),
         _requestManager = requestManager;
 

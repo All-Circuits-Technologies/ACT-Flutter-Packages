@@ -16,7 +16,7 @@ class FileSelectorBuilder extends AbsLifeCycleFactory<FileSelectorManager> {
   /// Class constructor
   const FileSelectorBuilder() : super(FileSelectorManager.new);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [];
 }

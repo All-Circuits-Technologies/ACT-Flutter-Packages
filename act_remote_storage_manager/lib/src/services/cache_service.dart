@@ -35,7 +35,7 @@ class CacheService extends AbsWithLifeCycle {
     required MixinStorageService storageService,
     required LogsHelper parentLogger,
   }) {
-    final logsHelper = parentLogger.createASubLogsHelper(_logsCategory);
+    final logsHelper = parentLogger.createSubLogger(subCategory: _logsCategory);
 
     // Create a the httpFileService that will use the method implemented in the storageService.
     final httpFileService = StorageHttpFileService(

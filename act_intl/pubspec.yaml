@@ -19,8 +19,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 # Project dependencies
 dependencies:
@@ -31,16 +31,16 @@ dependencies:
   # Code to deal with internationalized/localized messages
   intl: ^0.20.2
 
-  # Abstract manager
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_dart_utility:
     path: ../act_dart_utility
 
   # Global manager
   act_global_manager:
     path: ../act_global_manager
+
+  # Abstract manager
+  act_life_cycle:
+    path: ../act_life_cycle
 
   act_local_storage_manager:
     path: ../act_local_storage_manager

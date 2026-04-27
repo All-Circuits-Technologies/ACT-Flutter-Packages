@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_client_manager/src/abs_http_client_login.dart';
 import 'package:act_http_client_manager/src/models/request_param.dart';
@@ -25,7 +26,7 @@ abstract class AbsHttpClientBuilder<T extends AbsHttpClientManager> extends AbsL
   /// Class constructor
   const AbsHttpClientBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }
@@ -69,12 +70,11 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
 
     if (config.parentLogsHelper == null) {
       _logsHelper = LogsHelper(
-        logsManager: globalGetIt().get<LoggerManager>(),
-        logsCategory: config.loggerCategory,
-        enableLog: config.loggerEnabled,
+        category: config.loggerCategory,
+        minLevel: config.loggerEnabled ? null : LogsLevel.off,
       );
     } else {
-      _logsHelper = config.parentLogsHelper!.createASubLogsHelper(config.loggerCategory);
+      _logsHelper = config.parentLogsHelper!.createSubLogger(subCategory: config.loggerCategory);
     }
 
     final urlsByRelRoute = <String, Uri>{};

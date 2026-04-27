@@ -17,9 +17,7 @@ class CognitoSignUpService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor
-  CognitoSignUpService({
-    required this.logsHelper,
-  }) : super();
+  CognitoSignUpService({required this.logsHelper}) : super();
 
   /// User self-registration entry-point
   ///
@@ -70,7 +68,7 @@ class CognitoSignUpService extends AbsWithLifeCycle {
         password: password,
         options: SignUpOptions(
           userAttributes: {
-            if (email != null) AuthUserAttributeKey.email: email,
+            AuthUserAttributeKey.email: ?email,
             // Other keys we may want to set one day:
             // - AuthUserAttributeKey.locale for user to get AWS mails in wanted language
             //   Something like dart:ui/PlatformDispatcher.locale.toLanguageTag()
@@ -96,20 +94,14 @@ class CognitoSignUpService extends AbsWithLifeCycle {
   ///
   /// [accountId] identifies account to confirm.
   /// [code] is the code sent to user by [signUp] procedure (likely into its mailbox)
-  Future<AuthSignUpResult> confirmSignUp({
-    required String accountId,
-    required String code,
-  }) async {
+  Future<AuthSignUpResult> confirmSignUp({required String accountId, required String code}) async {
     if (accountId.isEmpty || code.isEmpty) {
       return const AuthSignUpResult(status: AuthSignUpStatus.badArgument);
     }
 
     SignUpResult? amplifyResult;
     try {
-      amplifyResult = await Amplify.Auth.confirmSignUp(
-        username: accountId,
-        confirmationCode: code,
-      );
+      amplifyResult = await Amplify.Auth.confirmSignUp(username: accountId, confirmationCode: code);
     } on AuthException catch (e) {
       logsHelper.e('Error sign-up confirmation: ${e.message}');
       return AuthSignUpResult(status: _parseException(e), extra: e);
@@ -124,9 +116,7 @@ class CognitoSignUpService extends AbsWithLifeCycle {
   /// This method can cope with a transient delivery failure by resending a code.
   ///
   /// [accountId] identifies account to confirm. Some services may also accept user email or phone.
-  Future<AuthSignUpResult> resendSignUpCode({
-    required String accountId,
-  }) async {
+  Future<AuthSignUpResult> resendSignUpCode({required String accountId}) async {
     if (accountId.isEmpty) {
       return const AuthSignUpResult(status: AuthSignUpStatus.badArgument);
     }
@@ -135,9 +125,7 @@ class CognitoSignUpService extends AbsWithLifeCycle {
     // or failure information. It only contains details about where code has been sent.
     ResendSignUpCodeResult? amplifyResult;
     try {
-      amplifyResult = await Amplify.Auth.resendSignUpCode(
-        username: accountId,
-      );
+      amplifyResult = await Amplify.Auth.resendSignUpCode(username: accountId);
     } on AuthException catch (e) {
       logsHelper.e('Error sign-up confirmation: ${e.message}');
       return AuthSignUpResult(status: _parseException(e), extra: e);
@@ -174,54 +162,54 @@ class CognitoSignUpService extends AbsWithLifeCycle {
 
   /// This parses the received error to a [AuthSignUpStatus]
   static AuthSignUpStatus _parseException(AuthException exception) => switch (exception) {
-        AliasExistsException _ =>
-          // This error fires when user pool is configured as username-centric and when
-          // chosen email is already used in another account. Untested, colliding phone
-          // numbers likely also generate this exception.
-          // Note that Cognito unfortunately checks attributes collision upon signup confirmation,
-          // that is after account creation which leads to complicated troubles:
-          //
-          // - attempting to sign up again with same new username and another email address fails
-          //   with UsernameExistsException.
-          // - attempting to sign-in results in a signupConfirmation required, which again fails
-          //
-          // We therefore better like to create Cognito user poll email-centric,
-          // which enables email collision detection upon signup, before account creation.
-          //
-          // Message example: "An account with the email already exists."
-          // (no recovery suggestion)
-          AuthSignUpStatus.accountPropertyConflict,
-        CodeMismatchException _ =>
-          // Message example: "Invalid verification code provided, please try again"
-          // (no recovery suggestion)
-          AuthSignUpStatus.wrongConfirmationCode,
-        ExpiredCodeException _ =>
-          // Note that a confirmation code posted with a wrong accountId also generate this error.
-          // Message example: "Invalid code provided, please request a code again."
-          // (no recovery suggestion)
-          AuthSignUpStatus.sessionExpired,
-        InvalidParameterException _ =>
-          // At least one provided form field is malformed
-          // Message example: "1 validation error detected: ... (detail)"
-          // (no recovery suggestion)
-          AuthSignUpStatus.badArgument,
-        InvalidPasswordException _ =>
-          // Message example: "Password did not conform with policy: Password not long enough"
-          // (no recovery suggestion)
-          AuthSignUpStatus.passwordNotConform,
-        NetworkException _ =>
-          // Message example: "The request failed due to a network error."
-          // Recovery suggestion example: "Ensure that you have an active network connection"
-          AuthSignUpStatus.networkError,
-        NotAuthorizedServiceException _ =>
-          // ex: "SignUp is not permitted for this user pool"
-          // (no recovery suggestion)
-          AuthSignUpStatus.genericError,
-        UsernameExistsException _ =>
-          // User ID (account name or email depending on user pool configuration) already exists.
-          // ex: "User already exists"
-          // (no recovery suggestion)
-          AuthSignUpStatus.accountIdentifierConflict,
-        _ => AuthSignUpStatus.genericError,
-      };
+    AliasExistsException _ =>
+      // This error fires when user pool is configured as username-centric and when
+      // chosen email is already used in another account. Untested, colliding phone
+      // numbers likely also generate this exception.
+      // Note that Cognito unfortunately checks attributes collision upon signup confirmation,
+      // that is after account creation which leads to complicated troubles:
+      //
+      // - attempting to sign up again with same new username and another email address fails
+      //   with UsernameExistsException.
+      // - attempting to sign-in results in a signupConfirmation required, which again fails
+      //
+      // We therefore better like to create Cognito user poll email-centric,
+      // which enables email collision detection upon signup, before account creation.
+      //
+      // Message example: "An account with the email already exists."
+      // (no recovery suggestion)
+      AuthSignUpStatus.accountPropertyConflict,
+    CodeMismatchException _ =>
+      // Message example: "Invalid verification code provided, please try again"
+      // (no recovery suggestion)
+      AuthSignUpStatus.wrongConfirmationCode,
+    ExpiredCodeException _ =>
+      // Note that a confirmation code posted with a wrong accountId also generate this error.
+      // Message example: "Invalid code provided, please request a code again."
+      // (no recovery suggestion)
+      AuthSignUpStatus.sessionExpired,
+    InvalidParameterException _ =>
+      // At least one provided form field is malformed
+      // Message example: "1 validation error detected: ... (detail)"
+      // (no recovery suggestion)
+      AuthSignUpStatus.badArgument,
+    InvalidPasswordException _ =>
+      // Message example: "Password did not conform with policy: Password not long enough"
+      // (no recovery suggestion)
+      AuthSignUpStatus.passwordNotConform,
+    NetworkException _ =>
+      // Message example: "The request failed due to a network error."
+      // Recovery suggestion example: "Ensure that you have an active network connection"
+      AuthSignUpStatus.networkError,
+    NotAuthorizedServiceException _ =>
+      // ex: "SignUp is not permitted for this user pool"
+      // (no recovery suggestion)
+      AuthSignUpStatus.genericError,
+    UsernameExistsException _ =>
+      // User ID (account name or email depending on user pool configuration) already exists.
+      // ex: "User already exists"
+      // (no recovery suggestion)
+      AuthSignUpStatus.accountIdentifierConflict,
+    _ => AuthSignUpStatus.genericError,
+  };
 }

@@ -32,7 +32,7 @@ class TbDevicesService extends AbsWithLifeCycle {
     required LogsHelper logsHelper,
   })  : _requestManager = requestManager,
         _deviceValues = {},
-        _logsHelper = logsHelper.createASubLogsHelper(_tbLogsCategory);
+        _logsHelper = logsHelper.createSubLogger(subCategory: _tbLogsCategory);
 
   /// The method creates and returns a [TbTelemetryHandler] linked to the [deviceId] given
   TbTelemetryHandler createTelemetryHandler(String deviceId) {

@@ -16,8 +16,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.5.3
-  flutter: ">=1.17.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -34,10 +34,6 @@ dependencies:
   # Used to get the application directory (cache, documents, etc.)
   path_provider: ^2.1.5
 
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   # Provide the configuration for the storage manager
   act_config_manager:
     path: ../act_config_manager
@@ -49,6 +45,10 @@ dependencies:
   # Global manager
   act_global_manager:
     path: ../act_global_manager
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Loggers
   act_logger_manager:

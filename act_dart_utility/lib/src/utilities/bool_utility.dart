@@ -4,6 +4,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
+
 /// This class provides a set of [bool] helpers, not provided by Dart.
 ///
 /// String parsing methods
@@ -78,11 +80,14 @@ sealed class BoolUtility {
   /// null is returned.
   ///
   /// See also [parse].
-  static bool? tryParse(String source) {
+  static bool? tryParse(String source, {MixinActLogger? logger}) {
+    bool? boolValue;
     try {
-      return parse(source);
+      boolValue = parse(source);
     } on FormatException {
-      return null;
+      logger?.w("The string given: '$source' does not contain a valid boolean literal");
     }
+
+    return boolValue;
   }
 }

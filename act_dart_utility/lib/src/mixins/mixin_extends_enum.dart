@@ -6,7 +6,7 @@
 ///
 /// You can add this mixin on a "derived" enum
 mixin MixinExtendsEnum on Enum {
-  /// {@template MixinExtendsEnum.idxToInsertInSharedEnum}
+  /// {@template act_dart_utility.MixinExtendsEnum.idxToInsertInSharedEnum}
   /// This is the index to use to insert the column key in the shared table.
   ///
   /// The elements are inserted in the order of the enums. Therefore, this index has to be the
@@ -14,7 +14,7 @@ mixin MixinExtendsEnum on Enum {
   /// {@endtemplate}
   int get idxToInsertInSharedEnum;
 
-  /// {@template MixinExtendsEnum.getAllColumns}
+  /// {@template act_dart_utility.MixinExtendsEnum.getAllColumns}
   /// Get all the columns of the [sharedEnums] and adds the [specificEnums] in it.
   ///
   /// Be careful: if B is something else than a strict [Enum], B must be a Mixin and has to be

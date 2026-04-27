@@ -12,11 +12,11 @@ enum BoolResultStatus with MixinResultStatus {
   /// This is equals to false value
   error(isSuccess: false, canBeRetried: false);
 
-  /// {@macro act_dart_utility.MixinResultStatus.isSuccess}
+  /// {@macro act_dart_result.MixinResultStatus.isSuccess}
   @override
   final bool isSuccess;
 
-  /// {@macro act_dart_utility.MixinResultStatus.canBeRetried}
+  /// {@macro act_dart_result.MixinResultStatus.canBeRetried}
   @override
   final bool canBeRetried;
 

@@ -15,8 +15,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   flutter:
@@ -26,10 +26,6 @@ dependencies:
 
   # Path manipulation tools
   path: ^1.9.1
-
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
 
   act_config_manager:
     path: ../act_config_manager
@@ -45,6 +41,10 @@ dependencies:
   # Utilities around dart core types
   act_intl:
     path: ../act_intl
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Loggers
   act_logger_manager:

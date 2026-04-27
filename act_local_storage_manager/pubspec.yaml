@@ -18,8 +18,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
-  flutter: ">=3.0.0 <4.0.0"
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
 
 dependencies:
   # Flutter framework
@@ -35,10 +35,6 @@ dependencies:
   # TODO(brolandeau): when updating the lib, verify if we still need to override `shared_preferences_android`
   shared_preferences: ^2.5.3
 
-  # Flutter AC Technologies dependencies
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
@@ -46,9 +42,16 @@ dependencies:
   act_dart_utility:
     path: ../act_dart_utility
 
+  act_foundation:
+    path: ../act_foundation
+
   # Default global manager
   act_global_manager:
     path: ../act_global_manager
+
+  # Flutter AC Technologies dependencies
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Logger manager
   act_logger_manager:

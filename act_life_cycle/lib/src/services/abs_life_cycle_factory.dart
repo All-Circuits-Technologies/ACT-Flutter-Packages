@@ -17,7 +17,7 @@ abstract class AbsLifeCycleFactory<T extends AbsWithLifeCycle> {
   /// Class constructor
   const AbsLifeCycleFactory(this.factory);
 
-  /// {@template abs_life_cycle_factory.AbsLifeCycleFactory.asyncFactory}
+  /// {@template act_life_cycle.AbsLifeCycleFactory.asyncFactory}
   /// Asynchronous factory which build and initialize a manager
   /// {@endtemplate}
   Future<T> asyncFactory() async {
@@ -28,7 +28,7 @@ abstract class AbsLifeCycleFactory<T extends AbsWithLifeCycle> {
     return manager;
   }
 
-  /// {@template abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@template act_life_cycle.AbsLifeCycleFactory.dependsOn}
   /// Abstract method which list the manager dependence on others managers
   /// {@endtemplate}
   @mustCallSuper

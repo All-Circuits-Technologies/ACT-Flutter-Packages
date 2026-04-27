@@ -4,7 +4,7 @@
 
 import 'dart:typed_data';
 
-import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// Utility class to manage bytes
 ///
@@ -196,10 +196,7 @@ sealed class ByteUtility {
   /// This method verifies if what you ask is possible: if you don't ask an impossible thing to do.
   /// If a problem occurred null is returned.
   /// If you are sure of your parameters, you can use [unsafeConvertFromLsb] method
-  static int? convertFromLsb({
-    required Uint8List lsbNumber,
-    bool isSigned = true,
-  }) {
+  static int? convertFromLsb({required Uint8List lsbNumber, bool isSigned = true}) {
     if (!_testConvertLimit(number: lsbNumber, isSigned: isSigned)) {
       // We can't manage an unsigned int
       return null;
@@ -217,10 +214,7 @@ sealed class ByteUtility {
   /// This method doesn't verify the parameters you give. If your parameters are incoherent, the
   /// method may raise an exception or returns wrong values.
   /// If you want a check on your parameters use [convertFromLsb] method
-  static int unsafeConvertFromLsb({
-    required Uint8List lsbNumber,
-    bool isSigned = true,
-  }) {
+  static int unsafeConvertFromLsb({required Uint8List lsbNumber, bool isSigned = true}) {
     final lsbNumberLength = lsbNumber.length;
     var number = 0;
 
@@ -247,9 +241,13 @@ sealed class ByteUtility {
   static int? convertFromMsb({
     required Uint8List msbNumber,
     bool isSigned = true,
+    MixinActLogger? logger,
   }) {
     if (!_testConvertLimit(number: msbNumber, isSigned: isSigned)) {
-      // We can't manage an unsigned int
+      logger?.w(
+        "We can't convert the byte list given to a number, because of the incoherence of the "
+        "parameters: the byte list: $msbNumber, and the isSigned parameter: $isSigned",
+      );
       return null;
     }
 
@@ -265,10 +263,7 @@ sealed class ByteUtility {
   /// This method doesn't verify the parameters you give. If your parameters are incoherent, the
   /// method may raise an exception or returns wrong values.
   /// If you want a check on your parameters use [convertFromMsb] method
-  static int unsafeConvertFromMsb({
-    required Uint8List msbNumber,
-    bool isSigned = true,
-  }) {
+  static int unsafeConvertFromMsb({required Uint8List msbNumber, bool isSigned = true}) {
     final msbNumberLength = msbNumber.length;
     var number = 0;
 
@@ -289,13 +284,10 @@ sealed class ByteUtility {
   /// List\<int\> to match an Uint8.
   ///
   /// This method test if the int values can be Uint8 or returns null if an overflow is detected
-  static Uint8List? safeConvertList(
-    List<int> values, {
-    required LoggerManager loggerManager,
-  }) {
+  static Uint8List? safeConvertList(List<int> values, {required MixinActLogger logger}) {
     for (final value in values) {
       if (value < 0 || value > ByteUtility.maxUInt8) {
-        loggerManager.w("The list given overflows the Uint8 size: $value");
+        logger.w("The list given overflows the Uint8 size: $value");
         return null;
       }
     }
@@ -306,10 +298,7 @@ sealed class ByteUtility {
   /// Test the convert limits when try to convert a byte list to number
   ///
   /// Returns false if a problem occurred in the test
-  static bool _testConvertLimit({
-    required Uint8List number,
-    bool isSigned = true,
-  }) {
+  static bool _testConvertLimit({required Uint8List number, bool isSigned = true}) {
     final numberLength = number.length;
 
     if (numberLength != ByteUtility.bytesNbUInt8 &&

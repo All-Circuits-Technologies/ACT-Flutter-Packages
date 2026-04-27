@@ -15,7 +15,7 @@ abstract class AbsHttpLoggingBuilder<M extends HttpLoggingManager> extends AbsLi
   /// Class constructor
   const AbsHttpLoggingBuilder(super.factory);
 
-  /// {@macro abs_life_cycle_factory.AbsLifeCycleFactory.dependsOn}
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [LoggerManager];
 }
@@ -63,7 +63,7 @@ class HttpLoggingManager extends AbsWithLifeCycle {
       tmpLog = log;
     }
 
-    appLogger().log(tmpLog.logLevel, tmpLog.formattedLogMsg);
+    appLogger().log(tmpLog.formattedLogMsg, level: tmpLog.logLevel);
     _logStreamController.add(tmpLog);
   }
 

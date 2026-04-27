@@ -11,7 +11,7 @@ enum GlobalManagerUiState with MixinExtendsEnum {
   /// AbsWithLifeCycleAndUi.initAfterView method
   initForWidget(idxToInsertInSharedEnum: 4);
 
-  /// {@macro MixinExtendsEnum.idxToInsertInSharedEnum}
+  /// {@macro act_dart_utility.MixinExtendsEnum.idxToInsertInSharedEnum}
   @override
   final int idxToInsertInSharedEnum;
 
@@ -20,7 +20,7 @@ enum GlobalManagerUiState with MixinExtendsEnum {
     required this.idxToInsertInSharedEnum,
   });
 
-  /// {@macro MixinExtendsEnum.getAllColumns}
+  /// {@macro act_dart_utility.MixinExtendsEnum.getAllColumns}
   static List<Enum> getAllColumns() => MixinExtendsEnum.getAllColumns(
         sharedEnums: GlobalManagerState.values,
         specificEnums: values,
