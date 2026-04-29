@@ -23,8 +23,7 @@ sealed class ComparableUtility {
     required Y? base,
     required Y? toCompareWith,
     required Y defaultValue,
-  }) =>
-      (base ?? defaultValue).compareTo(toCompareWith ?? defaultValue);
+  }) => (base ?? defaultValue).compareTo(toCompareWith ?? defaultValue);
 
   /// This method allows to compare two nullable comparable objects.
   ///
@@ -53,6 +52,36 @@ sealed class ComparableUtility {
     }
 
     return base.compareTo(toCompareWith);
+  }
+
+  /// Compares the given values to know if [base] value is strictly lesser than [toCompareWith]
+  /// value (in that case, the method returns true).
+  ///
+  /// If [testEquality] is equals to true, it also returns true if values are equals.
+  ///
+  /// Uses `compareTo` method.
+  static bool isBaseLesserOrEqualTo<Y extends Comparable<Y>>({
+    required Y base,
+    required Y toCompareWith,
+    bool testEquality = true,
+  }) {
+    final comparison = base.compareTo(toCompareWith);
+    return comparison < 0 || testEquality && comparison == 0;
+  }
+
+  /// Compares the given values to know if [base] value is strictly greater than
+  /// [toCompareWith] value (in that case, the method returns true).
+  ///
+  /// If [testEquality] is equals to true, it also returns true if values are equals.
+  ///
+  /// Uses `compareTo` method.
+  static bool isBaseGreaterOrEqualTo<Y extends Comparable<Y>>({
+    required Y base,
+    required Y toCompareWith,
+    bool testEquality = true,
+  }) {
+    final comparison = base.compareTo(toCompareWith);
+    return comparison > 0 || testEquality && comparison == 0;
   }
 
   /// This method allows to compare two boolean

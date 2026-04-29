@@ -178,34 +178,4 @@ sealed class NumUtility {
 
     return intValue;
   }
-
-  /// Compares the given num values to know if [base] value is strictly lesser than [toCompareWith]
-  /// value (in that case, the method returns true).
-  ///
-  /// If [testEquality] is equals to true, it also returns true if values are equals.
-  ///
-  /// Uses `compareTo` method.
-  static bool isBaseLesserOrEqualTo<T extends num>({
-    required T base,
-    required T toCompareWith,
-    bool testEquality = true,
-  }) {
-    final comparison = base.compareTo(toCompareWith);
-    return comparison < 0 || testEquality && comparison == 0;
-  }
-
-  /// Compares the given num values to know if [base] value is strictly greather than
-  /// [toCompareWith] value (in that case, the method returns true).
-  ///
-  /// If [testEquality] is equals to true, it also returns true if values are equals.
-  ///
-  /// Uses `compareTo` method.
-  static bool isBaseGreaterOrEqualTo<T extends num>({
-    required T base,
-    required T toCompareWith,
-    bool testEquality = true,
-  }) {
-    final comparison = base.compareTo(toCompareWith);
-    return comparison > 0 || testEquality && comparison == 0;
-  }
 }
