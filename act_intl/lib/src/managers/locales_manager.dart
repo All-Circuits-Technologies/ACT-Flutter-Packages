@@ -4,7 +4,9 @@
 
 import 'dart:async';
 
+import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_intl/src/mixins/mixin_locale_config.dart';
 import 'package:act_intl/src/mixins/mixin_locale_properties.dart';
 import 'package:act_intl/src/observers/locales_observer_widget.dart';
 import 'package:act_intl/src/utilities/locale_utility.dart';
@@ -14,19 +16,21 @@ import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
 /// This is the builder for the [LocalesManager].
-class LocalesManagerBuilder<P extends MixinLocaleProperties>
+class LocalesManagerBuilder<C extends MixinLocaleConfig, P extends MixinLocaleProperties>
     extends AbsLifeCycleFactory<LocalesManager> {
   /// Class constructor
-  LocalesManagerBuilder({
-    required List<Locale> Function() getSupportedLocales,
-  }) : super(() => LocalesManager(
-              getSupportedLocales: getSupportedLocales,
-              propertiesGetter: globalGetIt().get<P>,
-            ));
+  LocalesManagerBuilder({required List<Locale> Function() getSupportedLocales})
+    : super(
+        () => LocalesManager(
+          getSupportedLocales: getSupportedLocales,
+          propertiesGetter: globalGetIt().get<P>,
+          configGetter: globalGetIt().get<C>,
+        ),
+      );
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
-  Iterable<Type> dependsOn() => [LoggerManager, P];
+  Iterable<Type> dependsOn() => [LoggerManager, P, C];
 }
 
 /// This is the manager that handles the current locale of the application.
@@ -55,6 +59,9 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// This function is used to get the properties manager
   final MixinLocaleProperties Function() _propertiesGetter;
 
+  /// This function is used to get the config manager
+  final MixinLocaleConfig Function() _configGetter;
+
   /// This is the helper used to log messages
   late final LogsHelper _logsHelper;
 
@@ -80,7 +87,9 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// If you want to be sure that the locale is set, you should wait for the [initAfterView] method
   /// to be ended.
   String get currentLocaleStrForDateFormat => LocaleUtility.localeToString(
-      locale: _currentLocale, separator: LocaleUtility.underscoreSeparator);
+    locale: _currentLocale,
+    separator: LocaleUtility.underscoreSeparator,
+  );
 
   /// This is the locale wanted by the user
   ///
@@ -111,8 +120,10 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
       newLocaleInSupported = _findLocaleFromSupportedLocales(newLocaleLanguageTag);
       if (newLocaleInSupported == null) {
         // This wanted locale isn't supported, we don't go further
-        _logsHelper.w("The user wants the locale: $newLocaleLanguageTag, but this language "
-            "isn't in the supported list; therefore, we do nothing");
+        _logsHelper.w(
+          "The user wants the locale: $newLocaleLanguageTag, but this language "
+          "isn't in the supported list; therefore, we do nothing",
+        );
         return;
       }
     }
@@ -136,11 +147,13 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   LocalesManager({
     required List<Locale> Function() getSupportedLocales,
     required MixinLocaleProperties Function() propertiesGetter,
-  })  : _currentLocale = const Locale.fromSubtags(),
-        _currentLocaleCtrl = StreamController<Locale>.broadcast(),
-        _wantedLocaleCtrl = StreamController<Locale?>.broadcast(),
-        _getSupportedLocales = getSupportedLocales,
-        _propertiesGetter = propertiesGetter;
+    required MixinLocaleConfig Function() configGetter,
+  }) : _currentLocale = const Locale.fromSubtags(),
+       _currentLocaleCtrl = StreamController<Locale>.broadcast(),
+       _wantedLocaleCtrl = StreamController<Locale?>.broadcast(),
+       _getSupportedLocales = getSupportedLocales,
+       _propertiesGetter = propertiesGetter,
+       _configGetter = configGetter;
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
@@ -161,13 +174,16 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
     // ignore: use_build_context_synchronously
     final observer = context.findAncestorWidgetOfExactType<LocalesObserverWidget>();
     if (observer == null) {
-      _logsHelper.w("To be fully functional you have to add the LocalesObserverWidget in the root "
-          "tree of your main widget. The widget catches the locale modification and update the "
-          "LocalesManager. Therefore, if you don't add the widget, you won't be advised of local "
-          "update");
+      _logsHelper.w(
+        "To be fully functional you have to add the LocalesObserverWidget in the root "
+        "tree of your main widget. The widget catches the locale modification and update the "
+        "LocalesManager. Therefore, if you don't add the widget, you won't be advised of local "
+        "update",
+      );
     }
 
-    _currentLocale = _wantedLocale ??
+    _currentLocale =
+        _wantedLocale ??
         // Because the locale is returned by Intl.getCurrentLocale, we suppose that it can't return a
         // wrong value. That's why we expect the Locale created to be not null.
         // We don't call _setCurrentLocale to not emit an event here. We expect that no manager or view
@@ -204,16 +220,27 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   ///
   /// The supported locales have to be set before calling this method.
   Future<void> _initWantedLocale() async {
-    final savedWantedLocale = await _propertiesGetter().wantedLocale.load();
-    if (savedWantedLocale == null) {
+    final config = _configGetter();
+
+    var initWantedLocale = config.defaultWantedLocale.load();
+    final forceWantedLocaleInDev =
+        config.env == Environment.development && config.forceWantedLocaleInDev.load();
+
+    if (initWantedLocale == null || !forceWantedLocaleInDev) {
+      initWantedLocale = await _propertiesGetter().wantedLocale.load();
+    }
+
+    if (initWantedLocale == null) {
       // Nothing to do
       return;
     }
 
-    final localeFound = _findLocaleFromSupportedLocales(savedWantedLocale);
+    final localeFound = _findLocaleFromSupportedLocales(initWantedLocale);
     if (localeFound == null) {
-      _logsHelper.w("The saved wanted locale: $savedWantedLocale, isn't supported by the app; "
-          "therefore we don't use it");
+      _logsHelper.w(
+        "The saved wanted locale: $initWantedLocale, isn't supported by the app; "
+        "therefore we don't use it",
+      );
       return;
     }
 
@@ -223,10 +250,7 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
-    await Future.wait([
-      _currentLocaleCtrl.close(),
-      _wantedLocaleCtrl.close(),
-    ]);
+    await Future.wait([_currentLocaleCtrl.close(), _wantedLocaleCtrl.close()]);
     return super.disposeLifeCycle();
   }
 }
