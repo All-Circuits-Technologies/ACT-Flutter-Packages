@@ -12,7 +12,7 @@ class NullableNumBoundaries<T extends num> extends CustomComparableBoundaries<T?
   NullableNumBoundaries({super.min, super.max});
 
   /// Create a copy of this [NullableNumBoundaries] with the given parameters.
-  NullableNumBoundaries copyWith({
+  NullableNumBoundaries<T> copyWith({
     T? min,
     bool forceMinValue = false,
     T? max,

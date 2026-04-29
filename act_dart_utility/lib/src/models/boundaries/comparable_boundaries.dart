@@ -12,6 +12,6 @@ class ComparableBoundaries<T extends Comparable<T>> extends CustomComparableBoun
   ComparableBoundaries({required super.min, required super.max});
 
   /// Create a copy of this [ComparableBoundaries] with the given parameters.
-  ComparableBoundaries copyWith({T? min, T? max}) =>
+  ComparableBoundaries<T> copyWith({T? min, T? max}) =>
       ComparableBoundaries<T>(min: min ?? this.min, max: max ?? this.max);
 }

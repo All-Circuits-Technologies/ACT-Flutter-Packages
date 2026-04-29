@@ -13,7 +13,7 @@ class NullableComparableBoundaries<T extends Comparable<T>>
   NullableComparableBoundaries({super.min, super.max});
 
   /// Create a copy of this [NullableComparableBoundaries] with the given parameters.
-  NullableComparableBoundaries copyWith({
+  NullableComparableBoundaries<T> copyWith({
     T? min,
     bool forceMinValue = false,
     T? max,

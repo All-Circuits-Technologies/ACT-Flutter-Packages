@@ -9,8 +9,8 @@ import 'package:equatable/equatable.dart';
 /// This class contains [min] and [max] values to be compared with.
 /// {@endtemplate}
 ///
-/// We advice you to use one of the typedefs of this class, depending on your needs regarding
-/// nullability of the boundaries instead of using [CustomComparableBoundaries] directly.
+/// We advise you to use one of the concrete subclasses or wrapper classes matching your
+/// nullability needs for the boundaries instead of using [CustomComparableBoundaries] directly.
 class CustomComparableBoundaries<
   Min extends T?,
   Max extends T?,
@@ -32,14 +32,14 @@ class CustomComparableBoundaries<
   CustomComparableBoundaries({required this.min, required this.max})
     : assert(
         _isMinMaxValid<Comp>(min: min, max: max),
-        "The $min value shouldn't be greather then $max",
+        "The $min value shouldn't be greater then $max",
       );
 
   /// Test if the given [value] is in the [min] and [max] boundaries.
   ///
   /// If [min] or [max] are null, we don't test the boundary.
   ///
-  /// If [strictCompare] is equal to true, we return true if the value is equal to one of the
+  /// If [strictCompare] is equal to true, we return false if the value is equal to one of the
   /// boundary.
   bool isInBoundaries(T value, {bool strictCompare = false}) {
     if (null is! Min || min != null) {

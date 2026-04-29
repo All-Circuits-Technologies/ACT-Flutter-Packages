@@ -69,7 +69,7 @@ sealed class ComparableUtility {
     return comparison < 0 || testEquality && comparison == 0;
   }
 
-  /// Compares the given values to know if [base] value is strictly greather than
+  /// Compares the given values to know if [base] value is strictly greater than
   /// [toCompareWith] value (in that case, the method returns true).
   ///
   /// If [testEquality] is equals to true, it also returns true if values are equals.

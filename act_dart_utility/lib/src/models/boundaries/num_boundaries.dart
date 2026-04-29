@@ -12,6 +12,6 @@ class NumBoundaries<T extends num> extends CustomComparableBoundaries<T, T, T, n
   NumBoundaries({required super.min, required super.max});
 
   /// Create a copy of this [NumBoundaries] with the given parameters.
-  NumBoundaries copyWith({T? min, T? max}) =>
+  NumBoundaries<T> copyWith({T? min, T? max}) =>
       NumBoundaries<T>(min: min ?? this.min, max: max ?? this.max);
 }

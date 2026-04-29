@@ -13,7 +13,7 @@ class NullableMaxComparableBoundaries<T extends Comparable<T>>
   NullableMaxComparableBoundaries({required super.min, super.max});
 
   /// Create a copy of this [NullableMaxComparableBoundaries] with the given parameters.
-  NullableMaxComparableBoundaries copyWith({T? min, T? max, bool forceMaxValue = false}) =>
+  NullableMaxComparableBoundaries<T> copyWith({T? min, T? max, bool forceMaxValue = false}) =>
       NullableMaxComparableBoundaries<T>(
         min: min ?? this.min,
         max: max ?? (forceMaxValue ? null : this.max),
