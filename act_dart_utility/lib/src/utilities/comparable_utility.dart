@@ -66,7 +66,7 @@ sealed class ComparableUtility {
     bool testEquality = true,
   }) {
     final comparison = base.compareTo(toCompareWith);
-    return comparison < 0 || testEquality && comparison == 0;
+    return comparison < 0 || (testEquality && comparison == 0);
   }
 
   /// Compares the given values to know if [base] value is strictly greater than
@@ -81,7 +81,7 @@ sealed class ComparableUtility {
     bool testEquality = true,
   }) {
     final comparison = base.compareTo(toCompareWith);
-    return comparison > 0 || testEquality && comparison == 0;
+    return comparison > 0 || (testEquality && comparison == 0);
   }
 
   /// This method allows to compare two boolean
