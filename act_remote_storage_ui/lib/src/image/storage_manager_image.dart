@@ -31,7 +31,7 @@ class StorageManagerImage<S extends MixinImageCacheService> extends StatelessWid
   final ImageErrorWidgetBuilder? errorBuilder;
 
   /// If not null, this is called to display a temporary widget when the image is loading
-  final Widget Function(BuildContext context)? placeholderBuilder;
+  final WidgetBuilder? placeholderBuilder;
 
   /// Class constructor
   const StorageManagerImage({
@@ -48,39 +48,40 @@ class StorageManagerImage<S extends MixinImageCacheService> extends StatelessWid
   /// Build the image
   @override
   Widget build(BuildContext context) => Image(
-        width: width,
-        height: height,
-        fit: fit,
-        gaplessPlayback: true,
-        frameBuilder: placeholderBuilder != null
-            ? (context, child, frame, wasSynchronouslyLoaded) {
-                if (wasSynchronouslyLoaded) {
-                  return child;
-                }
+    width: width,
+    height: height,
+    fit: fit,
+    gaplessPlayback: true,
+    frameBuilder: placeholderBuilder != null
+        ? (context, child, frame, wasSynchronouslyLoaded) {
+            if (wasSynchronouslyLoaded) {
+              return child;
+            }
 
-                RawImage? image;
-                // If the image is not excluded from semantics the child is a Semantics
-                if (child is Semantics && child.child != null && child.child is RawImage) {
-                  image = child.child! as RawImage;
-                }
-                // If the image is excluded from semantics the child is a RawImage
-                else if (child is RawImage) {
-                  image = child;
-                }
+            RawImage? image;
+            // If the image is not excluded from semantics the child is a Semantics
+            if (child is Semantics && child.child != null && child.child is RawImage) {
+              image = child.child! as RawImage;
+            }
+            // If the image is excluded from semantics the child is a RawImage
+            else if (child is RawImage) {
+              image = child;
+            }
 
-                if (image != null && image.image != null) {
-                  return child;
-                }
+            if (image != null && image.image != null) {
+              return child;
+            }
 
-                return placeholderBuilder!(context);
-              }
-            : null,
-        image: StorageManagerImageProvider<S>(
-          fileId: fileId,
-          maxWidth: width,
-          maxHeight: height,
-          devicePixelRatio: MediaQuery.maybeOf(context)?.devicePixelRatio,
-        ),
-        errorBuilder: errorBuilder,
-      );
+            return placeholderBuilder!(context);
+          }
+        : null,
+    image: StorageManagerImageProvider<S>(
+      fileId: fileId,
+      maxWidth: width,
+      maxHeight: height,
+      devicePixelRatio: MediaQuery.maybeOf(context)?.devicePixelRatio,
+      useCache: useCache,
+    ),
+    errorBuilder: errorBuilder,
+  );
 }

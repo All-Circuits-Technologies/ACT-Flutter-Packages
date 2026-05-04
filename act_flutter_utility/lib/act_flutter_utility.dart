@@ -18,6 +18,7 @@ export 'src/models/act_tab_bar_config.dart';
 export 'src/models/banner_information_model.dart';
 export 'src/models/extended_text_style.dart';
 export 'src/models/text_span_config.dart';
+export 'src/types/act_useful_type_defs.dart';
 export 'src/types/banner_information_type.dart';
 export 'src/types/single_child_scroll_view_type.dart';
 export 'src/utilities/colors_utility.dart';
