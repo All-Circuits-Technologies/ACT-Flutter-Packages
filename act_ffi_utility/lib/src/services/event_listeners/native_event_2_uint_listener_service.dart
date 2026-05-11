@@ -67,28 +67,16 @@ class NativeEvent2UintListenerService<Result extends MixinResultStatus, ParsedOb
       RuntimeProtectCmd.protectWithCalloc<ParsedObject?>((register) {
         final firstParamPtr = register.add(calloc<ffi.UnsignedInt>());
         final secondParamPtr = register.add(calloc<ffi.UnsignedInt>());
-
-        final result = valueGetter!(firstParamPtr, secondParamPtr);
-        if (result.isError) {
-          logsHelper.e("Failed to get value from getter: $result");
-          return null;
-        }
-
-        final firstParam = firstParamPtr.value;
-        final secondParam = secondParamPtr.value;
-
-        return parseParamsToObject(firstParam, secondParam);
+        return handleGetterResult(
+          result: valueGetter!(firstParamPtr, secondParamPtr),
+          extract: () => parseParamsToObject(firstParamPtr.value, secondParamPtr.value),
+        );
       }, description: getDescriptionForRuntimeProtectCmd("getValueFromGetter"));
 
   /// Callback that gets called from the native code with two unsigned int parameters. It parses the
   /// parameters into a [ParsedObject] and adds it to the stream.
-  void _onNativeEvent(int firstParam, int secondParam) {
-    final parsedObject = parseParamsToObject(firstParam, secondParam);
-    if (parsedObject == null) {
-      logsHelper.w('Failed to parse native event with params: $firstParam, $secondParam');
-      return;
-    }
-
-    value = parsedObject;
-  }
+  void _onNativeEvent(int firstParam, int secondParam) => setParsedValue(
+    parsedObject: parseParamsToObject(firstParam, secondParam),
+    debugDescription: 'params: $firstParam, $secondParam',
+  );
 }
