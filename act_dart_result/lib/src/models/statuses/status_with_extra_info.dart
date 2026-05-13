@@ -9,7 +9,7 @@ import 'package:equatable/equatable.dart';
 /// for example an error message or a stack trace
 class StatusWithExtraInfo<Status extends MixinResultStatus> extends Equatable
     with MixinResultStatus {
-  /// This value is an enum describing the result status of a request
+  /// This value describes the result status of a request
   /// Since it extends the [MixinResultStatus] mixin, it has a isSuccess
   /// property that returns true if the status is overall a success
   final Status status;

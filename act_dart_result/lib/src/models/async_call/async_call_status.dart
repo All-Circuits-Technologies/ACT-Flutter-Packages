@@ -6,19 +6,19 @@ import 'package:act_dart_result/act_dart_result.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
-/// {@macro act_dart_result.AsyncCallResult}
+/// {@macro act_dart_result.AsyncCallStatus}
 ///
 /// This uses the [ResultWithStatus] class to represent the result of the asynchronous call
 typedef AsyncCallResult<Status extends MixinResultStatus, Value> =
     AsyncCallStatus<ResultWithStatus<Status, Value>>;
 
-/// {@macro act_dart_result.AsyncCallResult}
+/// {@macro act_dart_result.AsyncCallStatus}
 ///
 /// This uses the [ResultWithRequiredValue] class to represent the result of the asynchronous call
 typedef AsyncCallResultRequiredValue<Status extends MixinResultStatus, Value> =
     AsyncCallStatus<ResultWithRequiredValue<Status, Value>>;
 
-/// {@macro act_dart_result.AsyncCallResult}
+/// {@macro act_dart_result.AsyncCallStatus}
 ///
 /// This uses the [BoolResultStatus] class to represent the result of the asynchronous call
 typedef AsyncCallBoolStatus = AsyncCallStatus<BoolResultStatus>;

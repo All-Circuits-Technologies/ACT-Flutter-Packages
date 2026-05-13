@@ -21,13 +21,13 @@ class NativeEvent1FloatListenerService<Result extends MixinResultStatus, ParsedO
     extends AbsNativeEventListenerService<Result, Native1FloatCallback, ParsedObject> {
   /// This is the function that will be called to get the current value of the object from the
   /// native library. It should return a [Result] indicating success or failure, and fill the
-  /// provided pointers with one float parameter that will be parsed into a [ParsedObject].
+  /// provided pointer with one float parameter that will be parsed into a [ParsedObject].
   Result Function(ffi.Pointer<ffi.Float> param)? valueGetter;
 
   /// This is the function that will be called to parse one float parameter received
   /// from the native callback into a [ParsedObject].
   ///
-  /// It should return null if the parameters cannot be parsed into a valid object.
+  /// It should return null if the parameter cannot be parsed into a valid object.
   ParsedObject? Function(double value) parseParamToObject;
 
   /// Class constructor
