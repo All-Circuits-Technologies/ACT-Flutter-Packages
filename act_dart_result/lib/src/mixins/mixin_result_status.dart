@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-/// Mixin to add a `isSuccess` getter to an enum and a `canBeRetried` getter
-mixin MixinResultStatus on Enum {
+/// Mixin to add a `isSuccess` getter to a status and a `canBeRetried` getter
+mixin MixinResultStatus {
   /// {@template act_dart_result.MixinResultStatus.isSuccess}
   /// Getter to know if the request is a success
   /// {@endtemplate}

@@ -7,7 +7,8 @@ import 'package:equatable/equatable.dart';
 
 /// This class is used to represent a status with an optional extra information about the request,
 /// for example an error message or a stack trace
-class StatusWithExtraInfo<Status extends MixinResultStatus> extends Equatable {
+class StatusWithExtraInfo<Status extends MixinResultStatus> extends Equatable
+    with MixinResultStatus {
   /// This value is an enum describing the result status of a request
   /// Since it extends the [MixinResultStatus] mixin, it has a isSuccess
   /// property that returns true if the status is overall a success
@@ -20,14 +21,11 @@ class StatusWithExtraInfo<Status extends MixinResultStatus> extends Equatable {
   /// True if the status indicates a success
   ///
   /// The overall status of the request is only defined by the [status] value
+  @override
   bool get isSuccess => status.isSuccess;
 
-  /// True if the status indicates an error
-  ///
-  /// This is the opposite of [isSuccess]
-  bool get isError => !isSuccess;
-
   /// The request can be retried if the status says so
+  @override
   bool get canBeRetried => status.canBeRetried;
 
   /// Class constructor
