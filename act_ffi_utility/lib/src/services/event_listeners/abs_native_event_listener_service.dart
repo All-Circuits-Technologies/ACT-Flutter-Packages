@@ -87,6 +87,40 @@ abstract class AbsNativeEventListenerService<
   String getDescriptionForRuntimeProtectCmd(String descriptionAction) =>
       "${LogFormatUtility.formatCategories(logsHelper.categories)} - $descriptionAction";
 
+  /// Helper to set a parsed value.
+  ///
+  /// Should be called from `_onNativeEvent` implementations in subclasses.
+  /// [parsedObject] is the result of parsing the native event parameters.
+  /// [debugDescription] is a human-readable description of the parameters, used for logging.
+  @protected
+  void setParsedValue({required ParsedObject? parsedObject, required String debugDescription}) {
+    if (parsedObject == null) {
+      logsHelper.w('Failed to parse native event: $debugDescription');
+      return;
+    }
+
+    value = parsedObject;
+  }
+
+  /// Helper to handle a getter result.
+  ///
+  /// Should be called from `_getValueFromGetter` implementations in subclasses.
+  /// [result] is the result returned by the native getter.
+  /// [extract] is called only if [result] is successful, and should extract the value from the
+  /// filled pointers.
+  @protected
+  ParsedObject? handleGetterResult({
+    required Result result,
+    required ParsedObject? Function() extract,
+  }) {
+    if (result.isError) {
+      logsHelper.e("Failed to get value from getter: $result");
+      return null;
+    }
+
+    return extract();
+  }
+
   /// Helper to register the native callback in the C library, protected with [RuntimeProtectCmd] to
   /// catch any exceptions and log them.
   Result? _registerNativeCallbackProtectCmd() => RuntimeProtectCmd.protect<Result>(() {

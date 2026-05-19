@@ -44,6 +44,7 @@ export 'src/utilities/list_utility.dart';
 export 'src/utilities/lock_utility.dart';
 export 'src/utilities/loop_utility.dart';
 export 'src/utilities/map_utility.dart';
+export 'src/utilities/math_utility.dart';
 export 'src/utilities/num_utility.dart';
 export 'src/utilities/path_utility.dart';
 export 'src/utilities/string_interval_utility.dart';
