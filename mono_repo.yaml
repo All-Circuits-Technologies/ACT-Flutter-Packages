@@ -10,4 +10,6 @@ github:
 merge_stages:
   - analyze
 
-self_validate: analyze
+# self_validate is intentionally disabled: the dart.yml is post-patched by
+# tool/mono_repo_generate.sh (flutter-version fix), so mono_repo generate --validate
+# would always report a diff and fail.
