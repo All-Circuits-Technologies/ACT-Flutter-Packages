@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_result/act_dart_result.dart';
+import 'package:act_dart_result/src/mixins/mixin_result_status.dart';
+import 'package:act_dart_result/src/models/results/result_with_required_value.dart';
+import 'package:act_dart_result/src/models/results/result_with_status.dart';
+import 'package:act_dart_result/src/types/bool_result_status.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 

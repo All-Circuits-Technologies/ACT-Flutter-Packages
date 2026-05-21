@@ -114,6 +114,38 @@ is_semver() {
     [[ "$1" =~ ^[0-9]+\.[0-9] ]]
 }
 
+# Replaces the `mono_repo generate --validate` command in the self-validate job
+# with our own validation sequence: run the full generate+patch script then
+# check git diff. This keeps the same job structure and action versions that
+# mono_repo generates while adapting the command to the patched workflow.
+fix_self_validate_in_workflows() {
+    local count=0
+    while IFS= read -r workflow_file; do
+        if grep -q 'run: dart pub global run mono_repo generate --validate' "${workflow_file}" 2>/dev/null; then
+            local tmp_file
+            tmp_file="$(mktemp)"
+            awk '
+                /run: dart pub global run mono_repo generate --validate/ {
+                    print "        run: |"
+                    print "          bash tool/mono_repo_generate.sh"
+                    print "          if ! git diff --exit-code; then"
+                    print "            echo \"Generated files are out of sync. Run tool/mono_repo_generate.sh and commit.\""
+                    print "            exit 1"
+                    print "          fi"
+                    next
+                }
+                { print }
+            ' "${workflow_file}" > "${tmp_file}" && mv "${tmp_file}" "${workflow_file}"
+            echo "Fixed self-validate in: ${workflow_file}"
+            count=$((count + 1))
+        fi
+    done < <(find .github/workflows -name '*.yml' -o -name '*.yaml' 2>/dev/null)
+
+    if [ "${count}" -gt 0 ]; then
+        echo "${count} workflow file(s) self-validate patched."
+    fi
+}
+
 # After mono_repo generate, subosito/flutter-action receives the sdk value as
 # "channel:", which only accepts channel names. For numeric versions we must
 # replace it with "flutter-version:" in every generated workflow file.
@@ -159,6 +191,10 @@ run_mono_repo_generate() {
     echo ""
     echo "Patching flutter-action in generated workflows..."
     fix_flutter_action_in_workflows
+
+    echo ""
+    echo "Patching self-validate step in generated workflows..."
+    fix_self_validate_in_workflows
 }
 
 # Main -----------------------------------------------------------------
