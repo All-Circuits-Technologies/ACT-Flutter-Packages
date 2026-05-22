@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_flutter_utility/src/models/theme/abs_app_specific_colors.dart';
 import 'package:act_flutter_utility/src/models/theme/act_theme_colors.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:flutter/material.dart';
 /// This class is used to define the theme of the application. It contains the theme data of the
 /// light and dark themes of the application. At least one of the light or dark themes must be
 /// defined.
-class ActThemeModel extends Equatable {
+class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends Equatable {
   /// The theme data of the light theme of the application. It can be null if the light theme is not
   /// defined.
   final ThemeData? lightThemeData;
@@ -36,8 +37,8 @@ class ActThemeModel extends Equatable {
   /// The [overrideDefaultTextTheme] is called before the [overrideDefaultThemeData] method and
   /// this last one is called with the theme data updated by the [overrideDefaultTextTheme].
   factory ActThemeModel({
-    ActThemeColors? lightColors,
-    ActThemeColors? darkColors,
+    ActThemeColors<ExtColors>? lightColors,
+    ActThemeColors<ExtColors>? darkColors,
     String? fontFamily,
     TextTheme Function({required ThemeData baseThemeData})? overrideDefaultTextTheme,
     ThemeData Function({required ThemeData baseThemeData})? overrideDefaultThemeData,

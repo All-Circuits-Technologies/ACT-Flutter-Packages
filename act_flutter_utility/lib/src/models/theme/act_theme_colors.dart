@@ -9,12 +9,12 @@ import 'package:flutter/material.dart';
 /// This class is used to define the colors of the theme of the application. It contains the color
 /// scheme of the theme and the specific colors of the application that are not defined in the color
 /// scheme
-class ActThemeColors extends Equatable {
+class ActThemeColors<ExtColors extends AbsAppSpecificColors<ExtColors>> extends Equatable {
   /// The color scheme of the theme
   final ColorScheme colorScheme;
 
   /// The specific colors of the application that are not defined in the color scheme
-  final AbsAppSpecificColors? colorExtensions;
+  final ExtColors? colorExtensions;
 
   /// Class constructor
   const ActThemeColors({required this.colorScheme, this.colorExtensions});
