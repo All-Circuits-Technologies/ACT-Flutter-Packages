@@ -13,7 +13,7 @@ mixin MixinGenericLoadingState<S extends BlocStateForMixin<S>> on BlocStateForMi
   /// {@template act_flutter_utility.MixinGenericLoadingState.loading}
   /// True when at least one element of the view is loading.
   /// {@endtemplate}
-  bool get loading;
+  bool get loading => false;
 
   /// {@template act_flutter_utility.MixinGenericLoadingState.interactionsDisabled}
   /// Whether the interactions should be disabled in the page.
@@ -26,5 +26,5 @@ mixin MixinGenericLoadingState<S extends BlocStateForMixin<S>> on BlocStateForMi
   /// {@template act_flutter_utility.MixinGenericLoadingState.anErrorOccurred}
   /// True when an error occurred in one loading.
   /// {@endtemplate}
-  bool get anErrorOccurred;
+  bool get anErrorOccurred => false;
 }
