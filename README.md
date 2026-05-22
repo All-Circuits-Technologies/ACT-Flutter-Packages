@@ -14,6 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [Packages list](#packages-list)
 - [How to use the packages in your project](#how-to-use-the-packages-in-your-project)
 - [Add a new package](#add-a-new-package)
+- [Update the GitHub actions flutter version](#update-the-github-actions-flutter-version)
 
 ## Presentation
 
@@ -146,9 +147,24 @@ publish_to: none
 
 You will need to create a `mono_pkg.yaml` file with at least the stage: `analyze`.
 
-Then, you will have to call the next command to generate the github action linked to this
-package:
+Then, you will have to call the next command to regenerate the GitHub Actions configuration
+(this also re-applies the flutter-version patch):
 
 ```console
-> dart pub global run mono_repo generate
+> tool/mono_repo_generate.sh
 ```
+
+## Update the GitHub Actions Flutter version
+
+`mono_repo` does not support a global Flutter version, so the version is set in each
+`mono_pkg.yaml` file and persisted in `tool/.flutter_version`. Use the script:
+
+```console
+> tool/mono_repo_generate.sh --flutter-version <version>
+```
+
+Where `<version>` is the Flutter version to target, for example `3.41.9`. It may also be a
+channel, for example `stable` or `beta`.
+
+This command updates all `mono_pkg.yaml` files, saves the version to `tool/.flutter_version`,
+and regenerates the CI configuration with the appropriate workflow patch.
