@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_flutter_utility/src/models/theme/abs_app_specific_colors.dart';
-import 'package:act_flutter_utility/src/models/theme/act_theme_colors.dart';
+import 'abs_app_specific_colors.dart';
+import 'act_theme_colors.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
@@ -51,6 +51,7 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
     final lightThemeData = (lightColors != null)
         ? _buildThemeData(
             colors: lightColors,
+            brightness: Brightness.light,
             fontFamily: fontFamily,
             overrideDefaultTextTheme: overrideDefaultTextTheme,
             overrideDefaultThemeData: overrideDefaultThemeData,
@@ -60,6 +61,7 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
     final darkThemeData = (darkColors != null)
         ? _buildThemeData(
             colors: darkColors,
+            brightness: Brightness.dark,
             fontFamily: fontFamily,
             overrideDefaultTextTheme: overrideDefaultTextTheme,
             overrideDefaultThemeData: overrideDefaultThemeData,
@@ -85,11 +87,13 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
   static ThemeData _buildThemeData({
     required ActThemeColors colors,
     required String? fontFamily,
+    required Brightness brightness,
     required TextTheme Function({required ThemeData baseThemeData})? overrideDefaultTextTheme,
     required ThemeData Function({required ThemeData baseThemeData})? overrideDefaultThemeData,
   }) {
     var themeData = ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       colorScheme: colors.colorScheme,
       fontFamily: fontFamily,
       extensions: colors.colorExtensions != null ? [colors.colorExtensions!] : null,
