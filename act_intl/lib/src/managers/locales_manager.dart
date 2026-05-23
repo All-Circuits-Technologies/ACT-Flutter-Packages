@@ -227,7 +227,11 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
         config.env == Environment.development && config.forceWantedLocaleInDev.load();
 
     if (initWantedLocale == null || !forceWantedLocaleInDev) {
-      initWantedLocale = await _propertiesGetter().wantedLocale.load();
+      final tmpStoredLocale = await _propertiesGetter().wantedLocale.load();
+      if (tmpStoredLocale != null) {
+        // If there is no stored locale, we want to use the default wanted locale if it exists
+        initWantedLocale = tmpStoredLocale;
+      }
     }
 
     if (initWantedLocale == null) {
