@@ -4,7 +4,7 @@
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_themes_manager/src/types/mixin_act_themes.dart';
-import 'package:flutter/foundation.dart' show Brightness;
+import 'package:flutter/widgets.dart' show Brightness;
 
 /// Emitted when the theme of the application is updated, with the new theme.
 class ThemeUpdatedEvent extends BlocEventForMixin {

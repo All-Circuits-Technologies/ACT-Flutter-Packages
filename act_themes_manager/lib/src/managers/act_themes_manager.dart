@@ -139,7 +139,7 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
     if (defaultThemeStr == null || !forceThemeInDev) {
       final tmpStoredTheme = await _propertiesGetter().currentTheme.load();
       if (tmpStoredTheme != null) {
-        /// If there is no stored theme, we want to use the default theme defined in the config
+        // If there is no stored theme, we want to use the default theme defined in the config
         defaultThemeStr = tmpStoredTheme;
       }
     }
