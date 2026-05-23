@@ -7,7 +7,7 @@ import 'package:act_themes_manager/src/types/mixin_act_themes.dart';
 
 /// This mixin is used to define the configuration of the themes manager.
 mixin MixinThemesConfig on AbstractConfigManager {
-  /// This is the config variable that defines the default theme of the application, it should be
+  /// This is the config variable that defines the default theme of the application, it should
   /// match the name of one of the themes defined in the [MixinActThemes] mixin.
   ///
   /// If this is null or does not match any of the themes defined in the [MixinActThemes] mixin, the
@@ -22,7 +22,7 @@ mixin MixinThemesConfig on AbstractConfigManager {
   /// in the local storage. This is useful to force a specific theme in development mode, without
   /// having to clear the local storage each time we want to change the default theme.
   ///
-  /// This has no effet if the [defaultTheme] is not defined or does not match any of the themes
+  /// This has no effect if the [defaultTheme] is not defined or does not match any of the themes
   /// defined in the [MixinActThemes] mixin.
   final forceThemeInDev = const NotNullableConfigVar<bool>("themes.dev.force", defaultValue: false);
 

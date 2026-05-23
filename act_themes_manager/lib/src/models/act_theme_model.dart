@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'abs_app_specific_colors.dart';
-import 'act_theme_colors.dart';
+import 'package:act_themes_manager/src/models/abs_app_specific_colors.dart';
+import 'package:act_themes_manager/src/models/act_theme_colors.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Brightness, Color, TextTheme, ThemeData;
 
 /// This class is used to define the theme of the application. It contains the theme data of the
 /// light and dark themes of the application. At least one of the light or dark themes must be

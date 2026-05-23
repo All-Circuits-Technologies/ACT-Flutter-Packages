@@ -7,7 +7,7 @@ import 'package:act_themes_manager/src/models/act_theme_model.dart';
 
 /// This mixin is used to list the themes of the application.
 mixin MixinActThemes on MixinStringValueType {
-  /// {@template act_flutter_utility.MixinActThemes.themeData}
+  /// {@template act_themes_manager.MixinActThemes.themeData}
   /// The theme data of the theme.
   /// {@endtemplate}
   ActThemeModel get themeData;

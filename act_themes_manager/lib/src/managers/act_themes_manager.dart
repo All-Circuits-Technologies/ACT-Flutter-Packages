@@ -12,9 +12,7 @@ import 'package:act_themes_manager/src/managers/mixin_themes_config.dart';
 import 'package:act_themes_manager/src/managers/mixin_themes_properties.dart';
 import 'package:act_themes_manager/src/models/act_themes_not_defined.dart';
 import 'package:act_themes_manager/src/types/mixin_act_themes.dart';
-import 'package:flutter/foundation.dart' show Brightness;
-import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/widgets.dart' show MediaQuery;
+import 'package:flutter/widgets.dart' show Brightness;
 
 /// This is the builder of the [ActThemesManager] class.
 class ActThemesBuilder<C extends MixinThemesConfig, P extends MixinThemesProperties>
@@ -57,7 +55,7 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
   late final ValueKeeperWithStream<MixinActThemes> _currentTheme;
 
   /// The current brightness mode of the application with stream
-  late final ValueKeeperWithStreamAndNullInit<Brightness> _brightness;
+  late final ValueKeeperWithStream<Brightness?> _brightness;
 
   /// This is the helper used to log messages
   late final LogsHelper _logsHelper;
@@ -74,7 +72,9 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
   Brightness? get brightness => _brightness.value;
 
   /// Get the current brightness mode of the application as a stream.
-  Stream<Brightness> get brightnessStream => _brightness.valueStream;
+  ///
+  /// If the stream emits null, it means that the system default brightness mode should be used.
+  Stream<Brightness?> get brightnessStream => _brightness.valueStream;
 
   /// Class constructor
   ActThemesManager({
@@ -99,23 +99,7 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
     _currentTheme = ValueKeeperWithStream(value: defaultTheme);
 
     final defaultBrightness = await _getCurrentBrightness();
-    _brightness = ValueKeeperWithStreamAndNullInit(value: defaultBrightness);
-  }
-
-  /// {@macro act_life_cycle.MixinUiLifeCycle.initAfterView}
-  @override
-  Future<void> initAfterView(BuildContext context) async {
-    await super.initAfterView(context);
-
-    if (_brightness.value == null) {
-      // No brightness value is defined; therefore we are using the system default brightness.
-      // We get the current brightness mode of the system and update the brightness value of the
-      // manager.
-      //
-      // It's ok here to use the context asynchronously
-      // ignore: use_build_context_synchronously
-      _brightness.value = MediaQuery.of(context).platformBrightness;
-    }
+    _brightness = ValueKeeperWithStream(value: defaultBrightness);
   }
 
   /// This method is used to update the current theme of the application, and save it in the local
@@ -135,9 +119,14 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
 
   /// This method is used to update the current brightness mode of the application, and save it in
   /// the local storage.
-  Future<void> setBrightness({required Brightness newBrightness}) async {
+  Future<void> setBrightness({required Brightness? newBrightness}) async {
     _brightness.value = newBrightness;
-    await _propertiesGetter().currentThemeLightMode.store(newBrightness == Brightness.light);
+
+    bool? isLightMode;
+    if (newBrightness != null) {
+      isLightMode = newBrightness == Brightness.light;
+    }
+    await _propertiesGetter().currentThemeLightMode.store(isLightMode);
   }
 
   /// Get the current theme of the application, either from the config or from the local storage.
@@ -148,7 +137,11 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
     final forceThemeInDev = config.env == Environment.development && config.forceThemeInDev.load();
 
     if (defaultThemeStr == null || !forceThemeInDev) {
-      defaultThemeStr = await _propertiesGetter().currentTheme.load();
+      final tmpStoredTheme = await _propertiesGetter().currentTheme.load();
+      if (tmpStoredTheme != null) {
+        /// If there is no stored theme, we want to use the default theme defined in the config
+        defaultThemeStr = tmpStoredTheme;
+      }
     }
 
     if (defaultThemeStr == null) {

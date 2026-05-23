@@ -8,12 +8,12 @@ import 'package:flutter/material.dart' show Brightness, ThemeMode;
 
 /// This mixin is used for the main app state, to get the current theme of the application
 mixin MixinActThemesState<S extends MixinActThemesState<S>> on BlocStateForMixin<S> {
-  /// {@template act_flutter_utility.MixinActThemesState.currentTheme}
+  /// {@template act_themes_manager.MixinActThemesState.currentTheme}
   /// The current theme of the application.
   /// {@endtemplate}
   MixinActThemes get currentTheme;
 
-  /// {@template act_flutter_utility.MixinActThemesState.brightness}
+  /// {@template act_themes_manager.MixinActThemesState.brightness}
   /// The current brightness mode of the application.
   ///
   /// If null, we will use the system default brightness mode.
@@ -22,13 +22,13 @@ mixin MixinActThemesState<S extends MixinActThemesState<S>> on BlocStateForMixin
 
   /// This is a helper getter to get the current theme mode of the application based on the
   /// brightness value.
-  ThemeMode? get themeMode => switch (brightness) {
+  ThemeMode get themeMode => switch (brightness) {
     Brightness.light => ThemeMode.light,
     Brightness.dark => ThemeMode.dark,
-    null => null,
+    null => ThemeMode.system,
   };
 
-  /// {@template act_flutter_utility.MixinActThemesState.copyActThemesState}
+  /// {@template act_themes_manager.MixinActThemesState.copyActThemesState}
   /// This is the copyWith method for the mixin
   /// {@endtemplate}
   S copyActThemesState({
@@ -42,8 +42,8 @@ mixin MixinActThemesState<S extends MixinActThemesState<S>> on BlocStateForMixin
       copyActThemesState(currentTheme: currentTheme);
 
   /// This method is used to copy the state with a new brightness value
-  S copyToNewBrightnessState({required Brightness brightness}) =>
-      copyActThemesState(brightness: brightness);
+  S copyToNewBrightnessState({required Brightness? brightness}) =>
+      copyActThemesState(brightness: brightness, forceBrightnessValue: true);
 
   /// {@macro act_flutter_utility.BlocStateForMixin.props}
   @override

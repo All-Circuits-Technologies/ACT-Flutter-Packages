@@ -22,7 +22,7 @@ class ThemeUpdatedEvent extends BlocEventForMixin {
 /// Emitted when the brightness of the application is updated.
 class BrightnessUpdatedEvent extends BlocEventForMixin {
   /// The updated brightness mode of the application
-  final Brightness brightness;
+  final Brightness? brightness;
 
   /// Class constructor
   const BrightnessUpdatedEvent({required this.brightness});
@@ -49,7 +49,7 @@ class AskToUpdateThemeEvent extends BlocEventForMixin {
 /// value.
 class AskToUpdateBrightnessEvent extends BlocEventForMixin {
   /// The new brightness value to update
-  final Brightness newBrightness;
+  final Brightness? newBrightness;
 
   /// Class constructor
   const AskToUpdateBrightnessEvent({required this.newBrightness});

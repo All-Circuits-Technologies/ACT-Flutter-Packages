@@ -21,7 +21,7 @@ mixin MixinActThemesBloc<M extends ActThemesManager, S extends MixinActThemesSta
   /// This is the subscription linked to the theme stream of the [ActThemesManager]
   final List<StreamSubscription> _themeSubscriptions = [];
 
-  /// {@template act_flutter_utility.MixinActThemesBloc.themesManager}
+  /// {@template act_themes_manager.MixinActThemesBloc.themesManager}
   /// The manager of the themes of the application, used to get the current theme and update it.
   /// {@endtemplate}
   @protected
@@ -76,7 +76,7 @@ mixin MixinActThemesBloc<M extends ActThemesManager, S extends MixinActThemesSta
   }
 
   /// Called when the brightness mode of the application is changed
-  void _onBrightnessChanged(Brightness brightness) {
+  void _onBrightnessChanged(Brightness? brightness) {
     add(BrightnessUpdatedEvent(brightness: brightness));
   }
 
