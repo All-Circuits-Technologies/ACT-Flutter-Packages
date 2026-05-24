@@ -50,9 +50,7 @@ sealed class ListUtility {
           elements.first.toSet(),
           (previousValue, element) => previousValue.intersection(element.toSet()),
         )
-        .toList(
-          growable: growable,
-        );
+        .toList(growable: growable);
   }
 
   /// {@template act_dart_utility.ListUtility.interleave}
@@ -60,9 +58,12 @@ sealed class ListUtility {
   /// {@endtemplate}
   ///
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
-  static List<T> interleave<T>(List<T> list, T interleave,
-          {bool addLeft = false, bool addRight = false}) =>
-      interleaveWithBuilder(list, () => interleave, addLeft: addLeft, addRight: addRight);
+  static List<T> interleave<T>(
+    List<T> list,
+    T interleave, {
+    bool addLeft = false,
+    bool addRight = false,
+  }) => interleaveWithBuilder(list, () => interleave, addLeft: addLeft, addRight: addRight);
 
   /// {@template act_dart_utility.ListUtility.interleaveWithBuilder}
   /// Return a given [list] with built interleaves inserted between each [list] item.
@@ -75,17 +76,25 @@ sealed class ListUtility {
   /// If the list is empty, the method will return an empty list, even if [addLeft] and/or
   /// [addRight] are true.
   /// {@endtemplate}
-  static List<T> interleaveWithBuilder<T>(List<T> list, T Function() interleaveBuilder,
-      {bool addLeft = false, bool addRight = false}) {
+  static List<T> interleaveWithBuilder<T>(
+    List<T> list,
+    T Function() interleaveBuilder, {
+    bool addLeft = false,
+    bool addRight = false,
+  }) {
     if (list.isEmpty) {
       return [];
     }
 
     final newList = list.fold(
-      <T>[if (addLeft) interleaveBuilder()],
+      <T>[],
       (previousValue, element) =>
           previousValue.isEmpty ? [element] : [...previousValue, interleaveBuilder(), element],
     );
+
+    if (addLeft) {
+      newList.insert(0, interleaveBuilder());
+    }
 
     if (addRight) {
       newList.add(interleaveBuilder());
@@ -156,10 +165,7 @@ sealed class ListUtility {
   /// If the list objects are complexes, you can use the [getUniqueElem] method to extra an unique
   /// testable element from them.
   /// {@endtemplate}
-  static List<T> distinct<T, Y extends Object?>(
-    List<T> list, {
-    Y Function(T item)? getUniqueElem,
-  }) {
+  static List<T> distinct<T, Y extends Object?>(List<T> list, {Y Function(T item)? getUniqueElem}) {
     final tmpList = List<T>.from(list);
 
     if (getUniqueElem != null) {
@@ -261,8 +267,12 @@ sealed class ListUtility {
   /// Returns the index of the first element in [list] that satisfies the given [test], or a default
   /// value if no such element is found.
   /// {@endtemplate}
-  static int indexWhereOrDefault<T>(List<T> list, bool Function(T element) test,
-      {int start = 0, int defaultValue = defaultIndexOfValueNotFound}) {
+  static int indexWhereOrDefault<T>(
+    List<T> list,
+    bool Function(T element) test, {
+    int start = 0,
+    int defaultValue = defaultIndexOfValueNotFound,
+  }) {
     final tmpStart = _safeGetStartIndexForList(list: list, start: start);
     if (tmpStart == null) {
       return defaultValue;
