@@ -14,7 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [Packages list](#packages-list)
 - [How to use the packages in your project](#how-to-use-the-packages-in-your-project)
 - [Add a new package](#add-a-new-package)
-- [Update the GitHub actions flutter version](#update-the-github-actions-flutter-version)
+- [Update the GitHub Actions Flutter version](#update-the-github-actions-flutter-version)
 
 ## Presentation
 
@@ -94,6 +94,7 @@ To install it globally, you have to call:
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.                        |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
 | [act_splash_screen_manager](act_splash_screen_manager/)                   | Useful package to support native splash screens in mobile applications                                                   |         |
+| [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Helpful package to use the Thingsboard client with app                                                                   |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers.           |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                                   |         |

@@ -41,9 +41,7 @@ abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   ///
   /// You may want to use created instance as a singleton
   /// in order to save memory.
-  AbstractPropertiesManager()
-      : isFirstStart = true,
-        super();
+  AbstractPropertiesManager() : isFirstStart = true, super();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

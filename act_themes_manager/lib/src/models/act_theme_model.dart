@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_flutter_utility/src/models/theme/abs_app_specific_colors.dart';
-import 'package:act_flutter_utility/src/models/theme/act_theme_colors.dart';
+import 'package:act_themes_manager/src/models/abs_app_specific_colors.dart';
+import 'package:act_themes_manager/src/models/act_theme_colors.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart' show Brightness, TextTheme, ThemeData;
 
 /// This class is used to define the theme of the application. It contains the theme data of the
 /// light and dark themes of the application. At least one of the light or dark themes must be
@@ -51,6 +51,7 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
     final lightThemeData = (lightColors != null)
         ? _buildThemeData(
             colors: lightColors,
+            brightness: Brightness.light,
             fontFamily: fontFamily,
             overrideDefaultTextTheme: overrideDefaultTextTheme,
             overrideDefaultThemeData: overrideDefaultThemeData,
@@ -60,6 +61,7 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
     final darkThemeData = (darkColors != null)
         ? _buildThemeData(
             colors: darkColors,
+            brightness: Brightness.dark,
             fontFamily: fontFamily,
             overrideDefaultTextTheme: overrideDefaultTextTheme,
             overrideDefaultThemeData: overrideDefaultThemeData,
@@ -72,24 +74,18 @@ class ActThemeModel<ExtColors extends AbsAppSpecificColors<ExtColors>> extends E
   /// Class private constructor
   const ActThemeModel._({required this.lightThemeData, required this.darkThemeData});
 
-  /// {@template act_flutter_utility.ActThemeModel.getDisabledColor}
-  /// This method is used to get a disabled color from a given color. It returns the same color with
-  /// an alpha of 102 (40% opacity) to make it look disabled.
-  /// {@endtemplate}
-  ///
-  /// If you want to use a different alpha value, you can override this method in a subclass.
-  Color getDisabledColor(Color color) => color.withAlpha(102);
-
   /// Build the theme data of the application from the [colors] parameter and the
   /// [overrideDefaultTextTheme] and [overrideDefaultThemeData] methods.
   static ThemeData _buildThemeData({
     required ActThemeColors colors,
     required String? fontFamily,
+    required Brightness brightness,
     required TextTheme Function({required ThemeData baseThemeData})? overrideDefaultTextTheme,
     required ThemeData Function({required ThemeData baseThemeData})? overrideDefaultThemeData,
   }) {
     var themeData = ThemeData(
       useMaterial3: true,
+      brightness: brightness,
       colorScheme: colors.colorScheme,
       fontFamily: fontFamily,
       extensions: colors.colorExtensions != null ? [colors.colorExtensions!] : null,

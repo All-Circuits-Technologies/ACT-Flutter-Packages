@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_flutter_utility/src/models/theme/abs_app_specific_colors.dart';
+import 'package:act_themes_manager/src/models/abs_app_specific_colors.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
