@@ -47,23 +47,24 @@ class _QrCodeImageState extends State<QrCodeImage> {
   @override
   void didUpdateWidget(covariant QrCodeImage oldWidget) {
     super.didUpdateWidget(oldWidget);
-    // If the text or color changes, we need to regenerate the QR code
-    //
-    // The size change does not require regeneration because the SVG can be scaled without loss of
-    // quality
-    if (oldWidget.text != widget.text || oldWidget.color != widget.color) {
-      setState(_generateSvg);
+    // If the text, size or color changes, we need to regenerate the QR code
+    if (oldWidget.text != widget.text ||
+        oldWidget.color != widget.color ||
+        oldWidget.size != widget.size) {
+      setState(() {
+        if (oldWidget.text != widget.text || oldWidget.color != widget.color) {
+          // If the text or color changes, we need to regenerate the SVG and update the cache
+          //
+          // We don't need to regenerate the SVG if only the size changes
+          _generateSvg();
+        }
+      });
     }
   }
 
   @override
-  Widget build(BuildContext context) {
-    if (_cachedSvg == null) {
-      _generateSvg();
-    }
-
-    return SvgPicture.string(_cachedSvg!, width: widget.size, height: widget.size);
-  }
+  Widget build(BuildContext context) =>
+      SvgPicture.string(_cachedSvg!, width: widget.size, height: widget.size);
 
   /// Generate the SVG for the QR code based on the current text, size, and color. This method
   /// updates the [_cachedSvg] variable with the generated SVG string.
