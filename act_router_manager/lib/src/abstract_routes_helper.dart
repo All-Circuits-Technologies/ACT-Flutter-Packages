@@ -4,6 +4,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_router_manager/src/errors/act_not_right_route_extra_error.dart';
 import 'package:act_router_manager/src/models/route_page_details.dart';
 import 'package:act_router_manager/src/transitions/route_transition.dart';
 import 'package:act_router_manager/src/types/mixin_route.dart';
@@ -13,10 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// This callback is used to create pages when needed.
-typedef CreatePageCallback<T extends MixinRoute> = RoutePageDetails Function(
-  BuildContext context,
-  GoRouterState state,
-);
+typedef CreatePageCallback<T extends MixinRoute> =
+    RoutePageDetails Function(BuildContext context, GoRouterState state);
 
 /// Utility methods to manage [MixinRoute] enum
 abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
@@ -61,9 +60,9 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
     this.debugLogDiagnostics = false,
     this.defaultTransition = RouteTransition.none,
     this.defaultOrientation = ScreenOrientationOption.mayRotate,
-  })  : createPageCallback = {},
-        observers = [],
-        super();
+  }) : createPageCallback = {},
+       observers = [],
+       super();
 
   /// This is used to add a callback for managing a page creation depending of the route
   ///
@@ -131,6 +130,8 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
 
   /// Check the type of [state] extra object and return the object casted.
   /// The object can't be null.
+  ///
+  /// This throws an [ActNotRightRouteExtraError] if the extra is not of the expected type (or null).
   @protected
   ExtraType checkAndCastExtra<ExtraType>(GoRouterState state) =>
       _checkAndCastExtraProcess<ExtraType>(state, isNullable: false);
@@ -144,18 +145,19 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   /// The method checks the type of [state] extra object and return the object casted.
   ///
   /// This is the implementation of [checkAndCastExtra] and [checkAndCastNullableExtra].
-  ExtraType _checkAndCastExtraProcess<ExtraType>(
-    GoRouterState state, {
-    required bool isNullable,
-  }) {
+  ///
+  /// This throws an [ActNotRightRouteExtraError] if the extra is not of the expected type (or null
+  /// if it's not nullable).
+  ExtraType _checkAndCastExtraProcess<ExtraType>(GoRouterState state, {required bool isNullable}) {
     final extra = state.extra;
-    final textIfError = "The ${state.name} page can't be created because we didn't retrieve the "
-        "right argument";
     final testIsOk = ((isNullable && extra == null) || (extra != null && extra is ExtraType));
-    assert(testIsOk, textIfError);
+    assert(
+      testIsOk,
+      "The ${state.name} page can't be created because we didn't retrieve the right argument",
+    );
 
     if (!testIsOk) {
-      throw Exception(textIfError);
+      throw ActNotRightRouteExtraError<ExtraType>(state: state);
     }
 
     return extra as ExtraType;
@@ -164,14 +166,14 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   /// This is the list of class properties
   @override
   List<Object?> get props => [
-        logsHelper,
-        createPageCallback.keys,
-        observers,
-        values,
-        initialRoute,
-        errorRoute,
-        debugLogDiagnostics,
-        defaultTransition,
-        defaultOrientation,
-      ];
+    logsHelper,
+    createPageCallback.keys,
+    observers,
+    values,
+    initialRoute,
+    errorRoute,
+    debugLogDiagnostics,
+    defaultTransition,
+    defaultOrientation,
+  ];
 }
