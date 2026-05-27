@@ -10,10 +10,10 @@ class SemanticVersion extends Equatable {
   /// This is the regular expression used to parse a semantic version string.
   /// See: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
   static const regex =
-      r"^(?P<major>0|[1-9]\d*)\.(?P<minor>0|[1-9]\d*)\.(?P<patch>0|[1-9]\d*)"
-      r"(?:-(?P<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
+      r"^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)"
+      r"(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
       r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
-      r"(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
+      r"(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
 
   /// This is the key to extract the major version number from the regular expression match.
   static const majorRegexKey = "major";
@@ -52,7 +52,7 @@ class SemanticVersion extends Equatable {
   final String? prerelease;
 
   /// The build metadata string, if any.
-  final String? buildmetadata;
+  final String? buildMetadata;
 
   /// Class constructor
   const SemanticVersion({
@@ -60,7 +60,7 @@ class SemanticVersion extends Equatable {
     required this.minor,
     required this.patch,
     this.prerelease,
-    this.buildmetadata,
+    this.buildMetadata,
   });
 
   /// Create a copy of this semantic version with the given properties replaced by the new values.
@@ -70,14 +70,14 @@ class SemanticVersion extends Equatable {
     int? patch,
     String? prerelease,
     bool forcePrereleaseValue = false,
-    String? buildmetadata,
+    String? buildMetadata,
     bool forceBuildMetadataValue = false,
   }) => SemanticVersion(
     major: major ?? this.major,
     minor: minor ?? this.minor,
     patch: patch ?? this.patch,
     prerelease: prerelease ?? (forcePrereleaseValue ? null : this.prerelease),
-    buildmetadata: buildmetadata ?? (forceBuildMetadataValue ? null : this.buildmetadata),
+    buildMetadata: buildMetadata ?? (forceBuildMetadataValue ? null : this.buildMetadata),
   );
 
   /// Convert this semantic version to a string.
@@ -95,8 +95,8 @@ class SemanticVersion extends Equatable {
       prereleasePart = "$prereleaseSeparator$prerelease";
     }
 
-    if (includeBuildMetadata && buildmetadata != null) {
-      buildMetadataPart = "$buildMetadataSeparator$buildmetadata";
+    if (includeBuildMetadata && buildMetadata != null) {
+      buildMetadataPart = "$buildMetadataSeparator$buildMetadata";
     }
 
     return "$major$majorMinorPatchSeparator$minor$majorMinorPatchSeparator$patch"
@@ -114,11 +114,11 @@ class SemanticVersion extends Equatable {
       return null;
     }
 
-    final major = _tryParseInt(match.namedGroup("major"));
-    final minor = _tryParseInt(match.namedGroup("minor"));
-    final patch = _tryParseInt(match.namedGroup("patch"));
-    final prerelease = match.namedGroup("prerelease");
-    final buildmetadata = match.namedGroup("buildmetadata");
+    final major = _tryParseInt(match.namedGroup(majorRegexKey));
+    final minor = _tryParseInt(match.namedGroup(minorRegexKey));
+    final patch = _tryParseInt(match.namedGroup(patchRegexKey));
+    final prerelease = match.namedGroup(prereleaseRegexKey);
+    final buildMetadata = match.namedGroup(buildMetadataRegexKey);
 
     if (major == null || minor == null || patch == null) {
       logger?.w(
@@ -133,7 +133,7 @@ class SemanticVersion extends Equatable {
       minor: minor,
       patch: patch,
       prerelease: prerelease,
-      buildmetadata: buildmetadata,
+      buildMetadata: buildMetadata,
     );
   }
 
@@ -149,5 +149,5 @@ class SemanticVersion extends Equatable {
 
   /// Class properties
   @override
-  List<Object?> get props => [major, minor, patch, prerelease, buildmetadata];
+  List<Object?> get props => [major, minor, patch, prerelease, buildMetadata];
 }
