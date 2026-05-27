@@ -1,0 +1,78 @@
+// SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+import 'package:barcode/barcode.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+
+/// Widget to display a QR code image based on the provided text and size.
+class QrCodeImage extends StatefulWidget {
+  /// The text to encode in the QR code.
+  final String text;
+
+  /// The color of the QR code.
+  final Color color;
+
+  /// The size of the QR code image.
+  final double size;
+
+  /// The barcode generator for QR codes.
+  final Barcode _barcode;
+
+  /// Class constructor
+  QrCodeImage({super.key, required this.text, required this.color, required this.size})
+    : _barcode = Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high);
+
+  /// This widget is stateful because the QR code generation can be computationally expensive, and
+  /// we want to avoid regenerating it unnecessarily if the text or size does not change.
+  @override
+  State<StatefulWidget> createState() => _QrCodeImageState();
+}
+
+/// The state of the [QrCodeImage] widget, responsible for generating and caching the QR code SVG.
+class _QrCodeImageState extends State<QrCodeImage> {
+  /// Cache the generated SVG to avoid regenerating it on every build if the text and color do not
+  /// change.
+  String? _cachedSvg;
+
+  /// Init the state and generate the initial SVG for the QR code.
+  @override
+  void initState() {
+    super.initState();
+    _generateSvg();
+  }
+
+  /// If the widget is updated with new text, size, or color, we need to regenerate the QR code SVG.
+  @override
+  void didUpdateWidget(covariant QrCodeImage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // If the text or color changes, we need to regenerate the QR code
+    //
+    // The size change does not require regeneration because the SVG can be scaled without loss of
+    // quality
+    if (oldWidget.text != widget.text || oldWidget.color != widget.color) {
+      setState(_generateSvg);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_cachedSvg == null) {
+      _generateSvg();
+    }
+
+    return SvgPicture.string(_cachedSvg!, width: widget.size, height: widget.size);
+  }
+
+  /// Generate the SVG for the QR code based on the current text, size, and color. This method
+  /// updates the [_cachedSvg] variable with the generated SVG string.
+  void _generateSvg() {
+    _cachedSvg = widget._barcode.toSvg(
+      widget.text,
+      width: widget.size,
+      height: widget.size,
+      color: widget.color.toARGB32(),
+    );
+  }
+}
