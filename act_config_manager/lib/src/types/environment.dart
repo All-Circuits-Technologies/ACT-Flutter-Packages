@@ -32,10 +32,7 @@ enum Environment {
   final String? parsedString;
 
   /// Enum constructor
-  const Environment({
-    required this.fileName,
-    this.parsedString,
-  });
+  const Environment({required this.fileName, this.parsedString});
 
   /// Constants linked to Environment
   static const envType = "ENV";
