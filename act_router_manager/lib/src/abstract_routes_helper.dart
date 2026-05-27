@@ -131,7 +131,7 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   /// Check the type of [state] extra object and return the object casted.
   /// The object can't be null.
   ///
-  /// This throws an [ActUnsupportedTypeError] if the extra is not of the expected type (or null).
+  /// This throws an [ActNotRightRouteExtraError] if the extra is not of the expected type (or null).
   @protected
   ExtraType checkAndCastExtra<ExtraType>(GoRouterState state) =>
       _checkAndCastExtraProcess<ExtraType>(state, isNullable: false);
@@ -146,7 +146,7 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
   ///
   /// This is the implementation of [checkAndCastExtra] and [checkAndCastNullableExtra].
   ///
-  /// This throws an [ActUnsupportedTypeError] if the extra is not of the expected type (or null
+  /// This throws an [ActNotRightRouteExtraError] if the extra is not of the expected type (or null
   /// if it's not nullable).
   ExtraType _checkAndCastExtraProcess<ExtraType>(GoRouterState state, {required bool isNullable}) {
     final extra = state.extra;
@@ -157,7 +157,7 @@ abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {
     );
 
     if (!testIsOk) {
-      throw ActUnsupportedTypeError(state: state);
+      throw ActNotRightRouteExtraError<ExtraType>(state: state);
     }
 
     return extra as ExtraType;

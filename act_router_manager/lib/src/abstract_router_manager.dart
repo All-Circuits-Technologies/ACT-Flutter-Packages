@@ -541,7 +541,9 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     return stack;
   }
 
-  /// Get the route linked to the current context
+  /// Get the route linked to the current context.
+  ///
+  /// The route is retrieved thanks to its name (and not its path).
   ///
   /// This is not cost efficient, better to use [getCurrentTopView] if you just want the current
   /// view or [getFirstRouteInNavStack] if you want to know if one of a list of routes is in the
@@ -557,7 +559,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
 
     final currentRoute = _helperCompanion.helper.getRouteFromName(settingsName);
     if (currentRoute == null) {
-      _logsHelper.w("The route with path: $settingsName is not known by the app");
+      _logsHelper.w("The route with name: $settingsName is not known by the app");
       return null;
     }
 

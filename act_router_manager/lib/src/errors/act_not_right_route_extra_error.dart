@@ -5,12 +5,12 @@
 import 'package:act_router_manager/act_router_manager.dart';
 
 /// This error is thrown when the [ExpectedType] isn't the expected extra type
-class ActUnsupportedTypeError<ExpectedType> extends Error {
+class ActNotRightRouteExtraError<ExpectedType> extends Error {
   /// This allows to add the state that caused the error as context to the error
   final GoRouterState state;
 
   /// Class constructor
-  ActUnsupportedTypeError({required this.state});
+  ActNotRightRouteExtraError({required this.state});
 
   /// Display a representation of the error
   @override
