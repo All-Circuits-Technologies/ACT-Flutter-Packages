@@ -41,9 +41,8 @@ sealed class LicensesUtility {
 
     if (tmpLicensesPackages.isNotEmpty) {
       logger.w(
-        "The licenses with keys: ${tmpLicensesPackages.keys.join(", ")}; hasn't "
-        " no text defined in the config, and no license file found in the assets folders, skipping "
-        "them.",
+        "The licenses with keys: ${tmpLicensesPackages.keys.join(", ")}; have no text defined in "
+        "the config, and no license file found in the assets folders; skipping them.",
       );
     }
 
