@@ -9,11 +9,12 @@ import 'package:equatable/equatable.dart';
 class SemanticVersion extends Equatable {
   /// This is the regular expression used to parse a semantic version string.
   /// See: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-  static const regex =
-      r"^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)"
-      r"(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
-      r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
-      r"(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$";
+  static final regexExp = RegExp(
+    r"^(?<major>0|[1-9]\d*)\.(?<minor>0|[1-9]\d*)\.(?<patch>0|[1-9]\d*)"
+    r"(?:-(?<prerelease>(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)"
+    r"(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?"
+    r"(?:\+(?<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$",
+  );
 
   /// This is the key to extract the major version number from the regular expression match.
   static const majorRegexKey = "major";
@@ -107,7 +108,6 @@ class SemanticVersion extends Equatable {
   ///
   /// If the string does not contain a valid semantic version, null is returned.
   static SemanticVersion? tryToParse(String source, {MixinActLogger? logger}) {
-    final regexExp = RegExp(regex);
     final match = regexExp.firstMatch(source);
 
     if (match == null) {
