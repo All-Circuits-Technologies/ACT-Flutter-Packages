@@ -6,8 +6,8 @@ import 'dart:async';
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_qr_code/src/qr_code_event.dart';
-import 'package:act_qr_code/src/qr_code_state.dart';
+import 'package:act_qr_code/src/ui/reader/qr_code_event.dart';
+import 'package:act_qr_code/src/ui/reader/qr_code_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -34,8 +34,10 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
     add(QrCodePermissionRetrievedEvent(permissionStatus: status));
 
     if (status == PermissionStatus.permanentlyDenied) {
-      appLogger().w("Can't use the camera, the permission has been "
-          "permanently denied");
+      appLogger().w(
+        "Can't use the camera, the permission has been "
+        "permanently denied",
+      );
       lock.freeLock();
       return;
     }
@@ -53,17 +55,15 @@ class QrCodeBloc extends Bloc<QrCodeEvent, QrCodeState> {
   }
 
   Future<void> _onQrCodePermissionRetrievedEvent(
-      QrCodePermissionRetrievedEvent event, Emitter<QrCodeState> emitter) async {
-    emitter.call(PermissionResultState(
-      previousState: state,
-      permissionStatus: event.permissionStatus,
-    ));
+    QrCodePermissionRetrievedEvent event,
+    Emitter<QrCodeState> emitter,
+  ) async {
+    emitter.call(
+      PermissionResultState(previousState: state, permissionStatus: event.permissionStatus),
+    );
   }
 
   Future<void> _onQrCodeFoundEvent(QrCodeFoundEvent event, Emitter<QrCodeState> emitter) async {
-    emitter.call(QrCodeFoundState(
-      previousState: state,
-      found: event.found,
-    ));
+    emitter.call(QrCodeFoundState(previousState: state, found: event.found));
   }
 }
