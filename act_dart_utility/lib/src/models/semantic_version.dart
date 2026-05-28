@@ -111,6 +111,7 @@ class SemanticVersion extends Equatable {
     final match = regexExp.firstMatch(source);
 
     if (match == null) {
+      logger?.w("The string given: '$source' does not contain a valid semantic version");
       return null;
     }
 
