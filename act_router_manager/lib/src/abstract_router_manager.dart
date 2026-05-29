@@ -24,21 +24,17 @@ import 'package:go_router/go_router.dart';
 ///     built and displayed),
 ///   - this method will be recalled with the new view we ask (so be careful to not create
 ///     infinite redirection)
-typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
-    BuildContext context, T route, GoRouterState state);
+typedef RouterRedirect<T extends MixinRoute> =
+    Future<T?> Function(BuildContext context, T route, GoRouterState state);
 
 /// Builder for creating the AbstractGorouterManager
 class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsLifeCycleFactory<M> {
   /// Class constructor with the class construction
-  const AbstractRouterBuilder({
-    required ClassFactory<M> factory,
-  }) : super(factory);
+  const AbstractRouterBuilder({required ClassFactory<M> factory}) : super(factory);
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
-  Iterable<Type> dependsOn() => [
-        LoggerManager,
-      ];
+  Iterable<Type> dependsOn() => [LoggerManager];
 }
 
 /// The [AbstractRouterManager] simplifies [GoRouter]
@@ -318,13 +314,12 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     Map<String, String> pathParameters = const <String, String>{},
     Map<String, dynamic> queryParameters = const <String, dynamic>{},
     Object? extra,
-  }) async =>
-      _router.pushNamed(
-        route.name,
-        pathParameters: pathParameters,
-        queryParameters: queryParameters,
-        extra: extra,
-      );
+  }) async => _router.pushNamed(
+    route.name,
+    pathParameters: pathParameters,
+    queryParameters: queryParameters,
+    extra: extra,
+  );
 
   /// Pop the top page
   void pop<Y extends Object?>([Y? result]) => _router.pop<Y>(result);
@@ -343,10 +338,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   ///
   /// We have developed our own method because GoRouter doesn't support it for now but the flutter
   /// Navigator does.
-  void popUntil<P extends Object?>(
-    PopUntilPredicate predicate, {
-    P? popArgument,
-  }) {
+  void popUntil<P extends Object?>(PopUntilPredicate predicate, {P? popArgument}) {
     var status = predicate(_getCurrentLocation());
 
     while (!status.isFinished && _router.canPop()) {
@@ -366,25 +358,19 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   /// If none of [routes] are already in the route stack, we reach the initial page and do nothing.
   ///
   /// This uses [popUntil] method.
-  void popUntilMatchOne<P extends Object?>(
-    List<T> routes, {
-    P? popArgument,
-  }) {
+  void popUntilMatchOne<P extends Object?>(List<T> routes, {P? popArgument}) {
     final pathsToTest = <String>[];
     for (final route in routes) {
       pathsToTest.add(route.path);
     }
 
-    popUntil<P>(
-      (routePath) {
-        if (pathsToTest.contains(routePath)) {
-          return PopUntilAction.nothingMoreToDo;
-        }
+    popUntil<P>((routePath) {
+      if (pathsToTest.contains(routePath)) {
+        return PopUntilAction.nothingMoreToDo;
+      }
 
-        return PopUntilAction.continueRemoving;
-      },
-      popArgument: popArgument,
-    );
+      return PopUntilAction.continueRemoving;
+    }, popArgument: popArgument);
   }
 
   /// Pop until we reach the wanted [route]
@@ -397,14 +383,8 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   /// If the [route] is not in the route stack, we reach the initial page and do nothing.
   ///
   /// This uses [popUntil] method.
-  void popUntilMatchThis<P extends Object?>(
-    T route, {
-    P? popArgument,
-  }) =>
-      popUntilMatchOne(
-        [route],
-        popArgument: popArgument,
-      );
+  void popUntilMatchThis<P extends Object?>(T route, {P? popArgument}) =>
+      popUntilMatchOne([route], popArgument: popArgument);
 
   /// Pop until we reach one of the wanted [routes] and then pop the reached view.
   ///
@@ -431,10 +411,7 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     Object? extra,
     P? popArgument,
   }) async {
-    popUntilMatchOne(
-      routes,
-      popArgument: popArgument,
-    );
+    popUntilMatchOne(routes, popArgument: popArgument);
 
     if (canPop()) {
       pop(popArgument);
@@ -477,15 +454,14 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     Map<String, dynamic> queryParameters = const {},
     Object? extra,
     P? popArgument,
-  }) =>
-      popUntilMatchOneThenPop<Y, P>(
-        [route],
-        replaceWithIfCannotPop: replaceWithIfCannotPop,
-        pathParameters: pathParameters,
-        queryParameters: queryParameters,
-        extra: extra,
-        popArgument: popArgument,
-      );
+  }) => popUntilMatchOneThenPop<Y, P>(
+    [route],
+    replaceWithIfCannotPop: replaceWithIfCannotPop,
+    pathParameters: pathParameters,
+    queryParameters: queryParameters,
+    extra: extra,
+    popArgument: popArgument,
+  );
 
   /// Replace the top page with the given route
   ///
@@ -496,13 +472,12 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
     Map<String, String> pathParameters = const {},
     Map<String, dynamic> queryParameters = const {},
     Object? extra,
-  }) async =>
-      _router.pushReplacementNamed(
-        route.name,
-        pathParameters: pathParameters,
-        queryParameters: queryParameters,
-        extra: extra,
-      );
+  }) async => _router.pushReplacementNamed(
+    route.name,
+    pathParameters: pathParameters,
+    queryParameters: queryParameters,
+    extra: extra,
+  );
 
   /// Get the current top view
   T? getCurrentTopView() => _helperCompanion.helper.getRouteFromPath(_getCurrentLocation());
@@ -511,8 +486,9 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
   ///
   /// Returns true if [route] is either the current top view or one of its ancestors,
   /// return false otherwise.
-  bool isRouteInNavStack(T route) => _router.routerDelegate.currentConfiguration.matches
-      .any((match) => match is RouteMatch && match.route.path == route.path);
+  bool isRouteInNavStack(T route) => _router.routerDelegate.currentConfiguration.matches.any(
+    (match) => match is RouteMatch && match.route.path == route.path,
+  );
 
   /// This iterates on the navigation stack from the latest to the newest page and returns the first
   /// route found in the [routes] list given.
@@ -551,8 +527,10 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
 
       final route = _helperCompanion.helper.getRouteFromPath(match.route.path);
       if (route == null) {
-        appLogger().w("The route with path: ${match.route.path} is in the navigation stack but "
-            "it's not known by the app");
+        appLogger().w(
+          "The route with path: ${match.route.path} is in the navigation stack but "
+          "it's not known by the app",
+        );
         continue;
       }
 
@@ -561,6 +539,31 @@ abstract class AbstractRouterManager<T extends MixinRoute> extends AbsWithLifeCy
 
     appLogger().d("Nav stack retrieved: $stack");
     return stack;
+  }
+
+  /// Get the route linked to the current context.
+  ///
+  /// The route is retrieved thanks to its name (and not its path).
+  ///
+  /// This is not cost efficient, better to use [getCurrentTopView] if you just want the current
+  /// view or [getFirstRouteInNavStack] if you want to know if one of a list of routes is in the
+  /// navigation stack.
+  ///
+  /// This won't work with global overlay.
+  T? getRouteFromContext({required BuildContext context}) {
+    final settingsName = ModalRoute.of(context)?.settings.name;
+    if (settingsName == null) {
+      _logsHelper.d("We can't get the current location: the current configuration is empty");
+      return null;
+    }
+
+    final currentRoute = _helperCompanion.helper.getRouteFromName(settingsName);
+    if (currentRoute == null) {
+      _logsHelper.w("The route with name: $settingsName is not known by the app");
+      return null;
+    }
+
+    return currentRoute;
   }
 
   /// Register a router redirect callback to be called when a new page is asked.

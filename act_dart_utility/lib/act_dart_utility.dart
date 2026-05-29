@@ -24,6 +24,7 @@ export 'src/models/boundaries/nullable_min_comparable_boundaries.dart';
 export 'src/models/boundaries/nullable_min_num_boundaries.dart';
 export 'src/models/boundaries/nullable_num_boundaries.dart';
 export 'src/models/boundaries/num_boundaries.dart';
+export 'src/models/semantic_version.dart';
 export 'src/models/string_interval.dart';
 export 'src/models/updated_events/updated_model_event.dart';
 export 'src/models/updated_events/updated_unique_model_event.dart';

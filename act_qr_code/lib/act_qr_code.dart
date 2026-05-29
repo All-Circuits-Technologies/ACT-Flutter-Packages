@@ -4,7 +4,8 @@
 
 library;
 
-export 'src/qr_code_bloc.dart';
-export 'src/qr_code_event.dart';
-export 'src/qr_code_state.dart';
-export 'src/qr_code_widget.dart';
+export 'src/ui/qr_code_widget.dart';
+export 'src/ui/reader/qr_code_bloc.dart';
+export 'src/ui/reader/qr_code_event.dart';
+export 'src/ui/reader/qr_code_reader.dart';
+export 'src/ui/reader/qr_code_state.dart';
