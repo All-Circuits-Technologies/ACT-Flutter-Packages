@@ -1,17 +1,14 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
 
 import 'package:act_dart_timer/act_dart_timer.dart';
-import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_websocket_client_manager/src/mixins/mixin_websocket_client_config.dart';
 import 'package:act_websocket_client_manager/src/models/ws_client_manager_config.dart';
 import 'package:act_websocket_client_manager/src/types/ws_connection_status.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 import 'package:web_socket_channel/status.dart' as status;
@@ -19,12 +16,14 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 
 /// Builder to use with derived class in order to create a WebSocketManager with the right type.
 ///
-/// This is useful if you want to create another [WebsocketClientManager] to contact another WebSocket
-/// server.
-abstract class AbstractWebsocketClientDerivedBuilder<T extends WebsocketClientManager>
+/// This is useful if you want to create multiple [AbsWebsocketClientManager] to contact multiple
+/// WebSocket server.
+///
+/// Or if you want to create a WebSocket manager with a custom config.
+abstract class AbsWebsocketClientBuilder<T extends AbsWebsocketClientManager>
     extends AbsLifeCycleFactory<T> {
   /// Class constructor with the class construction
-  const AbstractWebsocketClientDerivedBuilder({required ClassFactory<T> factory}) : super(factory);
+  const AbsWebsocketClientBuilder({required ClassFactory<T> factory}) : super(factory);
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -32,32 +31,20 @@ abstract class AbstractWebsocketClientDerivedBuilder<T extends WebsocketClientMa
   Iterable<Type> dependsOn() => [LoggerManager];
 }
 
-/// Builder for creating the WebSocketManager
-class WebsocketClientDerivedBuilder<C extends MixinWebsocketClientConfig>
-    extends AbstractWebsocketClientDerivedBuilder<WebsocketClientManager> {
-  /// Class constructor
-  WebsocketClientDerivedBuilder()
-    : super(factory: () => WebsocketClientManager(configGetter: globalGetIt().get<C>));
-}
-
-/// This is the WebSocket manager
+/// This is the abstract WebSocket manager
 ///
-/// If you want to create multiple managers, use [AbstractWebsocketClientDerivedBuilder].
-class WebsocketClientManager extends AbsWithLifeCycle {
-  /// This is the default value of the start WebSocket at manager init
-  static const _startWsAtManagerInitDefaultValue = true;
-
-  /// This is the default logger category
-  static const defaultLoggerCategory = "ws";
-
+/// This is the base of the WebSocket client manager, it contains all the logic to manage a
+/// WebSocket connection, the auto reconnection, the received message stream and the connection
+/// status stream.
+///
+/// This is useful when you want to create a WebSocket manager with a custom config, or if you want
+/// to create multiple [AbsWebsocketClientManager] to contact multiple WebSocket server.
+abstract class AbsWebsocketClientManager extends AbsWithLifeCycle {
   /// This is the manager logger category
   final String loggerCategory;
 
   /// This is the logs helper of the manager
   late final LogsHelper logsHelper;
-
-  /// This is the getter of the config manager
-  final MixinWebsocketClientConfig Function() _configGetter;
 
   /// This is the mutex linked to the connection
   final Mutex _connectionMutex;
@@ -93,14 +80,11 @@ class WebsocketClientManager extends AbsWithLifeCycle {
   WebSocketChannel? _channel;
 
   /// Class constructor
-  WebsocketClientManager({
-    required MixinWebsocketClientConfig Function() configGetter,
-    this.loggerCategory = defaultLoggerCategory,
-  }) : _configGetter = configGetter,
-       _connectionStatus = WsConnectionStatus.disconnected,
-       _connectionMutex = Mutex(),
-       _connectionStatusCtrl = StreamController.broadcast(),
-       _receivedMsgCtrl = StreamController.broadcast();
+  AbsWebsocketClientManager({required this.loggerCategory})
+    : _connectionStatus = WsConnectionStatus.disconnected,
+      _connectionMutex = Mutex(),
+      _connectionStatusCtrl = StreamController.broadcast(),
+      _receivedMsgCtrl = StreamController.broadcast();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
@@ -158,17 +142,7 @@ class WebsocketClientManager extends AbsWithLifeCycle {
   /// Get the manager config, use value by default
   /// {@endtemplate}
   @protected
-  Future<WsClientManagerConfig> getConfig({required LogsHelper logsHelper}) async =>
-      WsClientManagerConfig(
-        uri: _configGetter().websocketClientUrl.load(),
-        autoReconnectEnabled: _configGetter().websocketClientAutoRecoEnabled.load(),
-        autoReconnectInitDuration: _configGetter().websocketClientAutoRecoInitDurationInMs.load(),
-        autoReconnectMaxDuration: _configGetter().websocketClientAutoRecoMaxDurationInMs.load(),
-        startWsAtManagerInit: _startWsAtManagerInitDefaultValue,
-        msgParsers: const [],
-        protocols: const [],
-        logReceivedMsg: _configGetter().websocketClientLogReceivedMsg.load(),
-      );
+  Future<WsClientManagerConfig> getConfig({required LogsHelper logsHelper});
 
   /// This is callback called when the auto reconnect is triggered
   Future<bool> _autoReconnectCallback() => _connectionMutex.protect(() async {

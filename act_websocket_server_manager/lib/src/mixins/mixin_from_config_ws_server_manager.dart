@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_http_logging_manager/act_http_logging_manager.dart';
 import 'package:act_http_server_manager/act_http_server_manager.dart';
 import 'package:act_websocket_server_manager/src/mixins/mixin_websocket_server_config.dart';
@@ -17,12 +18,23 @@ mixin MixinFromConfigWsServerManager on AbsHttpServerManager {
 
   /// {@macro act_http_server_manager.HttpServerManager.getServerConfig}
   @override
-  Future<HttpServerConfig> getServerConfig({required HttpLoggingManager httpLoggingManager}) async {
+  Future<HttpServerConfig> getInitServerConfig({
+    required HttpLoggingManager httpLoggingManager,
+  }) async {
     final configManager = configGetter();
+    final wsServerPort = configManager.wsServerPort.load();
+
+    NumBoundaries<int> portsRange;
+    if (wsServerPort == null) {
+      portsRange = configManager.httpServerPortsRange.load();
+    } else {
+      portsRange = NumBoundaries<int>(min: wsServerPort, max: wsServerPort);
+    }
+
     return HttpServerConfig(
       serverName: configManager.wsServerName.load(),
       hostname: configManager.wsServerHostname.load(),
-      port: configManager.wsServerPort.load(),
+      portsRange: portsRange,
       basePath: configManager.wsServerBasePath.load(),
     );
   }

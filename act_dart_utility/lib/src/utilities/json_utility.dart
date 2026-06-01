@@ -35,7 +35,7 @@ sealed class JsonUtility {
       return (isOk: canBeUndefined, value: null);
     }
 
-    final result = _castValueIfNeeded(
+    final result = _castValueIfNeeded<T, Y>(
       value: tmpValue,
       castValueFunc: castValueFunc,
       logger: logger,

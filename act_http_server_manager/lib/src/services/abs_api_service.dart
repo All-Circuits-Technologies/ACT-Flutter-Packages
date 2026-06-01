@@ -24,9 +24,6 @@ abstract class AbsApiService extends AbsWithLifeCycle {
   /// This is the key used in the request context to store the request id
   static const requestIdContext = "requestId";
 
-  /// This is the server config
-  final HttpServerConfig _config;
-
   /// Instance of the http logging manager
   final HttpLoggingManager _httpLoggingManager;
 
@@ -35,6 +32,9 @@ abstract class AbsApiService extends AbsWithLifeCycle {
 
   /// This is the list of all the registered routes in the service
   final List<HttpRouteListeningId> registeredRoutes;
+
+  /// This is the server config
+  HttpServerConfig _config;
 
   /// This is the HttpLoggingManager getter
   @protected
@@ -64,6 +64,18 @@ abstract class AbsApiService extends AbsWithLifeCycle {
   /// This method is used to define the request methods to add to the router
   /// {@endtemplate}
   Future<void> initRoutes(Router app);
+
+  /// {@template act_http_server_manager.abs_api_service.updateConfig}
+  /// This method is used to update the config of the service. It can be called when the server
+  /// config is updated, to update the config of the service with the new one.
+  /// {@endtemplate}
+  Future<void> updateConfig({required HttpServerConfig newConfig}) async {
+    if (newConfig == _config) {
+      return;
+    }
+
+    _config = newConfig;
+  }
 
   /// Called to register a GET request to the [app]
   ///
