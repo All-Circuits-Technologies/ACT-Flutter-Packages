@@ -36,8 +36,9 @@ sealed class ConfigFromEnvUtility {
     final envConfig = <String, dynamic>{};
 
     final mappingModels = await EnvConfigMappingUtility.fromAssetBundle(
-        _getConfigFilePath(configPath, config_constants.envConfigMappingFileName));
-    final platformEnv = ActPlatform.environment;
+      _getConfigFilePath(configPath, config_constants.envConfigMappingFileName),
+    );
+    final platformEnv = ActPlatform.instance.environment;
 
     final dotEnv = (await _loadDotEnvFromAsset(configPath)) ?? {};
 
@@ -66,8 +67,9 @@ sealed class ConfigFromEnvUtility {
   ///
   /// This method returns null if the env isn't found or if a problem occurred.
   static dynamic _parseFromRuntimeEnv(
-          Map<String, String> platformEnv, EnvConfigMappingModel model) =>
-      _parseFromMapEnv(platformEnv, model);
+    Map<String, String> platformEnv,
+    EnvConfigMappingModel model,
+  ) => _parseFromMapEnv(platformEnv, model);
 
   /// This method parses a value from the [mapEnv] given.
   ///
@@ -109,8 +111,9 @@ sealed class ConfigFromEnvUtility {
     String fileContent;
 
     try {
-      fileContent = await rootBundle
-          .loadString(_getConfigFilePath(configPath, config_constants.dotEnvFileName));
+      fileContent = await rootBundle.loadString(
+        _getConfigFilePath(configPath, config_constants.dotEnvFileName),
+      );
     } catch (error) {
       // The file doesn't exist or a problem occurred
       return null;
@@ -125,8 +128,9 @@ sealed class ConfigFromEnvUtility {
 
     final lines = LineSplitter.split(fileContent);
 
-    final globalElements =
-        dotenv.isInitialized ? Map<String, String>.from(dotenv.env) : <String, String>{};
+    final globalElements = dotenv.isInitialized
+        ? Map<String, String>.from(dotenv.env)
+        : <String, String>{};
 
     globalElements.addAll(const Parser().parse(lines));
 
