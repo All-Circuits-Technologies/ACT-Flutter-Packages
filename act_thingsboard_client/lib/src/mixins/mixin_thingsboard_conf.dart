@@ -11,4 +11,10 @@ mixin MixinThingsboardConf on AbstractConfigManager {
 
   /// This is the port of the Thingsboard server to request
   final tbPort = const ConfigVar<int>('thingsboard.port');
+
+  /// True to reach the Thingsboard server over TLS (https/wss), false for plain http/ws.
+  ///
+  /// Optional: when absent from the config, TLS is enabled (defaults to true). Setting it to false
+  /// is meant for local development against a non-TLS stack; production must stay secure.
+  final tbEnableTls = const NotNullableConfigVar<bool>('thingsboard.enableTls', defaultValue: true);
 }
