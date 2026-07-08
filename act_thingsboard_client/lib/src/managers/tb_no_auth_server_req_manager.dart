@@ -73,13 +73,15 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
     final confManager = _confGetter();
     final hostname = confManager.tbHostname.load();
     final port = confManager.tbPort.load();
+    final enableTls = confManager.tbEnableTls.load() ?? true;
 
     if (hostname == null) {
       _logsHelper.e("The Thingsboard hostname hasn't been given");
       throw Exception("The Thingsboard hostname hasn't been given");
     }
 
-    final uri = Uri(port: port, host: hostname, scheme: UriUtility.httpsScheme);
+    final scheme = enableTls ? UriUtility.httpsScheme : UriUtility.httpScheme;
+    final uri = Uri(port: port, host: hostname, scheme: scheme);
 
     _tbClient = ThingsboardClient(uri.toString(), storage: _tbStorage);
 
