@@ -21,10 +21,12 @@ class TbNoAuthServerReqBuilder<C extends MixinThingsboardConf, A extends AbsAuth
     extends AbsLifeCycleFactory<TbNoAuthServerReqManager> {
   /// Class constructor
   TbNoAuthServerReqBuilder()
-      : super(() => TbNoAuthServerReqManager(
-              storageServiceGetter: () => globalGetIt().get<A>().storageService,
-              confGetter: globalGetIt().get<C>,
-            ));
+    : super(
+        () => TbNoAuthServerReqManager(
+          storageServiceGetter: () => globalGetIt().get<A>().storageService,
+          confGetter: globalGetIt().get<C>,
+        ),
+      );
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -59,27 +61,27 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   TbNoAuthServerReqManager({
     required MixinAuthStorageService? Function()? storageServiceGetter,
     required MixinThingsboardConf Function() confGetter,
-  })  : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
-        _confGetter = confGetter;
+  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
+       _confGetter = confGetter;
 
   /// Init the service
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _noAuthTbLogsCategory,
-    );
+    _logsHelper = LogsHelper(category: _noAuthTbLogsCategory);
 
     final confManager = _confGetter();
     final hostname = confManager.tbHostname.load();
     final port = confManager.tbPort.load();
+    final enableTls = confManager.tbEnableTls.load();
 
     if (hostname == null) {
       _logsHelper.e("The Thingsboard hostname hasn't been given");
       throw Exception("The Thingsboard hostname hasn't been given");
     }
 
-    final uri = Uri(port: port, host: hostname, scheme: UriUtility.httpsScheme);
+    final scheme = enableTls ? UriUtility.httpsScheme : UriUtility.httpScheme;
+    final uri = Uri(port: port, host: hostname, scheme: scheme);
 
     _tbClient = ThingsboardClient(uri.toString(), storage: _tbStorage);
 
