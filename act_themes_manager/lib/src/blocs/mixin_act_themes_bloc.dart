@@ -80,11 +80,11 @@ mixin MixinActThemesBloc<M extends ActThemesManager, S extends MixinActThemesSta
     add(BrightnessUpdatedEvent(brightness: brightness));
   }
 
-  /// {@macro act_flutter_utility.BlocForMixin.close}
+  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     await Future.wait(_themeSubscriptions.map((subscription) => subscription.cancel()));
 
-    return super.close();
+    return super.disposeLifeCycle();
   }
 }

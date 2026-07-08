@@ -17,13 +17,18 @@ class BannerInfoBloc extends BlocForMixin<BannerInfoState> {
   late final StreamSubscription _internetSub;
 
   /// Class constructor
-  BannerInfoBloc() : super(const BannerInfoState.init()) {
+  BannerInfoBloc() : super(const BannerInfoState.init());
+
+  /// {@macro act_flutter_utility.BlocForMixin.registerMixinEvents}
+  @override
+  void registerMixinEvents() {
+    super.registerMixinEvents();
+
     on<BannerInfoInternetUpdateEvent>(_onInternetStateUpdated);
 
-    _internetSub = globalGetIt()
-        .get<InternetConnectivityManager>()
-        .hasInternetStream
-        .listen(_onInternetUpdated);
+    _internetSub = globalGetIt().get<InternetConnectivityManager>().hasInternetStream.listen(
+      _onInternetUpdated,
+    );
     _onInternetUpdated();
   }
 
@@ -33,9 +38,7 @@ class BannerInfoBloc extends BlocForMixin<BannerInfoState> {
     BannerInfoInternetUpdateEvent event,
     Emitter<BannerInfoState> emit,
   ) async {
-    emit(state.copyWithInternetState(
-      isInternetOk: event.isInternetOk,
-    ));
+    emit(state.copyWithInternetState(isInternetOk: event.isInternetOk));
   }
 
   /// Called when the internet connection state has been updated
@@ -48,11 +51,11 @@ class BannerInfoBloc extends BlocForMixin<BannerInfoState> {
     }
   }
 
-  /// Close the bloc
+  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     await _internetSub.cancel();
 
-    return super.close();
+    return super.disposeLifeCycle();
   }
 }

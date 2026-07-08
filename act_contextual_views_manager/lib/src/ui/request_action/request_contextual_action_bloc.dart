@@ -11,7 +11,8 @@ import 'package:mutex/mutex.dart';
 
 /// This bloc is used to request the user and waits for the associated status update
 class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
-    extends BlocForMixin<RequestContextualActionState> {
+    extends BlocForMixin<RequestContextualActionState>
+    with MixinAsyncInitBloc<RequestContextualActionState> {
   /// Subscription to the isOk stream
   late final StreamSubscription _isOkSub;
 
@@ -24,42 +25,38 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
   /// If true, that means the method to call when process is ended has already been called
   bool _whenEndedCalled;
 
-  /// Class constructor
-  ///
-  /// [isOkCallback] is used to know the current state
+  /// Constructor for the bloc.
   RequestContextualActionBloc({
     required this.config,
     required bool Function() isOkCallback,
     required Stream<bool> isOkStream,
-  })  : _whenEndedCalled = false,
-        _whenEndedMutex = Mutex(),
-        super(RequestContextualActionState.init(
-          isOk: isOkCallback(),
-        )) {
-    on<RequestContextualActionInitEvent>(_onInitCallback);
+  }) : _whenEndedCalled = false,
+       _whenEndedMutex = Mutex(),
+       super(RequestContextualActionState.init(isOk: isOkCallback())) {
+    _isOkSub = isOkStream.listen(_onIsOkStatus);
+  }
+
+  /// {@macro act_flutter_utility.BlocForMixin.registerMixinEvents}
+  @override
+  void registerMixinEvents() {
+    super.registerMixinEvents();
+
     on<RequestContextualActionNewStateEvent>(_onIsOkUpdated);
     on<RequestContextualActionAskEvent>(_onRequestUser);
     on<RequestContextualActionRefusedEvent>(_onUserRefused);
-
-    _isOkSub = isOkStream.listen(_onIsOkStatus);
-
-    add(const RequestContextualActionInitEvent());
   }
 
-  /// Called at the bloc initialisation
-  Future<void> _onInitCallback(
-    RequestContextualActionInitEvent event,
-    Emitter<RequestContextualActionState> emitter,
-  ) async {
+  /// {@macro act_flutter_utility.MixinAsyncInitBloc.initAsyncBloc}
+  @override
+  Future<void> initAsyncBloc({required Emitter<RequestContextualActionState> emit}) async {
+    await super.initAsyncBloc(emit: emit);
     if (state.isOk) {
       // Nothing more to do
       await _manageCallWhenEnded(ViewDisplayStatus.ok);
       return;
     }
 
-    emitter.call(state.copyWithLoadingState(
-      loading: false,
-    ));
+    emit.call(state.copyWithLoadingState(loading: false));
   }
 
   /// Called when the 'is ok' changes
@@ -72,9 +69,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     RequestContextualActionNewStateEvent event,
     Emitter<RequestContextualActionState> emitter,
   ) async {
-    emitter.call(state.copyWithResultState(
-      isOk: event.isOk,
-    ));
+    emitter.call(state.copyWithResultState(isOk: event.isOk));
 
     if (config.requestExtraAction == null && state.isOk) {
       // Nothing more to do
@@ -89,9 +84,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
     RequestContextualActionRefusedEvent event,
     Emitter<RequestContextualActionState> emitter,
   ) async {
-    emitter.call(state.copyWithLoadingState(
-      loading: true,
-    ));
+    emitter.call(state.copyWithLoadingState(loading: true));
 
     await _manageCallWhenEnded(ViewDisplayStatus.error);
   }
@@ -100,27 +93,21 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
   Future<void> _onRequestUser(
     RequestContextualActionAskEvent event,
     Emitter<RequestContextualActionState> emitter,
-  ) =>
-      _whenEndedMutex.protect(() async {
-        emitter.call(state.copyWithLoadingState(
-          loading: true,
-        ));
+  ) => _whenEndedMutex.protect(() async {
+    emitter.call(state.copyWithLoadingState(loading: true));
 
-        var isOk = true;
+    var isOk = true;
 
-        if (config.requestExtraAction != null) {
-          isOk = await config.requestExtraAction!();
-        }
+    if (config.requestExtraAction != null) {
+      isOk = await config.requestExtraAction!();
+    }
 
-        emitter.call(state.copyWithResultState(
-          isOk: isOk,
-          loading: false,
-        ));
+    emitter.call(state.copyWithResultState(isOk: isOk, loading: false));
 
-        if (isOk) {
-          await _manageCallWhenEndedWithoutMutex(ViewDisplayStatus.ok);
-        }
-      });
+    if (isOk) {
+      await _manageCallWhenEndedWithoutMutex(ViewDisplayStatus.ok);
+    }
+  });
 
   /// This is the method used to notify the end of the view. It calls [config] callWhenEnded method
   /// if it hasn't already been done.
@@ -140,10 +127,11 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
   Future<void> _manageCallWhenEnded(ViewDisplayStatus status) =>
       _whenEndedMutex.protect(() async => _manageCallWhenEndedWithoutMutex(status));
 
+  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     await _isOkSub.cancel();
 
-    return super.close();
+    return super.disposeLifeCycle();
   }
 }
