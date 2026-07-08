@@ -10,21 +10,27 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client/src/act_tb_storage.dart';
-import 'package:act_thingsboard_client/src/constants/tb_constants.dart' as tb_constants;
+import 'package:act_thingsboard_client/src/constants/tb_constants.dart'
+    as tb_constants;
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This is the builder of the [TbNoAuthServerReqManager] class
 ///
 /// The [TbNoAuthServerReqManager] doesn't depend on [AbsAuthManager], it only passes the
 /// `storageService` to the created ThingsboardClient.
-class TbNoAuthServerReqBuilder<C extends MixinThingsboardConf, A extends AbsAuthManager>
+class TbNoAuthServerReqBuilder<
+  C extends MixinThingsboardConf,
+  A extends AbsAuthManager
+>
     extends AbsLifeCycleFactory<TbNoAuthServerReqManager> {
   /// Class constructor
   TbNoAuthServerReqBuilder()
-      : super(() => TbNoAuthServerReqManager(
-              storageServiceGetter: () => globalGetIt().get<A>().storageService,
-              confGetter: globalGetIt().get<C>,
-            ));
+    : super(
+        () => TbNoAuthServerReqManager(
+          storageServiceGetter: () => globalGetIt().get<A>().storageService,
+          confGetter: globalGetIt().get<C>,
+        ),
+      );
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -38,7 +44,9 @@ class TbNoAuthServerReqBuilder<C extends MixinThingsboardConf, A extends AbsAuth
 /// It's helpful to call Thingsboard requests which doesn't depend on authentication.
 class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   /// This is the log category used with the manager
-  static final _noAuthTbLogsCategory = tb_constants.getTbLogCategory(subCategory: "noAuth");
+  static final _noAuthTbLogsCategory = tb_constants.getTbLogCategory(
+    subCategory: "noAuth",
+  );
 
   /// The [ThingsboardClient] used to request Thingsboard
   late final ThingsboardClient _tbClient;
@@ -59,21 +67,19 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   TbNoAuthServerReqManager({
     required MixinAuthStorageService? Function()? storageServiceGetter,
     required MixinThingsboardConf Function() confGetter,
-  })  : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
-        _confGetter = confGetter;
+  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
+       _confGetter = confGetter;
 
   /// Init the service
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _noAuthTbLogsCategory,
-    );
+    _logsHelper = LogsHelper(category: _noAuthTbLogsCategory);
 
     final confManager = _confGetter();
     final hostname = confManager.tbHostname.load();
     final port = confManager.tbPort.load();
-    final enableTls = confManager.tbEnableTls.load() ?? true;
+    final enableTls = confManager.tbEnableTls.load();
 
     if (hostname == null) {
       _logsHelper.e("The Thingsboard hostname hasn't been given");
@@ -92,7 +98,9 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   /// returning [RequestStatus] information
   ///
   /// The method doesn't manage the reconnection and/or getting of user tokens
-  Future<TbRequestResponse<T>> request<T>(tb_constants.TbRequestToCall<T> requestToCall) async {
+  Future<TbRequestResponse<T>> request<T>(
+    tb_constants.TbRequestToCall<T> requestToCall,
+  ) async {
     var status = RequestStatus.success;
     T? result;
 
@@ -102,7 +110,9 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
       status = RequestStatus.globalError;
 
       if (error.errorCode == ThingsBoardErrorCode.general) {
-        _logsHelper.w("A generic error happens on Thingsboard when tried to request it: $error");
+        _logsHelper.w(
+          "A generic error happens on Thingsboard when tried to request it: $error",
+        );
         _logsHelper.w("Source of the error: ${error.error}");
       } else if (error.errorCode == ThingsBoardErrorCode.jwtTokenExpired ||
           error.errorCode == ThingsBoardErrorCode.authentication) {

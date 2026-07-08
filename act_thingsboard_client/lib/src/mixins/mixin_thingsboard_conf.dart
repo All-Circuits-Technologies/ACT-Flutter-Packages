@@ -16,5 +16,8 @@ mixin MixinThingsboardConf on AbstractConfigManager {
   ///
   /// Optional: when absent from the config, TLS is enabled (defaults to true). Setting it to false
   /// is meant for local development against a non-TLS stack; production must stay secure.
-  final tbEnableTls = const ConfigVar<bool>('thingsboard.enableTls');
+  final tbEnableTls = const NotNullableConfigVar<bool>(
+    'thingsboard.enableTls',
+    defaultValue: true,
+  );
 }
