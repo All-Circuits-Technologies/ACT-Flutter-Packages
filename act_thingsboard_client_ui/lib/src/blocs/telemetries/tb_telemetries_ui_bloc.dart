@@ -12,7 +12,9 @@ import 'package:act_thingsboard_client_ui/act_thingsboard_client_ui.dart';
 /// BLoC, using the MixinTbTelemetriesUiBloc mixin
 class TbTelemetriesUiBloc<Tb extends AbsTbServerReqManager>
     extends BlocForMixin<TbTelemetriesUiState>
-    with MixinTbTelemetriesUiBloc<Tb, TbTelemetriesUiState> {
+    with
+        MixinAsyncInitBloc<TbTelemetriesUiState>,
+        MixinTbTelemetriesUiBloc<Tb, TbTelemetriesUiState> {
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.clientAttributesKeys}
   @override
   final List<MixinTelemetriesKeys> clientAttributesKeys;

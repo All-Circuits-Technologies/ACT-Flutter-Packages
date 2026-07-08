@@ -21,8 +21,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 typedef GetDeviceInfo = Future<({bool success, DeviceInfo? deviceInfo})> Function();
 
 /// This mixin is helpful to use the [TbTelemetriesUiBloc] and its states without extending it
-mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
-    S extends MixinTbTelemetriesUiState<S>> on BlocForMixin<S> {
+mixin MixinTbTelemetriesUiBloc<
+  Tb extends AbsTbServerReqManager,
+  S extends MixinTbTelemetriesUiState<S>
+>
+    on BlocForMixin<S>, MixinAsyncInitBloc<S> {
   /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.clientAttributesKeys}
   /// The keys of client attributes to listen
   /// {@endtemplate}
@@ -64,50 +67,19 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
   void registerMixinEvents() {
     super.registerMixinEvents();
 
-    on<InitTbTelemetriesUiEvent>(_onInitOrRetryEvent);
-    on<RetryInitTbTelemetriesUiEvent>(_onInitOrRetryEvent);
     on<NewTbTimeSeriesValuesUiEvent>(onNewTsValuesEvent);
     on<NewTbAttributesValuesUiEvent>(onNewAttributesValuesEvent);
-
-    add(const InitTbTelemetriesUiEvent());
   }
 
-  /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.onNewTsValuesEvent}
-  /// Called when a [NewTbTimeSeriesValuesUiEvent] event is emitted
-  /// {@endtemplate}
-  @protected
-  Future<void> onNewTsValuesEvent(
-    NewTbTimeSeriesValuesUiEvent event,
-    Emitter<S> emitter,
-  ) async {
-    emitter.call(state.copyWithNewValuesUiState(
-      tsValues: event.tsValues,
-    ));
-  }
+  /// {@macro act_flutter_utility.MixinAsyncInitBloc.initAsyncBloc}
+  @override
+  Future<void> initAsyncBloc({required Emitter<S> emit}) async {
+    await super.initAsyncBloc(emit: emit);
 
-  /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.onNewAttributesValuesEvent}
-  /// Called when a [NewTbAttributesValuesUiEvent] event is emitted
-  /// {@endtemplate}
-  @protected
-  Future<void> onNewAttributesValuesEvent(
-    NewTbAttributesValuesUiEvent event,
-    Emitter<S> emitter,
-  ) async {
-    emitter.call(state.copyWithNewValuesUiState(
-      attributesValues: event.attributesValues,
-    ));
-  }
-
-  /// Called to initialise the telemetry handler, also called when doing a retry after an error
-  /// occurred.
-  Future<void> _onInitOrRetryEvent<T extends BlocEventForMixin>(
-    T event,
-    Emitter<S> emitter,
-  ) async {
     DeviceInfo? deviceInfo;
 
     if (_tbTelemetryHandler == null) {
-      deviceInfo = await _initTelemetryHandler(emitter);
+      deviceInfo = await _initTelemetryHandler(emit);
 
       if (deviceInfo == null) {
         // A problem occurred, we can't continue
@@ -127,9 +99,7 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
       clientKeys: clientAttributesKeys,
     ))) {
       appLogger().w("Can't subscribe to listen some time series and client attributes");
-      emitter.call(state.copyWithErrorUiState(
-        genericError: TbTelemetriesUiError.serverError,
-      ));
+      emit.call(state.copyWithErrorUiState(genericError: TbTelemetriesUiError.serverError));
       return;
     }
 
@@ -137,23 +107,44 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
     final currentAttrValues = _tbTelemetryHandler!.getAttributeValues();
 
     /// Call the loading Ui State with telemetries and attributes values
-    emitter.call(state.copyWithTelemetryInit(
-      device: deviceInfo,
-      tsValues: currentTsValues,
-      attributesValues: currentAttrValues,
-    ));
+    emit.call(
+      state.copyWithTelemetryInit(
+        device: deviceInfo,
+        tsValues: currentTsValues,
+        attributesValues: currentAttrValues,
+      ),
+    );
+  }
+
+  /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.onNewTsValuesEvent}
+  /// Called when a [NewTbTimeSeriesValuesUiEvent] event is emitted
+  /// {@endtemplate}
+  @protected
+  Future<void> onNewTsValuesEvent(NewTbTimeSeriesValuesUiEvent event, Emitter<S> emitter) async {
+    emitter.call(state.copyWithNewValuesUiState(tsValues: event.tsValues));
+  }
+
+  /// {@template act_thingsboard_client_ui.MixinTbTelemetriesUiBloc.onNewAttributesValuesEvent}
+  /// Called when a [NewTbAttributesValuesUiEvent] event is emitted
+  /// {@endtemplate}
+  @protected
+  Future<void> onNewAttributesValuesEvent(
+    NewTbAttributesValuesUiEvent event,
+    Emitter<S> emitter,
+  ) async {
+    emitter.call(state.copyWithNewValuesUiState(attributesValues: event.attributesValues));
   }
 
   /// Called to init the [TbTelemetryHandler] linked to this BLoC
-  Future<DeviceInfo?> _initTelemetryHandler(
-    Emitter<S> emitter,
-  ) async {
+  Future<DeviceInfo?> _initTelemetryHandler(Emitter<S> emitter) async {
     if (!await _manageInternetConnectivity()) {
-      appLogger().w("We can't init the telemetry subscription: the phone isn't connected to "
-          "internet");
-      emitter.call(state.copyWithErrorUiState(
-        genericError: TbTelemetriesUiError.noInternetAtStart,
-      ));
+      appLogger().w(
+        "We can't init the telemetry subscription: the phone isn't connected to "
+        "internet",
+      );
+      emitter.call(
+        state.copyWithErrorUiState(genericError: TbTelemetriesUiError.noInternetAtStart),
+      );
       return null;
     }
 
@@ -162,31 +153,31 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
     final result = await getDeviceInfo();
 
     if (!result.success) {
-      appLogger().w("A problem occurred when tried to get the info of the thingsboard device, when "
-          "getting to try to get its telemetries");
-      emitter.call(state.copyWithErrorUiState(
-        genericError: TbTelemetriesUiError.serverError,
-      ));
+      appLogger().w(
+        "A problem occurred when tried to get the info of the thingsboard device, when "
+        "getting to try to get its telemetries",
+      );
+      emitter.call(state.copyWithErrorUiState(genericError: TbTelemetriesUiError.serverError));
       return null;
     }
 
     if (result.deviceInfo == null) {
-      appLogger().w("The wanted device info hasn't been found in thingsboard, when getting to try "
-          "to get its telemetries");
-      emitter.call(state.copyWithErrorUiState(
-        genericError: TbTelemetriesUiError.unknownDevice,
-      ));
+      appLogger().w(
+        "The wanted device info hasn't been found in thingsboard, when getting to try "
+        "to get its telemetries",
+      );
+      emitter.call(state.copyWithErrorUiState(genericError: TbTelemetriesUiError.unknownDevice));
       return null;
     }
 
     final deviceId = result.deviceInfo!.id?.id;
 
     if (deviceId == null) {
-      appLogger().w("A problem occurred when tried to get the device id of the thingsboard device, "
-          "when getting to try to get its telemetries");
-      emitter.call(state.copyWithErrorUiState(
-        genericError: TbTelemetriesUiError.serverError,
-      ));
+      appLogger().w(
+        "A problem occurred when tried to get the device id of the thingsboard device, "
+        "when getting to try to get its telemetries",
+      );
+      emitter.call(state.copyWithErrorUiState(genericError: TbTelemetriesUiError.serverError));
       return null;
     }
 
@@ -222,7 +213,7 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
 
     await _internetSub?.cancel();
     _internetSub = null;
-    add(const RetryInitTbTelemetriesUiEvent());
+    add(const AsyncInitEvent());
   }
 
   /// Called when the time series values are updated
@@ -239,13 +230,12 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
   static GetDeviceInfo getCallbackFromDeviceName<Tb extends AbsTbServerReqManager>({
     required String deviceName,
   }) =>
-      () async => globalGetIt().get<Tb>().devicesService.getCustomerDeviceByName(
-            deviceName: deviceName,
-          );
+      () async =>
+          globalGetIt().get<Tb>().devicesService.getCustomerDeviceByName(deviceName: deviceName);
 
-  /// Called when the BLoC close method is called
+  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     final futures = <Future>[
       if (_timeSeriesSub != null) _timeSeriesSub!.cancel(),
       if (_attributesSub != null) _attributesSub!.cancel(),
@@ -255,6 +245,6 @@ mixin MixinTbTelemetriesUiBloc<Tb extends AbsTbServerReqManager,
 
     await Future.wait(futures);
 
-    await super.close();
+    await super.disposeLifeCycle();
   }
 }

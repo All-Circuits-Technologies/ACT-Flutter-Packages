@@ -82,9 +82,9 @@ mixin MixinActThemesBloc<M extends ActThemesManager, S extends MixinActThemesSta
 
   /// {@macro act_flutter_utility.BlocForMixin.close}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     await Future.wait(_themeSubscriptions.map((subscription) => subscription.cancel()));
 
-    return super.close();
+    return super.disposeLifeCycle();
   }
 }
