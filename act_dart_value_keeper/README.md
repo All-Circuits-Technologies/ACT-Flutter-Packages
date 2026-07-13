@@ -10,6 +10,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 - [Table of contents](#table-of-contents)
 - [Presentation](#presentation)
+- [Good to know](#good-to-know)
 
 ## Presentation
 
@@ -20,3 +21,14 @@ The main goal is to have a unified way to have an object to keep a value in the 
 
 Thanks to this package, we can have a value that is automatically updated based on a stream and
 which emits an event when the value is updated.
+
+## Good to know
+
+The base of value keeper is the `ValueKeeper` class. This class is based on a getter
+which can be null but not the setter.
+
+In old dart version, this will raise the following error: `The setter 'value' has no
+corresponding getter.`, but in dart 3.11, this is not the case anymore and it is possible to have a
+setter without a getter.
+
+Therefore, to use this package, you need to have a dart version superior to 3.11.1.

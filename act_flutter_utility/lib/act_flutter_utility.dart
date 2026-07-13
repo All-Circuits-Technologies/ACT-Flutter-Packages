@@ -6,6 +6,8 @@
 
 library;
 
+export 'src/blocs/async_init/async_init_events.dart';
+export 'src/blocs/async_init/mixin_async_init_bloc.dart';
 export 'src/blocs/bloc_event_for_mixin.dart';
 export 'src/blocs/bloc_for_mixin.dart';
 export 'src/blocs/bloc_state_for_mixin.dart';

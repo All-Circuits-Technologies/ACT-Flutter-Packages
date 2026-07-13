@@ -4,21 +4,13 @@
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 
-/// Emitted to initialise the request ui bloc
-class RequestContextualActionInitEvent extends BlocEventForMixin {
-  /// Class constructor
-  const RequestContextualActionInitEvent();
-}
-
 /// Emitted when the new [isOk] status has been detected
 class RequestContextualActionNewStateEvent extends BlocEventForMixin {
   /// The new [isOk] value
   final bool isOk;
 
   /// Class constructor
-  const RequestContextualActionNewStateEvent({
-    required this.isOk,
-  }) : super();
+  const RequestContextualActionNewStateEvent({required this.isOk}) : super();
 
   @override
   List<Object?> get props => [...super.props, isOk];
