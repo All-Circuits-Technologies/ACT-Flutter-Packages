@@ -2,12 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_foundation/src/errors/act_error.dart';
-
 /// Base class for all the ACT specific exceptions.
 ///
 /// An [ActException] represents a recoverable runtime condition (e.g. invalid data, a failed I/O
-/// operation, a missing configuration, etc.), as opposed to [ActError] which represents a
+/// operation, a missing configuration, etc.), as opposed to `ActError` which represents a
 /// programming error.
 abstract class ActException implements Exception {
   /// A human readable description of the exception
