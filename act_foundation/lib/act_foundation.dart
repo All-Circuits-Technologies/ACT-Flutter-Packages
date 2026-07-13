@@ -4,6 +4,10 @@
 
 library;
 
+export 'src/errors/act_error.dart';
+export 'src/errors/act_exception.dart';
+export 'src/errors/act_method_not_implemented_error.dart';
+export 'src/errors/act_missing_config_exception.dart';
 export 'src/errors/act_singleton_already_created_error.dart';
 export 'src/errors/act_singleton_not_created_error.dart';
 export 'src/errors/act_unsupported_type_error.dart';

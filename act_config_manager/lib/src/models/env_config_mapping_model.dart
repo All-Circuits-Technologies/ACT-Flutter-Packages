@@ -4,6 +4,7 @@
 
 import 'dart:convert';
 
+import 'package:act_config_manager/src/errors/act_config_mapping_format_exception.dart';
 import 'package:act_config_manager/src/types/env_type.dart';
 import 'package:equatable/equatable.dart';
 
@@ -47,8 +48,10 @@ class EnvConfigMappingModel extends Equatable {
     }
 
     if (value is! String) {
-      throw Exception("The value isn't a map, nor a string, the env config mapping model isn't "
-          "correctly formatted: ${jsonEncode(value)}");
+      throw ActConfigMappingFormatException(
+        "The value isn't a map, nor a string, the env config mapping model isn't "
+        "correctly formatted: ${jsonEncode(value)}",
+      );
     }
 
     return EnvConfigMappingModel(envKey: value, path: path);
@@ -65,15 +68,18 @@ class EnvConfigMappingModel extends Equatable {
     final name = value[_nameKey];
 
     if (format is! String || name is! String) {
-      throw Exception("The env config mapping model isn't correctly formatted, we expect to have "
-          "properties: $_formatKey and $_nameKey in it: ${jsonEncode(value)}");
+      throw ActConfigMappingFormatException(
+        "The env config mapping model isn't correctly formatted, we expect to have "
+        "properties: $_formatKey and $_nameKey in it: ${jsonEncode(value)}",
+      );
     }
 
     final envType = EnvType.parseFromString(format);
 
     if (envType == null) {
-      throw Exception(
-          "The format of the env config mapping model is unknown: ${jsonEncode(value)}");
+      throw ActConfigMappingFormatException(
+        "The format of the env config mapping model is unknown: ${jsonEncode(value)}",
+      );
     }
 
     return EnvConfigMappingModel(envKey: name, path: path, type: envType);

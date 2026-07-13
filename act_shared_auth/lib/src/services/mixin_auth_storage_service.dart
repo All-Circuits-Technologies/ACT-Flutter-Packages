@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 
 /// This mixin has to be used by third party package when implementing shared authentication
@@ -21,9 +22,7 @@ mixin MixinAuthStorageService {
   ///
   /// Return true if no problem occurred.
   /// {@endtemplate}
-  Future<bool> storeTokens({
-    required AuthTokens tokens,
-  });
+  Future<bool> storeTokens({required AuthTokens tokens});
 
   /// {@template act_shared_auth.MixinAuthStorageService.loadTokens}
   /// Load the tokens info in the user secure storage.
@@ -45,10 +44,7 @@ mixin MixinAuthStorageService {
   ///
   /// Return true if no problem occurred.
   /// {@endtemplate}
-  Future<bool> storeUserIds({
-    required String username,
-    required String password,
-  }) async =>
+  Future<bool> storeUserIds({required String username, required String password}) async =>
       _crashUnimplemented("storeUserIds");
 
   /// {@template act_shared_auth.MixinAuthStorageService.loadUserIds}
@@ -75,9 +71,6 @@ mixin MixinAuthStorageService {
   /// Service either misses this method implementation or it does not support it at all.
   /// If a service can support missing method but do not implement it yet, developer may want to
   /// implement it and return notSupportedYet error.
-  Never _crashUnimplemented(String method) {
-    final err = "$runtimeType service does not implement $method";
-    assert(false, err);
-    throw Exception(err);
-  }
+  Never _crashUnimplemented(String method) =>
+      ActMethodNotImplementedError.crash(caller: this, method: method);
 }
