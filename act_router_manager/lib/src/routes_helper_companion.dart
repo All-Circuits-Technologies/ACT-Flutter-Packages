@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_router_manager/src/abstract_routes_helper.dart';
+import 'package:act_router_manager/src/errors/act_routes_not_configured_error.dart';
 import 'package:act_router_manager/src/models/page_arguments.dart';
 import 'package:act_router_manager/src/observers/orientation_observer.dart';
 import 'package:act_router_manager/src/transitions/page_fade_transition.dart';
@@ -40,9 +41,7 @@ class RoutesHelperCompanion<T extends MixinRoute> {
   }
 
   /// Class constructor
-  RoutesHelperCompanion({
-    required this.helper,
-  }) {
+  RoutesHelperCompanion({required this.helper}) {
     helper.onObserver(OrientationObserver<T>(helperCompanion: this));
   }
 
@@ -125,10 +124,7 @@ class RoutesHelperCompanion<T extends MixinRoute> {
   /// Create the routes lists with tree structure
   List<GoRoute> _createRoutesList() {
     if (helper.createPageCallback.length != helper.values.length) {
-      final err = "Some routes haven't been set with the 'on' method; therefore, some "
-          "pages won't be displayed correctly";
-      assert(false, err);
-      throw Exception(err);
+      ActRoutesNotConfiguredError.crash();
     }
 
     final routesList = <GoRoute>[];

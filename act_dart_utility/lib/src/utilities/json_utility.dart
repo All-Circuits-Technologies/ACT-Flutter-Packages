@@ -126,7 +126,7 @@ sealed class JsonUtility {
     castValueFunc: (toCast) {
       final finalList = <T>[];
       for (final elem in toCast) {
-        final result = _castValueIfNeeded(
+        final result = _castValueIfNeeded<T, Y>(
           value: elem,
           castValueFunc: castElemValueFunc,
           logger: logger,
@@ -286,11 +286,11 @@ sealed class JsonUtility {
   static Map<String, dynamic>? parseJsonBodyToObj(
     String? strJson, {
     required MixinActLogger logger,
-  }) => _parseJsonBody(strJson, logger: logger);
+  }) => _parseJsonBody<Map<String, dynamic>>(strJson, logger: logger);
 
   /// Parse the response body to a Json Array
   static List<dynamic>? parseJsonBodyToArray(String? strJson, {required MixinActLogger logger}) =>
-      _parseJsonBody(strJson, logger: logger);
+      _parseJsonBody<List<dynamic>>(strJson, logger: logger);
 
   /// Parse the response body to a Json Array
   static List<Map<String, dynamic>>? parseJsonArrayBodyToArray(

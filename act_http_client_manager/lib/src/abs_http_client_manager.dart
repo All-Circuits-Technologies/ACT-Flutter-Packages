@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_client_manager/src/abs_http_client_login.dart';
+import 'package:act_http_client_manager/src/errors/act_server_login_init_exception.dart';
 import 'package:act_http_client_manager/src/models/request_param.dart';
 import 'package:act_http_client_manager/src/models/request_response.dart';
 import 'package:act_http_client_manager/src/models/requester_config.dart';
@@ -105,7 +106,9 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
     );
 
     if (!(await _absServerLogin!.initLogin())) {
-      throw Exception("An error occurred when tried to init the abs server login");
+      throw ActServerLoginInitException(
+        "An error occurred when tried to init the abs server login",
+      );
     }
   }
 
@@ -154,8 +157,10 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
           await localAbsServerLogin.clearLogins();
 
           if (loginResult == RequestStatus.loginError) {
-            _logsHelper.e("There is a problem when tried to log-in, may be the logins aren't "
-                "right?");
+            _logsHelper.e(
+              "There is a problem when tried to log-in, may be the logins aren't "
+              "right?",
+            );
             return RequestResponse(status: globalResult);
           }
 
@@ -164,12 +169,14 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
       }
 
       if (loginResult == RequestStatus.success) {
-        (globalResult, response, castedBody) =
-            (await _serverRequester.executeRequestWithoutAuth<ParsedRespBody, RespBody>(
+        (
+          globalResult,
+          response,
+          castedBody,
+        ) = (await _serverRequester.executeRequestWithoutAuth<ParsedRespBody, RespBody>(
           requestParam: requestParam,
           parseRespBody: parseRespBody,
-        ))
-                .toPatterns();
+        )).toPatterns();
 
         if (localAbsServerLogin != null && globalResult == RequestStatus.loginError) {
           // We receive a login error, our logins aren't correct, we clear them
@@ -200,12 +207,12 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
     bool ifExistUseAuth = true,
     int retryRequestIfErrorNb = 0,
     Duration? retryTimeout,
-  }) async =>
-      executeRequest<RespBody, RespBody>(
-          requestParam: requestParam,
-          ifExistUseAuth: ifExistUseAuth,
-          retryRequestIfErrorNb: retryRequestIfErrorNb,
-          retryTimeout: retryTimeout);
+  }) async => executeRequest<RespBody, RespBody>(
+    requestParam: requestParam,
+    ifExistUseAuth: ifExistUseAuth,
+    retryRequestIfErrorNb: retryRequestIfErrorNb,
+    retryTimeout: retryTimeout,
+  );
 
   /// {@macro act_http_client_manager.AbsServerReqManager.executeRequest}
   ///
@@ -217,16 +224,13 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
     int retryRequestIfErrorNb = 0,
     Duration? retryTimeout,
     required RespBody? Function(Map<String, dynamic> body) parseRespBody,
-  }) async =>
-      executeRequest<RespBody, Map<String, dynamic>>(
-        requestParam: requestParam.copyWith(
-          expectedMimeType: HttpMimeTypes.json,
-        ),
-        ifExistUseAuth: ifExistUseAuth,
-        retryRequestIfErrorNb: retryRequestIfErrorNb,
-        retryTimeout: retryTimeout,
-        parseRespBody: parseRespBody,
-      );
+  }) async => executeRequest<RespBody, Map<String, dynamic>>(
+    requestParam: requestParam.copyWith(expectedMimeType: HttpMimeTypes.json),
+    ifExistUseAuth: ifExistUseAuth,
+    retryRequestIfErrorNb: retryRequestIfErrorNb,
+    retryTimeout: retryTimeout,
+    parseRespBody: parseRespBody,
+  );
 
   /// {@macro act_http_client_manager.AbsServerReqManager.executeRequest}
   ///
@@ -238,16 +242,13 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
     int retryRequestIfErrorNb = 0,
     Duration? retryTimeout,
     required RespBody? Function(List<dynamic> body) parseRespBody,
-  }) async =>
-      executeRequest<RespBody, List<dynamic>>(
-        requestParam: requestParam.copyWith(
-          expectedMimeType: HttpMimeTypes.json,
-        ),
-        ifExistUseAuth: ifExistUseAuth,
-        retryRequestIfErrorNb: retryRequestIfErrorNb,
-        retryTimeout: retryTimeout,
-        parseRespBody: parseRespBody,
-      );
+  }) async => executeRequest<RespBody, List<dynamic>>(
+    requestParam: requestParam.copyWith(expectedMimeType: HttpMimeTypes.json),
+    ifExistUseAuth: ifExistUseAuth,
+    retryRequestIfErrorNb: retryRequestIfErrorNb,
+    retryTimeout: retryTimeout,
+    parseRespBody: parseRespBody,
+  );
 
   /// {@macro act_http_client_manager.AbsServerReqManager.executeRequest}
   ///
@@ -259,19 +260,14 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
     int retryRequestIfErrorNb = 0,
     Duration? retryTimeout,
     required RespBody? Function(Map<String, dynamic> body) parseRespBody,
-  }) async =>
-      executeRequest<List<RespBody>, List<dynamic>>(
-        requestParam: requestParam.copyWith(
-          expectedMimeType: HttpMimeTypes.json,
-        ),
-        ifExistUseAuth: ifExistUseAuth,
-        retryRequestIfErrorNb: retryRequestIfErrorNb,
-        retryTimeout: retryTimeout,
-        parseRespBody: (bodyList) => _parseJsonObjectArray(
-          jsonArray: bodyList,
-          parseRespBody: parseRespBody,
-        ),
-      );
+  }) async => executeRequest<List<RespBody>, List<dynamic>>(
+    requestParam: requestParam.copyWith(expectedMimeType: HttpMimeTypes.json),
+    ifExistUseAuth: ifExistUseAuth,
+    retryRequestIfErrorNb: retryRequestIfErrorNb,
+    retryTimeout: retryTimeout,
+    parseRespBody: (bodyList) =>
+        _parseJsonObjectArray(jsonArray: bodyList, parseRespBody: parseRespBody),
+  );
 
   /// {@template act_http_client_manager.AbsServerReqManager.getRequesterConfig}
   /// The method returns the requester configuration to apply

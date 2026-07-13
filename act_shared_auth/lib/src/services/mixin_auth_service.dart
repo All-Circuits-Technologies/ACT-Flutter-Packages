@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:flutter/foundation.dart';
 
@@ -61,8 +62,7 @@ mixin MixinAuthService {
     required String accountId,
     required String password,
     String? email,
-  }) =>
-      crashUnimplemented("signUp");
+  }) => crashUnimplemented("signUp");
 
   /// {@template act_shared_auth.MixinAuthService.confirmSignUp}
   /// User self-registration second half
@@ -76,10 +76,7 @@ mixin MixinAuthService {
   /// You are advised to read method implementation documentation for service-specific details.
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthSignUpResult> confirmSignUp({
-    required String accountId,
-    required String code,
-  }) =>
+  Future<AuthSignUpResult> confirmSignUp({required String accountId, required String code}) =>
       crashUnimplemented("confirmSignUp");
 
   /// {@template act_shared_auth.MixinAuthService.resendSignUpCode}
@@ -93,9 +90,7 @@ mixin MixinAuthService {
   /// You are advised to read method implementation documentation for service-specific details.
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthSignUpResult> resendSignUpCode({
-    required String accountId,
-  }) =>
+  Future<AuthSignUpResult> resendSignUpCode({required String accountId}) =>
       crashUnimplemented("resendSignUpCode");
 
   /// {@template act_shared_auth.MixinAuthService.signInUser}
@@ -104,10 +99,7 @@ mixin MixinAuthService {
   /// [username] may also be an user email or anything else accepted as username by your third party
   /// service
   /// {@endtemplate}
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  });
+  Future<AuthSignInResult> signInUser({required String username, required String password});
 
   /// {@template act_shared_auth.MixinAuthService.confirmSignIn}
   /// This method allows to confirm the sign in.
@@ -116,9 +108,7 @@ mixin MixinAuthService {
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthSignInResult> confirmSignIn({
-    required String confirmationValue,
-  }) async =>
+  Future<AuthSignInResult> confirmSignIn({required String confirmationValue}) async =>
       crashUnimplemented("confirmSignIn");
 
   /// {@template act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
@@ -175,9 +165,7 @@ mixin MixinAuthService {
   ///
   /// DO NOT USE THIS METHOD IF THE THIRD PARTY PACKAGE SERVICE DOESN'T OVERRIDE IT
   /// {@endtemplate}
-  Future<AuthResetPwdResult> resetPassword({
-    required String username,
-  }) async =>
+  Future<AuthResetPwdResult> resetPassword({required String username}) async =>
       crashUnimplemented("resetPassword");
 
   /// {@template act_shared_auth.MixinAuthService.confirmResetPassword}
@@ -192,8 +180,7 @@ mixin MixinAuthService {
     required String username,
     required String newPassword,
     required String confirmationCode,
-  }) async =>
-      crashUnimplemented("confirmResetPassword");
+  }) async => crashUnimplemented("confirmResetPassword");
 
   /// {@template act_shared_auth.MixinAuthService.updatePassword}
   /// Allows to update the user password.
@@ -205,8 +192,7 @@ mixin MixinAuthService {
   Future<AuthResetPwdResult> updatePassword({
     required String oldPassword,
     required String newPassword,
-  }) async =>
-      crashUnimplemented("updatePassword");
+  }) async => crashUnimplemented("updatePassword");
 
   /// {@template act_shared_auth.MixinAuthService.getEmailAddress}
   /// Get email address of currently logged user
@@ -250,9 +236,6 @@ mixin MixinAuthService {
   /// If a service can support missing method but do not implement it yet, developer may want to
   /// implement it and return notSupportedYet error (which exists in all auth statuses).
   @protected
-  Never crashUnimplemented(String method) {
-    final err = "$runtimeType service does not implement $method";
-    assert(false, err);
-    throw Exception(err);
-  }
+  Never crashUnimplemented(String method) =>
+      ActMethodNotImplementedError.crash(caller: this, method: method);
 }

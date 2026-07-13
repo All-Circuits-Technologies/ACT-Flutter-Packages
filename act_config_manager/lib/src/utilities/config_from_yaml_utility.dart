@@ -3,6 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_config_manager/src/errors/act_config_load_exception.dart';
+import 'package:act_config_manager/src/errors/act_config_mapping_format_exception.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
 
@@ -45,13 +47,17 @@ sealed class ConfigFromYamlUtility {
   /// If the file is not found the method returns an empty map, if a problem occurred when loading
   /// the file (or if it's not correctly built), the method will raise an exception.
   static Future<Map<String, dynamic>> _parseFromConfigFile(
-      String configPath, Environment toLoad) async {
+    String configPath,
+    Environment toLoad,
+  ) async {
     final configFilePath = _getConfigFilePath(configPath, toLoad);
 
     final result = await YamlFromAssets.loadYaml(configFilePath, cache: false);
 
     if (result.status == AssetsBundleResult.genericError) {
-      throw Exception("An error occurred when tried to load the yaml config file: $configFilePath");
+      throw ActConfigLoadException(
+        "An error occurred when tried to load the yaml config file: $configFilePath",
+      );
     }
 
     final content = result.data;
@@ -60,8 +66,10 @@ sealed class ConfigFromYamlUtility {
     }
 
     if (content is! Map<String, dynamic>) {
-      throw Exception("An error occurred when tried to load the yaml config file: "
-          "$configFilePath; the content is not a map.");
+      throw ActConfigMappingFormatException(
+        "An error occurred when tried to load the yaml config "
+        "file: $configFilePath; the content is not a map.",
+      );
     }
 
     return content;

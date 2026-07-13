@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_remote_storage_manager/src/errors/act_storage_download_url_exception.dart';
 import 'package:act_remote_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_remote_storage_manager/src/types/storage_request_result.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
@@ -15,27 +16,20 @@ class StorageHttpFileService extends HttpFileService {
   final MixinStorageService _storageService;
 
   /// Constructor for [StorageHttpFileService].
-  StorageHttpFileService({
-    required MixinStorageService storageService,
-  })  : _storageService = storageService,
-        super();
+  StorageHttpFileService({required MixinStorageService storageService})
+    : _storageService = storageService,
+      super();
 
   /// Download a file from the given [url] and return a [FileServiceResponse].
   @override
-  Future<FileServiceResponse> get(
-    String url, {
-    Map<String, String>? headers,
-  }) async {
+  Future<FileServiceResponse> get(String url, {Map<String, String>? headers}) async {
     /// Get the download url
     final urlResult = await _storageService.getDownloadUrl(url);
 
     if (urlResult.result != StorageRequestResult.success) {
-      throw Exception('Error while getting download url for $url: $urlResult');
+      throw ActStorageDownloadUrlException('Error while getting download url for $url: $urlResult');
     }
 
-    return super.get(
-      urlResult.downloadUrl!,
-      headers: _storageService.headers,
-    );
+    return super.get(urlResult.downloadUrl!, headers: _storageService.headers);
   }
 }

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
@@ -76,8 +77,9 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
     final enableTls = confManager.tbEnableTls.load();
 
     if (hostname == null) {
-      _logsHelper.e("The Thingsboard hostname hasn't been given");
-      throw Exception("The Thingsboard hostname hasn't been given");
+      const configName = "Thingsboard hostname";
+      _logsHelper.e("The configuration value: $configName, is missing or hasn't been given");
+      throw ActMissingConfigException(configName);
     }
 
     final scheme = enableTls ? UriUtility.httpsScheme : UriUtility.httpScheme;

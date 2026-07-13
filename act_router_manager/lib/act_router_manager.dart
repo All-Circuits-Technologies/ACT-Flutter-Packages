@@ -9,6 +9,7 @@ export 'package:go_router/go_router.dart' show GoRouterState;
 export 'src/abstract_router_manager.dart';
 export 'src/abstract_routes_helper.dart';
 export 'src/errors/act_not_right_route_extra_error.dart';
+export 'src/errors/act_routes_not_configured_error.dart';
 export 'src/models/route_page_details.dart';
 export 'src/services/mixin_redirect_service.dart';
 export 'src/transitions/route_transition.dart';
