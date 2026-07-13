@@ -19,7 +19,7 @@ mixin MixinAuthStatusCallbackOnService<AuthManager extends AbsAuthManager>
     await initUpdate();
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await disposeUpdate();

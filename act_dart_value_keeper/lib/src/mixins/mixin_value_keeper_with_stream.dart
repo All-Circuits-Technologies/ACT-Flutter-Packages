@@ -5,7 +5,7 @@
 import 'dart:async' show StreamController;
 
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// {@template act_dart_value_keeper.MixinValueKeeperWithStream}
 /// Adds a stream to a ValueKeeper to notify the listeners when the value changes
@@ -41,7 +41,7 @@ mixin MixinValueKeeperWithStream<S extends T, T>
     _valueStreamController.add(newValue);
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _valueStreamController.close();

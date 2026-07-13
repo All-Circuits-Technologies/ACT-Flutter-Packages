@@ -328,7 +328,7 @@ class WebsocketClientManager extends AbsWithLifeCycle {
     _autoRecoTimer = null;
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_managerConfig.msgParsers.map((parser) => parser.disposeLifeCycle()));

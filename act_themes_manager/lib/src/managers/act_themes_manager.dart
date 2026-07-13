@@ -201,7 +201,7 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
     return isLightMode ? Brightness.light : Brightness.dark;
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _currentTheme.disposeLifeCycle();

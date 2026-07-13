@@ -31,6 +31,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  act_foundation:
+    path: ../act_foundation
+
 # Dependencies used by developer
 dev_dependencies:
   # API to test Flutter applications

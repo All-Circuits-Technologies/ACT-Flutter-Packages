@@ -127,7 +127,7 @@ class RequestContextualActionBloc<ViewContext extends AbstractViewContext>
   Future<void> _manageCallWhenEnded(ViewDisplayStatus status) =>
       _whenEndedMutex.protect(() async => _manageCallWhenEndedWithoutMutex(status));
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _isOkSub.cancel();

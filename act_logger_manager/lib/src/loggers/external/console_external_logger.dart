@@ -49,28 +49,22 @@ class ConsoleExternalLogger
   ///
   /// Because we get the log level from the config, we set the minimum log level to [LogsLevel.off]
   /// to avoid logging messages before getting the log level from the config.
-  factory ConsoleExternalLogger.fromConfigGetter(
-          {required MixinCslLoggerConfig Function() configGetter}) =>
-      ConsoleExternalLogger._(configGetter: configGetter, minLevel: LogsLevel.off);
+  factory ConsoleExternalLogger.fromConfigGetter({
+    required MixinCslLoggerConfig Function() configGetter,
+  }) => ConsoleExternalLogger._(configGetter: configGetter, minLevel: LogsLevel.off);
 
   /// Factory constructor to create a ConsoleExternalLogger with a minimum log level.
   factory ConsoleExternalLogger.withMinLevel({LogsLevel minLevel = LogsLevel.all}) =>
-      ConsoleExternalLogger._(
-        minLevel: minLevel,
-        configGetter: null,
-      );
+      ConsoleExternalLogger._(minLevel: minLevel, configGetter: null);
 
   /// Class constructor
-  ConsoleExternalLogger._(
-      {required LogsLevel minLevel, required MixinCslLoggerConfig Function()? configGetter})
-      : _logFilter = DefaultLogFilter(minLevel: minLevel),
-        _logPrinter = DefaultLogPrinter(),
-        _configGetter = configGetter {
-    _logger = Logger(
-      filter: _logFilter,
-      printer: _logPrinter,
-      output: ConsoleOutput(),
-    );
+  ConsoleExternalLogger._({
+    required LogsLevel minLevel,
+    required MixinCslLoggerConfig Function()? configGetter,
+  }) : _logFilter = DefaultLogFilter(minLevel: minLevel),
+       _logPrinter = DefaultLogPrinter(),
+       _configGetter = configGetter {
+    _logger = Logger(filter: _logFilter, printer: _logPrinter, output: ConsoleOutput());
   }
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
@@ -88,20 +82,25 @@ class ConsoleExternalLogger
 
   /// {@macro act_logger_manager.MixinExternalLogger.log}
   @override
-  void log(
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      {required dynamic message,
-      required LogsLevel level,
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      dynamic error,
-      StackTrace? stackTrace,
-      List<String>? categories,
-      DateTime? time}) {
+  void log({
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    required dynamic message,
+    required LogsLevel level,
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    dynamic error,
+    StackTrace? stackTrace,
+    List<String>? categories,
+    DateTime? time,
+  }) {
     _logger.log(
-        level.toLoggerLevel, LogMessage(message: message, categories: categories ?? const []),
-        error: error, stackTrace: stackTrace, time: time);
+      level.toLoggerLevel,
+      LogMessage(message: message, categories: categories ?? const []),
+      error: error,
+      stackTrace: stackTrace,
+      time: time,
+    );
   }
 
   /// {@macro act_logger_manager.MixinExternalLogger.wouldBeLogged}
@@ -109,7 +108,7 @@ class ConsoleExternalLogger
   bool wouldBeLogged({required LogsLevel level, List<String>? categories}) =>
       _logFilter.shouldLog(LogEvent(level.toLoggerLevel, null));
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _logger.close();

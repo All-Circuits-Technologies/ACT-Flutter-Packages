@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 

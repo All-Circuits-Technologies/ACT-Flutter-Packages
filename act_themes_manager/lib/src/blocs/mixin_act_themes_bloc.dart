@@ -80,7 +80,7 @@ mixin MixinActThemesBloc<M extends ActThemesManager, S extends MixinActThemesSta
     add(BrightnessUpdatedEvent(brightness: brightness));
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_themeSubscriptions.map((subscription) => subscription.cancel()));
