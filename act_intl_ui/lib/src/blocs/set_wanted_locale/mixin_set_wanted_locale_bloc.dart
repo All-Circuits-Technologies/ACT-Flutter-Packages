@@ -52,10 +52,10 @@ mixin MixinSetWantedLocaleBloc<S extends MixinSetWantedLocaleState<S>> on BlocFo
   void _onCurrentLocaleUpdated(Locale currentLocale) =>
       add(CurrentLocaleUpdatedEvent(currentLocale: currentLocale));
 
-  /// Bloc close method
+  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
-  Future<void> close() async {
+  Future<void> disposeLifeCycle() async {
     await Future.wait(_mixinSetWantedSubs.map((sub) => sub.cancel()));
-    return super.close();
+    return super.disposeLifeCycle();
   }
 }

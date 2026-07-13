@@ -4,11 +4,13 @@
 
 import 'package:act_flutter_utility/src/blocs/bloc_event_for_mixin.dart';
 import 'package:act_flutter_utility/src/blocs/bloc_state_for_mixin.dart';
+import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 /// This bloc is useful when you want to create a bloc with mixin.
-abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEventForMixin, S> {
+abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEventForMixin, S>
+    with MixinWithLifeCycleDispose {
   /// Constructor for the bloc.
   BlocForMixin(super.initialState) {
     registerMixinEvents();
@@ -27,10 +29,13 @@ abstract class BlocForMixin<S extends BlocStateForMixin<S>> extends Bloc<BlocEve
   /// This is the close method of the bloc.
   /// {@endtemplate}
   ///
-  /// We override the close method to call the disposeLifeCycle method of the state, which can be
-  /// used to dispose resources used by the state.
+  /// Do not override this method in your bloc, but prefer to override the [disposeLifeCycle]
+  /// method of the bloc.
   @override
   Future<void> close() async {
+    await disposeLifeCycle();
+    // We keep the state disposeLifeCycle call here to allow the bloc to dispose its life cycle with
+    // a valid state.
     await state.disposeLifeCycle();
     return super.close();
   }
