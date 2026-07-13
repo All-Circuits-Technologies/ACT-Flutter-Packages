@@ -5,6 +5,7 @@
 library;
 
 export 'src/abs_server_storage_manager.dart';
+export 'src/errors/act_storage_download_url_exception.dart';
 export 'src/mixins/mixin_storage_config.dart';
 export 'src/models/cache_storage_config.dart';
 export 'src/models/storage_file.dart';

@@ -42,6 +42,10 @@ dependencies:
   act_dart_utility:
     path: ../act_dart_utility
 
+  # Base errors/exceptions hierarchy
+  act_foundation:
+    path: ../act_foundation
+
   # Global manager
   act_global_manager:
     path: ../act_global_manager

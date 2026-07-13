@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_config_manager/src/errors/act_config_load_exception.dart';
+import 'package:act_config_manager/src/errors/act_config_mapping_format_exception.dart';
 import 'package:act_config_manager/src/models/env_config_mapping_model.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
@@ -19,7 +21,9 @@ sealed class EnvConfigMappingUtility {
     final result = await YamlFromAssets.loadYaml(path, cache: false);
 
     if (result.status == AssetsBundleResult.genericError) {
-      throw Exception("An error occurred when tried to load the environment config mapping file");
+      throw ActConfigLoadException(
+        "An error occurred when tried to load the environment config mapping file",
+      );
     }
 
     final content = result.data;
@@ -44,7 +48,9 @@ sealed class EnvConfigMappingUtility {
     List<String>? path,
   }) {
     if (value is List<dynamic>) {
-      throw Exception("The env config mapping yaml or json file can't contain array or list");
+      throw ActConfigMappingFormatException(
+        "The env config mapping yaml or json file can't contain array or list",
+      );
     }
 
     if (value is Map<String, dynamic>) {
@@ -52,8 +58,10 @@ sealed class EnvConfigMappingUtility {
     }
 
     if (value is! String) {
-      throw Exception("The env config mapping yaml or json isn't well formatted, the value has to "
-          "be a map or a string");
+      throw ActConfigMappingFormatException(
+        "The env config mapping yaml or json isn't well formatted, the value has to "
+        "be a map or a string",
+      );
     }
 
     toFill.add(EnvConfigMappingModel.fromJson(path!, value));

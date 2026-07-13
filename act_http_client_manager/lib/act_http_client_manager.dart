@@ -9,6 +9,7 @@ export 'package:http/http.dart' show MediaType, MultipartFile, Response;
 
 export 'src/abs_http_client_login.dart';
 export 'src/abs_http_client_manager.dart';
+export 'src/errors/act_server_login_init_exception.dart';
 export 'src/loaders/abs_element_loader.dart';
 export 'src/loaders/element_loader.dart';
 export 'src/loaders/element_loader_config.dart';
