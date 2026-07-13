@@ -42,6 +42,9 @@ class ActThemesBuilder<C extends MixinThemesConfig, P extends MixinThemesPropert
 /// theme.
 /// The default light mode is retrieved from the system default value.
 class ActThemesManager extends AbsWithLifeCycleAndUi {
+  /// The log category of the manager
+  static const String _logCategory = "themes";
+
   /// This function is used to get the properties manager
   final MixinThemesProperties Function() _propertiesGetter;
 
@@ -93,7 +96,7 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    _logsHelper = LogsHelper(category: "themes");
+    _logsHelper = LogsHelper(category: _logCategory);
 
     final defaultTheme = await _getCurrentTheme();
     _currentTheme = ValueKeeperWithStream(value: defaultTheme);

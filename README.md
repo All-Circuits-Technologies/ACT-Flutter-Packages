@@ -75,6 +75,7 @@ To install it globally, you have to call:
 | [act_intl_ui](act_intl_ui/)                                               | This package contains graphical helpers linked to translations.                                                          |         |
 | [act_jwt_utilities](act_jwt_utilities/)                                   | Contains useful classes to manage JWT in mobile app                                                                      |         |
 | [act_launcher_icon](act_launcher_icon/)                                   | Useful package to generate launcher icons for the apps                                                                   |         |
+| [act_licenses_manager](act_licenses_manager/)                             | This package manages the licenses of the app and its dependencies.                                                       |         |
 | [act_life_cycle](act_life_cycle/)                                         | This package contains a life cycle pattern implementation to manage the life cycle of classes and their dependencies.    |         |
 | [act_local_storage_manager](act_local_storage_manager/)                   | This package contains two managers to store properties and secrets                                                       |         |
 | [act_location_manager](act_location_manager/)                             | This package is useful to get location from phones                                                                       |         |

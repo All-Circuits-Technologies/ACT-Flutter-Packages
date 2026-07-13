@@ -1,0 +1,41 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_licenses_manager
+description: This package manages the licenses of the app and its dependencies.
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.7
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_foundation:
+    path: ../act_foundation
+
+  act_global_manager:
+    path: ../act_global_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
