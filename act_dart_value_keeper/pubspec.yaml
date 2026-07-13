@@ -15,8 +15,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  act_life_cycle:
-    path: ../act_life_cycle
+  act_foundation:
+    path: ../act_foundation
 
 dev_dependencies:
   flutter_test:

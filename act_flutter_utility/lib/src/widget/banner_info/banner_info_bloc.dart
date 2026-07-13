@@ -51,7 +51,7 @@ class BannerInfoBloc extends BlocForMixin<BannerInfoState> {
     }
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _internetSub.cancel();

@@ -251,7 +251,7 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
     _wantedLocale = localeFound;
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait([_currentLocaleCtrl.close(), _wantedLocaleCtrl.close()]);

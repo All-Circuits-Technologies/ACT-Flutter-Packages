@@ -108,7 +108,7 @@ abstract class AbsWebsocketApiService<ChService extends AbsWebsocketChannelServi
     _channelServices.remove(clientUuid);
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_channelServices.values.map((service) => service.disposeLifeCycle()));

@@ -47,14 +47,14 @@ dependencies:
   # Tells which amount a widget is currently visible
   visibility_detector: ^0.4.0+2
 
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_config_manager:
     path: ../act_config_manager
 
   act_dart_utility:
     path: ../act_dart_utility
+
+  act_foundation:
+    path: ../act_foundation
 
   # Default global manager
   act_global_manager:
@@ -63,6 +63,9 @@ dependencies:
   # Help to know the current internet state on the phone (if we can join internet, or not)
   act_internet_connectivity_manager:
     path: ../act_internet_connectivity_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
 
 # Dependencies used by developer
 dev_dependencies:

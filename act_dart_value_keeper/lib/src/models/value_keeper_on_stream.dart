@@ -6,7 +6,7 @@ import 'dart:async' show FutureOr, unawaited;
 
 import 'package:act_dart_value_keeper/src/mixins/mixin_value_keeper_on_stream_update.dart';
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// {@macro act_dart_value_keeper.ValueTypeIsEqualToSetterValue}
 ///
@@ -14,7 +14,7 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperOnStream<T, Listened> = BaseValueKeeperOnStream<T, T, Listened>;
 
 /// {@macro act_dart_value_keeper.ValueIsNullableButNotSetter}
@@ -23,14 +23,14 @@ typedef ValueKeeperOnStream<T, Listened> = BaseValueKeeperOnStream<T, T, Listene
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperOnStreamWithNullInit<T, Listened> = BaseValueKeeperOnStream<T, T?, Listened>;
 
 /// {@macro act_dart_value_keeper.ValueKeeper}
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 ///
 /// {@macro act_dart_value_keeper.SMustBeCastableToT}
 class BaseValueKeeperOnStream<S extends T, T, Listened> extends BaseValueKeeper<S, T>

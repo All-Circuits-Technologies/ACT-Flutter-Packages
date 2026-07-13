@@ -48,21 +48,16 @@ abstract class AbsFirebaseManager extends AbsWithLifeCycle {
       minLevel: config.loggerEnabled ? null : LogsLevel.off,
     );
 
-    await Firebase.initializeApp(
-      name: config.firebaseAppName,
-      options: config.options,
-    );
+    await Firebase.initializeApp(name: config.firebaseAppName, options: config.options);
 
     _firebaseServices = config.firebaseServices;
 
     for (final service in _firebaseServices) {
-      await service.initLifeCycle(
-        parentLogsHelper: _logsHelper,
-      );
+      await service.initLifeCycle(parentLogsHelper: _logsHelper);
     }
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     for (final service in _firebaseServices) {

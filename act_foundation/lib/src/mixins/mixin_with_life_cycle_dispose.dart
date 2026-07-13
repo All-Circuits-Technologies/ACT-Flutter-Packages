@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 /// This mixin is used to add a default dispose method to classes that do not need any
 /// initialization.
 mixin MixinWithLifeCycleDispose {
-  /// {@template act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@template act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   /// Default dispose for the class
   /// {@endtemplate}
   ///
