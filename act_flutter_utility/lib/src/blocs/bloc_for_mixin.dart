@@ -4,7 +4,7 @@
 
 import 'package:act_flutter_utility/src/blocs/bloc_event_for_mixin.dart';
 import 'package:act_flutter_utility/src/blocs/bloc_state_for_mixin.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

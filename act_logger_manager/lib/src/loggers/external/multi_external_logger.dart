@@ -24,8 +24,8 @@ class MultiExternalLogger with MixinWithLifeCycleDispose, MixinWithLifeCycle, Mi
   MultiExternalLogger({
     this.minLevel = LogsLevel.all,
     Map<Enum, MixinExternalLogger>? externalLoggers,
-  })  : _isInitialized = false,
-        _externalLoggers = Map<Enum, MixinExternalLogger>.from(externalLoggers ?? {});
+  }) : _isInitialized = false,
+       _externalLoggers = Map<Enum, MixinExternalLogger>.from(externalLoggers ?? {});
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
@@ -79,18 +79,19 @@ class MultiExternalLogger with MixinWithLifeCycleDispose, MixinWithLifeCycle, Mi
 
   /// {@macro act_logger_manager.MixinExternalLogger.log}
   @override
-  void log(
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      {required dynamic message,
-      required LogsLevel level,
+  void log({
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    required dynamic message,
+    required LogsLevel level,
 
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      dynamic error,
-      StackTrace? stackTrace,
-      List<String>? categories,
-      DateTime? time}) {
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    dynamic error,
+    StackTrace? stackTrace,
+    List<String>? categories,
+    DateTime? time,
+  }) {
     if (!_testIfItWouldBeLogged(level)) {
       return;
     }
@@ -114,15 +115,16 @@ class MultiExternalLogger with MixinWithLifeCycleDispose, MixinWithLifeCycle, Mi
       return false;
     }
 
-    return _externalLoggers.entries.any((externalLogger) =>
-        externalLogger.value.wouldBeLogged(level: level, categories: categories));
+    return _externalLoggers.entries.any(
+      (externalLogger) => externalLogger.value.wouldBeLogged(level: level, categories: categories),
+    );
   }
 
   /// Test if a message with a given level would be logged by the multi external logger, without
   /// considering the sub external loggers.
   bool _testIfItWouldBeLogged(LogsLevel level) => level.index >= minLevel.index;
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await clearExternalLoggers();

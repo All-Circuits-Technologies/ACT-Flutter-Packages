@@ -67,7 +67,7 @@ class HttpLoggingManager extends AbsWithLifeCycle {
     _logStreamController.add(tmpLog);
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _logStreamController.close();

@@ -43,25 +43,21 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycleAn
   final List<StreamObserver> _observers;
 
   /// Class constructor
-  AbstractConsentManager()
-      : _services = {},
-        _observers = [],
-        _subscriptions = [];
+  AbstractConsentManager() : _services = {}, _observers = [], _subscriptions = [];
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _consentManagerLogCategory,
-    );
+    _logsHelper = LogsHelper(category: _consentManagerLogCategory);
     final services = await getConsentServices(_logsHelper);
     _services.addAll(services);
 
     await Future.wait(_services.values.map((service) => service.initLifeCycle()));
 
     _subscriptions.add(
-        globalGetIt().get<LocalesManager>().currentLocaleStream.listen(_onCurrentLocaleUpdate));
+      globalGetIt().get<LocalesManager>().currentLocaleStream.listen(_onCurrentLocaleUpdate),
+    );
   }
 
   /// {@macro act_life_cycle.MixinUiLifeCycle.initAfterView}
@@ -77,9 +73,7 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycleAn
   /// the service as value
   /// {@endtemplate}
   @protected
-  Future<Map<E, AbstractConsentService>> getConsentServices(
-    LogsHelper logsHelper,
-  );
+  Future<Map<E, AbstractConsentService>> getConsentServices(LogsHelper logsHelper);
 
   /// This method must be implemented by the derived class to return a list of all the
   /// [StreamObserver] instances required by the service to determine the state of the consent.
@@ -97,7 +91,7 @@ abstract class AbstractConsentManager<E extends Enum> extends AbsWithLifeCycleAn
     await Future.wait(_services.values.map((service) => service.resetLocalConsentInfo()));
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_services.values.map((service) => service.disposeLifeCycle()));

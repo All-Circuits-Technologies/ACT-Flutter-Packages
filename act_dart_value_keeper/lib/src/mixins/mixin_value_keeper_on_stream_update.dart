@@ -5,7 +5,7 @@
 import 'dart:async' show FutureOr, StreamSubscription;
 
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:flutter/foundation.dart';
 
 /// {@template act_dart_value_keeper.MixinValueKeeperOnStreamUpdate}
@@ -59,7 +59,7 @@ mixin MixinValueKeeperOnStreamUpdate<S extends T, T, Listened>
     value = parsedValue;
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await _listenedStreamSubscription?.cancel();

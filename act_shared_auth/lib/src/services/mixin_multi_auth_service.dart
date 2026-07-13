@@ -204,9 +204,7 @@ mixin MixinMultiAuthService<P extends Enum> on MixinAuthService, AbsWithLifeCycl
 
   /// {@macro act_shared_auth.MixinAuthService.confirmSignIn}
   @override
-  Future<AuthSignInResult> confirmSignIn({
-    required String confirmationValue,
-  }) async {
+  Future<AuthSignInResult> confirmSignIn({required String confirmationValue}) async {
     final provider = _getCurrentProvider();
     if (provider == null) {
       logsHelper.w("No provider has been set, we can't confirm the user sign in");
@@ -218,17 +216,16 @@ mixin MixinMultiAuthService<P extends Enum> on MixinAuthService, AbsWithLifeCycl
 
   /// {@macro act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn({
-    P? providerKey,
-  }) async {
+  Future<AuthSignInResult> redirectToExternalUserSignIn({P? providerKey}) async {
     if (providerKey != null) {
       await setCurrentProviderKey(providerKey);
     }
 
     final provider = _getCurrentProvider();
     if (provider == null) {
-      logsHelper
-          .w("No provider has been set, we can't redirect sign in to an external user interface");
+      logsHelper.w(
+        "No provider has been set, we can't redirect sign in to an external user interface",
+      );
       return const AuthSignInResult(status: AuthSignInStatus.genericError);
     }
 
@@ -418,7 +415,7 @@ mixin MixinMultiAuthService<P extends Enum> on MixinAuthService, AbsWithLifeCycl
     _serviceStatusCtrl.add(status);
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await Future.wait(_subs.map((sub) => sub.cancel()));

@@ -145,7 +145,7 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
     return disposeLifeCycle();
   }
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     isClosed = true;

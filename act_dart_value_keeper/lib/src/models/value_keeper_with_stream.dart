@@ -4,7 +4,7 @@
 
 import 'package:act_dart_value_keeper/src/mixins/mixin_value_keeper_with_stream.dart';
 import 'package:act_dart_value_keeper/src/models/value_keeper.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// {@macro act_dart_value_keeper.ValueTypeIsEqualToSetterValue}
 ///
@@ -12,7 +12,7 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperWithStream<T> = BaseValueKeeperWithStream<T, T>;
 
 /// {@macro act_dart_value_keeper.ValueIsNullableButNotSetter}
@@ -21,14 +21,14 @@ typedef ValueKeeperWithStream<T> = BaseValueKeeperWithStream<T, T>;
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 typedef ValueKeeperWithStreamAndNullInit<T> = BaseValueKeeperWithStream<T, T?>;
 
 /// {@macro act_dart_value_keeper.ValueKeeper}
 ///
 /// {@macro act_dart_value_keeper.MixinValueKeeperWithStream}
 ///
-/// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+/// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
 ///
 /// {@macro act_dart_value_keeper.SMustBeCastableToT}
 class BaseValueKeeperWithStream<S extends T, T> extends BaseValueKeeper<S, T>

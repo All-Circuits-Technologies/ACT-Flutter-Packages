@@ -16,6 +16,7 @@ import 'package:act_http_server_manager/src/utilities/server_handler_utility.dar
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/foundation.dart';
+import 'package:mutex/mutex.dart';
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart' as io;
 import 'package:shelf_router/shelf_router.dart';
@@ -42,6 +43,9 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
   /// Whether the server should be started on init or not
   final bool startServerOnInit;
 
+  /// This mutex protects the server modification, to be sure to not modify the value in parallel
+  final Mutex _serverMutex;
+
   /// Instance of the http logging manager
   late final HttpLoggingManager _httpLoggingManager;
 
@@ -58,7 +62,10 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
   List<AbsApiService> get apiServices => _apiServices;
 
   /// Class constructor
-  AbsHttpServerManager({this.startServerOnInit = true}) : _apiServices = [], _globalHandlers = [];
+  AbsHttpServerManager({this.startServerOnInit = true})
+    : _apiServices = [],
+      _globalHandlers = [],
+      _serverMutex = Mutex();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
@@ -84,12 +91,30 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
     await Future.wait(_globalHandlers.map((handler) => handler.initLifeCycle()));
 
     if (startServerOnInit) {
-      await _initServer(config: null);
+      // We don't wait to try/catch here because if the server fails to start, we want the
+      // manager to be initialized and to be able to restart the server later with the correct
+      await _protectedRestartServer(config: null);
     }
   }
 
   /// Restart the server with the current config or with a new one if it's provided
-  Future<void> restartServer({HttpServerConfig? config}) => _initServer(config: config);
+  Future<bool> restartServer({HttpServerConfig? config}) => _serverMutex.protect(() async {
+    var success = true;
+    try {
+      await _initAndRestartServer(config: config);
+    } on Exception catch (e) {
+      appLogger().e("Failed to restart the HTTP server", e);
+      success = false;
+    }
+
+    return success;
+  });
+
+  /// Stop the server
+  Future<void> stopServer() => _serverMutex.protect(() async => _closeServer());
+
+  /// Test if the server is currently running or not
+  Future<bool> isServerRunning() async => _serverMutex.protect(() async => (_httpServer != null));
 
   /// {@template act_http_server_manager.HttpServerManager.getLoggingManager}
   /// Get the logging manager linked to this http server manager
@@ -143,10 +168,23 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
     return Router.routeNotFound;
   }
 
+  /// Do the same thing as [_initAndRestartServer] but protected by the mutex to be sure to not have
+  /// parallel modification of the server.
+  ///
+  /// This may raise an exception if the server fails to start.
+  Future<HttpServer> _protectedRestartServer({required HttpServerConfig? config}) =>
+      _serverMutex.protect(() => _initAndRestartServer(config: config));
+
   /// Initialize the server
   ///
   /// Set the [_httpServer] and the [_serverConfig] with the created server and the used config
-  Future<HttpServer> _initServer({required HttpServerConfig? config}) async {
+  ///
+  /// This may raise an exception if the server fails to start.
+  ///
+  /// Better to use [_protectedRestartServer] instead of this method to be sure to not have parallel
+  /// modification of the server. The only case where this method should be used directly is in the
+  /// mutex itself.
+  Future<HttpServer> _initAndRestartServer({required HttpServerConfig? config}) async {
     await _setConfig(newConfig: _serverConfig);
 
     if (_httpServer != null) {
@@ -200,6 +238,9 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
   }
 
   /// Close the [_httpServer] if it's not null
+  ///
+  /// Better to use [stopServer] instead of this method to be sure to not have parallel modification
+  /// of the server. The only case where this method should be used directly is in the mutex itself.
   Future<void> _closeServer() async {
     if (_httpServer == null) {
       // Nothing to do
@@ -235,7 +276,7 @@ abstract class AbsHttpServerManager extends AbsWithLifeCycle {
   Future<void> disposeLifeCycle() async {
     await Future.wait(_globalHandlers.map((service) => service.disposeLifeCycle()));
     await Future.wait(_apiServices.map((service) => service.disposeLifeCycle()));
-    await _closeServer();
+    await stopServer();
     return super.disposeLifeCycle();
   }
 }

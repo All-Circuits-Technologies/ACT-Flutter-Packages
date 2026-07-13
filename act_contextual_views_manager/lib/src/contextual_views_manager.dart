@@ -19,12 +19,13 @@ class ContextualViewsBuilder<R extends AbstractRouterManager>
     extends AbsLifeCycleFactory<ContextualViewsManager> {
   /// Class constructor
   /// The method expects an [AbstractViewBuilder] to use with the manager
-  ContextualViewsBuilder({
-    required AbstractViewBuilder viewBuilder,
-  }) : super(() => ContextualViewsManager._(
-              viewBuilder: viewBuilder,
-              routerManagerGetter: globalGetIt().get<R>,
-            ));
+  ContextualViewsBuilder({required AbstractViewBuilder viewBuilder})
+    : super(
+        () => ContextualViewsManager._(
+          viewBuilder: viewBuilder,
+          routerManagerGetter: globalGetIt().get<R>,
+        ),
+      );
 
   @override
   Iterable<Type> dependsOn() => [R, LoggerManager];
@@ -48,21 +49,16 @@ class ContextualViewsManager extends AbsWithLifeCycle {
   ContextualViewsManager._({
     required AbstractViewBuilder viewBuilder,
     required _RouterManagerGetter routerManagerGetter,
-  })  : _viewBuilder = viewBuilder,
-        _routerManagerGetter = routerManagerGetter;
+  }) : _viewBuilder = viewBuilder,
+       _routerManagerGetter = routerManagerGetter;
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _logsCategory,
-    );
+    _logsHelper = LogsHelper(category: _logsCategory);
 
-    await _viewBuilder.initBuilder(
-      routerManager: _routerManagerGetter(),
-      logsHelper: _logsHelper,
-    );
+    await _viewBuilder.initBuilder(routerManager: _routerManagerGetter(), logsHelper: _logsHelper);
   }
 
   /// Ask to display a view thanks to the [AbstractViewContext] parameter given
@@ -75,18 +71,12 @@ class ContextualViewsManager extends AbsWithLifeCycle {
   Future<ViewDisplayResult<C>> display<C>({
     required AbstractViewContext context,
     DoActionDisplayCallback<C>? doAction,
-  }) async =>
-      _viewBuilder.display<C>(
-        context: context,
-        doAction: doAction,
-      );
+  }) async => _viewBuilder.display<C>(context: context, doAction: doAction);
 
-  /// {@macro act_life_cycle.MixinWithLifeCycleDispose.disposeLifeCycle}
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
-    final futures = <Future>[
-      _viewBuilder.dispose(),
-    ];
+    final futures = <Future>[_viewBuilder.dispose()];
 
     await Future.wait(futures);
 
