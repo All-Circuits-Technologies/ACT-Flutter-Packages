@@ -82,10 +82,9 @@ class ConsoleExternalLogger
 
   /// {@macro act_logger_manager.MixinExternalLogger.log}
   @override
-  void log(
-  // We don't know the type of the objects we pass to the log messages
-  // ignore: avoid_annotating_with_dynamic
-  {
+  void log({
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
     required dynamic message,
     required LogsLevel level,
     // We don't know the type of the objects we pass to the log messages
