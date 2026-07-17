@@ -44,13 +44,12 @@ class ScrollableReorderableListView extends StatelessWidget {
   ///
   /// ```dart
   /// final child = children.removeAt(oldIndex);
-  /// var tmpNewIdx = newIndex;
-  /// if (oldIndex < newIndex) {
-  ///   tmpNewIdx = newIndex - 1;
-  /// }
-  /// children.insert(tmpNewIdx, child);
+  /// children.insert(newIndex, child);
   /// ```
-  final ReorderCallback onReorder;
+  ///
+  /// This method already managed the case when the new index is after the old index, so you don't
+  /// have to manage it.
+  final ReorderCallback onReorderItem;
 
   /// True to use the default drag handle (it's not the same behaviour on windows and phone).
   /// False to disable the dragging
@@ -65,7 +64,7 @@ class ScrollableReorderableListView extends StatelessWidget {
   const ScrollableReorderableListView({
     super.key,
     required this.children,
-    required this.onReorder,
+    required this.onReorderItem,
     this.parentScrollController,
     this.scrollable = true,
     this.buildDefaultDragHandles = true,
@@ -73,15 +72,15 @@ class ScrollableReorderableListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => _wrapListener(
-        context: context,
-        child: ReorderableListView(
-          shrinkWrap: !scrollable,
-          physics: scrollable ? null : const ClampingScrollPhysics(),
-          onReorder: onReorder,
-          buildDefaultDragHandles: buildDefaultDragHandles,
-          children: children,
-        ),
-      );
+    context: context,
+    child: ReorderableListView(
+      shrinkWrap: !scrollable,
+      physics: scrollable ? null : const ClampingScrollPhysics(),
+      onReorderItem: onReorderItem,
+      buildDefaultDragHandles: buildDefaultDragHandles,
+      children: children,
+    ),
+  );
 
   /// Start the auto scroll process
   Timer? _startAutoScroll(
@@ -108,11 +107,7 @@ class ScrollableReorderableListView extends StatelessWidget {
   }
 
   /// Start scrolling and move the scroller periodically
-  Timer? _startScrolling(
-    ScrollController scrollController,
-    Timer? timer,
-    double step,
-  ) {
+  Timer? _startScrolling(ScrollController scrollController, Timer? timer, double step) {
     _stopScrolling(timer);
 
     return Timer.periodic(_scrollDuration, (timer) {
@@ -132,10 +127,7 @@ class ScrollableReorderableListView extends StatelessWidget {
 
   /// If the element isn't scrollable by itself, the method adds a listener to the child, in order
   /// to move the scroll with the user dragging.
-  Widget _wrapListener({
-    required BuildContext context,
-    required Widget child,
-  }) {
+  Widget _wrapListener({required BuildContext context, required Widget child}) {
     if (scrollable) {
       return child;
     }
