@@ -21,8 +21,13 @@ class QrCodeImage extends StatefulWidget {
   final Barcode _barcode;
 
   /// Class constructor
-  QrCodeImage({super.key, required this.text, required this.color, required this.size})
-    : _barcode = Barcode.qrCode(errorCorrectLevel: BarcodeQRCorrectionLevel.high);
+  QrCodeImage({
+    super.key,
+    required this.text,
+    required this.color,
+    required this.size,
+    BarcodeQRCorrectionLevel errorCorrectLevel = BarcodeQRCorrectionLevel.low,
+  }) : _barcode = Barcode.qrCode(errorCorrectLevel: errorCorrectLevel);
 
   /// This widget is stateful because the QR code generation can be computationally expensive, and
   /// we want to avoid regenerating it unnecessarily if the text or size does not change.
