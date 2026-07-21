@@ -17,6 +17,13 @@ class QrCodeImage extends StatefulWidget {
   /// The size of the QR code image.
   final double size;
 
+  /// The error correction level for the QR code.
+  ///
+  /// The error correction level determines how much of the QR code can be restored if it is
+  /// damaged or obscured. The higher the level, the more data can be restored, but the QR code will
+  /// be larger and more complex. The default is [BarcodeQRCorrectionLevel.low].
+  final BarcodeQRCorrectionLevel errorCorrectLevel;
+
   /// The barcode generator for QR codes.
   final Barcode _barcode;
 
@@ -26,7 +33,7 @@ class QrCodeImage extends StatefulWidget {
     required this.text,
     required this.color,
     required this.size,
-    BarcodeQRCorrectionLevel errorCorrectLevel = BarcodeQRCorrectionLevel.low,
+    this.errorCorrectLevel = BarcodeQRCorrectionLevel.low,
   }) : _barcode = Barcode.qrCode(errorCorrectLevel: errorCorrectLevel);
 
   /// This widget is stateful because the QR code generation can be computationally expensive, and
@@ -55,10 +62,14 @@ class _QrCodeImageState extends State<QrCodeImage> {
     // If the text, size or color changes, we need to regenerate the QR code
     if (oldWidget.text != widget.text ||
         oldWidget.color != widget.color ||
-        oldWidget.size != widget.size) {
+        oldWidget.size != widget.size ||
+        oldWidget.errorCorrectLevel != widget.errorCorrectLevel) {
       setState(() {
-        if (oldWidget.text != widget.text || oldWidget.color != widget.color) {
-          // If the text or color changes, we need to regenerate the SVG and update the cache
+        if (oldWidget.text != widget.text ||
+            oldWidget.color != widget.color ||
+            oldWidget.errorCorrectLevel != widget.errorCorrectLevel) {
+          // If the text, color or error correct level changes, we need to regenerate the SVG and
+          // update the cache
           //
           // We don't need to regenerate the SVG if only the size changes
           _generateSvg();
