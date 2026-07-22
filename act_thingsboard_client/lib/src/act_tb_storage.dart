@@ -7,7 +7,13 @@ import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This class allows to override the default behaviour of Thingsboard when saving JWT token to
 /// memory
-class ActTbStorage extends TbStorage<String> {
+///
+/// The generic is parameterized with the nullable `String?` on purpose: the upstream
+/// [TbStorage] contract exposes `Future<E>? getItem(...)`, whose value type must be able to be
+/// `null` to signal an absent item. Modelling `E` as `String?` keeps [getItem] returning a
+/// `Future<String?>` — its historical shape — while remaining a valid override of the upstream
+/// interface.
+class ActTbStorage extends TbStorage<String?> {
   /// This is the key used by the Thingsboard library to store the JWT token
   static const _tokenTbKey = "jwt_token";
 
@@ -25,6 +31,9 @@ class ActTbStorage extends TbStorage<String> {
   Future<void> deleteItem(String key) async => _clearTokenItem(key);
 
   /// Called to get the content of an item
+  ///
+  /// Resolves to `null` when no token is stored, which the Thingsboard client treats the same as
+  /// an absent item.
   @override
   Future<String?> getItem(String key, {String? defaultValue}) async {
     final token = await _tryToGetTokenItem(key);
@@ -33,8 +42,16 @@ class ActTbStorage extends TbStorage<String> {
   }
 
   /// Called to set the content of an item
+  ///
+  /// A `null` [value] clears the stored token, mirroring the absence semantics of [getItem].
   @override
-  Future<void> setItem(String key, String value) async => _storeTokenItem(key, value);
+  Future<void> setItem(String key, String? value) async {
+    if (value == null) {
+      return _clearTokenItem(key);
+    }
+
+    await _storeTokenItem(key, value);
+  }
 
   /// Test if the [key] exists in the storage
   @override
