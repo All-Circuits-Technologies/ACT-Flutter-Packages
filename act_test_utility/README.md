@@ -30,8 +30,13 @@ It is only meant to be added as a `dev_dependency`: nothing here is intended to 
 application. It contains no test of its own for the other packages either; it only provides the
 tools they use to write theirs.
 
-A package which this one depends on cannot use it, because that would create a dependency cycle.
-Such a package defines its fakes locally, in its own `test/` folder.
+This package depends on the ACT packages whose interfaces it fakes, and those packages use it in
+their own tests: pub resolves such a cycle between packages linked by a path, as long as this one
+is only ever a `dev_dependency`.
+
+What a package which defines a faked interface does keep is its own fake of that interface, in its
+`test/` folder: the tests of the real thing must not be written against the stand-in they are
+meant to justify. Those tests hide the shared name when they import this package.
 
 ## Architecture
 
