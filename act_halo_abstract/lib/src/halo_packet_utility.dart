@@ -335,7 +335,8 @@ abstract class HaloPacketUtility {
     final tmp = _escapeGivenElementIfNeeded(element).toList();
 
     if (timestamp != null) {
-      // This won't crash until 2106
+      // The protocol carries the timestamp as a number of seconds on four bytes, which is why the
+      // milliseconds are dropped here and why this won't crash until 2106
       final rawTs = ByteUtility.unsafeConvertToLsbFirst(
         number: timestamp.millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond,
         bytesNb: HaloPacketUtility._tsBytesNb,
@@ -409,6 +410,7 @@ abstract class HaloPacketUtility {
         return null;
       }
 
+      // The protocol carries the timestamp as a number of seconds, not of milliseconds
       final tsInS = ByteUtility.unsafeConvertFromLsb(lsbNumber: tmpTs, isSigned: false);
       ts = DateTime.fromMillisecondsSinceEpoch(
         tsInS * Duration.millisecondsPerSecond,
