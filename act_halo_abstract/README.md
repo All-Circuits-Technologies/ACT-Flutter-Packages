@@ -233,7 +233,7 @@ await hardware.close();
 The tests build packets, read them back, and check what the device would receive in between. They
 cover the framing of a packet and its cutting in parts, the escaping of the five bytes the protocol
 reserves, the values of every size and sign the payload accepts, the ones it refuses because they
-would not fit, the timestamps and the second they are rounded to, and the packets which are refused
+would not fit, the timestamps and the milliseconds they lose, and the packets which are refused
 because they are incomplete, padded or truncated.
 
 They also cover what the abstract classes decide before a transport is reached: the requests which
