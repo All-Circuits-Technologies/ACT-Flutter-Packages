@@ -21,10 +21,10 @@ class ColorsUtility {
     required double coeff,
   }) =>
       _redistributeRgb(
-          redWithCoef: baseColor.r * coeff,
-          greenWithCoef: baseColor.g * coeff,
-          blueWithCoef: baseColor.b * coeff,
-          alpha: baseColor.a);
+          redWithCoef: _toRgbRange(baseColor.r) * coeff,
+          greenWithCoef: _toRgbRange(baseColor.g) * coeff,
+          blueWithCoef: _toRgbRange(baseColor.b) * coeff,
+          alpha: _toRgbRange(baseColor.a));
 
   /// This method allows to make colors darker.
   ///
@@ -36,11 +36,15 @@ class ColorsUtility {
     required double coeff,
   }) =>
       _redistributeRgb(
-        redWithCoef: baseColor.r / coeff,
-        greenWithCoef: baseColor.g / coeff,
-        blueWithCoef: baseColor.b / coeff,
-        alpha: baseColor.a,
+        redWithCoef: _toRgbRange(baseColor.r) / coeff,
+        greenWithCoef: _toRgbRange(baseColor.g) / coeff,
+        blueWithCoef: _toRgbRange(baseColor.b) / coeff,
+        alpha: _toRgbRange(baseColor.a),
       );
+
+  /// A channel of a color is a ratio between 0 and 1, whereas the redistribution below works on
+  /// the 0 to [_thresholdRgb] range a color is built from.
+  static double _toRgbRange(double channel) => channel * _thresholdRgb;
 
   /// This method picks a color from a gradient thanks to the [gradientPercent] given.
   ///
