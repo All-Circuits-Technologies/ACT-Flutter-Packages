@@ -15,6 +15,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
+  - [Serve the assets a test needs](#serve-the-assets-a-test-needs)
 - [Testing](#testing)
 
 ## Presentation
@@ -65,6 +66,11 @@ flowchart LR
     FakeLogger -.implements.-> MixinActLogger
     SilentLogger -.implements.-> MixinActLogger
 ```
+
+`FakeAssets` serves the files a test needs in place of the ones of the application bundle. It
+answers on the platform channel the asset bundle reads through, so the class under test keeps
+loading its assets the way it does in an application, and it also empties the cache of the bundle,
+which otherwise keeps the files of the previous test.
 
 ## How to use
 
@@ -121,10 +127,35 @@ shared without any set up or tear down:
 final manager = MyManager(logger: const SilentLogger());
 ```
 
+### Serve the assets a test needs
+
+Give the contents to serve, keyed by asset key, and stop serving them once the test is over:
+
+```dart
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  tearDown(FakeAssets.stop);
+
+  test("reads the level from its configuration file", () async {
+    FakeAssets.serve({"assets/config/default.yaml": "logs:\n  level: warning"});
+
+    final manager = MyConfigManager(logger: const SilentLogger());
+    await manager.initLifeCycle();
+
+    expect(manager.logLevelEnv.load(), LogsLevel.warn);
+  });
+}
+```
+
+A key which is not served is reported as missing, exactly as a file absent from the bundle is, so a
+test can check what a class does without its optional files.
+
 ## Testing
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
-to the sub loggers, and the filtering done by the minimum level. To run them:
+to the sub loggers, the filtering done by the minimum level, and the contents served, replaced and
+stopped by the fake assets. To run them:
 
 ```console
 > flutter test
