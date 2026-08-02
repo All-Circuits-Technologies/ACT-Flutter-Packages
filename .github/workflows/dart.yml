@@ -1266,6 +1266,39 @@ jobs:
       - job_001
       - job_002
   job_021:
+    name: "test; PKG: act_intl; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_intl;commands:test"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_intl
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_intl_pub_upgrade
+        name: act_intl; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl
+      - name: act_intl; flutter test
+        run: flutter test
+        if: "always() && steps.act_intl_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl
+    needs:
+      - job_001
+      - job_002
+  job_022:
     name: "test; PKG: act_jwt_utilities; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1298,7 +1331,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_022:
+  job_023:
     name: "test; PKG: act_licenses_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1331,7 +1364,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_023:
+  job_024:
     name: "test; PKG: act_life_cycle; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1364,7 +1397,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_024:
+  job_025:
     name: "test; PKG: act_local_storage_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1397,7 +1430,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_025:
+  job_026:
     name: "test; PKG: act_logger_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1430,7 +1463,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_026:
+  job_027:
     name: "test; PKG: act_music_player_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1463,7 +1496,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_027:
+  job_028:
     name: "test; PKG: act_platform_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1496,7 +1529,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_028:
+  job_029:
     name: "test; PKG: act_qr_code; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1529,7 +1562,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_029:
+  job_030:
     name: "test; PKG: act_remote_storage_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1562,7 +1595,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_030:
+  job_031:
     name: "test; PKG: act_router_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1595,7 +1628,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_031:
+  job_032:
     name: "test; PKG: act_splash_screen_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1628,7 +1661,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_032:
+  job_033:
     name: "test; PKG: act_test_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1661,7 +1694,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_033:
+  job_034:
     name: "test; PKG: act_tic_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1694,7 +1727,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_034:
+  job_035:
     name: "test; PKG: act_websocket_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1727,7 +1760,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_035:
+  job_036:
     name: "test; PKG: act_yaml_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
