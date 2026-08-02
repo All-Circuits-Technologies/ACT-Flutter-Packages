@@ -4,6 +4,7 @@
 
 library;
 
+export 'src/fakes/fake_assets.dart';
 export 'src/fakes/fake_logger.dart';
 export 'src/fakes/silent_logger.dart';
 export 'src/models/fake_log_record.dart';
