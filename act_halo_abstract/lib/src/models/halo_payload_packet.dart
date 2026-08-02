@@ -121,7 +121,7 @@ class HaloPayloadPacket {
     DateTime? firstTimestamp;
     final elements = <String>[];
     for (var idx = 0; idx < realLength; ++idx) {
-      final tmp = HaloPacketUtility.getString(_elements[idx]);
+      final tmp = HaloPacketUtility.getString(_elements[fromStartIdx + idx]);
 
       if (tmp == null) {
         return null;

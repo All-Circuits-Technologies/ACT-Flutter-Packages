@@ -332,31 +332,29 @@ abstract class HaloPacketUtility {
   /// Format and escape bytes list to create a [PayloadPacketElem], the method also prepend the
   /// [timestamp] if not null
   static PayloadPacketElem _formatAndEscapePacketElem(Uint8List element, DateTime? timestamp) {
-    var tmp = Uint8List.fromList(element);
-    tmp = _escapeGivenElementIfNeeded(tmp);
+    final tmp = _escapeGivenElementIfNeeded(element).toList();
 
     if (timestamp != null) {
       // This won't crash until 2106
-      var formattedTs = ByteUtility.unsafeConvertToLsbFirst(
-        number: (timestamp.millisecondsSinceEpoch / 1000).round(),
+      final rawTs = ByteUtility.unsafeConvertToLsbFirst(
+        number: timestamp.millisecondsSinceEpoch ~/ Duration.millisecondsPerSecond,
         bytesNb: HaloPacketUtility._tsBytesNb,
         isSigned: false,
       );
 
-      formattedTs = _escapeGivenElementIfNeeded(formattedTs);
-
-      formattedTs.add(HaloPacketUtility._tsSeparator);
+      final formattedTs = _escapeGivenElementIfNeeded(rawTs).toList()
+        ..add(HaloPacketUtility._tsSeparator);
 
       // Insert the timestamp before
       tmp.insertAll(0, formattedTs);
     }
 
-    return tmp;
+    return Uint8List.fromList(tmp);
   }
 
   /// This method escapes the bytes of the list given if needed
-  /// It also adds the escape byte in the list given before the escaped byte (it modifies the given
-  /// list)
+  /// It returns a new list where each forbidden byte is masked and preceded by the escape byte; the
+  /// list given is left untouched
   static Uint8List _escapeGivenElementIfNeeded(Uint8List toEscape) {
     final tmp = toEscape.toList();
     for (var idx = (tmp.length - 1); idx >= 0; --idx) {
@@ -367,7 +365,7 @@ abstract class HaloPacketUtility {
       }
     }
 
-    return Uint8List.fromList(toEscape);
+    return Uint8List.fromList(tmp);
   }
 
   /// This method unescape the given element to remove all the escape byte and convert back all the
@@ -411,8 +409,11 @@ abstract class HaloPacketUtility {
         return null;
       }
 
-      final tsInMS = ByteUtility.unsafeConvertFromLsb(lsbNumber: tmpTs, isSigned: false);
-      ts = DateTime.fromMillisecondsSinceEpoch(tsInMS, isUtc: true);
+      final tsInS = ByteUtility.unsafeConvertFromLsb(lsbNumber: tmpTs, isSigned: false);
+      ts = DateTime.fromMillisecondsSinceEpoch(
+        tsInS * Duration.millisecondsPerSecond,
+        isUtc: true,
+      );
 
       // Remove the ts from the temporary element
       tmpElement = element.sublist(tsSepIndex + 1);
