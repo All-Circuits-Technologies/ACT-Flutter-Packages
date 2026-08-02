@@ -11,83 +11,173 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 - [Table of contents](#table-of-contents)
 - [Presentation](#presentation)
-- [How to add config variables](#how-to-add-config-variables)
-  - [Storage](#storage)
-  - [How it works](#how-it-works)
-    - [1. Default config file](#1-default-config-file)
-    - [2. Environment config files](#2-environment-config-files)
-    - [3. Local config files](#3-local-config-files)
-    - [4. Environment variables and mapping](#4-environment-variables-and-mapping)
-      - [4.1. Mapping with env variables](#41-mapping-with-env-variables)
-      - [4.2. Use env variables](#42-use-env-variables)
-        - [4.2.1. Presentation](#421-presentation)
-        - [4.2.2. Env variables set at build time](#422-env-variables-set-at-build-time)
-        - [4.2.3. Env variables of the OS](#423-env-variables-of-the-os)
-      - [4.3. Use `.env` file](#43-use-env-file)
-  - [Environment](#environment)
+- [Architecture](#architecture)
+  - [Where the values come from](#where-the-values-come-from)
+  - [The manager and the singleton](#the-manager-and-the-singleton)
+  - [The config variables](#the-config-variables)
+- [How to use](#how-to-use)
+  - [Installation](#installation)
+  - [Declare the variables](#declare-the-variables)
+  - [Register the manager](#register-the-manager)
+  - [Read a variable](#read-a-variable)
+- [Configuration](#configuration)
+  - [Where the files live](#where-the-files-live)
+  - [The default file](#the-default-file)
+  - [The environment files](#the-environment-files)
+  - [The local file](#the-local-file)
+  - [The environment variables and their mapping](#the-environment-variables-and-their-mapping)
+  - [The dot env file](#the-dot-env-file)
+  - [Choosing the environment](#choosing-the-environment)
   - [The precedence](#the-precedence)
-- [How to use the config variables](#how-to-use-the-config-variables)
+- [Testing](#testing)
 
 ## Presentation
 
-This package contains methods to manage config variables. This package manages three different
-environments:
+This package reads the configuration of an application and gives it back as typed values.
 
-- production,
-- qualification, and
-- development.
+A value may differ from one environment to another, and some values must not be committed at all.
+The package therefore reads several files and the environment variables, in a fixed order, and
+merges them into one configuration: the application declares the variables it needs and reads them
+without knowing where each value came from.
 
-You may have different config values for each environment.
+The package only reads the configuration. It never writes a file, it does not watch for a change,
+and it holds no value which the application computes at runtime.
 
-## How to add config variables
+## Architecture
 
-### Storage
+### Where the values come from
 
-The configuration files have to be stored in the assets folder of your project in a `assets/config/`
-folder.
+The manager reads the files and the environment variables at initialization, merges them, and hands
+the result to a singleton the config variables read from.
 
-The folder has to be added in the assets of the `pubspec.yaml` of the main project (to be usable
-by the app after the build).
+```mermaid
+flowchart LR
+    default[default.yaml] --> yamlMerge
+    env[environment file] --> yamlMerge
+    local[local.yaml] --> yamlMerge
+    yamlMerge[ConfigFromYamlUtility] --> merge
+    mapping[env_config_mapping.yaml] --> envMerge
+    os[process environment] --> envMerge
+    dotEnv[.env] --> envMerge
+    envMerge[ConfigFromEnvUtility] --> merge
+    merge[AbstractConfigManager] --> ConfigSingleton
+    ConfigSingleton --> AbsConfigVar
+```
 
-In this folder, you store config files, which are yaml or json files.
+`ConfigFromYamlUtility` reads the configuration files, `EnvConfigMappingUtility` reads the file
+which maps the environment variables to the configuration structure, and `ConfigFromEnvUtility`
+builds a configuration out of the environment variables that mapping names. A value found on the
+right of the flow overrides the one found on its left.
 
-But you may also store a local `.env` files to override env variables.
+### The manager and the singleton
 
-### How it works
+`AbstractConfigManager` is the manager an application derives from to declare its variables. It is
+registered like any other manager, with an `AbstractConfigBuilder`, and it depends on none of them.
 
-#### 1. Default config file
+`ConfigSingleton` holds the merged configuration. The config variables read from it, rather than
+from the manager, because a variable is declared as a field of the derived manager and cannot reach
+that manager through the `GlobalManager` without knowing its concrete type. The singleton is created
+when the manager is initialized and released when it is disposed, so a manager may be initialized
+again afterwards.
 
-The package takes the default config file, which contains all the default values for the config
-variables. The file name must be `default.*` _(e.g. default.yaml or default.json ...)_.
+### The config variables
 
-#### 2. Environment config files
+A config variable wraps a key and reads it with the expected type. The key is the path in the
+configuration, with a dot between the steps: `logs.level` reads the `level` value of the `logs`
+object.
 
-Then, the package takes the config file which matches the current environment (production,
-qualification or development). The files name have to be:
+Six classes are available, and the choice between them depends on what the application does when the
+value is missing:
 
-- `development.*` for development env _(e.g. development.yaml or development.json ...)_,
-- `qualification.*` for qualification env _(e.g. qualification.yaml or qualification.json ...)_, and
-- `production.*` for production env _(e.g. production.yaml or production.json ...)_.
+| Class                      | Reads          | When the value is missing             |
+| -------------------------- | -------------- | ------------------------------------- |
+| `ConfigVar`                | One value      | Returns null                          |
+| `ConfigVarList`            | A list         | Returns null                          |
+| `NotNullableConfigVar`     | One value      | Returns the default value, or throws  |
+| `NotNullableConfigVarList` | A list         | Returns the default values, or throws |
+| `ParserConfigVar`          | A parsed value | Returns null                          |
+| `NotNullParserConfigVar`   | A parsed value | Returns the default value, or throws  |
 
-The values stored in the env files overrides the values of the default file.
+A parser variable reads a stored value of a simple type and turns it into the type the application
+wants, which is how an enum, a duration or a url is read. Its parser returns null when the stored
+value cannot be turned into that type, and the variable then behaves as if the value was missing.
 
-#### 3. Local config files
+The `crashIfNull` constructors of the not nullable variables have no default value: they throw an
+`ActConfigNullValueError` when nothing is found. Use them for the values an application cannot start
+without.
 
-If you don't want to commit some configs, you can use a `local.*` _(e.g. local.yaml or local.json
-...)_ file which will contain configuration only used in your PC.
+## How to use
 
-#### 4. Environment variables and mapping
+### Installation
 
-##### 4.1. Mapping with env variables
+Add the package to the `dependencies` of your package:
 
-Then the package takes the env variables. To match the environment variables with the config
-variables you have to create a "mapping" file, which is named: `env_config_mapping.*`
-_(e.g. env_config_mapping.yaml or env_config_mapping.json ...)_. The file may be a yaml or json
-file.
+```yaml
+dependencies:
+  act_config_manager:
+    path: ../act_config_manager
+```
 
-To add a matching between a conf variable and an env variable, you have to copy the config files
-structure and write the name of the env variable you want instead of the conf value. For instance,
-you have this config in your `default.yaml` file:
+### Declare the variables
+
+Derive the manager and declare one field per variable:
+
+```dart
+class AppConfigManager extends AbstractConfigManager {
+  final logLevel = const NotNullableConfigVar<String>("logs.level", defaultValue: "warning");
+  final serverUrl = const NotNullParserConfigVar<Uri, String>.crashIfNull(
+    "server.url",
+    parser: Uri.tryParse,
+  );
+  final retryDelays = const ConfigVarList<int>("server.retryDelays");
+
+  AppConfigManager({required super.logger});
+}
+```
+
+A package which needs its own variables declares them in a mixin on `AbstractConfigManager`, and the
+application mixes it into its manager. That way the package says what it reads without knowing the
+manager of the application.
+
+### Register the manager
+
+```dart
+class AppConfigBuilder extends AbstractConfigBuilder<AppConfigManager> {
+  AppConfigBuilder() : super(() => AppConfigManager(logger: appLogger()));
+}
+```
+
+```dart
+GlobalManager.instance.register(AppConfigBuilder());
+```
+
+### Read a variable
+
+```dart
+final level = globalGetIt().get<AppConfigManager>().logLevel.load();
+```
+
+`load` reads the configuration which was merged at initialization, so calling it again costs no more
+than keeping its result.
+
+## Configuration
+
+### Where the files live
+
+Every file the package reads is an asset of the application, in the `assets/config/` folder by
+default. Another folder can be given to the manager with its `configPath` parameter.
+
+The folder has to be declared in the assets of the `pubspec.yaml` of the application, otherwise it
+is absent from the build and the package finds nothing.
+
+Every configuration file may be written in YAML or in JSON: the extension is guessed, `.yaml` first,
+then `.yml` and `.json`. A file which is absent is not an error; a file which cannot be parsed, or
+whose content is not an object, is.
+
+### The default file
+
+`default.*` holds the value of every variable, and is the only file which is always read. It is the
+place to document what a variable is and what it defaults to:
 
 ```yaml
 logs:
@@ -96,16 +186,33 @@ logs:
   logsNb: 3
 ```
 
-To create an env variable, in the env config mapping file, you have to replace the value by the name
-of the env variable you want. For instance:
+### The environment files
+
+One file per environment holds the values which differ from the default ones. Only the file of the
+chosen environment is read:
+
+- `development.*`,
+- `qualification.*`,
+- `production.*`.
+
+### The local file
+
+`local.*` holds the values a developer changes on their own machine. It overrides every other file
+and is not meant to be committed.
+
+### The environment variables and their mapping
+
+`env_config_mapping.*` says which environment variable replaces which configuration value. It
+repeats the structure of the configuration files, with the name of the environment variable in place
+of the value:
 
 ```yaml
 logs:
   level: LOGS_LEVEL
 ```
 
-In the case, the env variable replaces a boolean, number or yaml, you may precise the format type,
-like this:
+A variable which is not a string declares its format, so that the value is read as a boolean, a
+number or a structure rather than as text:
 
 ```yaml
 logs:
@@ -118,32 +225,22 @@ logs:
   logsNb:
     __name: LOGS_NB
     __format: number
+  appenders:
+    __name: LOGS_APPENDERS
+    __format: yaml
 ```
 
-##### 4.2. Use env variables
+The formats are `string` (or `str`), `boolean` (or `bool`), `number` (or `num`, `int`, `integer`,
+`decimal`, `float`) and `yaml` (or `yml`, `json`). A number is read as an integer, unless it has a
+decimal separator. A format which is not one of these names is refused, and so is a value which
+cannot be read with the format it declares.
 
-###### 4.2.1. Presentation
+The mapping file cannot contain a list, and the name of a variable has to be a string.
 
-With Flutter apps, there are two kinds of environment variables:
+### The dot env file
 
-- The environment variables set at build time
-- The environment variables of the OS
-
-###### 4.2.2. Env variables set at build time
-
-Those are the env variables set when the app is built (through the command argument:
-`--dart-define`). For instance:
-
-> `flutter build --dart-define="LOGS_LEVEL=warning"`
-
-###### 4.2.3. Env variables of the OS
-
-Those are the env variables retrieved from the OS.
-
-##### 4.3. Use `.env` file
-
-In local you may create a `.env` file which is a property file and contain env values to use. For
-instance:
+`.env` holds the environment variables of a developer machine, as a property file, and is not meant
+to be committed:
 
 ```ini
 LOGS_LEVEL=warning
@@ -151,50 +248,49 @@ LOGS_ENABLE=true
 LOGS_NB=4
 ```
 
-### Environment
+### Choosing the environment
 
-To choose the environment in flutter run/build, use the parameter "--dart-define"
+The environment is chosen at build time, with the `ENV` define:
 
-Example:
+```console
+> flutter run --dart-define="ENV=PROD"
+```
 
-> flutter run --dart-define="ENV=PROD".
+The values are `DEV`, `QUALIF` and `PROD`, whichever case. Any other value, and the absence of the
+define, select the development environment.
 
-Possible values are : `DEV`, `QUALIF` and `PROD`.
+`ENV` is the only value which can be set that way: reading a define requires its name to be written
+in the code as a constant, which a variable named by the mapping file is not. The environment
+variables come from the process and from the `.env` file.
 
 ### The precedence
 
-The following conf variables are overridden in this order (from the less to the more important):
+From the least to the most important:
 
 1. `default.*`
 2. `production.*`, `qualification.*` or `development.*`
 3. `local.*` (_not committed_)
-4. OS/Runtime env variables
-5. Build env variables
-6. `.env` file (_not committed_)
+4. the environment variables of the process
+5. `.env` (_not committed_)
 
-The build env variables are more important than the OS env variables, because some env variables
-should be shared between some OS applications and we want to be able to override those values.
+The `.env` file wins over the environment of the process, so that a developer may override a
+variable which is shared with the other applications of their machine.
 
-## How to use the config variables
+## Testing
 
-To use the config variables, you have to use the classes which derived from the `AbsConfigVar`
-class.
+The tests read the configuration through the asset bundle of the tests, so they cover the whole path
+an application goes through, from the files to the value a variable returns.
 
-The class takes a `key`. This key is the path to get the variable you want separated by dot. For
-instance, if you have the following config file:
+They cover the merge order of the files, the ones which are missing, empty, unparsable or not an
+object, the structure the mapping file builds out of the environment variables, every format a
+mapped variable may declare and what happens when a value does not match it, the precedence of the
+`.env` file over the environment of the process, the keys the singleton finds and the ones it
+refuses, what each config variable returns when its value is missing or of another type, and the
+release of the singleton when the manager is disposed.
 
-```yaml
-logs:
-  level: warning
+The environment of a process cannot be changed from inside it, so the tests which need a variable
+coming from the operating system use one which is already set.
 
-firebase:
-  crash:
-    enable: false
-    autoLogEnable: false
+```console
+> flutter test
 ```
-
-To access the variables, you have to use the following keys:
-
-- `logs.level`
-- `firebase.crash.enable`
-- `firebase.crash.autoLogEnable`
