@@ -51,3 +51,11 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # Log levels the tests assert on
+  act_foundation:
+    path: ../act_foundation
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
