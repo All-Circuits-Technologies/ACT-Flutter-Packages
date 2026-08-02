@@ -9,7 +9,9 @@ import 'package:act_foundation/act_foundation.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_logger_manager/src/services/logger_singleton.dart';
 import 'package:act_logger_manager/src/types/safe_external_loggers.dart';
-import 'package:act_test_utility/act_test_utility.dart';
+// The external logger this package defines is the one under test, so its own fake is the one to
+// drive here, not the shared one which stands in for it elsewhere
+import 'package:act_test_utility/act_test_utility.dart' hide FakeExternalLogger;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
