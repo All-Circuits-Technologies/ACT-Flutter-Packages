@@ -29,6 +29,9 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Equatable for value equality in Dart objects
+  equatable: ^2.0.8
+
   act_foundation:
     path: ../act_foundation
 

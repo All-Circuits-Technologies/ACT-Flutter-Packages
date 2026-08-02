@@ -97,6 +97,15 @@ test("logs a warning when the value is out of range", () {
 messages of a given level, and `clearRecords` forgets them all, which is useful to isolate the
 messages of a single step in a test which has several ones.
 
+A `FakeLogRecord` has a value equality, so a whole record can be compared at once instead of
+asserting on its fields one by one:
+
+```dart
+expect(logger.records, [
+  const FakeLogRecord(categories: ["myManager"], level: LogsLevel.warn, message: "value: -1"),
+]);
+```
+
 A minimum level makes the fake drop the messages a real logger would not write:
 
 ```dart

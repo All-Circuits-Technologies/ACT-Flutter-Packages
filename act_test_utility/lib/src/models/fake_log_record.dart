@@ -3,14 +3,16 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
-import 'package:flutter/foundation.dart';
+import 'package:equatable/equatable.dart';
 
 /// A message captured by a fake logger.
 ///
 /// The record keeps everything which was given to the logger, so that a test can assert on the
 /// level, on the message or on the error which was reported.
-@immutable
-class FakeLogRecord {
+///
+/// The record has a value equality, so a test may compare an expected record with the recorded
+/// one instead of asserting on its fields one by one.
+class FakeLogRecord extends Equatable {
   /// The categories of the logger which recorded the message.
   ///
   /// The first category is the main category and the last one is the most specific.
@@ -37,7 +39,12 @@ class FakeLogRecord {
     this.stackTrace,
   });
 
+  /// Returns a string representation of the record
   @override
   String toString() =>
       "FakeLogRecord(level: $level, categories: $categories, message: $message, error: $error)";
+
+  /// Class properties
+  @override
+  List<Object?> get props => [categories, level, message, error, stackTrace];
 }
