@@ -42,8 +42,8 @@ class OrientationObserver<T extends MixinRoute> extends NavigatorObserver {
 
   @override
   void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (!route.isCurrent) {
-      // Nothing to do
+    if (!(previousRoute?.isCurrent ?? false)) {
+      // The page removed wasn't the top one, the orientation displayed doesn't change
       return;
     }
 
@@ -52,8 +52,8 @@ class OrientationObserver<T extends MixinRoute> extends NavigatorObserver {
 
   @override
   void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) {
-    if (!route.isCurrent) {
-      // Nothing to do
+    if (!(previousRoute?.isCurrent ?? false)) {
+      // The page popped wasn't the top one, the orientation displayed doesn't change
       return;
     }
 
