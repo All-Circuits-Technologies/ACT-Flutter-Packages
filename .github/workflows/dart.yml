@@ -870,6 +870,39 @@ jobs:
       - job_001
       - job_002
   job_009:
+    name: "test; PKG: act_http_core; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_core;commands:test"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_core
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_http_core_pub_upgrade
+        name: act_http_core; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_http_core
+      - name: act_http_core; flutter test
+        run: flutter test
+        if: "always() && steps.act_http_core_pub_upgrade.conclusion == 'success'"
+        working-directory: act_http_core
+    needs:
+      - job_001
+      - job_002
+  job_010:
     name: "test; PKG: act_life_cycle; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -902,7 +935,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_010:
+  job_011:
     name: "test; PKG: act_test_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
