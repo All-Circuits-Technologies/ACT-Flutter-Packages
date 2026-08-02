@@ -149,7 +149,10 @@ sealed class NumUtility {
       return null;
     }
 
-    final newValue = value * math.pow(10, powerOfTenCoeff);
+    // The base is a double on purpose: with two integers, pow returns an integer, which silently
+    // wraps around instead of becoming infinite once the coefficient goes past what an integer of
+    // 64 bits can hold.
+    final newValue = value * math.pow(10.0, powerOfTenCoeff);
     if (!newValue.isFinite) {
       logger.w("We can't convert a double which is not finite: $value");
       return null;
