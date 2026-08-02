@@ -53,6 +53,8 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   final MixinActLogger defaultLogger;
 
   /// This is the list of states of the global manager
+  ///
+  /// The list is filled by the constructor, which asks the derived class for it.
   late final List<Enum> _globalManagerStates;
 
   /// This is the current state of the global manager
@@ -76,14 +78,14 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
         defaultLogger = LoggerManager.getSafeLogger(
           defaultMinLevel: defaultMinLevel,
         ),
-        _registeredManagers = [];
+        _registeredManagers = [] {
+    _globalManagerStates = getGlobalManagerStates();
+  }
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-
-    _globalManagerStates = getGlobalManagerStates();
 
     if (!tryAdvanceToState(GlobalManagerState.startInit)) {
       return;
