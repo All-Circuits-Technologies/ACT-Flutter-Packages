@@ -16,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
   - [Serve the assets a test needs](#serve-the-assets-a-test-needs)
+  - [Give the class under test a global manager](#give-the-class-under-test-a-global-manager)
 - [Testing](#testing)
 
 ## Presentation
@@ -66,6 +67,10 @@ flowchart LR
     FakeLogger -.implements.-> MixinActLogger
     SilentLogger -.implements.-> MixinActLogger
 ```
+
+`FakeGlobalManager` is the global manager of the application in a test. A class which reaches its
+logger or its managers through the shortcuts of `act_global_manager` needs one to exist, and this
+manager gives the test one which holds only what the test registers.
 
 `FakeAssets` serves the files a test needs in place of the ones of the application bundle. It
 answers on the platform channel the asset bundle reads through, so the class under test keeps
@@ -151,11 +156,44 @@ void main() {
 A key which is not served is reported as missing, exactly as a file absent from the bundle is, so a
 test can check what a class does without its optional files.
 
+### Give the class under test a global manager
+
+Install the manager before the class under test is built, and forget the managers it holds once the
+test is over:
+
+```dart
+void main() {
+  late FakeGlobalManager globalManager;
+
+  setUp(() => globalManager = FakeGlobalManager.install());
+  tearDown(() => globalManager.reset());
+
+  test("logs a warning when the packet is empty", () {
+    final logger = FakeLogger();
+    globalManager = FakeGlobalManager.install(logger: logger);
+
+    MyParser.parse(Uint8List(0));
+
+    expect(logger.recordsAtLevel(LogsLevel.warn).length, 1);
+  });
+}
+```
+
+Without a logger, the manager is silent, which is what a test which only needs the shortcuts to
+answer wants. The managers a test needs are registered on it the way an application registers
+them:
+
+```dart
+globalManager.register(MyManagerBuilder());
+await globalManager.allReady();
+```
+
 ## Testing
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
-to the sub loggers, the filtering done by the minimum level, and the contents served, replaced and
-stopped by the fake assets. To run them:
+to the sub loggers, the filtering done by the minimum level, the contents served, replaced and
+stopped by the fake assets, and the installation, the logger and the managers of the fake global
+manager. To run them:
 
 ```console
 > flutter test
