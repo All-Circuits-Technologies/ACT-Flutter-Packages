@@ -49,6 +49,10 @@ fails when the folder doesn't exist.
 > tool/test_all.sh
 ```
 
+A package whose tests only run on one platform says so next to the test task of its
+`mono_pkg.yaml`, for instance `- test: --platform chrome`; the script reads those arguments from
+there, so it runs the tests the same way the CI does.
+
 Like `pub_get_all.sh`, it accepts `--use-fvm` to call `fvm flutter` instead of `flutter`.
 
 ### `mono_repo_generate.sh`

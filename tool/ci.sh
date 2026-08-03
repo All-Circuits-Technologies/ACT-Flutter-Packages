@@ -67,9 +67,13 @@ for PKG in ${PKGS}; do
         echo 'flutter analyze --fatal-infos .'
         flutter analyze --fatal-infos . || EXIT_CODE=$?
         ;;
-      test)
+      test_0)
         echo 'flutter test'
         flutter test || EXIT_CODE=$?
+        ;;
+      test_1)
+        echo 'flutter test --platform chrome'
+        flutter test --platform chrome || EXIT_CODE=$?
         ;;
       *)
         echo -e "\033[31mUnknown TASK '${TASK}' - TERMINATING JOB\033[0m"

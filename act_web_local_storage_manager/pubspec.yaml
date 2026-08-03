@@ -40,3 +40,16 @@ dependencies:
 
   act_logger_manager:
     path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # The in memory storage the tests keep the properties in
+  shared_preferences_platform_interface: ^2.4.1
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
