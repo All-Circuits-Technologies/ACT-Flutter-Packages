@@ -150,7 +150,9 @@ class WebsocketClientManager extends AbsWithLifeCycle {
   /// {@endtemplate}
   Future<void> close() => _connectionMutex.protect(() async {
     _stopAutoReconnection();
-    await _channel?.sink.close(status.goingAway);
+    // The WebSocket only accepts the normal closure and the codes an application defines itself:
+    // the ones the protocol reserves for a server are refused when a client sends them.
+    await _channel?.sink.close(status.normalClosure);
     await _manageWebSocketDisconnect();
   });
 
