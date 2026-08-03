@@ -100,12 +100,14 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
 
     await _serverRequester.initLifeCycle();
 
-    _absServerLogin = await createServerLogin(
+    final serverLogin = await createServerLogin(
       serverRequester: _serverRequester,
       parentLogsHelper: _logsHelper,
     );
+    _absServerLogin = serverLogin;
 
-    if (!(await _absServerLogin!.initLogin())) {
+    // A server which asks for no authentication has no login to initialize
+    if (serverLogin != null && !(await serverLogin.initLogin())) {
       throw ActServerLoginInitException(
         "An error occurred when tried to init the abs server login",
       );
