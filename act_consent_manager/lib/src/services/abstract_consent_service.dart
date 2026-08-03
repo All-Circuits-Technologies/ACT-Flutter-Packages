@@ -377,10 +377,12 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
     return ConsentStateEnum.notAccepted;
   }
 
-  /// Cancel the stream subscription of the [StreamObserver]
+  /// Cancel the stream subscription of the [StreamObserver] and stop publishing the state of the
+  /// consent
   @override
   Future<void> disposeLifeCycle() async {
     await _cancelSubs();
+    await _stateController.close();
     await super.disposeLifeCycle();
   }
 }
