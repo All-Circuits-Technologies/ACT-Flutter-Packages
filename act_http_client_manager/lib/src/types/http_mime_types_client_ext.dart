@@ -10,9 +10,6 @@ extension HttpMimeTypesClientExt on HttpMimeTypes {
   /// Create a media type from the Mime Type
   MediaType toMediaType({
     Map<String, String>? parameters,
-  }) {
-    final type = MediaType.parse(stringValue);
-    type.change(clearParameters: true, parameters: parameters);
-    return type;
-  }
+  }) =>
+      MediaType.parse(stringValue).change(clearParameters: true, parameters: parameters);
 }
