@@ -37,4 +37,12 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # The logger a router of a test is asked for its routes with
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+
   flutter_lints: ^6.0.0
