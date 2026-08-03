@@ -75,7 +75,12 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
         minLevel: config.loggerEnabled ? null : LogsLevel.off,
       );
     } else {
-      _logsHelper = config.parentLogsHelper!.createSubLogger(subCategory: config.loggerCategory);
+      // The requester says whether it logs, whether it has a logger of its own or one under the
+      // logger of the class which owns it
+      _logsHelper = config.parentLogsHelper!.createSubLoggerMinLevel(
+        subCategory: config.loggerCategory,
+        minLevel: config.loggerEnabled ? null : LogsLevel.off,
+      );
     }
 
     final urlsByRelRoute = <String, Uri>{};
