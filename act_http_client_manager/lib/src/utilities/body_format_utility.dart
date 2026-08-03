@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:act_http_client_manager/src/models/converted_body.dart';
 import 'package:act_http_client_manager/src/models/request_param.dart';
 import 'package:act_http_client_manager/src/models/request_response.dart';
+import 'package:act_http_client_manager/src/types/http_mime_types_client_ext.dart';
 import 'package:act_http_client_manager/src/types/request_status.dart';
 import 'package:act_http_core/act_http_core.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -35,15 +36,42 @@ sealed class BodyFormatUtility {
 
     request.headers.addAll(requestParam.headers);
 
-    // We had guessed the body content type and we set it in the request
+    // We had guessed the body content type and we set it in the request.
+    //
+    // The http library gives the request a content type of its own as soon as a body is written in
+    // it, therefore we can't look at the request to know whether the caller asked for one: we look
+    // at the headers it gave us. The charset the library added is kept, because it says how the
+    // body we are about to send has been encoded.
     if (convertedBody.contentType != HttpMimeTypes.empty &&
-        !request.headers.containsKey(HeaderConstants.contentTypeHeaderKey)) {
+        _findContentType(requestParam.headers) == null) {
       logsHelper.d("We had guessed the content type: ${convertedBody.contentType.stringValue}, and "
           "we set it in the request header");
-      request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType.stringValue;
+
+      final writtenType = request.headers[HeaderConstants.contentTypeHeaderKey];
+      final charset = (writtenType == null)
+          ? null
+          : MediaType.parse(writtenType).parameters[HeaderConstants.charsetKey];
+
+      request.headers[HeaderConstants.contentTypeHeaderKey] = convertedBody.contentType
+          .toMediaType(parameters: {HeaderConstants.charsetKey: ?charset})
+          .toString();
     }
 
     return request;
+  }
+
+  /// Returns the content type contained in the [headers] given, whatever the case it is written
+  /// with, or null if there is none
+  static String? _findContentType(Map<String, String> headers) {
+    final contentTypeKey = HeaderConstants.contentTypeHeaderKey.toLowerCase();
+
+    for (final header in headers.entries) {
+      if (header.key.toLowerCase() == contentTypeKey) {
+        return header.value;
+      }
+    }
+
+    return null;
   }
 
   /// Tries to guess the body type based on its runtime type
@@ -76,7 +104,13 @@ sealed class BodyFormatUtility {
           }
           break;
         case HttpBodyTypes.json:
-          if (body is Map<String, dynamic> || body is List<dynamic>) {
+          if (body is Map<String, dynamic>) {
+            return HttpBodyTypes.json;
+          }
+
+          // A list of files is a list of values, and it is the files which are meant, so we leave
+          // it to the type below
+          if (body is List<dynamic> && !_areAllFiles(body)) {
             return HttpBodyTypes.json;
           }
           break;
@@ -85,11 +119,8 @@ sealed class BodyFormatUtility {
             return HttpBodyTypes.files;
           }
 
-          if (body is List<dynamic>) {
-            final allAreFiles = body.every((element) => element is MultipartFile);
-            if (allAreFiles) {
-              return HttpBodyTypes.files;
-            }
+          if (body is List<dynamic> && _areAllFiles(body)) {
+            return HttpBodyTypes.files;
           }
           break;
       }
@@ -97,6 +128,10 @@ sealed class BodyFormatUtility {
 
     return null;
   }
+
+  /// Returns true if the [body] given contains at least one element and if all of them are files
+  static bool _areAllFiles(List<dynamic> body) =>
+      body.isNotEmpty && body.every((element) => element is MultipartFile);
 
   /// The methods parses the body given and parse it to manageable type for the external http lib
   ///
@@ -152,12 +187,9 @@ sealed class BodyFormatUtility {
           break;
         }
 
-        if (requestBody is List<dynamic>) {
-          final allAreFiles = requestBody.every((element) => element is MultipartFile);
-          if (allAreFiles) {
-            // Nothing to do
-            break;
-          }
+        if (requestBody is List<dynamic> && _areAllFiles(requestBody)) {
+          // Nothing to do
+          break;
         }
 
         logsHelper.w("We expect to have a MultipartFile or List<MultipartFile> body for the "
