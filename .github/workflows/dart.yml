@@ -2025,6 +2025,39 @@ jobs:
       - job_001
       - job_002
   job_044:
+    name: "test; PKG: act_shared_auth_local_storage; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_shared_auth_local_storage;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_shared_auth_local_storage
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_shared_auth_local_storage_pub_upgrade
+        name: act_shared_auth_local_storage; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth_local_storage
+      - name: act_shared_auth_local_storage; flutter test
+        run: flutter test
+        if: "always() && steps.act_shared_auth_local_storage_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth_local_storage
+    needs:
+      - job_001
+      - job_002
+  job_045:
     name: "test; PKG: act_splash_screen_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2057,7 +2090,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_045:
+  job_046:
     name: "test; PKG: act_test_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2090,7 +2123,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_046:
+  job_047:
     name: "test; PKG: act_themes_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2123,7 +2156,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_047:
+  job_048:
     name: "test; PKG: act_tic_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2156,7 +2189,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_048:
+  job_049:
     name: "test; PKG: act_websocket_client_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2189,7 +2222,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_049:
+  job_050:
     name: "test; PKG: act_websocket_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2222,7 +2255,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_050:
+  job_051:
     name: "test; PKG: act_websocket_server_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2255,7 +2288,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_051:
+  job_052:
     name: "test; PKG: act_yaml_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -2288,7 +2321,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_052:
+  job_053:
     name: "test; PKG: act_web_local_storage_manager; `flutter test --platform chrome`"
     runs-on: ubuntu-latest
     steps:

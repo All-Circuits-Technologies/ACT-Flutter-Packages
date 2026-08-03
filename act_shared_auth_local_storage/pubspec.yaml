@@ -54,3 +54,15 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+  # The in memory storages the tests keep the properties and the secrets in
+  flutter_secure_storage: ^9.2.4
+  shared_preferences_platform_interface: ^2.4.1
+
+  # The levels the tests read the logs of the package at
+  act_foundation:
+    path: ../act_foundation
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
