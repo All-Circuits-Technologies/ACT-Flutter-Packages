@@ -21,7 +21,7 @@ encounter unexpected information that does not match the info here.
 - [Validation Scenarios](#validation-scenarios)
   - [Critical Validation Steps](#critical-validation-steps)
 - [Key Repository Structure](#key-repository-structure)
-  - [Package Structure (All 51 packages follow this pattern)](#package-structure-all-51-packages-follow-this-pattern)
+  - [Package Structure (All 68 packages follow this pattern)](#package-structure-all-68-packages-follow-this-pattern)
   - [Important Configuration Files](#important-configuration-files)
   - [Generated Files (DO NOT EDIT)](#generated-files-do-not-edit)
 - [Common Operations](#common-operations)
@@ -67,7 +67,7 @@ dart pub global activate mono_repo
 
 ```bash
 # Use the provided script to install all package dependencies
-./tool/pub_get_all.sh  # NEVER CANCEL: Takes 10-15 minutes for all 52 packages. Set timeout to 30+ minutes.
+./tool/pub_get_all.sh  # NEVER CANCEL: Takes 10-15 minutes for all 68 packages. Set timeout to 30+ minutes.
 # View script help:
 ./tool/pub_get_all.sh --help  # This works without Flutter
 ```
@@ -81,7 +81,7 @@ dart pub global activate mono_repo
 chmod +x ./tool/ci.sh  # Make script executable if needed
 PKGS="$(find . -name 'mono_pkg.yaml' | sed 's|./||; s|/mono_pkg.yaml||' | tr '\n' ' ')" \
 ./tool/ci.sh analyze
-# NEVER CANCEL: Takes 15-25 minutes to analyze all 52 packages. Set timeout to 45+ minutes.
+# NEVER CANCEL: Takes 15-25 minutes to analyze all 68 packages. Set timeout to 45+ minutes.
 ```
 
 - Analyze a single package:
@@ -92,10 +92,28 @@ flutter pub upgrade  # Takes 30-60 seconds per package
 flutter analyze --fatal-infos .  # Takes 10-30 seconds per package
 ```
 
-- Generate GitHub Actions (after adding new packages):
+- Test all packages (second CI operation):
 
 ```bash
-dart pub global run mono_repo generate  # Takes 1-2 minutes
+# The script skips the packages which have no test folder and lists the failing ones
+./tool/test_all.sh  # NEVER CANCEL: Takes 30-45 minutes. Set timeout to 60+ minutes.
+# View script help:
+./tool/test_all.sh --help  # This works without Flutter
+```
+
+- Test a single package:
+
+```bash
+cd <package_name>
+flutter test  # Takes 10-60 seconds per package
+```
+
+- Generate GitHub Actions (after adding new packages or editing a `mono_pkg.yaml`):
+
+```bash
+# Do not call "mono_repo generate" directly: this script also applies the patches
+# the generated workflow needs (flutter-version, self-validate step)
+bash tool/mono_repo_generate.sh  # Takes 1-2 minutes
 ```
 
 ### Repository Management Commands
@@ -110,9 +128,9 @@ dart pub global run mono_repo readme --pad
 
 ```bash
 flutter create --template=package <your_package_name>
-# Then manually add mono_pkg.yaml with analyze stage
+# Then manually add mono_pkg.yaml with the analyze stage, and the test stage once it has tests
 # Then run:
-dart pub global run mono_repo generate
+bash tool/mono_repo_generate.sh
 ```
 
 ## Validation Scenarios
@@ -127,7 +145,8 @@ After making any changes to packages, ALWAYS run these validation steps:
     cd <modified_package>
     flutter pub upgrade
     flutter analyze --fatal-infos .
-    # Both commands must complete successfully
+    flutter test  # Skip this one only when the package has no test folder
+    # All the commands must complete successfully
     ```
 
 2. **Full Repository Validation** (before committing):
@@ -138,6 +157,8 @@ After making any changes to packages, ALWAYS run these validation steps:
     PKGS="$(find . -name 'mono_pkg.yaml' | sed 's|./||; s|/mono_pkg.yaml||' | tr '\n' ' ')" \
     ./tool/ci.sh analyze
     # Expected time: 15-25 minutes for all packages. Set timeout to 45+ minutes.
+    ./tool/test_all.sh
+    # Expected time: 30-45 minutes for all packages. Set timeout to 60+ minutes.
     ```
 
 3. **Markdown Validation**:
@@ -149,29 +170,29 @@ After making any changes to packages, ALWAYS run these validation steps:
 
 ## Key Repository Structure
 
-### Package Structure (All 51 packages follow this pattern)
+### Package Structure (All 68 packages follow this pattern)
 
 ```text
 act_<package_name>/
 ├── lib/                    # Main source code
-├── test/                   # Test files (mostly minimal)
+├── test/                   # Unit tests, mirroring the lib/src tree
 ├── pubspec.yaml            # Package definition with "sdk: flutter"
-├── mono_pkg.yaml           # Mono repo configuration with "analyze" stage
+├── mono_pkg.yaml           # Mono repo configuration with the "analyze" and "test" stages
 ├── README.md               # Package documentation
 └── .metadata               # Flutter metadata
 ```
 
 ### Important Configuration Files
 
-- `mono_repo.yaml` - Main monorepo configuration (defines analyze stage)
+- `mono_repo.yaml` - Main monorepo configuration (merges the analyze and test stages)
 - `analysis_options.yaml` - Strict Flutter linting rules (very comprehensive)
 - `.github/workflows/dart.yml` - Generated CI workflow (DO NOT EDIT MANUALLY)
 - `tool/ci.sh` - Generated CI script (DO NOT EDIT MANUALLY)
 
 ### Generated Files (DO NOT EDIT)
 
-- `.github/workflows/dart.yml` - Regenerated by `mono_repo generate`
-- `tool/ci.sh` - Regenerated by `mono_repo generate`
+- `.github/workflows/dart.yml` - Regenerated by `tool/mono_repo_generate.sh`
+- `tool/ci.sh` - Regenerated by `tool/mono_repo_generate.sh`
 
 ## Common Operations
 
@@ -179,8 +200,10 @@ act_<package_name>/
 
 - All packages use `publish_to: none` (not published to pub.dev)
 - All packages require Flutter SDK (`sdk: flutter`)
-- All packages must pass `flutter analyze --fatal-infos .`
-- Test files exist but are mostly empty (`void main() {}`)
+- All packages must pass `flutter analyze --fatal-infos .`, test code included
+- Every package which ships Dart code has unit tests and must pass `flutter test`
+- The test conventions (layout, naming, shared fakes, mocking library) are described in the
+  "Tests" section of the root `README.md`
 
 ### Integration with Projects
 
@@ -206,15 +229,18 @@ act_life_cycle:
 - `flutter doctor` (first run): 10+ minutes timeout
 - `./tool/pub_get_all.sh`: 30+ minutes timeout
 - Full repository analysis: 45+ minutes timeout
-- `dart pub global run mono_repo generate`: 5+ minutes timeout
+- `./tool/test_all.sh`: 60+ minutes timeout
+- `bash tool/mono_repo_generate.sh`: 5+ minutes timeout
 - Single package `flutter pub upgrade`: 2+ minutes timeout
 - Single package `flutter analyze`: 2+ minutes timeout
+- Single package `flutter test`: 5+ minutes timeout
 
 ### CI Pipeline Timing
 
-- GitHub Actions workflow runs analysis on all 52 packages
-- Expected CI time: 20-30 minutes total
-- Each package: pub upgrade (30-60s) + analyze (10-30s)
+- GitHub Actions workflow runs the analysis on all 68 packages in one job, and the tests in
+  another one
+- Expected CI time: about 6 minutes for the analysis job, about 15 for the test one
+- Each package: pub upgrade (30-60s) + analyze (10-30s) + test (10-60s)
 
 ## Error Prevention
 
@@ -228,17 +254,18 @@ flutter --version
 
 # 2. Validate your specific package(s)
 cd <your_package>
-flutter pub upgrade && flutter analyze --fatal-infos .
+flutter pub upgrade && flutter analyze --fatal-infos . && flutter test
 
-# 3. Generate updated GitHub Actions if you added/modified packages
-dart pub global run mono_repo generate
+# 3. Generate updated GitHub Actions if you added/modified packages or their mono_pkg.yaml
+cd /path/to/repo/root
+bash tool/mono_repo_generate.sh
 
 # 4. Run full validation (same as CI)
-cd /path/to/repo/root
 chmod +x ./tool/ci.sh  # Make script executable if needed
 PKGS="$(find . -name 'mono_pkg.yaml' | sed 's|./||; s|/mono_pkg.yaml||' | tr '\n' ' ')" \
 ./tool/ci.sh analyze
-# NEVER CANCEL: Set timeout to 45+ minutes
+./tool/test_all.sh
+# NEVER CANCEL: Set timeout to 45+ minutes for each of them
 ```
 
 ### Common Issues and Solutions
@@ -256,7 +283,7 @@ PKGS="$(find . -name 'mono_pkg.yaml' | sed 's|./||; s|/mono_pkg.yaml||' | tr '\n
 
 ## Repository Statistics
 
-- **Total packages**: 52 Flutter packages
-- **Main CI operation**: Analysis only (no building/testing of applications)
+- **Total packages**: 68 Flutter packages
+- **Main CI operations**: Analysis and unit tests (no building of applications)
 - **Package types**: All are library packages, no applications
 - **Dependencies**: Heavy use of Flutter ecosystem packages
