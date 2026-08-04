@@ -45,3 +45,38 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  # The Bluetooth of the device the tests answer in place of
+  reactive_ble_platform_interface: ^5.4.0
+
+  # The permissions of the device the tests answer in place of
+  permission_handler_platform_interface: ^4.3.0
+
+  # The Bluetooth of the device the tests read through
+  flutter_reactive_ble: ^5.4.0
+
+  # The managers the Bluetooth of an application needs
+  act_app_life_cycle_manager:
+    path: ../act_app_life_cycle_manager
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  act_contextual_views_manager:
+    path: ../act_contextual_views_manager
+
+  act_enable_service_utility:
+    path: ../act_enable_service_utility
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  act_permissions_manager:
+    path: ../act_permissions_manager
+
+  act_platform_manager:
+    path: ../act_platform_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
