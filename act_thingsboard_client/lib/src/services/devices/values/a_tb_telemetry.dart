@@ -262,8 +262,16 @@ abstract class ATbTelemetry<T> {
   }
 
   /// Called to dispose the class
+  ///
+  /// Every telemetry element is forgotten first, so that the subscription is unsubscribed and no
+  /// more update is received: an update received after the class is disposed would be pushed on a
+  /// closed stream.
   @mustCallSuper
   Future<void> dispose() async {
+    _testTimer?.cancel();
+    _testTimer = null;
+    _values.clear();
+
     await _manageNeededSubOrUnSub();
 
     final futures = <Future>[
