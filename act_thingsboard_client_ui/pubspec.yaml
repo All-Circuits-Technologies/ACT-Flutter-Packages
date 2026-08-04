@@ -60,3 +60,18 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  # The client of the server the tests stand in for
+  mocktail: ^1.0.4
+
+  # The status a request to the server answers
+  act_http_client_manager:
+    path: ../act_http_client_manager
+
+  # The managers the tests register in the global manager
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
