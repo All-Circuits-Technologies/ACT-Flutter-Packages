@@ -179,17 +179,15 @@ class BleDevice {
   }
 
   /// Close stream on remove device
+  ///
+  /// The disconnection happens first, because it emits the state of a device which was connected
+  /// and that state has to be emitted before the streams are closed.
   Future<void> dispose() async {
-    final futuresList = <Future>[
+    await disconnect();
+
+    await Future.wait([
       _connectionStateCtrl.close(),
       _bondStateCtrl.close(),
-      disconnect(),
-    ];
-
-    if (_connectionSub != null) {
-      futuresList.add(_connectionSub!.cancel());
-    }
-
-    await Future.wait(futuresList);
+    ]);
   }
 }
