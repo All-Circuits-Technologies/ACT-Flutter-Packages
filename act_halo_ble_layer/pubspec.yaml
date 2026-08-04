@@ -60,3 +60,32 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # The Bluetooth of the device the tests answer in place of
+  reactive_ble_platform_interface: ^5.4.0
+
+  # The permissions of the device the tests answer in place of
+  permission_handler_platform_interface: ^4.3.0
+
+  # The Bluetooth of the device the tests read through
+  flutter_reactive_ble: ^5.4.0
+
+  # The life cycle of an application under test
+  act_app_life_cycle_manager:
+    path: ../act_app_life_cycle_manager
+
+  # The configuration of the Bluetooth of an application under test
+  act_config_manager:
+    path: ../act_config_manager
+
+  # The permissions the Bluetooth needs
+  act_permissions_manager:
+    path: ../act_permissions_manager
+
+  # The platform the tests say the application runs on
+  act_platform_manager:
+    path: ../act_platform_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
