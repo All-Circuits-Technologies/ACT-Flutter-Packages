@@ -133,4 +133,122 @@ void main() {
       expect(DateTimeUtility.getCurrentAge(birthDate), 0);
     });
   });
+
+  group("DateTimeUtility.addMonths", () {
+    test("adds the months and keeps the time of day", () {
+      expect(
+        DateTimeUtility.addMonths(DateTime(2026, 1, 15, 10, 20, 30), 7),
+        DateTime(2026, 8, 15, 10, 20, 30),
+      );
+    });
+
+    test("clamps the day to the length of the arrival month", () {
+      expect(DateTimeUtility.addMonths(DateTime(2026, 1, 31), 1), DateTime(2026, 2, 28));
+      expect(DateTimeUtility.addMonths(DateTime(2024, 1, 31), 1), DateTime(2024, 2, 29));
+      expect(DateTimeUtility.addMonths(DateTime(2026, 3, 31), 1), DateTime(2026, 4, 30));
+    });
+
+    test("crosses the years in both directions", () {
+      expect(DateTimeUtility.addMonths(DateTime(2026, 8, 25), 5), DateTime(2027, 1, 25));
+      expect(DateTimeUtility.addMonths(DateTime(2026, 8, 25), 17), DateTime(2028, 1, 25));
+      expect(DateTimeUtility.addMonths(DateTime(2026, 1, 25), -1), DateTime(2025, 12, 25));
+      expect(DateTimeUtility.addMonths(DateTime(2026, 1, 25), -13), DateTime(2024, 12, 25));
+    });
+
+    test("keeps the time zone of the given date", () {
+      expect(DateTimeUtility.addMonths(DateTime.utc(2026, 1, 15), 1).isUtc, isTrue);
+      expect(DateTimeUtility.addMonths(DateTime(2026, 1, 15), 1).isUtc, isFalse);
+    });
+
+    test("returns the given date when no month is added", () {
+      final date = DateTime(2026, 8, 25, 10, 20, 30);
+
+      expect(DateTimeUtility.addMonths(date, 0), date);
+    });
+  });
+
+  group("DateTimeUtility.wholeMonthsBetween", () {
+    test("returns zero for two equal date times", () {
+      final date = DateTime(2026, 8, 25, 10, 20, 30);
+
+      expect(DateTimeUtility.wholeMonthsBetween(from: date, to: date), 0);
+    });
+
+    test("counts the whole months of the interval", () {
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2026, 1, 20), to: DateTime(2026, 8, 20)),
+        7,
+      );
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2025, 12, 31), to: DateTime(2026, 8, 25)),
+        7,
+      );
+    });
+
+    test("does not count the month which is not complete yet", () {
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2026, 1, 20), to: DateTime(2026, 8, 19)),
+        6,
+      );
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2026, 1, 2), to: DateTime(2026, 1, 30)),
+        0,
+      );
+    });
+
+    test("counts the time of day of the interval bounds", () {
+      expect(
+        DateTimeUtility.wholeMonthsBetween(
+          from: DateTime(2026, 1, 15, 18),
+          to: DateTime(2026, 2, 15, 9),
+        ),
+        0,
+      );
+      expect(
+        DateTimeUtility.wholeMonthsBetween(
+          from: DateTime(2026, 1, 15, 18),
+          to: DateTime(2026, 2, 15, 18),
+        ),
+        1,
+      );
+    });
+
+    test("stands the last day of the month in for a day which does not exist", () {
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2026, 1, 31), to: DateTime(2026, 2, 28)),
+        1,
+      );
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: DateTime(2026, 1, 31), to: DateTime(2026, 2, 27)),
+        0,
+      );
+    });
+
+    test("returns the opposite count when the bounds are swapped", () {
+      final from = DateTime(2026, 1, 20);
+      final to = DateTime(2026, 8, 19);
+
+      expect(DateTimeUtility.wholeMonthsBetween(from: to, to: from), -6);
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: to, to: from),
+        -DateTimeUtility.wholeMonthsBetween(from: from, to: to),
+      );
+    });
+
+    test("compares the bounds in the time zone of the first one", () {
+      final from = DateTime.utc(2026, 1, 20, 12);
+
+      expect(
+        DateTimeUtility.wholeMonthsBetween(from: from, to: from.add(const Duration(days: 213))),
+        7,
+      );
+      expect(
+        DateTimeUtility.wholeMonthsBetween(
+          from: from,
+          to: from.toLocal().add(const Duration(days: 213)),
+        ),
+        7,
+      );
+    });
+  });
 }
