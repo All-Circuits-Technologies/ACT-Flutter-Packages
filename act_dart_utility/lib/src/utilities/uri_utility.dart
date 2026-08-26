@@ -79,8 +79,10 @@ sealed class UriUtility {
       host: reference.host,
       port: reference.port,
       pathSegments: tmpSegments,
-      queryParameters: reference.queryParametersAll,
-      fragment: reference.fragment,
+      // An empty map and an empty string are not the same thing as the absence of a query or of a
+      // fragment: they would add a trailing "?" and "#" to a uri which had neither.
+      queryParameters: reference.hasQuery ? reference.queryParametersAll : null,
+      fragment: reference.hasFragment ? reference.fragment : null,
     );
   }
 
