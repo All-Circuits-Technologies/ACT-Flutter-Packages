@@ -41,6 +41,22 @@ print_help() {
     grep "^##" "$0" | sed 's/^## \?//' | sed "s,\$0,$0,"
 }
 
+# Prints the arguments the package gives to "flutter test", if it gives any.
+#
+# A package which only runs its tests on one platform says so next to the test
+# task of its mono_pkg.yaml; the CI reads the arguments from there, and so does
+# this script.
+test_args_of() {
+    local mono_pkg="$1mono_pkg.yaml"
+
+    if [ ! -f "${mono_pkg}" ]
+    then
+        return
+    fi
+
+    sed -n 's/^ *- test:  *\(.*\)$/\1/p' "${mono_pkg}" | head -n 1
+}
+
 flutter-test-all() {
     for i in $(git ls-files --recurse-submodules "*/pubspec.yaml")
     do
@@ -52,8 +68,13 @@ flutter-test-all() {
             continue
         fi
 
+        local test_args
+        test_args="$(test_args_of "${pkg_dir}")"
+
         echo "Test ${pkg_dir}"
-        if ! (cd "${pkg_dir}" && ${FVM_IF_NEEDED} flutter test)
+        # The arguments are meant to be split into several ones
+        # shellcheck disable=SC2086
+        if ! (cd "${pkg_dir}" && ${FVM_IF_NEEDED} flutter test ${test_args})
         then
             FAILURES+=("${pkg_dir}")
         fi

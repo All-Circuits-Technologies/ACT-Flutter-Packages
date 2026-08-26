@@ -93,13 +93,18 @@ class CookieSessionSingleton extends AbsWithLifeCycle
 
     String? cookieValue;
     for (final cookie in cookiesElements) {
-      if (!cookie.startsWith("$name$_cookieValueSeparator")) {
+      // The browser separates the cookies with a separator and a space, so every cookie but the
+      // first one begins with a space
+      final trimmedCookie = cookie.trim();
+      final prefix = "$name$_cookieValueSeparator";
+
+      if (!trimmedCookie.startsWith(prefix)) {
         // We haven't found it
         continue;
       }
 
-      final cookieValueParts = cookie.split(_cookieValueSeparator);
-      cookieValue = cookieValueParts[1];
+      // The value is taken as a whole, because it may contain the separator itself
+      cookieValue = trimmedCookie.substring(prefix.length);
       break;
     }
 

@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 name: act_firebase_crash
-description: "A new Flutter package project."
+description: "Reports the crashes and the logs of an application to Firebase Crashlytics."
 version: 0.1.0
 publish_to: none
 
@@ -54,3 +54,19 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  # Starts the Firebase of a test, which the crash service hangs its Crashlytics under
+  firebase_core: ^3.14.0
+
+  # Firebase as a test answers for it
+  firebase_core_platform_interface: ^6.0.0
+
+  # Crashlytics as a test answers for it
+  firebase_crashlytics_platform_interface: ^3.0.0
+
+  # Lets a fake stand in for the Crashlytics of a device
+  plugin_platform_interface: ^2.1.8
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

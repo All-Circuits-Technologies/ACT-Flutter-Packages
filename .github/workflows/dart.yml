@@ -672,6 +672,39 @@ jobs:
         if: "always() && steps.act_yaml_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_yaml_utility
   job_003:
+    name: "test; PKG: act_amplify_api; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_api;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_api
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_amplify_api_pub_upgrade
+        name: act_amplify_api; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_api
+      - name: act_amplify_api; flutter test
+        run: flutter test
+        if: "always() && steps.act_amplify_api_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_api
+    needs:
+      - job_001
+      - job_002
+  job_004:
     name: "test; PKG: act_amplify_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -679,7 +712,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_core;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_core;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_core
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -704,7 +737,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_004:
+  job_005:
+    name: "test; PKG: act_amplify_storage_s3; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_storage_s3;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_amplify_storage_s3
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_amplify_storage_s3_pub_upgrade
+        name: act_amplify_storage_s3; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+      - name: act_amplify_storage_s3; flutter test
+        run: flutter test
+        if: "always() && steps.act_amplify_storage_s3_pub_upgrade.conclusion == 'success'"
+        working-directory: act_amplify_storage_s3
+    needs:
+      - job_001
+      - job_002
+  job_006:
     name: "test; PKG: act_app_life_cycle_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -712,7 +778,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_app_life_cycle_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_app_life_cycle_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_app_life_cycle_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -737,7 +803,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_005:
+  job_007:
     name: "test; PKG: act_config_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -745,7 +811,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_config_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_config_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_config_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -770,7 +836,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_006:
+  job_008:
     name: "test; PKG: act_dart_result; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -778,7 +844,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_result;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_result;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_result
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -803,7 +869,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_007:
+  job_009:
     name: "test; PKG: act_dart_timer; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -811,7 +877,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_timer;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_timer;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_timer
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -836,7 +902,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_008:
+  job_010:
     name: "test; PKG: act_dart_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -844,7 +910,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_utility;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_utility;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_utility
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -869,7 +935,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_009:
+  job_011:
     name: "test; PKG: act_dart_value_keeper; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -877,7 +943,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_value_keeper;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_value_keeper;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_dart_value_keeper
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -902,7 +968,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_010:
+  job_012:
     name: "test; PKG: act_entity; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -910,7 +976,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_entity;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_entity;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_entity
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -935,7 +1001,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_011:
+  job_013:
     name: "test; PKG: act_ffi_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -943,7 +1009,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_ffi_utility;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_ffi_utility;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_ffi_utility
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -968,7 +1034,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_012:
+  job_014:
     name: "test; PKG: act_file_transfer_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -976,7 +1042,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_file_transfer_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_file_transfer_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_file_transfer_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1001,7 +1067,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_013:
+  job_015:
     name: "test; PKG: act_firebase_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1009,7 +1075,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_firebase_core;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_firebase_core;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_firebase_core
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1034,7 +1100,73 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_014:
+  job_016:
+    name: "test; PKG: act_firebase_crash; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_firebase_crash;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_firebase_crash
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_firebase_crash_pub_upgrade
+        name: act_firebase_crash; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_firebase_crash
+      - name: act_firebase_crash; flutter test
+        run: flutter test
+        if: "always() && steps.act_firebase_crash_pub_upgrade.conclusion == 'success'"
+        working-directory: act_firebase_crash
+    needs:
+      - job_001
+      - job_002
+  job_017:
+    name: "test; PKG: act_flutter_utility; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_flutter_utility;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_flutter_utility
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_flutter_utility_pub_upgrade
+        name: act_flutter_utility; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_flutter_utility
+      - name: act_flutter_utility; flutter test
+        run: flutter test
+        if: "always() && steps.act_flutter_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: act_flutter_utility
+    needs:
+      - job_001
+      - job_002
+  job_018:
     name: "test; PKG: act_foundation; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1042,7 +1174,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_foundation;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_foundation;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_foundation
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1067,7 +1199,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_015:
+  job_019:
     name: "test; PKG: act_global_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1075,7 +1207,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_global_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_global_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_global_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1100,7 +1232,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_016:
+  job_020:
     name: "test; PKG: act_halo_abstract; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1108,7 +1240,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_halo_abstract;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_halo_abstract;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_halo_abstract
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1133,7 +1265,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_017:
+  job_021:
+    name: "test; PKG: act_halo_manager; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_halo_manager;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_halo_manager
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_halo_manager_pub_upgrade
+        name: act_halo_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_halo_manager
+      - name: act_halo_manager; flutter test
+        run: flutter test
+        if: "always() && steps.act_halo_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_halo_manager
+    needs:
+      - job_001
+      - job_002
+  job_022:
     name: "test; PKG: act_http_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1141,7 +1306,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_core;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_core;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_core
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1166,7 +1331,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_018:
+  job_023:
     name: "test; PKG: act_http_logging_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1174,7 +1339,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_logging_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_logging_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_logging_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1199,7 +1364,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_019:
+  job_024:
+    name: "test; PKG: act_http_server_manager; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_server_manager;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_http_server_manager
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_http_server_manager_pub_upgrade
+        name: act_http_server_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_http_server_manager
+      - name: act_http_server_manager; flutter test
+        run: flutter test
+        if: "always() && steps.act_http_server_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_http_server_manager
+    needs:
+      - job_001
+      - job_002
+  job_025:
     name: "test; PKG: act_internet_connectivity_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1207,7 +1405,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_internet_connectivity_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_internet_connectivity_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_internet_connectivity_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1232,7 +1430,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_020:
+  job_026:
+    name: "test; PKG: act_intl; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_intl;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_intl
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_intl_pub_upgrade
+        name: act_intl; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_intl
+      - name: act_intl; flutter test
+        run: flutter test
+        if: "always() && steps.act_intl_pub_upgrade.conclusion == 'success'"
+        working-directory: act_intl
+    needs:
+      - job_001
+      - job_002
+  job_027:
     name: "test; PKG: act_jwt_utilities; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1240,7 +1471,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_jwt_utilities;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_jwt_utilities;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_jwt_utilities
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1265,7 +1496,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_021:
+  job_028:
     name: "test; PKG: act_licenses_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1273,7 +1504,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_licenses_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_licenses_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_licenses_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1298,7 +1529,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_022:
+  job_029:
     name: "test; PKG: act_life_cycle; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1306,7 +1537,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_life_cycle;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_life_cycle;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_life_cycle
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1331,7 +1562,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_023:
+  job_030:
     name: "test; PKG: act_local_storage_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1339,7 +1570,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_local_storage_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_local_storage_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_local_storage_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1364,7 +1595,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_024:
+  job_031:
     name: "test; PKG: act_logger_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1372,7 +1603,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_logger_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_logger_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_logger_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1397,7 +1628,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_025:
+  job_032:
     name: "test; PKG: act_music_player_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1405,7 +1636,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_music_player_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_music_player_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_music_player_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1430,7 +1661,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_026:
+  job_033:
     name: "test; PKG: act_platform_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1438,7 +1669,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_platform_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_platform_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_platform_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1463,7 +1694,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_027:
+  job_034:
     name: "test; PKG: act_qr_code; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1471,7 +1702,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_qr_code;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_qr_code;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_qr_code
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1496,7 +1727,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_028:
+  job_035:
     name: "test; PKG: act_remote_storage_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1504,7 +1735,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_remote_storage_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_remote_storage_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_remote_storage_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1529,7 +1760,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_029:
+  job_036:
+    name: "test; PKG: act_remote_storage_ui; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_remote_storage_ui;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_remote_storage_ui
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_remote_storage_ui_pub_upgrade
+        name: act_remote_storage_ui; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_remote_storage_ui
+      - name: act_remote_storage_ui; flutter test
+        run: flutter test
+        if: "always() && steps.act_remote_storage_ui_pub_upgrade.conclusion == 'success'"
+        working-directory: act_remote_storage_ui
+    needs:
+      - job_001
+      - job_002
+  job_037:
     name: "test; PKG: act_router_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1537,7 +1801,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_router_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_router_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_router_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1562,7 +1826,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_030:
+  job_038:
+    name: "test; PKG: act_shared_auth; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_shared_auth;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_shared_auth
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_shared_auth_pub_upgrade
+        name: act_shared_auth; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_shared_auth
+      - name: act_shared_auth; flutter test
+        run: flutter test
+        if: "always() && steps.act_shared_auth_pub_upgrade.conclusion == 'success'"
+        working-directory: act_shared_auth
+    needs:
+      - job_001
+      - job_002
+  job_039:
     name: "test; PKG: act_splash_screen_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1570,7 +1867,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_splash_screen_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_splash_screen_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_splash_screen_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1595,7 +1892,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_031:
+  job_040:
     name: "test; PKG: act_test_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1603,7 +1900,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_test_utility;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_test_utility;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_test_utility
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1628,7 +1925,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_032:
+  job_041:
     name: "test; PKG: act_tic_manager; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1636,7 +1933,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_tic_manager;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_tic_manager;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_tic_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1661,7 +1958,40 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_033:
+  job_042:
+    name: "test; PKG: act_websocket_client_manager; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_websocket_client_manager;commands:test_0"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_websocket_client_manager
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_websocket_client_manager_pub_upgrade
+        name: act_websocket_client_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_websocket_client_manager
+      - name: act_websocket_client_manager; flutter test
+        run: flutter test
+        if: "always() && steps.act_websocket_client_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_websocket_client_manager
+    needs:
+      - job_001
+      - job_002
+  job_043:
     name: "test; PKG: act_websocket_core; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1669,7 +1999,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_websocket_core;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_websocket_core;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_websocket_core
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1694,7 +2024,7 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_034:
+  job_044:
     name: "test; PKG: act_yaml_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
@@ -1702,7 +2032,7 @@ jobs:
         uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_yaml_utility;commands:test"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_yaml_utility;commands:test_0"
           restore-keys: |
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_yaml_utility
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
@@ -1724,6 +2054,39 @@ jobs:
         run: flutter test
         if: "always() && steps.act_yaml_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_yaml_utility
+    needs:
+      - job_001
+      - job_002
+  job_045:
+    name: "test; PKG: act_web_local_storage_manager; `flutter test --platform chrome`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager;commands:test_1"
+          restore-keys: |
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - id: act_web_local_storage_manager_pub_upgrade
+        name: act_web_local_storage_manager; flutter pub upgrade
+        run: flutter pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: act_web_local_storage_manager
+      - name: "act_web_local_storage_manager; flutter test --platform chrome"
+        run: flutter test --platform chrome
+        if: "always() && steps.act_web_local_storage_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: act_web_local_storage_manager
     needs:
       - job_001
       - job_002
