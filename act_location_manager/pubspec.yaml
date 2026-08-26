@@ -60,3 +60,21 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # The location of the device the tests answer in place of
+  geolocator_platform_interface: ^4.2.6
+
+  # The permissions of the device the tests answer in place of
+  permission_handler_platform_interface: ^4.3.0
+
+  # The router the contextual views of the tests are displayed through
+  act_router_manager:
+    path: ../act_router_manager
+
+  # The pages the tests display when the location has to be switched on
+  act_contextual_views_manager:
+    path: ../act_contextual_views_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

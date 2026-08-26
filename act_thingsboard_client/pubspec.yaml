@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 name: act_thingsboard_client
-description: Helpful package to use the Thingsboard client with app
+description: Reaches a Thingsboard server, its devices and their telemetry
 publish_to: none
 
 # This package supports all platforms listed below.
@@ -70,3 +70,10 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  # The client of the server the tests stand in for
+  mocktail: ^1.0.4
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

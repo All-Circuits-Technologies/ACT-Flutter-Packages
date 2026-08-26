@@ -37,7 +37,7 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin {
   @override
   Future<bool> managedIntermediateProcess() async {
     if (!verifyTokenInfo(tokensInfo?.refreshToken)) {
-      logsHelper.i("The refresh token is valid, we can't try to get tokens");
+      logsHelper.i("There is no valid refresh token, we can't try to get tokens");
       return false;
     }
 

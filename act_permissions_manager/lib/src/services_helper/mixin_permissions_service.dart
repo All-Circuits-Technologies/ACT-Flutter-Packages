@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_permissions_manager/src/element/permission_element.dart';
+import 'package:act_permissions_manager/src/handlers/permission_handler.dart';
 import 'package:act_permissions_manager/src/permissions_manager.dart';
 import 'package:act_permissions_manager/src/services_helper/permission_monitor_service.dart';
 import 'package:equatable/equatable.dart';
@@ -263,6 +264,9 @@ class _PermissionContainer {
   /// The permission subscription linked to the permission manager listener
   late final StreamSubscription _permissionSub;
 
+  /// The handler of the permission this container follows
+  late final PermissionHandler _permissionHandler;
+
   /// The permission monitor service linked to this permission
   late final PermissionMonitorService _permissionMonitorService;
 
@@ -289,8 +293,8 @@ class _PermissionContainer {
       permissionElement: element,
     );
 
-    _permissionSub =
-        permissionManager.getAHandler(element).statusStream.listen(_onPermissionStatusUpdated);
+    _permissionHandler = permissionManager.getAHandler(element);
+    _permissionSub = _permissionHandler.statusStream.listen(_onPermissionStatusUpdated);
   }
 
   /// Check and ask for permission
@@ -340,5 +344,9 @@ class _PermissionContainer {
       _permissionSub.cancel(),
       _permissionMonitorService.close(),
     ]);
+
+    // The handler has to be closed too, otherwise the permission keeps being watched for a service
+    // which no longer needs it
+    await _permissionHandler.close();
   }
 }

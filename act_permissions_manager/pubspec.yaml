@@ -76,6 +76,17 @@ dev_dependencies:
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
 
+  # The permissions of the device the tests answer in place of
+  permission_handler_platform_interface: ^4.3.0
+
+  # The router the contextual views of the tests are displayed through
+  act_router_manager:
+    path: ../act_router_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+
 dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The permission handler doesn't use the latest android package which is needed by flutter.
