@@ -4,7 +4,9 @@
 
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_test_utility/act_test_utility.dart';
+// The global manager this package defines is the one under test, so its own fake is the one to
+// drive here, not the shared one which stands in for it elsewhere
+import 'package:act_test_utility/act_test_utility.dart' hide FakeGlobalManager;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';

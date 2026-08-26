@@ -65,6 +65,13 @@ dev_dependencies:
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
 
+  # In memory implementation of the shared preferences, for the tests
+  shared_preferences_platform_interface: ^2.4.1
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+
 dependency_overrides:
   # This is needed to fix problem with building for Android app
   # The shared preferences doesn't use the latest android package which is needed by flutter.

@@ -48,3 +48,14 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+  # Log levels the tests assert on
+  act_foundation:
+    path: ../act_foundation
+
+  # The dialog of the platform, which the tests answer for
+  file_selector_platform_interface: ^2.7.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

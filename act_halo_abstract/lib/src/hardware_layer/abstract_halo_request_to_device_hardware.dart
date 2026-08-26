@@ -85,7 +85,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
   /// device doesn't say if everything goes right or not (this can be used for rebooting a device,
   /// for instance).
   Future<HaloErrorType> callOrder({required HaloRequestParamsPacket request}) async {
-    final error = _verifyRequest(request: request, expectedType: HaloRequestType.procedure);
+    final error = _verifyRequest(request: request, expectedType: HaloRequestType.order);
     if (error != null) {
       return error.error;
     }

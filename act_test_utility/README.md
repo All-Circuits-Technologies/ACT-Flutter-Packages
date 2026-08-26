@@ -15,7 +15,9 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
+  - [Assert on what a logs helper wrote](#assert-on-what-a-logs-helper-wrote)
   - [Serve the assets a test needs](#serve-the-assets-a-test-needs)
+  - [Give the class under test a global manager](#give-the-class-under-test-a-global-manager)
 - [Testing](#testing)
 
 ## Presentation
@@ -28,8 +30,13 @@ It is only meant to be added as a `dev_dependency`: nothing here is intended to 
 application. It contains no test of its own for the other packages either; it only provides the
 tools they use to write theirs.
 
-A package which this one depends on cannot use it, because that would create a dependency cycle.
-Such a package defines its fakes locally, in its own `test/` folder.
+This package depends on the ACT packages whose interfaces it fakes, and those packages use it in
+their own tests: pub resolves such a cycle between packages linked by a path, as long as this one
+is only ever a `dev_dependency`.
+
+What a package which defines a faked interface does keep is its own fake of that interface, in its
+`test/` folder: the tests of the real thing must not be written against the stand-in they are
+meant to justify. Those tests hide the shared name when they import this package.
 
 ## Architecture
 
@@ -45,6 +52,11 @@ choice between them depends on what the test asserts:
 | -------------- | ------------------------------------------ | ----------------------------------- |
 | `FakeLogger`   | Records every message as a `FakeLogRecord` | The test asserts on what was logged |
 | `SilentLogger` | Drops every message and records nothing    | The logs are not part of the test   |
+
+A class which owns a `LogsHelper` of `act_logger_manager` rather than the interface cannot be given
+either of them: the helper is a concrete class, and what it writes to is its external logger.
+`FakeExternalLogger` is that external logger, and it records the messages as the same
+`FakeLogRecord`.
 
 A `FakeLogger` behaves like a real logger helper: it owns a list of categories, an optional minimum
 level below which the messages are dropped, and a default level used when the level of a message is
@@ -66,6 +78,10 @@ flowchart LR
     FakeLogger -.implements.-> MixinActLogger
     SilentLogger -.implements.-> MixinActLogger
 ```
+
+`FakeGlobalManager` is the global manager of the application in a test. A class which reaches its
+logger or its managers through the shortcuts of `act_global_manager` needs one to exist, and this
+manager gives the test one which holds only what the test registers.
 
 `FakeAssets` serves the files a test needs in place of the ones of the application bundle. It
 answers on the platform channel the asset bundle reads through, so the class under test keeps
@@ -127,6 +143,21 @@ shared without any set up or tear down:
 final manager = MyManager(logger: const SilentLogger());
 ```
 
+### Assert on what a logs helper wrote
+
+Build the helper of the class under test from a fake external logger, then read its records:
+
+```dart
+final external = FakeExternalLogger();
+final manager = MyManager(logsHelper: external.buildHelper(category: "myManager"));
+
+manager.setValue(-1);
+
+expect(external.recordsAtLevel(LogsLevel.warn).length, 1);
+```
+
+`records`, `recordsAtLevel` and `clearRecords` behave as the ones of a `FakeLogger`.
+
 ### Serve the assets a test needs
 
 Give the contents to serve, keyed by asset key, and stop serving them once the test is over:
@@ -151,11 +182,45 @@ void main() {
 A key which is not served is reported as missing, exactly as a file absent from the bundle is, so a
 test can check what a class does without its optional files.
 
+### Give the class under test a global manager
+
+Install the manager before the class under test is built, and forget the managers it holds once the
+test is over:
+
+```dart
+void main() {
+  late FakeGlobalManager globalManager;
+
+  setUp(() => globalManager = FakeGlobalManager.install());
+  tearDown(() => globalManager.reset());
+
+  test("logs a warning when the packet is empty", () {
+    final logger = FakeLogger();
+    globalManager = FakeGlobalManager.install(logger: logger);
+
+    MyParser.parse(Uint8List(0));
+
+    expect(logger.recordsAtLevel(LogsLevel.warn).length, 1);
+  });
+}
+```
+
+Without a logger, the manager is silent, which is what a test which only needs the shortcuts to
+answer wants. The managers a test needs are registered on it the way an application registers
+them:
+
+```dart
+globalManager.register(MyManagerBuilder());
+await globalManager.allReady();
+```
+
 ## Testing
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
-to the sub loggers, the filtering done by the minimum level, and the contents served, replaced and
-stopped by the fake assets. To run them:
+to the sub loggers, the filtering done by the minimum level, the contents served, replaced and
+stopped by the fake assets, the installation, the logger and the managers of the fake global
+manager, and the recording done by the fake external logger and by the helpers it builds. To run
+them:
 
 ```console
 > flutter test

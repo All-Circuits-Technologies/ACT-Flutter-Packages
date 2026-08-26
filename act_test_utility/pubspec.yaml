@@ -40,6 +40,15 @@ dependencies:
   act_foundation:
     path: ../act_foundation
 
+  act_global_manager:
+    path: ../act_global_manager
+
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
 # This package is only meant to be used as a dev dependency. Keep its dependencies limited to the
 # ACT packages whose interfaces are faked here, and never depend on a package which could itself
 # want to use this one in its tests.

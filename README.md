@@ -175,8 +175,10 @@ tested by `test/a/b_test.dart`.
 ### Test tooling
 
 - [`act_test_utility`](act_test_utility/) holds the fakes shared by several packages. It is added
-  as a `dev_dependency` by the packages which use it. A package it depends on cannot use it, to
-  avoid a dependency cycle; such a package defines its fakes in its own `test` folder.
+  as a `dev_dependency` by the packages which use it, including the ones it depends on: pub
+  resolves such a cycle between packages linked by a path. A package which defines a faked
+  interface still keeps its own fake of it, in its `test` folder, and hides the shared name when
+  it imports the shared fakes.
 - [`mocktail`](https://pub.dev/packages/mocktail) is the mocking library. It needs no code
   generation, so there is no generated file to maintain. It is added as a `dev_dependency` only in
   the packages which need it.
