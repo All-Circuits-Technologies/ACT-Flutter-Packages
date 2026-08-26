@@ -12,7 +12,7 @@ extension HttpMimeTypesClientExt on HttpMimeTypes {
     Map<String, String>? parameters,
   }) {
     final type = MediaType.parse(stringValue);
-    type.change(clearParameters: true, parameters: parameters);
-    return type;
+    // A media type is a value: changing it answers another one instead of touching this one
+    return type.change(clearParameters: true, parameters: parameters);
   }
 }

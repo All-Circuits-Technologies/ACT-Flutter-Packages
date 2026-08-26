@@ -43,18 +43,23 @@ sealed class LocalizedFileUtility {
     required bool useCache,
     required LogsHelper logsHelper,
   }) async {
-    // Convert locales to variants.
+    // Convert locales to variants, keeping the locale each variant was written from: variants are
+    // lowercase, so reading one back as a locale would give a locale which differs from the one
+    // the caller asked for (ex: "fr_fr" instead of "fr_FR").
     final expandedLocales = LocaleUtility.expandLocales(locales);
 
-    final variants = expandedLocales.map((locale) => LocaleUtility.localeToString(
+    final localesByVariant = {
+      for (final locale in expandedLocales)
+        LocaleUtility.localeToString(
           locale: locale,
           separator: server_local_vers_file_constants.localeCodesSep,
-        ).toLowerCase());
+        ).toLowerCase(): locale,
+    };
 
     // Process lookup with variants
     final variantUtilityResult = await VariantFileUtility.getVariantFile(
       storage: storage,
-      variants: variants,
+      variants: localesByVariant.keys,
       variantToFilePath: (variant) => [dirId, variant, fileName].join(storage.getPathSeparator()),
       useCache: useCache,
       logsHelper: logsHelper,
@@ -72,16 +77,13 @@ sealed class LocalizedFileUtility {
 
     // Transform result back to locales
     final foundVariant = variantUtilityResult.data!.variant;
-    final foundLocale = LocaleUtility.localeFromString(
-      string: foundVariant,
-      separator: server_local_vers_file_constants.localeCodesSep,
-    );
+    final foundLocale = localesByVariant[foundVariant];
 
     if (foundLocale == null) {
-      // We stringified locales at the very beginning of this method
-      // and we transformed one of them back to a locale.
+      // We searched the file with the variants we stringified from the given locales, so the
+      // variant which was found is one of them.
       // We do not expect any issue here.
-      logsHelper.e("Variants are stringified locales, so should be readable as locales again");
+      logsHelper.e("Variants are stringified locales, so should be known as locales again");
       assert(false, "Should never fire");
       return (result: StorageRequestResult.genericError, data: null);
     }

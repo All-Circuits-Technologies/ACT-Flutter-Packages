@@ -77,7 +77,9 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
       // [filteredElements] length newly added with this loader in front of what it has already
       // been added.
       final previousFilteredElementsLength = filteredElements.length;
-      while (!loader.isAllLoaded &&
+      // A loader which has everything may still have elements we haven't used yet: it is done when
+      // it has nothing more to get and nothing left to give
+      while ((!loader.isAllLoaded || tmpOffset < loader.loadedElements.length) &&
           (filteredElements.length - previousFilteredElementsLength) < limit) {
         final loaderElements = await loader.load(
           offset: tmpOffset,

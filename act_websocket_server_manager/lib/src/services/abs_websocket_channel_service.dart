@@ -159,7 +159,9 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
       ),
     );
     await _onMessageSub?.cancel();
-    await _webSocket.sink.close(status.goingAway);
+    // The WebSocket only accepts the normal closure and the codes an application defines itself:
+    // the ones the protocol reserves are refused, "going away" included.
+    await _webSocket.sink.close(status.normalClosure);
     _onClose(clientUuid);
 
     return super.disposeLifeCycle();

@@ -61,3 +61,21 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # The translations of the widgets of Flutter, which a page of a test is shown in
+  flutter_localizations:
+    sdk: flutter
+
+  # The in memory storage the tests keep the properties in
+  shared_preferences_platform_interface: ^2.4.1
+
+  # The configuration and the storage the locales of the tests are read from
+  act_config_manager:
+    path: ../act_config_manager
+
+  act_local_storage_manager:
+    path: ../act_local_storage_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
