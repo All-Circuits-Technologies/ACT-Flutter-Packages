@@ -87,7 +87,9 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
   /// Called when the manager is disposed
   @override
   Future<void> disposeLifeCycle() async {
-    await ConfigSingleton.instance.disposeLifeCycle();
+    // The singleton doesn't exist when the manager is disposed before it has been initialized, for
+    // instance when its initialization failed
+    await ConfigSingleton.instanceOrNull?.disposeLifeCycle();
     await super.disposeLifeCycle();
   }
 }

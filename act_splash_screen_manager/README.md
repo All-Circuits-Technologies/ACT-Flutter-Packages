@@ -10,28 +10,71 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 - [Table of contents](#table-of-contents)
 - [Presentation](#presentation)
-- [How to add a splash screen to the app](#how-to-add-a-splash-screen-to-the-app)
-  - [Initialization](#initialization)
+- [Architecture](#architecture)
+- [How to use](#how-to-use)
+  - [Installation](#installation)
+  - [Register the manager](#register-the-manager)
+  - [Generate the native splash screens](#generate-the-native-splash-screens)
 - [Troubleshooting](#troubleshooting)
   - [Android 12 - No icon when debugging or at first launch](#android-12---no-icon-when-debugging-or-at-first-launch)
+- [Testing](#testing)
 
 ## Presentation
 
-This package helps to support native splash screen. It uses the package to do it:
-[flutter_native_splash](https://pub.dev/packages/flutter_native_splash).
+This package keeps the native splash screen of an application displayed until its first view is
+built.
 
-## How to add a splash screen to the app
+The splash screen the platform displays is removed as soon as Flutter is ready, which is before the
+managers of the application are. Without this manager, the application shows an empty screen during
+that time; with it, the splash screen covers the whole initialization.
 
-### Initialization
+The package does not draw the splash screen and does not generate it either: the images and the
+colours belong to the configuration of
+[flutter_native_splash](https://pub.dev/packages/flutter_native_splash), which this manager only
+drives.
 
-_We follow the doc here: [flutter_native_splash](https://pub.dev/packages/flutter_native_splash)._
+## Architecture
 
-To configure the adding of the splash screen to the app, you have to add configuration to the
-project `pubspec.yaml` (not the one of the package but the root one).
+`SplashScreenManager` is a manager with the life cycle of the views, and it does one thing at each
+of its two steps:
 
-You may also create a file in the root folder: `flutter_native_splash.yaml`.
+- when it is initialized, it holds the first frame back, which leaves the native splash screen on
+  the screen,
+- when the first view is built, it lets the frames through, which removes it.
 
-Then you have to call the command at the project root:
+`SplashScreenBuilder` is the factory to register it with. It depends on the logger manager, so that
+the messages of the initialization it covers are already written where the application writes them.
+
+## How to use
+
+### Installation
+
+Add the package to the `dependencies` of your package:
+
+```yaml
+dependencies:
+  act_splash_screen_manager:
+    path: ../act_splash_screen_manager
+```
+
+### Register the manager
+
+```dart
+GlobalManager.instance.register(SplashScreenBuilder());
+```
+
+Nothing else is needed: the manager is initialized with the others, and the first view removes the
+splash screen through `initInFirstView` of the global manager.
+
+### Generate the native splash screens
+
+_The steps below follow the documentation of
+[flutter_native_splash](https://pub.dev/packages/flutter_native_splash)._
+
+The splash screen is described in the `pubspec.yaml` of the application, not in the one of this
+package, or in a `flutter_native_splash.yaml` file at the root of the application.
+
+Then generate the native files, from the root of the application:
 
 > dart run flutter_native_splash:create
 
@@ -50,3 +93,17 @@ This problem has already been noticed by aloiseau (2023/04/11):
 > small.
 
 Because when you debug, you install a new app, it's considered as a first launch.
+
+## Testing
+
+The tests drive the manager through its two steps and read the binding of the test to check what an
+application would see: the frames are held back once the manager is initialized, and they are let
+through once the first view is built. A manager which is asked to remove a splash screen it never
+preserved is covered too.
+
+The images and the native files are out of reach of a test: they are generated at build time, by the
+package this one drives.
+
+```console
+> flutter test
+```

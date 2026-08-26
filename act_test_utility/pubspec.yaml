@@ -29,6 +29,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # API to test Flutter applications: this package only exists to be used from a test, so the
+  # test API belongs to its public interface
+  flutter_test:
+    sdk: flutter
+
   # Equatable for value equality in Dart objects
   equatable: ^2.0.8
 
@@ -41,9 +46,5 @@ dependencies:
 
 # Dependencies used by developer
 dev_dependencies:
-  # API to test Flutter applications
-  flutter_test:
-    sdk: flutter
-
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
