@@ -103,7 +103,9 @@ building an expensive message.
 
 `LogFormatUtility` writes the lines every external logger of the package prints:
 
-> 2025-01-08T11:50:38.470987Z-[info][default/other]: Global manager initialized.
+```text
+2025-01-08T11:50:38.470987Z-[info][default/other]: Global manager initialized.
+```
 
 The time is written in the universal time zone, the level in lower case, and the categories between
 brackets, separated by a slash. A part which is missing is left out, prefix included. An error and a

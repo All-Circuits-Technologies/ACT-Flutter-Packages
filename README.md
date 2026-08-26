@@ -16,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [Tests](#tests)
   - [How to run the tests](#how-to-run-the-tests)
   - [Where the tests live](#where-the-tests-live)
+  - [How deep the tests go](#how-deep-the-tests-go)
   - [How the tests are written](#how-the-tests-are-written)
   - [Test tooling](#test-tooling)
   - [Lint and continuous integration](#lint-and-continuous-integration)
@@ -164,6 +165,26 @@ which failed.
 The `test` folder of a package mirrors its `lib/src` folder: a source file `lib/src/a/b.dart` is
 tested by `test/a/b_test.dart`.
 
+What the tests of a package cover, and anything they deliberately leave out, is written in the
+`Testing` section of the README of that package.
+
+### How deep the tests go
+
+The depth of the tests follows what the package is made of, so all packages are not covered the
+same way:
+
+- A package which holds pure logic (models, parsing, state, timers, extensions) is covered
+  exhaustively, edge cases and error paths included.
+- A manager which wraps a native plugin, a socket or a server is tested through the boundary it
+  already defines: a fake takes the place of the plugin, and the tests cover the life cycle, the
+  state machine, the parsing, the retries and the error handling. When a class cannot be reached
+  without reshaping it, it is tested through an existing interface and its README says so. No
+  abstraction is added to the sources for the sole purpose of making a test possible.
+- A thin wrapper or a purely graphical package gets a smoke test or widget tests, and the effort
+  goes to its README instead.
+
+A package which ships no Dart code at all has no `test` folder, and therefore no `test` stage.
+
 ### How the tests are written
 
 - One `group` per class or per public method, named after it.
@@ -205,8 +226,17 @@ stages:
 ```
 
 The stage is only declared once the package actually has tests, because `flutter test` fails when
-the `test` folder doesn't exist. As for any change made to a `mono_pkg.yaml` file, the CI
-configuration has to be regenerated and committed:
+the `test` folder doesn't exist. A package whose tests need a browser asks for one in the same
+place, with `test: --platform chrome`; it then gets its own job, because only the packages sharing
+the very same command are grouped together.
+
+`mono_repo.yaml` merges the `analyze` and `test` stages, so the whole repository is analysed in one
+job and tested in another, instead of one job per package. This keeps a single `flutter pub upgrade`
+per package, which is what a job per package would pay for, and the whole run takes about twenty
+minutes.
+
+As for any change made to a `mono_pkg.yaml` file, the CI configuration has to be regenerated and
+committed:
 
 ```console
 > tool/mono_repo_generate.sh
