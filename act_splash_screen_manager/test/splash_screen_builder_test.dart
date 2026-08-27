@@ -5,6 +5,7 @@
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_splash_screen_manager/act_splash_screen_manager.dart';
+import 'package:act_splash_screen_manager_desktop/act_splash_screen_manager_desktop.dart';
 import 'package:act_splash_screen_manager_mobile/act_splash_screen_manager_mobile.dart';
 import 'package:act_splash_screen_manager_web/act_splash_screen_manager_web.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,6 +25,13 @@ void main() {
       );
     });
 
+    test("asks the runner on Linux", () {
+      expect(
+        SplashScreenBuilder.managerForPlatform(const _APlatform(isLinux: true)),
+        isA<DesktopSplashScreenManager>(),
+      );
+    });
+
     test("asks nothing on Android and on iOS, where the platform removes its splash screen", () {
       expect(
         SplashScreenBuilder.managerForPlatform(const _APlatform(isAndroid: true)),
@@ -35,24 +43,17 @@ void main() {
       );
     });
 
-    test("asks nothing on the platforms which draw no splash screen", () {
+    test("asks nothing on the platforms which are not supported yet", () {
+      expect(
+        SplashScreenBuilder.managerForPlatform(const _APlatform(isWindows: true)),
+        isA<MobileSplashScreenManager>(),
+      );
       expect(
         SplashScreenBuilder.managerForPlatform(const _APlatform(isMacOS: true)),
         isA<MobileSplashScreenManager>(),
       );
       expect(
         SplashScreenBuilder.managerForPlatform(const _APlatform(isFuchsia: true)),
-        isA<MobileSplashScreenManager>(),
-      );
-    });
-
-    test("asks nothing on the desktop platforms, which are not supported yet", () {
-      expect(
-        SplashScreenBuilder.managerForPlatform(const _APlatform(isLinux: true)),
-        isA<MobileSplashScreenManager>(),
-      );
-      expect(
-        SplashScreenBuilder.managerForPlatform(const _APlatform(isWindows: true)),
         isA<MobileSplashScreenManager>(),
       );
     });

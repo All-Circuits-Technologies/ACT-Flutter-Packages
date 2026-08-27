@@ -103,6 +103,7 @@ To install it globally, you have to call:
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
 | [act_splash_screen_manager](act_splash_screen_manager/) | Splash screen manager choosing what the platform of the application needs | |
 | [act_splash_screen_manager_core](act_splash_screen_manager_core/) | Base of the managers which keep the native splash screen displayed until the app is ready | |
+| [act_splash_screen_manager_desktop](act_splash_screen_manager_desktop/) | Splash screen manager of the desktop applications | |
 | [act_splash_screen_manager_mobile](act_splash_screen_manager_mobile/) | Splash screen manager of the mobile applications | |
 | [act_splash_screen_manager_web](act_splash_screen_manager_web/) | Splash screen manager of the web applications | |
 | [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |

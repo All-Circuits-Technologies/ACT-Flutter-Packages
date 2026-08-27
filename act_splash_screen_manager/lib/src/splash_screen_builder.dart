@@ -4,6 +4,7 @@
 
 import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_splash_screen_manager_core/act_splash_screen_manager_core.dart';
+import 'package:act_splash_screen_manager_desktop/act_splash_screen_manager_desktop.dart';
 import 'package:act_splash_screen_manager_mobile/act_splash_screen_manager_mobile.dart';
 import 'package:act_splash_screen_manager_web/act_splash_screen_manager_web.dart';
 import 'package:flutter/foundation.dart';
@@ -26,6 +27,10 @@ class SplashScreenBuilder extends AbsSplashScreenBuilder {
   static AbsSplashScreenManager managerForPlatform(MixinActPlatforms platform) {
     if (platform.isWeb) {
       return WebSplashScreenManager();
+    }
+
+    if (platform.isLinux) {
+      return DesktopSplashScreenManager();
     }
 
     // Android and iOS remove their splash screen by themselves, and the platforms which are not

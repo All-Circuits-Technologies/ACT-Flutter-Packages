@@ -9,6 +9,7 @@ publish_to: none
 platforms:
   android:
   ios:
+  linux:
   web:
 
 environment:
@@ -28,6 +29,9 @@ dependencies:
     path: ../act_splash_screen_manager_core
 
   # One package per family of platforms, the right one is chosen at runtime
+  act_splash_screen_manager_desktop:
+    path: ../act_splash_screen_manager_desktop
+
   act_splash_screen_manager_mobile:
     path: ../act_splash_screen_manager_mobile
 

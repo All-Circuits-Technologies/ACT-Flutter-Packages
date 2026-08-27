@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# The native code of the desktop packages is not built by the workflow mono_repo generates, which
+# only analyses and tests Dart. This one builds it, on the two platforms it targets, and runs the
+# unit tests of the code they share.
+
+name: Desktop native
+
+on:
+  push:
+    paths:
+      - "act_splash_screen_manager_desktop/**"
+      - ".github/workflows/desktop_native.yml"
+
+jobs:
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Install what a GTK application is built with
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes clang cmake ninja-build pkg-config libgtk-3-dev
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+
+      - name: Build the example and the unit tests
+        working-directory: act_splash_screen_manager_desktop/example
+        env:
+          ACT_SPLASH_BUILD_TESTS: 1
+        run: |
+          flutter pub get
+          flutter build linux --debug
+
+      - name: Run the unit tests
+        working-directory: act_splash_screen_manager_desktop/example
+        run: >
+          ./build/linux/x64/debug/plugins/act_splash_screen_manager_desktop/act_splash_screen_manager_desktop_test
+

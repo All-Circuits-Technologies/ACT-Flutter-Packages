@@ -1,0 +1,35 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_splash_screen_manager_desktop_example
+description: Shows the splash screen of a desktop application, and how long it lasts
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  act_logger_manager:
+    path: ../../act_logger_manager
+
+  act_splash_screen_manager_core:
+    path: ../../act_splash_screen_manager_core
+
+  act_splash_screen_manager_desktop:
+    path: ../
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/
