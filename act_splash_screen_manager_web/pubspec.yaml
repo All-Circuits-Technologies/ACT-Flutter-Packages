@@ -1,0 +1,34 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_splash_screen_manager_web
+description: Splash screen manager of the web applications
+publish_to: none
+
+platforms:
+  web:
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Base of the splash screen managers
+  act_splash_screen_manager_core:
+    path: ../act_splash_screen_manager_core
+
+  # Generates the splash screen of the page, and removes it when it is asked to
+  flutter_native_splash: ^2.4.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+  # The tests check which managers the builder depends on
+  act_logger_manager:
+    path: ../act_logger_manager

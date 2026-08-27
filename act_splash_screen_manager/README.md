@@ -32,6 +32,7 @@ both this package and the core one, they export the same names.
 | ---------------------------------------------- | ------------ | --------------------------------------------------------------- |
 | [core](../act_splash_screen_manager_core/)     | all          | holds the first frame back until the application is ready        |
 | [mobile](../act_splash_screen_manager_mobile/) | Android, iOS | nothing to ask: the platform removes its splash screen by itself |
+| [web](../act_splash_screen_manager_web/)       | web          | asks the generated page to remove the splash screen             |
 
 More families join the table as their packages are added. Each of them says how the splash screen
 of its platforms is described and generated, which is not the same work from one to the other. Read

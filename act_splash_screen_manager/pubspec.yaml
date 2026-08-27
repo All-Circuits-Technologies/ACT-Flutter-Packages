@@ -9,6 +9,7 @@ publish_to: none
 platforms:
   android:
   ios:
+  web:
 
 environment:
   sdk: ^3.11.1
@@ -18,6 +19,10 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Tells which platform the application runs on
+  act_platform_manager:
+    path: ../act_platform_manager
+
   # Base of the splash screen managers, re-exported to the applications
   act_splash_screen_manager_core:
     path: ../act_splash_screen_manager_core
@@ -25,6 +30,9 @@ dependencies:
   # One package per family of platforms, the right one is chosen at runtime
   act_splash_screen_manager_mobile:
     path: ../act_splash_screen_manager_mobile
+
+  act_splash_screen_manager_web:
+    path: ../act_splash_screen_manager_web
 
 dev_dependencies:
   flutter_test:
