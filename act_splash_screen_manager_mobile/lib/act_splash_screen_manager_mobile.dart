@@ -4,6 +4,5 @@
 
 library;
 
-export 'package:act_splash_screen_manager_core/act_splash_screen_manager_core.dart';
-
-export 'src/splash_screen_builder.dart';
+export 'src/mobile_splash_screen_builder.dart';
+export 'src/mobile_splash_screen_manager.dart';
