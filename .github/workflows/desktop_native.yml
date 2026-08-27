@@ -61,10 +61,11 @@ jobs:
       # header. Building from a short virtual drive keeps every path the compiler sees within the
       # limit, whatever the checkout is placed at.
       - name: Map the workspace to a short drive
-        run: subst W: "${{ github.workspace }}"
+        run: |
+          subst W: "${{ github.workspace }}"
 
       - name: Build the example and the unit tests
-        working-directory: W:\act_splash_screen_manager_desktop\example
+        working-directory: 'W:\act_splash_screen_manager_desktop\example'
         env:
           ACT_SPLASH_BUILD_TESTS: 1
         run: |
@@ -74,7 +75,7 @@ jobs:
       # The layout of the build directory is not the same as the one of Linux, and the tests have
       # not been run on Windows yet: the binary is looked for rather than named.
       - name: Run the unit tests
-        working-directory: W:\act_splash_screen_manager_desktop\example
+        working-directory: 'W:\act_splash_screen_manager_desktop\example'
         run: |
           $test = Get-ChildItem -Path build\windows -Recurse -Filter act_splash_screen_manager_desktop_test.exe |
             Select-Object -First 1
