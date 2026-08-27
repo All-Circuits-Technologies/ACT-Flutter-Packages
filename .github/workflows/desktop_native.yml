@@ -55,8 +55,16 @@ jobs:
         with:
           flutter-version: "3.41.9"
 
+      # The plugin is reached through a symlink nested deep under the example, and the name of the
+      # package is repeated three times along the path of a header pulled that way: it passes the
+      # 260 character limit the Windows toolchain still enforces, and the compiler cannot open the
+      # header. Building from a short virtual drive keeps every path the compiler sees within the
+      # limit, whatever the checkout is placed at.
+      - name: Map the workspace to a short drive
+        run: subst W: "${{ github.workspace }}"
+
       - name: Build the example and the unit tests
-        working-directory: act_splash_screen_manager_desktop/example
+        working-directory: W:\act_splash_screen_manager_desktop\example
         env:
           ACT_SPLASH_BUILD_TESTS: 1
         run: |
@@ -66,7 +74,7 @@ jobs:
       # The layout of the build directory is not the same as the one of Linux, and the tests have
       # not been run on Windows yet: the binary is looked for rather than named.
       - name: Run the unit tests
-        working-directory: act_splash_screen_manager_desktop/example
+        working-directory: W:\act_splash_screen_manager_desktop\example
         run: |
           $test = Get-ChildItem -Path build\windows -Recurse -Filter act_splash_screen_manager_desktop_test.exe |
             Select-Object -First 1
