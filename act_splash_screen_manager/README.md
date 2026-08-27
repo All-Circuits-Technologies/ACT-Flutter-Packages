@@ -28,16 +28,15 @@ both this package and the core one, they export the same names.
 
 ## The packages of the family
 
-| Package                                        | Platforms    | What it does                                                     |
-| ---------------------------------------------- | ------------ | --------------------------------------------------------------- |
-| [core](../act_splash_screen_manager_core/)     | all          | holds the first frame back until the application is ready        |
-| [mobile](../act_splash_screen_manager_mobile/) | Android, iOS | nothing to ask: the platform removes its splash screen by itself |
-| [web](../act_splash_screen_manager_web/)       | web          | asks the generated page to remove the splash screen             |
-| [desktop](../act_splash_screen_manager_desktop/) | Linux | asks the runner of the application to remove the splash screen it draws |
+| Package                                          | Platforms      | What it does                                                            |
+| ------------------------------------------------ | -------------- | ----------------------------------------------------------------------- |
+| [core](../act_splash_screen_manager_core/)       | all            | holds the first frame back until the application is ready               |
+| [mobile](../act_splash_screen_manager_mobile/)   | Android, iOS   | nothing to ask: the platform removes its splash screen by itself        |
+| [web](../act_splash_screen_manager_web/)         | web            | asks the generated page to remove the splash screen                     |
+| [desktop](../act_splash_screen_manager_desktop/) | Linux, Windows | asks the runner of the application to remove the splash screen it draws |
 
-More families join the table as their packages are added. Each of them says how the splash screen
-of its platforms is described and generated, which is not the same work from one to the other. Read
-the one of every platform your application targets.
+Each of them says how the splash screen of its platforms is described and generated, which is not
+the same work from one to the other. Read the one of every platform your application targets.
 
 ## How to use
 
@@ -60,8 +59,8 @@ the images, the configuration, the generated files - belongs to the package of e
 
 ## Testing
 
-The tests check that the builder depends on the logger manager and builds the manager of the
-platform the application runs on.
+The tests drive the choice of the manager over every platform Flutter knows, so that a platform
+which is added to Flutter, or a package which is added to the family, cannot be forgotten here.
 
 ```console
 > flutter test

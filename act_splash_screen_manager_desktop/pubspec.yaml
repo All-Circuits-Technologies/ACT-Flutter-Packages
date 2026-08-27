@@ -8,6 +8,7 @@ publish_to: none
 
 platforms:
   linux:
+  windows:
 
 environment:
   sdk: ^3.11.1
@@ -41,3 +42,5 @@ flutter:
     platforms:
       linux:
         pluginClass: ActSplashScreenManagerDesktopPlugin
+      windows:
+        pluginClass: ActSplashScreenManagerDesktopPluginCApi

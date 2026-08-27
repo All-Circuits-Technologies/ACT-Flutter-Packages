@@ -11,6 +11,7 @@ platforms:
   ios:
   linux:
   web:
+  windows:
 
 environment:
   sdk: ^3.11.1
@@ -26,6 +27,7 @@ dependencies:
 
   # Base of the splash screen managers, re-exported to the applications
   act_splash_screen_manager_core:
+
     path: ../act_splash_screen_manager_core
 
   # One package per family of platforms, the right one is chosen at runtime

@@ -21,7 +21,7 @@ class SplashScreenBuilder extends AbsSplashScreenBuilder {
   /// Builds the splash screen manager the given platform needs.
   ///
   /// Which package answers is decided here and nowhere else: a package cannot be depended upon by
-  /// a platform and ignored by another, so the families are all brought and one is used.
+  /// a platform and ignored by another, so the three of them are brought and one is used.
   /// {@endtemplate}
   @visibleForTesting
   static AbsSplashScreenManager managerForPlatform(MixinActPlatforms platform) {
@@ -29,13 +29,13 @@ class SplashScreenBuilder extends AbsSplashScreenBuilder {
       return WebSplashScreenManager();
     }
 
-    if (platform.isLinux) {
+    if (platform.isLinux || platform.isWindows) {
       return DesktopSplashScreenManager();
     }
 
     // Android and iOS remove their splash screen by themselves, and the platforms which are not
-    // supported yet draw none at all: in both cases there is nothing to ask, which is what the
-    // manager of the mobile applications does.
+    // supported yet, macOS and Fuchsia, draw none at all: in both cases there is nothing to ask,
+    // which is what the manager of the mobile applications does.
     return MobileSplashScreenManager();
   }
 

@@ -15,6 +15,13 @@ void main() {
     test("depends on the logger manager", () {
       expect(const SplashScreenBuilder().dependsOn(), [LoggerManager]);
     });
+
+    test("builds the manager the platform of the application needs", () {
+      expect(
+        SplashScreenBuilder.managerForPlatform(const _APlatform(isLinux: true)),
+        isA<DesktopSplashScreenManager>(),
+      );
+    });
   });
 
   group("SplashScreenBuilder.managerForPlatform", () {
@@ -25,9 +32,13 @@ void main() {
       );
     });
 
-    test("asks the runner on Linux", () {
+    test("asks the runner on Linux and on Windows", () {
       expect(
         SplashScreenBuilder.managerForPlatform(const _APlatform(isLinux: true)),
+        isA<DesktopSplashScreenManager>(),
+      );
+      expect(
+        SplashScreenBuilder.managerForPlatform(const _APlatform(isWindows: true)),
         isA<DesktopSplashScreenManager>(),
       );
     });
@@ -43,11 +54,7 @@ void main() {
       );
     });
 
-    test("asks nothing on the platforms which are not supported yet", () {
-      expect(
-        SplashScreenBuilder.managerForPlatform(const _APlatform(isWindows: true)),
-        isA<MobileSplashScreenManager>(),
-      );
+    test("asks nothing on the platforms which draw no splash screen", () {
       expect(
         SplashScreenBuilder.managerForPlatform(const _APlatform(isMacOS: true)),
         isA<MobileSplashScreenManager>(),

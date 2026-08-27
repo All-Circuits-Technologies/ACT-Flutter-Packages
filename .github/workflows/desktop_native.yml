@@ -44,3 +44,31 @@ jobs:
         run: >
           ./build/linux/x64/debug/plugins/act_splash_screen_manager_desktop/act_splash_screen_manager_desktop_test
 
+  windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        with:
+          flutter-version: "3.41.9"
+
+      - name: Build the example and the unit tests
+        working-directory: act_splash_screen_manager_desktop/example
+        env:
+          ACT_SPLASH_BUILD_TESTS: 1
+        run: |
+          flutter pub get
+          flutter build windows --debug
+
+      # The layout of the build directory is not the same as the one of Linux, and the tests have
+      # not been run on Windows yet: the binary is looked for rather than named.
+      - name: Run the unit tests
+        working-directory: act_splash_screen_manager_desktop/example
+        run: |
+          $test = Get-ChildItem -Path build\windows -Recurse -Filter act_splash_screen_manager_desktop_test.exe |
+            Select-Object -First 1
+          if ($null -eq $test) { throw "The unit tests were not built" }
+          & $test.FullName

@@ -16,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Describe the splash screen](#describe-the-splash-screen)
   - [Register the manager](#register-the-manager)
   - [Call the splash screen from the Linux runner](#call-the-splash-screen-from-the-linux-runner)
+  - [Call the splash screen from the Windows runner](#call-the-splash-screen-from-the-windows-runner)
   - [Cover the moment the splash screen is removed at](#cover-the-moment-the-splash-screen-is-removed-at)
 - [Example](#example)
 - [Limitations](#limitations)
@@ -23,9 +24,9 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 ## Presentation
 
-This package brings the splash screen manager of the desktop applications. It completes
+This package brings the splash screen manager of the Linux and Windows applications. It completes
 [act_splash_screen_manager_core](../act_splash_screen_manager_core/), which holds the first frame
-back until the application is ready. Linux is supported; Windows is added next.
+back until the application is ready.
 
 Desktop platforms draw no splash screen of their own: the window of the application is created by
 its runner, and stays empty until Flutter paints in it. This package draws the splash screen in
@@ -39,7 +40,7 @@ anything.
 
 ## Architecture
 
-The native code is organised in a few pieces, plus what the platforms share:
+The native code is organised in three pieces per platform, plus what the platforms share:
 
 - `common/splash_config` holds what a splash screen is and reads it from the text of the
   configuration file. It knows no platform, and it is the part the unit tests cover,
@@ -47,17 +48,16 @@ The native code is organised in a few pieces, plus what the platforms share:
 - `ASplashPresenter` displays the splash screen and removes it,
 - `OverlaySplashPresenter` is the presenter which draws in the window of the application.
 
-Linux draws with GTK and Cairo. A presenter which opens a window of its own, the way desktop
-applications used to, would be another `ASplashPresenter`: the runner would call it instead, and
-neither the application nor this package would see the difference. The `common/` code is written to
-be shared by a second platform without a change.
+Linux draws with GTK and Cairo, Windows with Win32 and GDI+. A presenter which opens a window of
+its own, the way desktop applications used to, would be another `ASplashPresenter`: the runner would
+call it instead, and neither the application nor this package would see the difference.
 
 `DesktopSplashScreenManager` asks the runner to remove the splash screen through the
 `act_splash_screen` channel. When the runner of the application draws no splash screen, the manager
 says so in the logs and the application starts anyway.
 
-The native code is documented on its own, for whoever changes it: see
-[linux/README.md](linux/README.md).
+The native code of each platform is documented on its own, for whoever changes it: see
+[linux/README.md](linux/README.md) and [windows/README.md](windows/README.md).
 
 ## How to use
 
@@ -137,6 +137,29 @@ Showing the window before the view is created is what puts the image on the scre
 returned container is the window itself when the application bundles no splash screen, so the same
 runner works either way.
 
+### Call the splash screen from the Windows runner
+
+In `flutter_window.cpp`, draw the splash screen as soon as the window exists, and tell it which
+window it covers:
+
+```diff
++#include <act_splash_screen_manager_desktop/act_splash_screen.h>
++
+ #include "flutter/generated_plugin_registrant.h"
+
++  ActSplashScreenAttach(GetHandle());
++  Show();
++
+   RECT frame = GetClientArea();
+
+   SetChildContent(flutter_controller_->view()->GetNativeWindow());
++  ActSplashScreenSetContent(flutter_controller_->view()->GetNativeWindow());
+```
+
+The runner of a Flutter application usually keeps its window hidden until the first frame; here the
+window is shown right away, and the view of the application stays hidden until the splash screen is
+removed.
+
 ### Cover the moment the splash screen is removed at
 
 Display `SplashScreenCover` from the core package in the first view, with the same image, so that
@@ -144,9 +167,9 @@ the screen shows the same thing before and after the runner removes the splash s
 
 ## Example
 
-`example/` is a small application which stays on its splash screen for two seconds before showing
-its own view. It is the quickest way to see the behaviour, and the way the native code is compiled
-outside of a real application:
+`example/` is a small application wired for both platforms, which stays on its splash screen for
+two seconds before showing its own view. It is the quickest way to see the behaviour, and the way
+the native code is compiled outside of a real application:
 
 ```console
 > cd example
@@ -170,8 +193,9 @@ splash screen starts anyway with a warning in its logs.
 > flutter test
 ```
 
-The configuration parser is covered by GoogleTest, in `common/test/splash_config_test.cc`. The
-tests are built with the example, on demand:
+The configuration shared by the platforms is covered by GoogleTest, in
+`common/test/splash_config_test.cc`. The tests are built with the example, on demand, and the same
+sources are compiled by both toolchains:
 
 ```console
 > cd example
@@ -179,6 +203,6 @@ tests are built with the example, on demand:
 > ./build/linux/x64/debug/plugins/act_splash_screen_manager_desktop/act_splash_screen_manager_desktop_test
 ```
 
-What draws on the screen - GTK and Cairo - is not covered by a test: building and running
-`example/` is what exercises it. The `Desktop native` workflow does both whenever this package
-changes.
+What draws on the screen - GTK, Cairo, Win32, GDI+ - is not covered by a test: building and running
+`example/` is what exercises it. The `Desktop native` workflow does both on the two platforms
+whenever this package changes.
