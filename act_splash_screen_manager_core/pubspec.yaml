@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_splash_screen_manager_core
+description: Base of the managers which keep the native splash screen displayed until the app is ready
+publish_to: none
+
+# The package brings no platform specific code, it is the base of the packages which do.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Easily create managers
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
