@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 name: act_splash_screen_manager
-description: Splash screen manager choosing what the platform of the application needs
+description: Keeps the splash screen of the platform displayed until the application is ready
 publish_to: none
 
 platforms:
@@ -21,30 +21,36 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Tells which platform the application runs on
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # Tells which platform the application runs on, to pick the manager it needs
   act_platform_manager:
     path: ../act_platform_manager
 
-  # Base of the splash screen managers, re-exported to the applications
-  act_splash_screen_manager_core:
+  # Warns when the runner of a desktop application does not draw any splash screen
+  act_foundation:
+    path: ../act_foundation
+  act_logger_manager:
+    path: ../act_logger_manager
 
-    path: ../act_splash_screen_manager_core
-
-  # One package per family of platforms, the right one is chosen at runtime
-  act_splash_screen_manager_desktop:
-    path: ../act_splash_screen_manager_desktop
-
-  act_splash_screen_manager_mobile:
-    path: ../act_splash_screen_manager_mobile
-
-  act_splash_screen_manager_web:
-    path: ../act_splash_screen_manager_web
+  # Removes the splash screen of the web page, and generates the splash screens of the mobile and
+  # web applications
+  flutter_native_splash: ^2.4.6
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 
-  # The tests check which managers the builder depends on
-  act_logger_manager:
-    path: ../act_logger_manager
+  # Fakes shared by the tests of the packages
+  act_test_utility:
+    path: ../act_test_utility
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        pluginClass: ActSplashScreenManagerPlugin
+      windows:
+        pluginClass: ActSplashScreenManagerPluginCApi

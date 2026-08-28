@@ -5,9 +5,9 @@
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_splash_screen_manager/act_splash_screen_manager.dart';
-import 'package:act_splash_screen_manager_desktop/act_splash_screen_manager_desktop.dart';
-import 'package:act_splash_screen_manager_mobile/act_splash_screen_manager_mobile.dart';
-import 'package:act_splash_screen_manager_web/act_splash_screen_manager_web.dart';
+import 'package:act_splash_screen_manager/src/platforms/desktop_splash_screen_manager.dart';
+import 'package:act_splash_screen_manager/src/platforms/mobile_splash_screen_manager.dart';
+import 'package:act_splash_screen_manager/src/platforms/web_splash_screen_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

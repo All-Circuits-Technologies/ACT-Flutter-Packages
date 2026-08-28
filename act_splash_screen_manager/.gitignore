@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -9,9 +9,11 @@
 *.swp
 .DS_Store
 .atom/
+.build/
 .buildlog/
 .history
 .svn/
+.swiftpm/
 migrate_working_dir/
 
 # IntelliJ related
@@ -30,4 +32,6 @@ migrate_working_dir/
 /pubspec.lock
 **/doc/api/
 .dart_tool/
-build/
+.flutter-plugins-dependencies
+/build/
+/coverage/
