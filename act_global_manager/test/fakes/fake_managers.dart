@@ -34,8 +34,7 @@ class FakeManagerBuilder extends AbsLifeCycleFactory<FakeManager> {
   final List<Type> dependencies;
 
   /// Class constructor
-  FakeManagerBuilder(FakeManager manager, {this.dependencies = const []})
-    : super(() => manager);
+  FakeManagerBuilder(FakeManager manager, {this.dependencies = const []}) : super(() => manager);
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -52,6 +51,9 @@ class FakeUiManager extends AbsWithLifeCycleAndUi {
 
   /// The contexts the manager has been initialized after a view with.
   final List<BuildContext> initAfterViewContexts = [];
+
+  /// The errors the manager has been told a fatal error page is about to be shown with.
+  final List<Object> fatalErrorPageErrors = [];
 
   /// The number of times the manager has been disposed.
   int disposeCount = 0;
@@ -75,6 +77,13 @@ class FakeUiManager extends AbsWithLifeCycleAndUi {
   Future<void> initAfterView(BuildContext context) async {
     await super.initAfterView(context);
     initAfterViewContexts.add(context);
+  }
+
+  /// {@macro act_life_cycle.MixinUiLifeCycle.onFatalErrorPageWillShow}
+  @override
+  Future<void> onFatalErrorPageWillShow(Object error) async {
+    await super.onFatalErrorPageWillShow(error);
+    fatalErrorPageErrors.add(error);
   }
 
   /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}

@@ -65,9 +65,7 @@ void main() {
   });
 
   group("MixinUiGlobalManager.initInFirstView", () {
-    testWidgets("initializes the managers which depend on the UI with the context", (
-      tester,
-    ) async {
+    testWidgets("initializes the managers which depend on the UI with the context", (tester) async {
       final uiManager = FakeUiManager();
       final manager = FakeUiGlobalManager(
         onRegisterManagers: (globalManager) async =>
@@ -143,7 +141,43 @@ void main() {
 
       expect(find.text("the error page"), findsOneWidget);
       expect(find.text("the app"), findsNothing);
-      expect(manager.fatalErrors.length, 1);
+    });
+
+    testWidgets("tells the UI managers before the fatal error page is shown", (tester) async {
+      final uiManager = FakeUiManager();
+      final manager = FakeUiGlobalManager(
+        fatalErrorPage: const Text("the error page", textDirection: TextDirection.ltr),
+        onRegisterManagers: (globalManager) async {
+          globalManager.register(FakeUiManagerBuilder(uiManager));
+          // The failing manager depends on the UI one so it initializes first: it is then
+          // registered by the time the error is caught, which is what lets the notification reach
+          // it.
+          globalManager.register(
+            FakeManagerBuilder(_FailingManager(), dependencies: [FakeUiManager]),
+          );
+        },
+      );
+
+      await manager.runActApp(const Text("the app", textDirection: TextDirection.ltr));
+      await tester.pump();
+
+      expect(uiManager.fatalErrorPageErrors, [isA<StateError>()]);
+      expect(uiManager.initAfterViewContexts, isEmpty);
+    });
+
+    testWidgets("does not tell the UI managers about a fatal error when the app starts", (
+      tester,
+    ) async {
+      final uiManager = FakeUiManager();
+      final manager = FakeUiGlobalManager(
+        onRegisterManagers: (globalManager) async =>
+            globalManager.register(FakeUiManagerBuilder(uiManager)),
+      );
+
+      await manager.runActApp(const Text("the app", textDirection: TextDirection.ltr));
+      await tester.pump();
+
+      expect(uiManager.fatalErrorPageErrors, isEmpty);
     });
 
     testWidgets("gives up when the initialization fails and there is no page to display", (
@@ -158,7 +192,6 @@ void main() {
         manager.runActApp(const Text("the app", textDirection: TextDirection.ltr)),
         throwsA(anything),
       );
-      expect(manager.fatalErrors.length, 1);
     });
   });
 
