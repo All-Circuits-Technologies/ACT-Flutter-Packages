@@ -34,7 +34,24 @@ abstract class AbsSplashScreenManager extends AbsWithLifeCycleAndUi {
   Future<void> initAfterView(BuildContext context) async {
     await super.initAfterView(context);
 
-    // The initialization is over: the frames are let through and the splash screen is removed.
+    // The initialization is over: the first view is being built, the splash screen can go.
+    await _releaseSplashScreen();
+  }
+
+  /// {@macro act_life_cycle.MixinUiLifeCycle.onFatalErrorPageWillShow}
+  @override
+  Future<void> onFatalErrorPageWillShow(Object error) async {
+    await super.onFatalErrorPageWillShow(error);
+
+    // The initialization failed, but the error page still has to be seen: without this the frames
+    // stay held back and the error page never shows behind the splash screen.
+    await _releaseSplashScreen();
+  }
+
+  /// Lets the held-back frames through and removes the platform splash screen.
+  ///
+  /// The frames are released only on the first call, so it is safe to call more than once.
+  Future<void> _releaseSplashScreen() async {
     _widgetsBinding?.allowFirstFrame();
     _widgetsBinding = null;
 

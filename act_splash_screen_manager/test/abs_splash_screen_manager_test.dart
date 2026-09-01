@@ -54,6 +54,30 @@ void main() {
       expect(tester.binding.sendFramesToEngine, isTrue);
       expect(manager.hideCalls, 1);
     });
+
+    testWidgets("lets the frames through when a fatal error page is about to be shown", (
+      tester,
+    ) async {
+      final manager = _SplashScreenManagerUnderTest();
+      await manager.initLifeCycle();
+
+      await manager.onFatalErrorPageWillShow(StateError("a failure"));
+
+      expect(tester.binding.sendFramesToEngine, isTrue);
+    });
+
+    testWidgets("removes the splash screen when a fatal error page is about to be shown", (
+      tester,
+    ) async {
+      final manager = _SplashScreenManagerUnderTest();
+      await manager.initLifeCycle();
+
+      expect(manager.hideCalls, 0);
+
+      await manager.onFatalErrorPageWillShow(StateError("a failure"));
+
+      expect(manager.hideCalls, 1);
+    });
   });
 }
 

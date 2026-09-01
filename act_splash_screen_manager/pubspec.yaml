@@ -21,26 +21,28 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Removes the splash screen of the web page, and generates the splash screens of the mobile and
+  # web applications
+  flutter_native_splash: ^2.4.6
+
+  # Warns when the runner of a desktop application does not draw any splash screen
+  act_foundation:
+    path: ../act_foundation
+
   act_life_cycle:
     path: ../act_life_cycle
+
+  act_logger_manager:
+    path: ../act_logger_manager
 
   # Tells which platform the application runs on, to pick the manager it needs
   act_platform_manager:
     path: ../act_platform_manager
 
-  # Warns when the runner of a desktop application does not draw any splash screen
-  act_foundation:
-    path: ../act_foundation
-  act_logger_manager:
-    path: ../act_logger_manager
-
-  # Removes the splash screen of the web page, and generates the splash screens of the mobile and
-  # web applications
-  flutter_native_splash: ^2.4.6
-
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^6.0.0
 
   # Fakes shared by the tests of the packages
