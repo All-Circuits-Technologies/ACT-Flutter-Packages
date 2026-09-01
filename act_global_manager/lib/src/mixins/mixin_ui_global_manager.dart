@@ -28,7 +28,8 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
     await super.initLifeCycle();
 
     await Future.wait(
-        registeredManagersWithUi.map((manager) => manager.initAfterManagersAndBeforeViews()));
+      registeredManagersWithUi.map((manager) => manager.initAfterManagersAndBeforeViews()),
+    );
   }
 
   /// {@template act_global_manager.MixinUiGlobalManager.initInFirstView}
@@ -49,18 +50,11 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
 
     // We don't wait the initialization here to not block the display of the first view
     unawaited(
-        Future.wait(registeredManagersWithUi.map((manager) => manager.initAfterView(context))));
+      Future.wait(registeredManagersWithUi.map((manager) => manager.initAfterView(context))),
+    );
 
     return true;
   }
-
-  /// {@template act_global_manager.MixinUiGlobalManager.buildFatalErrorPage}
-  /// The [buildFatalErrorPage] method is used to build a page to display when a fatal error occurs
-  /// during the initialization of the managers before the view is displayed.
-  ///
-  /// If null, the throw is rethrown and the app crash with the error message in the console.
-  /// {@endtemplate}
-  Widget? buildFatalErrorPage(Object error) => null;
 
   /// {@template act_global_manager.MixinUiGlobalManager.runActApp}
   /// The [runActApp] method is used to run the flutter app in the main method of the app
@@ -71,19 +65,66 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
     // The UI starts after these functions are finished.
     WidgetsFlutterBinding.ensureInitialized();
 
-    Widget? fatalErrorWidget;
+    Object? startupError;
+    StackTrace? startupStack;
     try {
       await initLifeCycle();
-    } catch (error) {
-      appLogger()
-          .e("An error occurred during the initialization of the managers before the view is "
-              "displayed: $error");
-      fatalErrorWidget = buildFatalErrorPage(error);
-      if (fatalErrorWidget == null) {
-        rethrow;
+    } catch (error, stack) {
+      appLogger().e(
+        "An error occurred during the initialization of the managers before the view is "
+        "displayed: $error",
+      );
+      startupError = error;
+      startupStack = stack;
+    }
+
+    final uiFatalErrorManager = await _getUiFatalErrorManager();
+    if (startupError != null && uiFatalErrorManager == null) {
+      // An error occurred and there is no manager to manage it
+      Error.throwWithStackTrace(startupError, startupStack!);
+    }
+
+    if (uiFatalErrorManager != null) {
+      uiFatalErrorManager.addFatalErrorWillShowHandler(_notifyFatalErrorPageWillShow);
+
+      if (startupError != null) {
+        uiFatalErrorManager.displayFatalErrorPage(startupError);
       }
     }
 
-    runApp(fatalErrorWidget ?? app);
+    runApp(uiFatalErrorManager?.wrapWithFatalErrorWidget(child: app) ?? app);
+  }
+
+  /// Get the UI fatal error manager if it is registered, otherwise return null.
+  Future<UiFatalErrorManager?> _getUiFatalErrorManager() async {
+    if (!globalGetIt().isRegistered<UiFatalErrorManager>()) {
+      // This may mean that the UI fatal error manager has not been registered yet. Either the
+      // initialization has not been completed or the manager is not needed for this application.
+      return null;
+    }
+
+    UiFatalErrorManager? uiFatalErrorManager;
+    try {
+      uiFatalErrorManager = await globalGetIt().getAsync<UiFatalErrorManager>();
+    } catch (error) {
+      appLogger().e("An error occurred while trying to get the UI fatal error manager: $error");
+    }
+
+    // We use getAsync here because the UI fatal error manager might not be immediately available.
+    return uiFatalErrorManager;
+  }
+
+  /// {@template act_global_manager.MixinUiGlobalManager.notifyFatalErrorPageWillShow}
+  /// Notifies the UI managers that a fatal error page is about to be displayed instead of the
+  /// application.
+  ///
+  /// The normal startup calls [initInFirstView], which never runs when the initialization fails, so
+  /// managers that need to react to the error page being shown (for instance to release resources
+  /// held back for the normal startup) can only be reached through this method.
+  /// {@endtemplate}
+  Future<void> _notifyFatalErrorPageWillShow(Object error) async {
+    await Future.wait(
+      registeredManagersWithUi.map((manager) => manager.onFatalErrorPageWillShow(error)),
+    );
   }
 }

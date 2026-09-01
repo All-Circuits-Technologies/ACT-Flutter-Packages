@@ -10,3 +10,5 @@ export 'src/services/abs_global_manager.dart';
 export 'src/services/abs_ui_global_manager.dart';
 export 'src/services/abs_usual_config_manager.dart';
 export 'src/services/ext_default_logger_builder.dart';
+export 'src/services/ui_fatal_error_manager.dart';
+export 'src/types/fatal_error_page_types.dart';
