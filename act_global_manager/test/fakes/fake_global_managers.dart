@@ -61,7 +61,7 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
   @override
   Future<void> registerManagers() async {
     if (fatalErrorPage != null) {
-      register<UiFatalErrorManager>(_FakeUiFatalErrorBuilder((_) => fatalErrorPage!));
+      register<UiFatalErrorManager>(UiFatalErrorBuilder((_) => fatalErrorPage!));
     }
 
     await onRegisterManagers?.call(this);
@@ -82,31 +82,4 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
 
   /// The managers which have been registered and which depend on the UI.
   List<AbsWithLifeCycleAndUi> get uiManagersOfTheApp => registeredManagersWithUi;
-}
-
-/// A fake UI fatal error manager which skips hooking the logger.
-///
-/// The real manager reaches for a `LoggerManager` in its initialization, which the tests of the
-/// mixin do not set up. Only the startup path is exercised here, so the hook is not needed.
-class _FakeUiFatalErrorManager extends UiFatalErrorManager {
-  /// Class constructor
-  _FakeUiFatalErrorManager({required super.buildFatalErrorPage});
-
-  /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
-  @override
-  // The base hooks the logger, which is not set up in these tests, so super is intentionally
-  // not called.
-  // ignore: must_call_super
-  Future<void> initLifeCycle() async {}
-}
-
-/// A builder of the [_FakeUiFatalErrorManager], without the `LoggerManager` dependency.
-class _FakeUiFatalErrorBuilder extends AbsLifeCycleFactory<UiFatalErrorManager> {
-  /// Class constructor
-  _FakeUiFatalErrorBuilder(FatalErrorPageBuilder buildFatalErrorPage)
-    : super(() => _FakeUiFatalErrorManager(buildFatalErrorPage: buildFatalErrorPage));
-
-  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
-  @override
-  Iterable<Type> dependsOn() => [];
 }

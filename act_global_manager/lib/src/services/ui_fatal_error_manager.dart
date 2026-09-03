@@ -8,21 +8,19 @@ import 'package:act_global_manager/src/services/abs_global_manager.dart';
 import 'package:act_global_manager/src/types/fatal_error_page_types.dart';
 import 'package:act_global_manager/src/ui/fatal_error_wrapper_widget.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 
 /// Build a manager to handle fatal errors in the UI
 class UiFatalErrorBuilder extends AbsLifeCycleFactory<UiFatalErrorManager> {
-  /// {@macro act_global_manager.AbsGlobalManager.create}
-  ///
-  /// The [buildFatalErrorPage] method is used to build a page to display when a fatal error occurs
+  /// A factory to create the [UiFatalErrorManager], with the [buildFatalErrorPage] used to build
+  /// the page to display when a fatal error occurs.
   UiFatalErrorBuilder(FatalErrorPageBuilder buildFatalErrorPage)
     : super(() => UiFatalErrorManager(buildFatalErrorPage: buildFatalErrorPage));
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
-  Iterable<Type> dependsOn() => [LoggerManager];
+  Iterable<Type> dependsOn() => [];
 }
 
 /// This manager is used to handle fatal errors in the UI and display a page when a fatal error
@@ -50,17 +48,6 @@ class UiFatalErrorManager extends AbsWithLifeCycleAndUi {
       _buildFatalErrorPage = buildFatalErrorPage,
       _fatalErrorWillShowHandlers = {},
       _hasFatalError = false;
-
-  /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
-  @override
-  Future<void> initLifeCycle() async {
-    await super.initLifeCycle();
-
-    final logger = globalGetIt().get<LoggerManager>();
-
-    logger.addFlutterExceptionHandler(_onFlutterExceptionHandler);
-    logger.addPlatformErrorCallback(_onPlatformErrorCallback);
-  }
 
   /// Wrap the app with a widget that will display a fatal error page when a fatal error occurs
   Widget wrapWithFatalErrorWidget({required Widget child}) => FatalErrorWrapperWidget(
@@ -90,41 +77,43 @@ class UiFatalErrorManager extends AbsWithLifeCycleAndUi {
     _fatalErrorWillShowHandlers.remove(handler);
   }
 
-  /// Callback to handle platform errors
-  void _onPlatformErrorCallback(Object exception, StackTrace stackTrace) => _raise(exception);
-
-  /// Callback to handle flutter errors
-  void _onFlutterExceptionHandler(FlutterErrorDetails details) => _raise(details.exception);
-
   /// Called when a fatal error occurs to notify the app and display the error page
   void _raise(Object error) {
     if (_hasFatalError) {
-      // If a fatal error has already been raised, we don't want to raise another one
+      // A fatal error has already been raised; the first one, most relevant, stays on screen.
       return;
     }
     _hasFatalError = true;
 
-    try {
-      for (final handler in _fatalErrorWillShowHandlers) {
-        handler(error);
-      }
-    } catch (handlerError) {
-      appLogger().e(
-        "An error occurred while notifying fatal error will show handlers: $handlerError",
-      );
+    // The handlers are notified before the page is shown, each in isolation so that a slow or
+    // failing one neither skips the others nor leaks an unhandled error. Their completion is not
+    // awaited: the page must appear even if a handler hangs.
+    for (final handler in _fatalErrorWillShowHandlers) {
+      _notifyWillShowHandler(handler, error);
     }
 
     if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.idle) {
       _fatalErrorNotifier.value = error;
     } else {
-      scheduleMicrotask(
-        // We test if a fatal error has already been raised before setting the value because
-        // the microtask may be executed later (and there is no mutex) and we don't want to
-        // overwrite an existing fatal error.
-        () {
-          _fatalErrorNotifier.value ??= error;
-        },
-      );
+      // A fatal error raised during a frame: the notifier is set out of the build phase.
+      scheduleMicrotask(() => _fatalErrorNotifier.value = error);
+    }
+  }
+
+  /// Calls one will-show [handler], guarding both a synchronous throw and a rejected future so a
+  /// single faulty handler cannot break the others or leak an unhandled error.
+  void _notifyWillShowHandler(FatalErrorWillShowHandler handler, Object error) {
+    void logHandlerError(Object handlerError) => appLogger().e(
+      "An error occurred while notifying a fatal error will show handler: $handlerError",
+    );
+
+    try {
+      final result = handler(error);
+      if (result is Future) {
+        unawaited(result.catchError(logHandlerError));
+      }
+    } catch (handlerError) {
+      logHandlerError(handlerError);
     }
   }
 }

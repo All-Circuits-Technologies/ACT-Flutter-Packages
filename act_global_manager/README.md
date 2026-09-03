@@ -104,25 +104,26 @@ in place of the application. `runActApp` wraps the application in that widget on
 ready, so the switch from the application to the error page needs no rebuild of the tree from the
 call site.
 
-A fatal error reaches the manager from three places:
+The page is shown on a deliberate decision, never by intercepting every error: Flutter survives most
+runtime errors on its own (a build error becomes an `ErrorWidget`, a failed image or a throwing
+callback is only reported), and those recoverable errors must not replace the whole application. A
+fatal error reaches the manager from two places only:
 
 - the initialization of the managers failing in `runActApp`, before the first view is ever built,
-- an uncaught Flutter or platform error at any later point, which the manager listens for through
-  the logger manager it depends on,
-- a call to `displayFatalErrorPage`, for an application which decides on its own that it cannot go
-  on.
+- a call to `displayFatalErrorPage`, for an application which decides on its own, from its own code,
+  that it cannot go on.
 
 Only the first error is shown; the ones which follow it are ignored, so a cascade of failures still
 leaves the first, most relevant, page on screen.
 
 Two hooks let the rest of the application react to the page being shown:
 
-- a manager which derives `AbsWithLifeCycleAndUi` overrides `onFatalErrorPageWillShow` to do what
-  it still can in that degraded state, typically releasing a resource it was holding back for the
-  normal startup so the error page can actually run. It receives no `BuildContext`, because the
-  normal first view never happens on this path. Only the managers already initialized when the
-  failure happens are called, so a manager which relies on this has to be registered early, before
-  the ones whose failure it wants to react to.
+- a manager which derives `AbsWithLifeCycleAndUi` overrides `onFatalErrorPageWillShow`, typically to
+  release a resource it was holding back for the normal startup so the error page can actually run.
+  It receives no `BuildContext`, because on the startup path the normal first view never happens. On
+  that path only the managers already initialized when the failure happens are called, so a manager
+  which relies on this has to be registered early, before the ones whose failure it wants to react
+  to.
 - any other code adds a `FatalErrorWillShowHandler` through `addFatalErrorWillShowHandler`, called
   with the error just before the page is shown.
 
@@ -191,8 +192,8 @@ MaterialApp(
 ### Add a fatal error page
 
 Register `UiFatalErrorManager` with `UiFatalErrorBuilder`, giving it the builder of the page to show
-when a fatal error occurs. The manager depends on the logger manager, so it comes after it, and it
-should come early, before the managers whose failure it is meant to catch:
+when a fatal error occurs. Register it early, before the managers whose startup failure it is meant
+to catch:
 
 ```dart
 @override
@@ -221,9 +222,9 @@ class FatalErrorPage extends StatelessWidget {
 }
 ```
 
-Nothing more is needed for the page to appear when the initialization fails or an error goes
-uncaught. An application which detects a fatal condition on its own shows the same page through the
-manager:
+Nothing more is needed for the page to appear when the initialization fails. At runtime, the page is
+never shown by intercepting Flutter's errors, which it survives on its own; an application which
+detects a fatal condition it cannot recover from shows the same page through the manager:
 
 ```dart
 globalGetIt().get<UiFatalErrorManager>().displayFatalErrorPage(error);
