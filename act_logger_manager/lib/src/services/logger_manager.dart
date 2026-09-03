@@ -34,28 +34,23 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   MixinLoggerConfig Function() get loggerConfigGetter => _loggerConfigGetter;
 
   /// Class constructor
-  LoggerManager({
-    required MixinLoggerConfig Function() loggerConfigGetter,
-  })  : _loggerConfigGetter = loggerConfigGetter,
-        _flutterExceptionHandler = {},
-        _platformErrorCallback = {};
+  LoggerManager({required MixinLoggerConfig Function() loggerConfigGetter})
+    : _loggerConfigGetter = loggerConfigGetter,
+      _flutterExceptionHandler = {},
+      _platformErrorCallback = {};
 
-  /// Init the manager
+  /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
     final minLevel = _loggerConfigGetter().logLevelEnv.load();
 
-    final instance = LoggerSingleton.createOrUpdateInstance(
-      minLevel: minLevel,
-    );
+    final instance = LoggerSingleton.createOrUpdateInstance(minLevel: minLevel);
 
     await instance.externalLogger.initLifeCycle();
 
-    _logger = LogsHelper.withExternalLogger(
-      externalLogger: instance.externalLogger,
-    );
+    _logger = LogsHelper.withExternalLogger(externalLogger: instance.externalLogger);
 
     FlutterError.onError = _onFlutterError;
 
@@ -85,12 +80,7 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   // We don't know the type of the objects we pass to the log messages
   // ignore: avoid_annotating_with_dynamic
   void log(dynamic message, {required LogsLevel level, dynamic error, StackTrace? stackTrace}) =>
-      _logger.log(
-        message,
-        level: level,
-        error: error,
-        stackTrace: stackTrace,
-      );
+      _logger.log(message, level: level, error: error, stackTrace: stackTrace);
 
   /// {@macro act_foundation.MixinActLogger.logMessages}
   ///
@@ -183,20 +173,16 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
 
   /// Get the default logger of the app, which is always ready to be used, even before the manager
   /// initialization.
-  static MixinActLogger getSafeLogger({
-    LogsLevel defaultMinLevel = LogsLevel.warn,
-  }) {
+  static MixinActLogger getSafeLogger({LogsLevel defaultMinLevel = LogsLevel.warn}) {
     final instance = LoggerSingleton.createInstance(
       externalLoggers: SafeExternalLoggers.toExternalLoggersMap(),
       minLevel: defaultMinLevel,
     );
 
-    return LogsHelper.withExternalLogger(
-      externalLogger: instance.externalLogger,
-    );
+    return LogsHelper.withExternalLogger(externalLogger: instance.externalLogger);
   }
 
-  /// To call in order to dispose the class elements
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   @override
   Future<void> disposeLifeCycle() async {
     await LoggerSingleton.instanceOrNull?.externalLogger.disposeLifeCycle();

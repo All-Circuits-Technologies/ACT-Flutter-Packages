@@ -45,13 +45,11 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
   /// Registers the managers of the test, if it has any.
   final RegisterManagersFunc<FakeUiGlobalManager>? onRegisterManagers;
 
-  /// The page to display when the initialization of the managers fails.
+  /// The page displayed when the initialization of the managers fails.
   ///
-  /// When null, the error is rethrown and the application crashes.
+  /// When null, no fatal error manager is registered, so the error is rethrown and no page is
+  /// displayed.
   final Widget? fatalErrorPage;
-
-  /// The errors the fatal error page has been built with.
-  final List<Object> fatalErrors = [];
 
   /// Class constructor
   FakeUiGlobalManager({this.onRegisterManagers, this.fatalErrorPage, super.defaultMinLevel})
@@ -61,14 +59,12 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
 
   /// {@macro act_global_manager.AbsGlobalManager.registerManagers}
   @override
-  Future<void> registerManagers() async => onRegisterManagers?.call(this);
+  Future<void> registerManagers() async {
+    if (fatalErrorPage != null) {
+      register<UiFatalErrorManager>(UiFatalErrorBuilder((_) => fatalErrorPage!));
+    }
 
-  /// {@macro act_global_manager.MixinUiGlobalManager.buildFatalErrorPage}
-  @override
-  Widget? buildFatalErrorPage(Object error) {
-    fatalErrors.add(error);
-
-    return fatalErrorPage;
+    await onRegisterManagers?.call(this);
   }
 
   /// {@macro act_global_manager.AbsGlobalManager.registerManagerAsync}

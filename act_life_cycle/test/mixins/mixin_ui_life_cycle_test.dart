@@ -15,6 +15,8 @@ class _RecordingManager extends AbsWithLifeCycle with MixinUiLifeCycle {
 
   BuildContext? seenContext;
 
+  Object? seenError;
+
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
@@ -32,6 +34,13 @@ class _RecordingManager extends AbsWithLifeCycle with MixinUiLifeCycle {
     await super.initAfterView(context);
     steps.add("initAfterView");
     seenContext = context;
+  }
+
+  @override
+  Future<void> onFatalErrorPageWillShow(Object error) async {
+    await super.onFatalErrorPageWillShow(error);
+    steps.add("onFatalErrorPageWillShow");
+    seenError = error;
   }
 
   @override
@@ -84,6 +93,24 @@ void main() {
       await manager.initAfterView(viewContext);
 
       expect(manager.seenContext, viewContext);
+    });
+  });
+
+  group("MixinUiLifeCycle.onFatalErrorPageWillShow", () {
+    test("completes without doing anything when it is not overridden", () async {
+      final manager = _PlainManager();
+
+      await expectLater(manager.onFatalErrorPageWillShow(StateError("a failure")), completes);
+    });
+
+    test("gives the error to the derived class", () async {
+      final manager = _RecordingManager();
+      final error = StateError("a failure");
+
+      await manager.onFatalErrorPageWillShow(error);
+
+      expect(manager.seenError, same(error));
+      expect(manager.steps, ["onFatalErrorPageWillShow"]);
     });
   });
 

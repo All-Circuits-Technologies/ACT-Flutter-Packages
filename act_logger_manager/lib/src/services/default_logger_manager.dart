@@ -17,11 +17,10 @@ import 'package:act_logger_manager/src/types/default_external_loggers.dart';
 class DefaultLoggerBuilder<C extends MixinDefaultLoggerConfig>
     extends AbsLifeCycleFactory<LoggerManager> {
   /// A factory to create a manager instance
-  DefaultLoggerBuilder({
-    required MixinDefaultLoggerConfig Function() loggerConfigGetter,
-  }) : super(() => DefaultLoggerManager(loggerConfigGetter: loggerConfigGetter));
+  DefaultLoggerBuilder({required MixinDefaultLoggerConfig Function() loggerConfigGetter})
+    : super(() => DefaultLoggerManager(loggerConfigGetter: loggerConfigGetter));
 
-  /// List of manager dependence
+  /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
   Iterable<Type> dependsOn() => [C];
 }
@@ -36,16 +35,16 @@ class DefaultLoggerBuilder<C extends MixinDefaultLoggerConfig>
 /// [LoggerManager] if you want to have more control over the loggers
 class DefaultLoggerManager extends LoggerManager {
   /// Class constructor
-  DefaultLoggerManager({
-    required MixinDefaultLoggerConfig Function() loggerConfigGetter,
-  }) : super(loggerConfigGetter: loggerConfigGetter);
+  DefaultLoggerManager({required MixinDefaultLoggerConfig Function() loggerConfigGetter})
+    : super(loggerConfigGetter: loggerConfigGetter);
 
   /// {@macro act_logger_manager.LoggerManager.buildExternalLoggersToReplaceSafeLogger}
   @override
   Future<Map<Enum, MixinExternalLogger>> buildExternalLoggersToReplaceSafeLogger() async => {
-        DefaultExternalLoggers.console:
-            ConsoleExternalLogger.fromConfigGetter(configGetter: _loggerDefaultConfig),
-      };
+    DefaultExternalLoggers.console: ConsoleExternalLogger.fromConfigGetter(
+      configGetter: _loggerDefaultConfig,
+    ),
+  };
 
   /// Get the logger configuration with the correct type.
   MixinDefaultLoggerConfig _loggerDefaultConfig() =>

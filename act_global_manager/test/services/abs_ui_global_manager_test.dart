@@ -27,9 +27,5 @@ void main() {
     test("has the life cycle of an application with a view", () {
       expect(_PlainUiGlobalManager(), isA<MixinUiGlobalManager>());
     });
-
-    test("displays no page of its own when the initialization fails", () {
-      expect(_PlainUiGlobalManager().buildFatalErrorPage(StateError("a failure")), isNull);
-    });
   });
 }

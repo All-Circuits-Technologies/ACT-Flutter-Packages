@@ -16,11 +16,13 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [The order the managers are initialized in](#the-order-the-managers-are-initialized-in)
   - [The shortcuts](#the-shortcuts)
   - [The application with a view](#the-application-with-a-view)
+  - [The fatal error page](#the-fatal-error-page)
   - [The config manager of the usual application](#the-config-manager-of-the-usual-application)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Write the global manager of the application](#write-the-global-manager-of-the-application)
   - [Start the application](#start-the-application)
+  - [Add a fatal error page](#add-a-fatal-error-page)
   - [Reach a manager](#reach-a-manager)
 - [Testing](#testing)
 
@@ -85,12 +87,45 @@ an application with a view needs:
   once they are all initialized and before the first view is built,
 - `initInFirstView` gives them the context of the first view, without waiting for them: the first
   view is displayed rather than held back,
-- `runActApp` initializes the managers and then runs the application,
-- `buildFatalErrorPage` gives the page to display when that initialization fails. Without one, the
-  error is rethrown and the application crashes with it in the console.
+- `runActApp` initializes the managers and then runs the application.
 
 Only the managers which derive `AbsWithLifeCycleAndUi` take part in those two steps; the others are
 left alone.
+
+### The fatal error page
+
+The page to display when something goes irrecoverably wrong is not built by the global manager
+itself: it is the job of a dedicated manager, `UiFatalErrorManager`, which the application registers
+like any other. Without it, a failure during the initialization is rethrown and the application
+crashes with the error in the console, exactly as if no page had been asked for.
+
+The manager is given a builder, `FatalErrorPageBuilder`, which turns an error into the widget to run
+in place of the application. `runActApp` wraps the application in that widget once the managers are
+ready, so the switch from the application to the error page needs no rebuild of the tree from the
+call site.
+
+The page is shown on a deliberate decision, never by intercepting every error: Flutter survives most
+runtime errors on its own (a build error becomes an `ErrorWidget`, a failed image or a throwing
+callback is only reported), and those recoverable errors must not replace the whole application. A
+fatal error reaches the manager from two places only:
+
+- the initialization of the managers failing in `runActApp`, before the first view is ever built,
+- a call to `displayFatalErrorPage`, for an application which decides on its own, from its own code,
+  that it cannot go on.
+
+Only the first error is shown; the ones which follow it are ignored, so a cascade of failures still
+leaves the first, most relevant, page on screen.
+
+Two hooks let the rest of the application react to the page being shown:
+
+- a manager which derives `AbsWithLifeCycleAndUi` overrides `onFatalErrorPageWillShow`, typically to
+  release a resource it was holding back for the normal startup so the error page can actually run.
+  It receives no `BuildContext`, because on the startup path the normal first view never happens. On
+  that path only the managers already initialized when the failure happens are called, so a manager
+  which relies on this has to be registered early, before the ones whose failure it wants to react
+  to.
+- any other code adds a `FatalErrorWillShowHandler` through `addFatalErrorWillShowHandler`, called
+  with the error just before the page is shown.
 
 ### The config manager of the usual application
 
@@ -153,6 +188,50 @@ MaterialApp(
   },
 );
 ```
+
+### Add a fatal error page
+
+Register `UiFatalErrorManager` with `UiFatalErrorBuilder`, giving it the builder of the page to show
+when a fatal error occurs. Register it early, before the managers whose startup failure it is meant
+to catch:
+
+```dart
+@override
+Future<void> registerManagers() async {
+  registerManagerAsync(AppConfigBuilder());
+  registerManagerAsync(ExtDefaultLoggerBuilder<AppConfigManager>());
+  registerManagerAsync(UiFatalErrorBuilder((error) => FatalErrorPage(error: error)));
+  registerManagerAsync(TicBuilder());
+}
+```
+
+The page runs on its own, before or instead of the usual view, so it cannot rely on the routes, the
+translations, or any other manager being ready. Give it what it needs itself, for instance its own
+minimal `MaterialApp`:
+
+```dart
+class FatalErrorPage extends StatelessWidget {
+  final Object error;
+
+  const FatalErrorPage({super.key, required this.error});
+
+  @override
+  Widget build(BuildContext context) => MaterialApp(
+    home: Scaffold(body: Center(child: Text('Something went wrong:\n$error'))),
+  );
+}
+```
+
+Nothing more is needed for the page to appear when the initialization fails. At runtime, the page is
+never shown by intercepting Flutter's errors, which it survives on its own; an application which
+detects a fatal condition it cannot recover from shows the same page through the manager:
+
+```dart
+globalGetIt().get<UiFatalErrorManager>().displayFatalErrorPage(error);
+```
+
+A manager which has to release a resource before the error page can run overrides
+`onFatalErrorPageWillShow`; any other code reacts through `addFatalErrorWillShowHandler`.
 
 ### Reach a manager
 
