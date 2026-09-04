@@ -1,16 +1,17 @@
-# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 name: act_splash_screen_manager
-description: Useful package to support native splash screens in mobile applications
+description: Keeps the splash screen of the platform displayed until the application is ready
 publish_to: none
 
-# This package supports all platforms listed below.
 platforms:
   android:
   ios:
+  linux:
   web:
+  windows:
 
 environment:
   sdk: ^3.11.1
@@ -20,17 +21,38 @@ dependencies:
   flutter:
     sdk: flutter
 
+  # Removes the splash screen of the web page, and generates the splash screens of the mobile and
+  # web applications
   flutter_native_splash: ^2.4.6
 
-  # Easily create managers
+  # Warns when the runner of a desktop application does not draw any splash screen
+  act_foundation:
+    path: ../act_foundation
+
   act_life_cycle:
     path: ../act_life_cycle
 
-  # Logger manager
   act_logger_manager:
     path: ../act_logger_manager
+
+  # Tells which platform the application runs on, to pick the manager it needs
+  act_platform_manager:
+    path: ../act_platform_manager
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
   flutter_lints: ^6.0.0
+
+  # Fakes shared by the tests of the packages
+  act_test_utility:
+    path: ../act_test_utility
+
+flutter:
+  plugin:
+    platforms:
+      linux:
+        pluginClass: ActSplashScreenManagerPlugin
+      windows:
+        pluginClass: ActSplashScreenManagerPluginCApi

@@ -75,7 +75,12 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
         minLevel: config.loggerEnabled ? null : LogsLevel.off,
       );
     } else {
-      _logsHelper = config.parentLogsHelper!.createSubLogger(subCategory: config.loggerCategory);
+      // The requester says whether it logs, whether it has a logger of its own or one under the
+      // logger of the class which owns it
+      _logsHelper = config.parentLogsHelper!.createSubLoggerMinLevel(
+        subCategory: config.loggerCategory,
+        minLevel: config.loggerEnabled ? null : LogsLevel.off,
+      );
     }
 
     final urlsByRelRoute = <String, Uri>{};
@@ -100,12 +105,14 @@ abstract class AbsHttpClientManager<T extends AbsHttpClientLogin?> extends AbsWi
 
     await _serverRequester.initLifeCycle();
 
-    _absServerLogin = await createServerLogin(
+    final serverLogin = await createServerLogin(
       serverRequester: _serverRequester,
       parentLogsHelper: _logsHelper,
     );
+    _absServerLogin = serverLogin;
 
-    if (!(await _absServerLogin!.initLogin())) {
+    // A server which asks for no authentication has no login to initialize
+    if (serverLogin != null && !(await serverLogin.initLogin())) {
       throw ActServerLoginInitException(
         "An error occurred when tried to init the abs server login",
       );

@@ -4,4 +4,6 @@
 
 library;
 
-export 'src/splash_screen_manager.dart';
+export 'src/abs_splash_screen_manager.dart';
+export 'src/splash_screen_builder.dart';
+export 'src/ui/splash_screen_cover.dart';

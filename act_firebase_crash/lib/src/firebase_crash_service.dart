@@ -195,14 +195,13 @@ class FirebaseCrashService extends AbsFirebaseService {
   ///
   /// If [value] is null, the debugging is disabled.
   Future<void> setCrashDebugConfig(FirebaseCrashDebugConfig? value) async {
-    if (_crashDebugConfig == null && value == null) {
+    if (_crashDebugConfig == value) {
       // Nothing to do
       return;
     }
 
-    final onlyUpdateId = (_crashDebugConfig != null && value != null);
     _crashDebugConfig = value;
-    await _updateCrashDebugConfig(onlyUpdateId: onlyUpdateId);
+    await _updateCrashDebugConfig();
   }
 
   /// This method generates a specific error to send all the crash debug logs kept since the last
@@ -232,7 +231,7 @@ class FirebaseCrashService extends AbsFirebaseService {
   ///
   /// The method doesn't test if the updating has already be done (therefore it's better to do tests
   /// before calling it).
-  Future<void> _updateCrashDebugConfig({bool onlyUpdateId = false}) async {
+  Future<void> _updateCrashDebugConfig() async {
     final crashlytics = FirebaseCrashlytics.instance;
     final loggerManager = globalGetIt().get<LoggerManager>();
 
@@ -240,13 +239,13 @@ class FirebaseCrashService extends AbsFirebaseService {
       // We set an empty identifier to remove the existing one
       await loggerManager.removeExternalLogger(CrashlyticsLoggerType.crash);
       await crashlytics.setUserIdentifier("");
-    } else if (_crashDebugConfig != null) {
+    } else {
       await crashlytics.setUserIdentifier(_crashDebugConfig!.identifier);
 
-      if (!onlyUpdateId) {
-        await loggerManager.addExternalLogger(CrashlyticsLoggerType.crash,
-            CrashlyticsExternalLogger(crashDebugConfig: _crashDebugConfig!));
-      }
+      // The logger keeps the config it was built with, and the level of that config is the level it
+      // logs from; therefore it is replaced as soon as the config changes.
+      await loggerManager.addExternalLogger(CrashlyticsLoggerType.crash,
+          CrashlyticsExternalLogger(crashDebugConfig: _crashDebugConfig!));
     }
   }
 

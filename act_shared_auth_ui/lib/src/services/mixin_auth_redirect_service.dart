@@ -19,7 +19,10 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   late final T _signInRoute;
 
   /// This is the stream subscription to the authentication stream status
-  late final StreamSubscription<AuthStatus> _authSub;
+  ///
+  /// This is null as long as the service hasn't been initialized, which may never happen: the
+  /// initialization stops before if a redirection is already registered.
+  StreamSubscription<AuthStatus>? _authSub;
 
   /// This is the current auth status
   AuthStatus _authStatus = AuthStatus.signedOut;
@@ -108,6 +111,6 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   Future<void> closeRedirectService() async {
     await super.closeRedirectService();
 
-    await _authSub.cancel();
+    await _authSub?.cancel();
   }
 }

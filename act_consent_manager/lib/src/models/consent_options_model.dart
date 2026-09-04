@@ -67,9 +67,14 @@ class ConsentOptionsModel<T extends MixinConsentOptions> extends Equatable {
       other.runtimeType == runtimeType &&
       mapEquals(_optionMap, other._optionMap);
 
-  /// Override the [hashCode] to use the [_optionMap] hash code.
+  /// Override the [hashCode] to use what the [_optionMap] contains.
+  ///
+  /// A map hashes on its identity, therefore two equal options would have different hash codes if we
+  /// used the hash code of the map itself, and looking one of them up in a set or a map would fail.
   @override
-  int get hashCode => _optionMap.hashCode;
+  int get hashCode => Object.hashAllUnordered(
+        _optionMap.entries.map((entry) => Object.hash(entry.key, entry.value)),
+      );
 
   /// Override the [props] getter expected by the [Equatable] class but since we override the
   /// equality operator, this getter won't be used.

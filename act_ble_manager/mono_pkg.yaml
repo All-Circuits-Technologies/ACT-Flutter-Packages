@@ -9,3 +9,6 @@ stages:
   - analyze:
       - group:
           - analyze: --fatal-infos .
+  - test:
+      - group:
+          - test

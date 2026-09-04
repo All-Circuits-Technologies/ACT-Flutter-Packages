@@ -29,11 +29,9 @@ enum EnvType {
   static EnvType? parseFromString(String value) {
     final lowCaseValue = value.toLowerCase();
 
-    for (final value in EnvType.values) {
-      for (final beParsedWith in value._couldBeParsedWith) {
-        if (beParsedWith.contains(lowCaseValue)) {
-          return value;
-        }
+    for (final envType in EnvType.values) {
+      if (envType._couldBeParsedWith.contains(lowCaseValue)) {
+        return envType;
       }
     }
 

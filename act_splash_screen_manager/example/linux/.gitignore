@@ -1,0 +1,8 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+flutter/ephemeral
+flutter/generated_plugin_registrant.cc
+flutter/generated_plugin_registrant.h
+flutter/generated_plugins.cmake

@@ -60,6 +60,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
   flutter_lints: ^6.0.0
 
 dependency_overrides:

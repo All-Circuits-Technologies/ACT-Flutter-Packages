@@ -60,3 +60,7 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # Fakes and helpers shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

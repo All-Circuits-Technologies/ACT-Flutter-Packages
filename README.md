@@ -13,6 +13,13 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [mono\_repo](#mono_repo)
 - [Packages list](#packages-list)
 - [How to use the packages in your project](#how-to-use-the-packages-in-your-project)
+- [Tests](#tests)
+  - [How to run the tests](#how-to-run-the-tests)
+  - [Where the tests live](#where-the-tests-live)
+  - [How deep the tests go](#how-deep-the-tests-go)
+  - [How the tests are written](#how-the-tests-are-written)
+  - [Test tooling](#test-tooling)
+  - [Lint and continuous integration](#lint-and-continuous-integration)
 - [Add a new package](#add-a-new-package)
 - [Update the GitHub Actions Flutter version](#update-the-github-actions-flutter-version)
 
@@ -58,7 +65,7 @@ To install it globally, you have to call:
 | [act_ffi_utility](act_ffi_utility/)                                       | This package provides utility functions for working with FFI in Flutter.                                                 |         |
 | [act_file_transfer_manager](act_file_transfer_manager/)                   | A Flutter package for managing file transfers.                                                                           |         |
 | [act_firebase_core](act_firebase_core/)                                   | This is the main package to manage firebase with our ACT libs                                                            |         |
-| [act_firebase_crash](act_firebase_crash/)                                 | A new Flutter package project.                                                                                           |         |
+| [act_firebase_crash](act_firebase_crash/)                                 | Reports the crashes and the logs of an application to Firebase Crashlytics.                                              |         |
 | [act_flutter_utility](act_flutter_utility/)                               | This package contains useful methods and classes which extends flutter functionality.                                    |         |
 | [act_foundation](act_foundation/)                                         | This package provides foundational classes and interfaces for the ACT packages, such as the logger interface and errors. |         |
 | [act_global_manager](act_global_manager/)                                 | This package contains the default global_manager which has to be extended in the app.                                    |         |
@@ -86,7 +93,7 @@ To install it globally, you have to call:
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
-| [act_qr_code](act_qr_code/)                                               | This package contains a QR Code widget ready to use                                                                      |         |
+| [act_qr_code](act_qr_code/)                                               | This package contains widgets linked to QR code                                                                          |         |
 | [act_remote_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act remote localized and versioned file manager.                                                                         |         |
 | [act_remote_storage_manager](act_remote_storage_manager/)                 | This package contains the remote storage manager, which can be used to get files from a remote server.                   |         |
 | [act_remote_storage_ui](act_remote_storage_ui/)                           | Contains helpful widgets to work with act_remote_storage_manager                                                         |         |
@@ -94,9 +101,10 @@ To install it globally, you have to call:
 | [act_shared_auth](act_shared_auth/)                                       | This contains generic and shared elements for authentication services.                                                   |         |
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.                        |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
-| [act_splash_screen_manager](act_splash_screen_manager/)                   | Useful package to support native splash screens in mobile applications                                                   |         |
+| [act_splash_screen_manager](act_splash_screen_manager/)                   | Keeps the splash screen of the platform displayed until the application is ready                                         |         |
+| [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
-| [act_thingsboard_client](act_thingsboard_client/)                         | Helpful package to use the Thingsboard client with app                                                                   |         |
+| [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers.           |         |
 | [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                                   |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                                      |         |
@@ -132,6 +140,107 @@ corrections from others.
 
 Because, this code isn't reviewed if no merge request is done to the master branch, it's recommended
 to oftenly create merge requests from the project branch to master.
+
+## Tests
+
+### How to run the tests
+
+Inside a package:
+
+```console
+> flutter test
+```
+
+For the whole repository:
+
+```console
+> tool/test_all.sh
+```
+
+The script skips the packages which have no `test` folder and prints the list of the packages
+which failed.
+
+### Where the tests live
+
+The `test` folder of a package mirrors its `lib/src` folder: a source file `lib/src/a/b.dart` is
+tested by `test/a/b_test.dart`.
+
+What the tests of a package cover, and anything they deliberately leave out, is written in the
+`Testing` section of the README of that package.
+
+### How deep the tests go
+
+The depth of the tests follows what the package is made of, so all packages are not covered the
+same way:
+
+- A package which holds pure logic (models, parsing, state, timers, extensions) is covered
+  exhaustively, edge cases and error paths included.
+- A manager which wraps a native plugin, a socket or a server is tested through the boundary it
+  already defines: a fake takes the place of the plugin, and the tests cover the life cycle, the
+  state machine, the parsing, the retries and the error handling. When a class cannot be reached
+  without reshaping it, it is tested through an existing interface and its README says so. No
+  abstraction is added to the sources for the sole purpose of making a test possible.
+- A thin wrapper or a purely graphical package gets a smoke test or widget tests, and the effort
+  goes to its README instead.
+
+A package which ships no Dart code at all has no `test` folder, and therefore no `test` stage.
+
+### How the tests are written
+
+- One `group` per class or per public method, named after it.
+- One `test` per behaviour, described in English and in the third person, for instance
+  `returns null when the key is missing`.
+- Arrange, act, assert, in this order and without any section comment.
+- The test files carry the same SPDX header as the source files.
+
+### Test tooling
+
+- [`act_test_utility`](act_test_utility/) holds the fakes shared by several packages. It is added
+  as a `dev_dependency` by the packages which use it, including the ones it depends on: pub
+  resolves such a cycle between packages linked by a path. A package which defines a faked
+  interface still keeps its own fake of it, in its `test` folder, and hides the shared name when
+  it imports the shared fakes.
+- [`mocktail`](https://pub.dev/packages/mocktail) is the mocking library. It needs no code
+  generation, so there is no generated file to maintain. It is added as a `dev_dependency` only in
+  the packages which need it.
+- `fake_async`, which comes with `flutter_test`, is used for everything which depends on timers or
+  delays. A test must never wait on a real delay.
+
+### Lint and continuous integration
+
+The analysis covers the test code too, so `flutter analyze --fatal-infos .` has to pass on the
+`test` folder as well as on `lib`. The only rule which does not apply outside of `lib` is
+`public_member_api_docs`.
+
+The tests of a package are run by the CI once the package declares the `test` stage in its
+`mono_pkg.yaml`:
+
+```yaml
+stages:
+  - analyze:
+      - group:
+          - analyze: --fatal-infos .
+  - test:
+      - group:
+          - test
+```
+
+The stage is only declared once the package actually has tests, because `flutter test` fails when
+the `test` folder doesn't exist. A package whose tests need a browser asks for one in the same
+place, with `test: --platform chrome`; it then gets its own job, because only the packages sharing
+the very same command are grouped together.
+
+`mono_repo.yaml` merges the `analyze` and `test` stages, so the whole repository is analysed in one
+job and tested in another, instead of one job per package. This keeps a single `flutter pub upgrade`
+per package, which is what a job per package would pay for, and the whole run takes about twenty
+minutes.
+
+As for any change made to a `mono_pkg.yaml` file, the CI configuration has to be regenerated and
+committed:
+
+```console
+> tool/mono_repo_generate.sh
+```
 
 ## Add a new package
 

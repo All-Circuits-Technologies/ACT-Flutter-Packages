@@ -1,5 +1,5 @@
 #!/bin/bash
-# Created with package:mono_repo v6.6.3
+# Created with package:mono_repo v6.7.3
 
 # Support built in commands on windows out of the box.
 
@@ -66,6 +66,14 @@ for PKG in ${PKGS}; do
       analyze)
         echo 'flutter analyze --fatal-infos .'
         flutter analyze --fatal-infos . || EXIT_CODE=$?
+        ;;
+      test_0)
+        echo 'flutter test'
+        flutter test || EXIT_CODE=$?
+        ;;
+      test_1)
+        echo 'flutter test --platform chrome'
+        flutter test --platform chrome || EXIT_CODE=$?
         ;;
       *)
         echo -e "\033[31mUnknown TASK '${TASK}' - TERMINATING JOB\033[0m"

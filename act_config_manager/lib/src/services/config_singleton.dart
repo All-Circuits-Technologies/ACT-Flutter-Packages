@@ -37,6 +37,9 @@ class ConfigSingleton extends AbsWithLifeCycle {
     return _instance!;
   }
 
+  /// Getter to this instance, which returns null when the singleton hasn't been created yet.
+  static ConfigSingleton? get instanceOrNull => _instance;
+
   /// Create the singleton instance.
   ///
   /// This method has to be called only once or an exception will be raised.
@@ -82,6 +85,18 @@ class ConfigSingleton extends AbsWithLifeCycle {
     } catch (_) {
       return null;
     }
+  }
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  ///
+  /// The instance is released, so that [createInstance] can be called again afterwards.
+  @override
+  Future<void> disposeLifeCycle() async {
+    if (_instance == this) {
+      _instance = null;
+    }
+
+    await super.disposeLifeCycle();
   }
 
   /// Find, thanks to the given key, the expected object

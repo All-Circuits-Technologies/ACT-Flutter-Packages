@@ -72,5 +72,23 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  # The Bluetooth of the device the tests answer in place of
+  reactive_ble_platform_interface: ^5.4.0
+
+  # The permissions of the device the tests answer in place of
+  permission_handler_platform_interface: ^4.3.0
+
+  # The router the contextual views of the tests are displayed through
+  act_router_manager:
+    path: ../act_router_manager
+
+  # The pages the tests display when the Bluetooth has to be switched on
+  act_contextual_views_manager:
+    path: ../act_contextual_views_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0

@@ -111,7 +111,7 @@ class RestartableTimer implements InterfaceRestartableTimer {
   /// cancel process is not finished.
   @override
   void reset() {
-    unawaited(_mutex.protect(() async => cancelWithoutMutex()));
+    unawaited(_mutex.protect(() async => resetWithoutMutex()));
   }
 
   /// Call to restart the timer. The timer is cancelled before to be started again.
