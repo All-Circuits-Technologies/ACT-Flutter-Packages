@@ -1,4 +1,4 @@
-# Created with package:mono_repo v6.6.3
+# Created with package:mono_repo v6.7.3
 name: Dart CI
 on:
   pull_request:
@@ -15,22 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
-          restore-keys: |
+          restore-keys: |-
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: stable
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - name: mono_repo self validate
-        run: dart pub global activate mono_repo 6.6.3
+        run: dart pub global activate mono_repo 6.7.3
       - name: mono_repo self validate
         run: |
           bash tool/mono_repo_generate.sh
@@ -43,22 +45,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_fireba-!!too_long!!-1481-1047405625"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1464-832818144
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebase_-!!too_long!!-1481-1420144"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1464-182751564
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.6"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_abs_peripherals_manager_pub_upgrade
         name: act_abs_peripherals_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -676,22 +680,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1432-165124845"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1416-196292371
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1432-277715329"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1416-865754736
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.6"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_abs_peripherals_manager_pub_upgrade
         name: act_abs_peripherals_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -1294,22 +1300,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager;commands:test_1"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_web_local_storage_manager;commands:test_1"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6;packages:act_web_local_storage_manager
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.44.6
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.6"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_web_local_storage_manager_pub_upgrade
         name: act_web_local_storage_manager; flutter pub upgrade
         run: flutter pub upgrade
