@@ -1,0 +1,15 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# The native code of this plugin follows the C++ rules of the repository, inherited from the root
+# configuration. The only checks turned off here are the ones which fire solely on the GTK and
+# Flutter platform macros: those macros are the platform APIs the plugin is written against, not
+# code it can rewrite.
+#   - bugprone-casting-through-void: the GTK cast macros (GTK_WIDGET, GTK_OVERLAY, ...) go through
+#     void, and are the intended way to use the toolkit.
+#   - misc-header-include-cycle: reported inside the GTK headers themselves.
+InheritParentConfig: true
+Checks: >
+    -bugprone-casting-through-void,
+    -misc-header-include-cycle
