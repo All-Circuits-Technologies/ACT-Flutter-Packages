@@ -101,9 +101,7 @@ To install it globally, you have to call:
 | [act_shared_auth](act_shared_auth/)                                       | This contains generic and shared elements for authentication services.                                                   |         |
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.                        |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
-| [act_splash_screen_manager](act_splash_screen_manager/)                   | Splash screen manager choosing what the platform of the application needs                                                |         |
-| [act_splash_screen_manager_core](act_splash_screen_manager_core/)         | Base of the managers which keep the native splash screen displayed until the app is ready                                |         |
-| [act_splash_screen_manager_mobile](act_splash_screen_manager_mobile/)     | Splash screen manager of the mobile applications                                                                         |         |
+| [act_splash_screen_manager](act_splash_screen_manager/)                   | Keeps the splash screen of the platform displayed until the application is ready                                         |         |
 | [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |

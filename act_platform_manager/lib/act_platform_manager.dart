@@ -5,5 +5,6 @@
 
 library;
 
+export 'src/models/mixin_act_platforms.dart';
 export 'src/platform_manager.dart';
 export 'src/platforms_deps/act_platform.dart';
