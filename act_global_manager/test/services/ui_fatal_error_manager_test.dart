@@ -5,7 +5,6 @@
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 
 import '../fakes/fake_global_managers.dart';
 
@@ -14,8 +13,6 @@ void main() {
     // Sets AbsGlobalManager.instance so appLogger() resolves when a will-show handler fails.
     FakeGlobalManager();
   });
-
-  tearDown(GetIt.instance.reset);
 
   UiFatalErrorManager buildManager() => UiFatalErrorManager(
     buildFatalErrorPage: (error) => Text("error: $error", textDirection: TextDirection.ltr),

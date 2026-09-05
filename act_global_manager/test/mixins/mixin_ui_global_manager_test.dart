@@ -5,7 +5,6 @@
 import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../fakes/fake_global_managers.dart';
@@ -32,8 +31,6 @@ void main() {
     ),
   );
 
-  tearDown(GetIt.instance.reset);
-
   group("MixinUiGlobalManager.initLifeCycle", () {
     testWidgets("initializes the managers which depend on the UI before the first view", (
       tester,
@@ -48,6 +45,19 @@ void main() {
 
       expect(uiManager.initBeforeViewsCount, 1);
       expect(uiManager.initAfterViewContexts, isEmpty);
+    });
+
+    testWidgets("initializes the managers which depend on the UI only once", (tester) async {
+      final uiManager = FakeUiManager();
+      final manager = FakeUiGlobalManager(
+        onRegisterManagers: (globalManager) async =>
+            globalManager.register(FakeUiManagerBuilder(uiManager)),
+      );
+      await manager.initLifeCycle();
+
+      await manager.initLifeCycle();
+
+      expect(uiManager.initBeforeViewsCount, 1);
     });
 
     testWidgets("leaves the managers which don't depend on the UI alone", (tester) async {
