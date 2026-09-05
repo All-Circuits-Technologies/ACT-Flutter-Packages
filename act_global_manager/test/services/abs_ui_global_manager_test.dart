@@ -4,7 +4,6 @@
 
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 
 /// The global manager of an application with a view which overrides nothing.
 class _PlainUiGlobalManager extends AbsUiGlobalManager {
@@ -17,8 +16,6 @@ class _PlainUiGlobalManager extends AbsUiGlobalManager {
 }
 
 void main() {
-  tearDown(GetIt.instance.reset);
-
   group("AbsUiGlobalManager", () {
     test("is a global manager", () {
       expect(_PlainUiGlobalManager(), isA<AbsGlobalManager>());

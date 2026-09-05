@@ -43,8 +43,6 @@ void main() {
     ),
   );
 
-  tearDown(GetIt.instance.reset);
-
   group("AbsGlobalManager", () {
     test("is a manager with a life cycle", () {
       expect(FakeGlobalManager(), isA<AbsWithLifeCycle>());
@@ -56,10 +54,11 @@ void main() {
       expect(AbsGlobalManager.instance, same(manager));
     });
 
-    test("owns the get it instance the managers are registered in", () {
+    test("owns a get it instance of its own the managers are registered in", () {
       final manager = FakeGlobalManager();
 
-      expect(manager.managers, same(GetIt.instance));
+      expect(manager.managers, isA<GetIt>());
+      expect(manager.managers, isNot(same(GetIt.instance)));
     });
 
     test("reports whether the application has been built in release mode", () {
@@ -125,7 +124,7 @@ void main() {
 
       await manager.initLifeCycle();
 
-      expect(GetIt.instance.allReadySync(), isTrue);
+      expect(manager.managers.allReadySync(), isTrue);
       expect(first.initCount, 1);
       expect(second.initCount, 1);
     });

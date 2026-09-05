@@ -5,7 +5,6 @@
 import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import '../fakes/fake_global_managers.dart';
@@ -31,8 +30,6 @@ void main() {
       buildSignature: "",
     ),
   );
-
-  tearDown(GetIt.instance.reset);
 
   group("MixinUiGlobalManager.initLifeCycle", () {
     testWidgets("initializes the managers which depend on the UI before the first view", (

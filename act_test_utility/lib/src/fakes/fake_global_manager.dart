@@ -54,9 +54,14 @@ class FakeGlobalManager extends AbsGlobalManager {
     return manager;
   }
 
-  /// Registers [builder] the way an application registers one of its managers.
+  /// Registers [builder]'s manager into the service locator so the test can reach it through the
+  /// shortcuts once [allReady] has built it.
+  ///
+  /// Unlike an application, which collects its managers and lets their dependencies drive the order
+  /// they are registered in, the fake registers each one straight away: a test registers the few
+  /// managers it needs, in order when one depends on another.
   void register<T extends AbsWithLifeCycle>(AbsLifeCycleFactory<T> builder) =>
-      registerManagerAsync<T>(builder);
+      managers.registerSingletonAsync<T>(builder.asyncFactory, dependsOn: builder.dependsOn());
 
   /// Waits for the registered managers to be built and initialized.
   Future<void> allReady() => managers.allReady();

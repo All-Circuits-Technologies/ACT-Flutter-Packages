@@ -45,7 +45,7 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   static set setInstance(AbsGlobalManager globalManager) => _instance = globalManager;
 
   /// This is the Get it instance used to get managers
-  final managers = GetIt.instance;
+  final GetIt managers;
 
   /// The registration information of every manager, keyed by its type and kept in the order the
   /// application registered them.
@@ -89,7 +89,9 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   AbsGlobalManager.create({LogsLevel defaultMinLevel = LogsLevel.warn})
     : _currentState = GlobalManagerState.created,
       defaultLogger = LoggerManager.getSafeLogger(defaultMinLevel: defaultMinLevel),
-      _managersInfo = {} {
+      _managersInfo = {},
+      // We prefer to create a new instance to help testing
+      managers = GetIt.asNewInstance() {
     _globalManagerStates = getGlobalManagerStates();
   }
 
