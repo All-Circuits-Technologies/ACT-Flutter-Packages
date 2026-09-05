@@ -181,14 +181,41 @@ void main() {
       expect(manager.managersOfTheApp, [dependency, dependent]);
     });
 
-    test("refuses to register a manager before the ones it depends on", () async {
+    test("registers a manager before the ones it depends on", () async {
+      final dependency = FakeManager();
+      final dependent = FakeUiManager();
+      final manager = FakeGlobalManager(
+        // The dependent is registered first, before the manager it depends on: the registration
+        // order does not have to follow the dependencies.
+        onRegisterManagers: (globalManager) async => globalManager
+          ..register(FakeUiManagerBuilder(dependent, dependencies: [FakeManager]))
+          ..register(FakeManagerBuilder(dependency)),
+      );
+
+      await manager.initLifeCycle();
+
+      expect(dependency.initCount, 1);
+      expect(dependent.initCount, 1);
+    });
+
+    test("crashes when a manager depends on one which is never registered", () async {
       final manager = FakeGlobalManager(
         onRegisterManagers: (globalManager) async => globalManager.register(
           FakeUiManagerBuilder(FakeUiManager(), dependencies: [FakeManager]),
         ),
       );
 
-      await expectLater(manager.initLifeCycle(), throwsArgumentError);
+      await expectLater(manager.initLifeCycle(), throwsAssertionError);
+    });
+
+    test("crashes when the same manager is registered twice", () async {
+      final manager = FakeGlobalManager(
+        onRegisterManagers: (globalManager) async => globalManager
+          ..register(FakeManagerBuilder(FakeManager()))
+          ..register(FakeManagerBuilder(FakeManager())),
+      );
+
+      await expectLater(manager.initLifeCycle(), throwsAssertionError);
     });
   });
 

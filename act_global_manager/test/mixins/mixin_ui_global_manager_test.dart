@@ -50,6 +50,19 @@ void main() {
       expect(uiManager.initAfterViewContexts, isEmpty);
     });
 
+    testWidgets("initializes the managers which depend on the UI only once", (tester) async {
+      final uiManager = FakeUiManager();
+      final manager = FakeUiGlobalManager(
+        onRegisterManagers: (globalManager) async =>
+            globalManager.register(FakeUiManagerBuilder(uiManager)),
+      );
+      await manager.initLifeCycle();
+
+      await manager.initLifeCycle();
+
+      expect(uiManager.initBeforeViewsCount, 1);
+    });
+
     testWidgets("leaves the managers which don't depend on the UI alone", (tester) async {
       final plainManager = FakeManager();
       final manager = FakeUiGlobalManager(
