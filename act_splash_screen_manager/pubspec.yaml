@@ -27,7 +27,7 @@ dependencies:
 
   # Warns when the runner of a desktop application does not draw any splash screen
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   act_life_cycle:
     path: ../act_life_cycle

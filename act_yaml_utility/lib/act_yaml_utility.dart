@@ -4,6 +4,6 @@
 
 library;
 
+export 'package:act_dart_yaml_utility/act_dart_yaml_utility.dart';
+
 export 'src/utilities/yaml_from_assets.dart';
-export 'src/utilities/yaml_from_string.dart';
-export 'src/utilities/yaml_to_standard_obj.dart';

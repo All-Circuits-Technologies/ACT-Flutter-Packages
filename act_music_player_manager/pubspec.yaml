@@ -59,7 +59,7 @@ dev_dependencies:
 
   # Log levels the tests assert on
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Fakes shared by the tests of the ACT packages
   act_test_utility:

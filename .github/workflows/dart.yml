@@ -1,4 +1,4 @@
-# Created with package:mono_repo v6.6.3
+# Created with package:mono_repo v6.7.3
 name: Dart CI
 on:
   pull_request:
@@ -15,50 +15,49 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:stable"
-          restore-keys: |
+          restore-keys: |-
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Dart SDK
-        uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
         with:
           sdk: stable
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - name: mono_repo self validate
-        run: dart pub global activate mono_repo 6.6.3
+        run: dart pub global activate mono_repo 6.7.3
       - name: mono_repo self validate
-        run: |
-          bash tool/mono_repo_generate.sh
-          if ! git diff --exit-code; then
-            echo "Generated files are out of sync. Run tool/mono_repo_generate.sh and commit."
-            exit 1
-          fi
+        run: dart pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; PKGS: act_abs_peripherals_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_app_life_cycle_manager, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_result, act_dart_timer, act_dart_utility, act_dart_value_keeper, act_enable_service_utility, act_entity, act_ffi_utility, act_file_transfer_manager, act_firebase_core, act_firebase_crash, act_flutter_utility, act_foundation, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_http_client_jwt_auth, act_http_client_manager, act_http_core, act_http_logging_manager, act_http_server_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_launcher_icon, act_licenses_manager, act_life_cycle, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_remote_local_vers_file_manager, act_remote_storage_manager, act_remote_storage_ui, act_router_manager, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_test_utility, act_themes_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_web_local_storage_manager, act_websocket_client_manager, act_websocket_core, act_websocket_server_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
+    name: "analyze; PKGS: act_abs_peripherals_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_app_life_cycle_manager, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_enable_service_utility, act_ffi_utility, act_file_transfer_manager, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_http_client_jwt_auth, act_http_client_manager, act_http_core, act_http_logging_manager, act_http_server_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_launcher_icon, act_licenses_manager, act_life_cycle, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_remote_local_vers_file_manager, act_remote_storage_manager, act_remote_storage_ui, act_router_manager, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_test_utility, act_themes_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_web_local_storage_manager, act_websocket_client_manager, act_websocket_core, act_websocket_server_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_fireba-!!too_long!!-1481-1047405625"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1464-832818144
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_enable_service_utility-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_laye-!!too_long!!-1387-98485418"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_enable_service_utility-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_lay-!!too_long!!-1368-483746769
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          channel: "3.41.9"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_abs_peripherals_manager_pub_upgrade
         name: act_abs_peripherals_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -167,42 +166,6 @@ jobs:
         run: flutter analyze --fatal-infos .
         if: "always() && steps.act_contextual_views_manager_pub_upgrade.conclusion == 'success'"
         working-directory: act_contextual_views_manager
-      - id: act_dart_result_pub_upgrade
-        name: act_dart_result; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_result
-      - name: "act_dart_result; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_dart_result_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_result
-      - id: act_dart_timer_pub_upgrade
-        name: act_dart_timer; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_timer
-      - name: "act_dart_timer; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_dart_timer_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_timer
-      - id: act_dart_utility_pub_upgrade
-        name: act_dart_utility; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_utility
-      - name: "act_dart_utility; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_dart_utility_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_utility
-      - id: act_dart_value_keeper_pub_upgrade
-        name: act_dart_value_keeper; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_value_keeper
-      - name: "act_dart_value_keeper; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_dart_value_keeper_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_value_keeper
       - id: act_enable_service_utility_pub_upgrade
         name: act_enable_service_utility; flutter pub upgrade
         run: flutter pub upgrade
@@ -212,15 +175,6 @@ jobs:
         run: flutter analyze --fatal-infos .
         if: "always() && steps.act_enable_service_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_enable_service_utility
-      - id: act_entity_pub_upgrade
-        name: act_entity; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_entity
-      - name: "act_entity; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_entity_pub_upgrade.conclusion == 'success'"
-        working-directory: act_entity
       - id: act_ffi_utility_pub_upgrade
         name: act_ffi_utility; flutter pub upgrade
         run: flutter pub upgrade
@@ -266,15 +220,6 @@ jobs:
         run: flutter analyze --fatal-infos .
         if: "always() && steps.act_flutter_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_flutter_utility
-      - id: act_foundation_pub_upgrade
-        name: act_foundation; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_foundation
-      - name: "act_foundation; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.act_foundation_pub_upgrade.conclusion == 'success'"
-        working-directory: act_foundation
       - id: act_global_manager_pub_upgrade
         name: act_global_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -672,26 +617,123 @@ jobs:
         if: "always() && steps.act_yaml_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_yaml_utility
   job_003:
-    name: "test; PKGS: act_abs_peripherals_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_app_life_cycle_manager, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_dart_result, act_dart_timer, act_dart_utility, act_dart_value_keeper, act_enable_service_utility, act_entity, act_ffi_utility, act_file_transfer_manager, act_firebase_core, act_firebase_crash, act_flutter_utility, act_foundation, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_http_client_jwt_auth, act_http_client_manager, act_http_core, act_http_logging_manager, act_http_server_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_licenses_manager, act_life_cycle, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_remote_local_vers_file_manager, act_remote_storage_manager, act_remote_storage_ui, act_router_manager, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_test_utility, act_themes_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_websocket_client_manager, act_websocket_core, act_websocket_server_manager, act_yaml_utility; `flutter test`"
+    name: "analyze; PKGS: dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation; `dart analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1432-165124845"
-          restore-keys: |
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_dart_result-act_dart_timer-act_dart_utility-act_dart_value_keeper-act_enable_service_utility-act_entity-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebas-!!too_long!!-1416-196292371
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation;commands:analyze_1"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - id: dart_act_dart_result_pub_upgrade
+        name: dart/act_dart_result; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_result
+      - name: "dart/act_dart_result; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_result_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_result
+      - id: dart_act_dart_test_utility_pub_upgrade
+        name: dart/act_dart_test_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_test_utility
+      - name: "dart/act_dart_test_utility; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_test_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_test_utility
+      - id: dart_act_dart_timer_pub_upgrade
+        name: dart/act_dart_timer; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_timer
+      - name: "dart/act_dart_timer; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_timer_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_timer
+      - id: dart_act_dart_utility_pub_upgrade
+        name: dart/act_dart_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_utility
+      - name: "dart/act_dart_utility; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_utility
+      - id: dart_act_dart_value_keeper_pub_upgrade
+        name: dart/act_dart_value_keeper; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_value_keeper
+      - name: "dart/act_dart_value_keeper; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_value_keeper_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_value_keeper
+      - id: dart_act_dart_yaml_utility_pub_upgrade
+        name: dart/act_dart_yaml_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_yaml_utility
+      - name: "dart/act_dart_yaml_utility; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_yaml_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_yaml_utility
+      - id: dart_act_entity_pub_upgrade
+        name: dart/act_entity; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_entity
+      - name: "dart/act_entity; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_entity_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_entity
+      - id: dart_act_foundation_pub_upgrade
+        name: dart/act_foundation; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_foundation
+      - name: "dart/act_foundation; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_foundation_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_foundation
+  job_004:
+    name: "test; PKGS: act_abs_peripherals_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_app_life_cycle_manager, act_aws_iot_core, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_enable_service_utility, act_ffi_utility, act_file_transfer_manager, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_http_client_jwt_auth, act_http_client_manager, act_http_core, act_http_logging_manager, act_http_server_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_licenses_manager, act_life_cycle, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_qr_code, act_remote_local_vers_file_manager, act_remote_storage_manager, act_remote_storage_ui, act_router_manager, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_test_utility, act_themes_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_websocket_client_manager, act_websocket_core, act_websocket_server_manager, act_yaml_utility; `flutter test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_enable_service_utility-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_lay-!!too_long!!-1336-431457951"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_abs_peripherals_manager-act_amplify_api-act_amplify_cognito-act_amplify_core-act_amplify_storage_s3-act_app_life_cycle_manager-act_aws_iot_core-act_ble_manager-act_ble_manager_ui-act_config_manager-act_consent_manager-act_contextual_views_manager-act_enable_service_utility-act_ffi_utility-act_file_transfer_manager-act_firebase_core-act_firebase_crash-act_flutter_utility-act_global_manager-act_halo_abstract-act_halo_ble_laye-!!too_long!!-1320-26050596
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          channel: "3.41.9"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_abs_peripherals_manager_pub_upgrade
         name: act_abs_peripherals_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -800,42 +842,6 @@ jobs:
         run: flutter test
         if: "always() && steps.act_contextual_views_manager_pub_upgrade.conclusion == 'success'"
         working-directory: act_contextual_views_manager
-      - id: act_dart_result_pub_upgrade
-        name: act_dart_result; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_result
-      - name: act_dart_result; flutter test
-        run: flutter test
-        if: "always() && steps.act_dart_result_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_result
-      - id: act_dart_timer_pub_upgrade
-        name: act_dart_timer; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_timer
-      - name: act_dart_timer; flutter test
-        run: flutter test
-        if: "always() && steps.act_dart_timer_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_timer
-      - id: act_dart_utility_pub_upgrade
-        name: act_dart_utility; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_utility
-      - name: act_dart_utility; flutter test
-        run: flutter test
-        if: "always() && steps.act_dart_utility_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_utility
-      - id: act_dart_value_keeper_pub_upgrade
-        name: act_dart_value_keeper; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_dart_value_keeper
-      - name: act_dart_value_keeper; flutter test
-        run: flutter test
-        if: "always() && steps.act_dart_value_keeper_pub_upgrade.conclusion == 'success'"
-        working-directory: act_dart_value_keeper
       - id: act_enable_service_utility_pub_upgrade
         name: act_enable_service_utility; flutter pub upgrade
         run: flutter pub upgrade
@@ -845,15 +851,6 @@ jobs:
         run: flutter test
         if: "always() && steps.act_enable_service_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_enable_service_utility
-      - id: act_entity_pub_upgrade
-        name: act_entity; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_entity
-      - name: act_entity; flutter test
-        run: flutter test
-        if: "always() && steps.act_entity_pub_upgrade.conclusion == 'success'"
-        working-directory: act_entity
       - id: act_ffi_utility_pub_upgrade
         name: act_ffi_utility; flutter pub upgrade
         run: flutter pub upgrade
@@ -899,15 +896,6 @@ jobs:
         run: flutter test
         if: "always() && steps.act_flutter_utility_pub_upgrade.conclusion == 'success'"
         working-directory: act_flutter_utility
-      - id: act_foundation_pub_upgrade
-        name: act_foundation; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_foundation
-      - name: act_foundation; flutter test
-        run: flutter test
-        if: "always() && steps.act_foundation_pub_upgrade.conclusion == 'success'"
-        working-directory: act_foundation
       - id: act_global_manager_pub_upgrade
         name: act_global_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -1289,27 +1277,30 @@ jobs:
     needs:
       - job_001
       - job_002
-  job_004:
+      - job_003
+  job_005:
     name: "test; PKG: act_web_local_storage_manager; `flutter test --platform chrome`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
-        uses: actions/cache@d4323d4df104b026a6aa633fdb11d772146be0bf
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
           key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager;commands:test_1"
-          restore-keys: |
+          restore-keys: |-
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:act_web_local_storage_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          channel: "3.41.9"
       - id: checkout
         name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
       - id: act_web_local_storage_manager_pub_upgrade
         name: act_web_local_storage_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -1322,3 +1313,103 @@ jobs:
     needs:
       - job_001
       - job_002
+      - job_003
+  job_006:
+    name: "test; PKGS: dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation; `dart test`"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cache Pub hosted dependencies
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
+        with:
+          path: "~/.pub-cache/hosted"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation;commands:test_2"
+          restore-keys: |-
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.41.9
+            os:ubuntu-latest;pub-cache-hosted
+            os:ubuntu-latest
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@65eb853c7ba17dde3be364c3d2858773e7144260
+        with:
+          sdk: "3.41.9"
+      - id: checkout
+        name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - id: dart_act_dart_result_pub_upgrade
+        name: dart/act_dart_result; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_result
+      - name: dart/act_dart_result; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_result_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_result
+      - id: dart_act_dart_test_utility_pub_upgrade
+        name: dart/act_dart_test_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_test_utility
+      - name: dart/act_dart_test_utility; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_test_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_test_utility
+      - id: dart_act_dart_timer_pub_upgrade
+        name: dart/act_dart_timer; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_timer
+      - name: dart/act_dart_timer; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_timer_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_timer
+      - id: dart_act_dart_utility_pub_upgrade
+        name: dart/act_dart_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_utility
+      - name: dart/act_dart_utility; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_utility
+      - id: dart_act_dart_value_keeper_pub_upgrade
+        name: dart/act_dart_value_keeper; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_value_keeper
+      - name: dart/act_dart_value_keeper; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_value_keeper_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_value_keeper
+      - id: dart_act_dart_yaml_utility_pub_upgrade
+        name: dart/act_dart_yaml_utility; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_yaml_utility
+      - name: dart/act_dart_yaml_utility; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_yaml_utility_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_yaml_utility
+      - id: dart_act_entity_pub_upgrade
+        name: dart/act_entity; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_entity
+      - name: dart/act_entity; dart test
+        run: dart test
+        if: "always() && steps.dart_act_entity_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_entity
+      - id: dart_act_foundation_pub_upgrade
+        name: dart/act_foundation; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_foundation
+      - name: dart/act_foundation; dart test
+        run: dart test
+        if: "always() && steps.dart_act_foundation_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_foundation
+    needs:
+      - job_001
+      - job_002
+      - job_003

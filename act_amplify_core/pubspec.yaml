@@ -31,7 +31,7 @@ dependencies:
     path: ../act_config_manager
 
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Default global manager
   act_global_manager:

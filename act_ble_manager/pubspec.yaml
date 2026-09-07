@@ -45,7 +45,7 @@ dependencies:
 
   # Extend Dart functionalities
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   act_enable_service_utility:
     path: ../act_enable_service_utility

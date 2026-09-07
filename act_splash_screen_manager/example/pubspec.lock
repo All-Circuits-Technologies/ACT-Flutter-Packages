@@ -11,14 +11,14 @@ packages:
   act_dart_utility:
     dependency: transitive
     description:
-      path: "../../act_dart_utility"
+      path: "../../dart/act_dart_utility"
       relative: true
     source: path
     version: "0.0.0"
   act_foundation:
     dependency: transitive
     description:
-      path: "../../act_foundation"
+      path: "../../dart/act_foundation"
       relative: true
     source: path
     version: "0.0.0"

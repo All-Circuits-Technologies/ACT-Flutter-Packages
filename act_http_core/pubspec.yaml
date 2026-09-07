@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
 dev_dependencies:
   flutter_test:

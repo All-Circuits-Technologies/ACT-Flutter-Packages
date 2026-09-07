@@ -2,10 +2,10 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_test_utility/act_dart_test_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_test_utility/src/fakes/silent_logger.dart';
 
 /// A global manager which stands in for the one of an application.
 ///

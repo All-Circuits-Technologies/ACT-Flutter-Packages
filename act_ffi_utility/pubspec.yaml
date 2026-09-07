@@ -30,10 +30,10 @@ dependencies:
     path: ../act_config_manager
 
   act_dart_result:
-    path: ../act_dart_result
+    path: ../dart/act_dart_result
 
   act_dart_value_keeper:
-    path: ../act_dart_value_keeper
+    path: ../dart/act_dart_value_keeper
 
   # Default global manager
   act_global_manager:
@@ -52,7 +52,7 @@ dev_dependencies:
 
   # Log levels the tests assert on
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Fakes shared by the tests of the ACT packages
   act_test_utility:
