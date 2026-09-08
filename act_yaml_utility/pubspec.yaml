@@ -6,15 +6,6 @@ name: act_yaml_utility
 description: This contains utility classes to manage YAML
 publish_to: none
 
-# This package supports all platforms listed below.
-platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  web:
-  windows:
-
 environment:
   sdk: ^3.11.1
   flutter: ">=3.29.0"
@@ -25,9 +16,16 @@ dependencies:
 
   yaml: ^3.1.3
 
-  # Contains utilities for Dart
-  act_dart_utility:
-    path: ../act_dart_utility
+  act_dart_result:
+    path: ../dart/act_dart_result
+
+  # Pure Dart YAML parsing this package builds the assets loading on top of
+  act_dart_yaml_utility:
+    path: ../dart/act_dart_yaml_utility
+
+  # Contains utilities for Flutter
+  act_flutter_utility:
+    path: ../act_flutter_utility
 
 dev_dependencies:
   flutter_test:

@@ -40,7 +40,7 @@ dependencies:
       ref: fix-tb-storage-interface
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   act_flutter_utility:
     path: ../act_flutter_utility

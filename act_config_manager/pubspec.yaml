@@ -36,10 +36,14 @@ dependencies:
 
   # Contains utilities for Dart
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
+
+  # Contains utilities for Flutter
+  act_flutter_utility:
+    path: ../act_flutter_utility
 
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Easily create managers
   act_life_cycle:

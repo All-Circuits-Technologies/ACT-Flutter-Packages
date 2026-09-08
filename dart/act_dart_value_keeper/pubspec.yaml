@@ -1,0 +1,21 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_dart_value_keeper
+description: This package provides a way to keep a value and update it based on
+  a stream or an initialization function.
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+
+dependencies:
+  meta: ^1.17.0
+
+  act_foundation:
+    path: ../act_foundation
+
+dev_dependencies:
+  test: ^1.32.0
+  lints: ^6.1.0

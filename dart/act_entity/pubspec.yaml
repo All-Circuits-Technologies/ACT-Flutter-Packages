@@ -1,0 +1,16 @@
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_entity
+description: This package contains the entity base class for models.
+publish_to: none
+
+environment:
+  sdk: ^3.11.1
+
+# dependencies:
+
+dev_dependencies:
+  test: ^1.32.0
+  lints: ^6.1.0

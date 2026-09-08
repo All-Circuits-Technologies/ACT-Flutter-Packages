@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
 
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
 # Dependencies used by developer
 dev_dependencies:

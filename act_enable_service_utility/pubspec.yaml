@@ -35,7 +35,7 @@ dependencies:
     path: ../act_contextual_views_manager
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   act_global_manager:
     path: ../act_global_manager

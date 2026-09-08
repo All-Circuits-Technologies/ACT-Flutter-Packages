@@ -37,7 +37,7 @@ dependencies:
   logger: ^2.5.0
 
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Easily create managers
   act_life_cycle:

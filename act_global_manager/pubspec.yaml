@@ -43,11 +43,11 @@ dependencies:
     path: ../act_config_manager
 
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Contains utilities for Dart
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   # Easily create managers
   act_life_cycle:

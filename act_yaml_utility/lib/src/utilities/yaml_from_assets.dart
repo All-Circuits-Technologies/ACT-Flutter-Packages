@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_yaml_utility/src/utilities/yaml_to_standard_obj.dart';
-import 'package:yaml/yaml.dart' as yaml;
+import 'package:act_dart_result/act_dart_result.dart';
+import 'package:act_dart_yaml_utility/act_dart_yaml_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 
 /// This class contains methods used to load yaml files from assets
 ///
@@ -40,14 +40,10 @@ sealed class YamlFromAssets {
   /// If the first part of the method result is [AssetsBundleResult.ok], the second part isn't null.
   ///
   /// The second part of the result contains the same kind of objects the jsonDecode can return.
-  static Future<({AssetsBundleResult status, dynamic data})> loadYaml(
+  static Future<ResultWithStatus<AssetsBundleResult, dynamic>> loadYaml(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await _guessTypeAndLoadAssetsContent(
       key,
@@ -56,22 +52,20 @@ sealed class YamlFromAssets {
     );
 
     if (result.status != AssetsBundleResult.ok) {
-      return (status: result.status, data: null);
+      return ResultWithStatus(status: result.status);
     }
 
-    if (result.data == null) {
-      return (status: AssetsBundleResult.ok, data: null);
+    if (result.value == null) {
+      return const ResultWithStatus(status: AssetsBundleResult.ok);
     }
 
-    dynamic jsonContent;
-    try {
-      final yamlContent = yaml.loadYaml(result.data!);
-      jsonContent = YamlToStandardObj.fromYamlValue(yamlContent);
-    } catch (error) {
-      return (status: AssetsBundleResult.genericError, data: null);
+    final jsonContent = YamlFromString.fromYaml(result.value!);
+
+    if (jsonContent == null) {
+      return const ResultWithStatus(status: AssetsBundleResult.genericError);
     }
 
-    return (status: AssetsBundleResult.ok, data: jsonContent);
+    return ResultWithStatus(status: AssetsBundleResult.ok, value: jsonContent);
   }
 
   /// Load the content of a YAML file from assets bundle and returns a JSON representation. The
@@ -95,31 +89,30 @@ sealed class YamlFromAssets {
   /// This method returns a JSON object, if the content of the YAML file is a JSON list, this will
   /// return an error.
   /// Only use this method if you expect to have a JSON object in the root of your document.
-  static Future<({AssetsBundleResult status, Map<String, dynamic>? data})> loadYamlMap(
+  static Future<ResultWithRequiredValue<AssetsBundleResult, Map<String, dynamic>>> loadYamlMap(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await loadYaml(key, cache: cache, yamlFileTypes: yamlFileTypes);
 
     if (result.status != AssetsBundleResult.ok) {
-      return (status: result.status, data: null);
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    final content = result.data;
+    final content = result.value;
     if (content == null) {
-      return (status: AssetsBundleResult.ok, data: <String, dynamic>{});
+      return const ResultWithRequiredValue(
+        status: AssetsBundleResult.ok,
+        value: <String, dynamic>{},
+      );
     }
 
     if (content is! Map<String, dynamic>) {
-      return (status: AssetsBundleResult.genericError, data: null);
+      return const ResultWithRequiredValue(status: AssetsBundleResult.genericError);
     }
 
-    return (status: result.status, data: content);
+    return ResultWithRequiredValue(status: result.status, value: content);
   }
 
   /// Load the content of a YAML file from assets bundle and returns a JSON representation. The
@@ -143,31 +136,27 @@ sealed class YamlFromAssets {
   /// This method returns a JSON objects list, if the content of the YAML file is a JSON object,
   /// this will return an error.
   /// Only use this method if you expect to have a JSON objects list in the root of your document.
-  static Future<({AssetsBundleResult status, List<dynamic>? data})> loadYamlList(
+  static Future<ResultWithRequiredValue<AssetsBundleResult, List<dynamic>>> loadYamlList(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await loadYaml(key, cache: cache, yamlFileTypes: yamlFileTypes);
 
     if (result.status != AssetsBundleResult.ok) {
-      return (status: result.status, data: null);
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    final content = result.data;
+    final content = result.value;
     if (content == null) {
-      return (status: AssetsBundleResult.ok, data: []);
+      return const ResultWithRequiredValue(status: AssetsBundleResult.ok, value: []);
     }
 
     if (content is! List<dynamic>) {
-      return (status: AssetsBundleResult.genericError, data: null);
+      return const ResultWithRequiredValue(status: AssetsBundleResult.genericError);
     }
 
-    return (status: result.status, data: content);
+    return ResultWithRequiredValue(status: result.status, value: content);
   }
 
   /// This method tries to guess the file suffix and load the YAML file from assets bundle.
@@ -179,44 +168,34 @@ sealed class YamlFromAssets {
   /// better to set [cache] to false.
   ///
   /// If the first part of the method result is [AssetsBundleResult.ok], the second part isn't null.
-  static Future<({AssetsBundleResult status, String? data})> _guessTypeAndLoadAssetsContent(
+  static Future<ResultWithRequiredValue<AssetsBundleResult, String>> _guessTypeAndLoadAssetsContent(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final sepIdx = key.indexOf(fileTypeSeparator);
 
     String? content;
     if (sepIdx >= 0) {
       // We don't need to test for all the file types, the developer has already chosen one
-      final result = await _loadAssetsContent(
-        key,
-        cache: cache,
-      );
+      final result = await _loadAssetsContent(key, cache: cache);
 
       if (result.status != AssetsBundleResult.ok) {
-        return result;
+        return ResultWithRequiredValue(status: result.status);
       }
 
-      content = result.data;
+      content = result.value;
     } else {
       for (final type in yamlFileTypes) {
-        final result = await _loadAssetsContent(
-          "$key$fileTypeSeparator$type",
-          cache: cache,
-        );
+        final result = await _loadAssetsContent("$key$fileTypeSeparator$type", cache: cache);
 
         if (result.status == AssetsBundleResult.genericError) {
-          return result;
+          return ResultWithRequiredValue(status: result.status, value: result.value);
         }
 
-        if (result.status == AssetsBundleResult.ok && result.data != null) {
+        if (result.status == AssetsBundleResult.ok && result.value != null) {
           // No need to continue
-          content = result.data;
+          content = result.value;
           break;
         }
       }
@@ -224,10 +203,10 @@ sealed class YamlFromAssets {
 
     if (content == null) {
       // It means that we found nothing
-      return (status: AssetsBundleResult.notFound, data: null);
+      return const ResultWithRequiredValue(status: AssetsBundleResult.notFound);
     }
 
-    return (status: AssetsBundleResult.ok, data: content);
+    return ResultWithRequiredValue(status: AssetsBundleResult.ok, value: content);
   }
 
   /// Load the YAML file from the assets bundle thanks to the [key].
@@ -236,19 +215,16 @@ sealed class YamlFromAssets {
   /// better to set [cache] to false.
   ///
   /// If the first part of the method result is [AssetsBundleResult.ok], the second part isn't null.
-  static Future<({AssetsBundleResult status, String? data})> _loadAssetsContent(
+  static Future<ResultWithStatus<AssetsBundleResult, String>> _loadAssetsContent(
     String key, {
     bool cache = true,
   }) async {
     // We don't need to test for all the file types, the developer has already chosen one
-    final result = await AssetsBundleUtility.loadStringFromAssetBundle(
-      key,
-      cache: cache,
-    );
+    final result = await AssetsBundleUtility.loadStringFromAssetBundle(key, cache: cache);
 
-    if (result.status != AssetsBundleResult.ok || result.data == null) {
+    if (result.status != AssetsBundleResult.ok || result.value == null) {
       // No need to go further
-      return (status: result.status, data: null);
+      return ResultWithStatus(status: result.status);
     }
 
     return result;
