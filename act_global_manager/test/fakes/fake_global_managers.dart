@@ -81,5 +81,6 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
   List<AbsWithLifeCycle> get managersOfTheApp => registeredManagers;
 
   /// The managers which have been registered and which depend on the UI.
-  List<AbsWithLifeCycleAndUi> get uiManagersOfTheApp => registeredManagersWithUi;
+  List<AbsWithLifeCycleAndUi> get uiManagersOfTheApp =>
+      registeredManagers.whereType<AbsWithLifeCycleAndUi>().toList(growable: false);
 }
