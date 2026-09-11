@@ -34,8 +34,7 @@ named `foo_app` with project code `Foo`; substitute your own.
 
 ## Project profile (the questions to answer)
 
-Answer these before writing code. The **Drives** column points to the steps each answer activates;
-unanswered optional rows can be skipped and added later.
+Answer these before writing code; unanswered optional rows can be skipped and added later.
 
 | Id  | Question                 | Options / format                                                | Default    |
 | --- | ------------------------ | --------------------------------------------------------------- | ---------- |
@@ -57,7 +56,7 @@ the optional answers.
 ## Bootstrap procedure
 
 Run the steps in order: later steps register managers that depend on earlier ones. The registration
-order assembled in [PS12](#ps12---assemble-the-global-manager-and-main) mirrors this sequence.
+order assembled in PS12 mirrors this sequence.
 
 ### PS1 - Create the Flutter app for the target platforms <!-- omit from toc -->
 
