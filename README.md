@@ -13,6 +13,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [mono\_repo](#mono_repo)
 - [Packages list](#packages-list)
 - [How to use the packages in your project](#how-to-use-the-packages-in-your-project)
+- [Creating a new project](#creating-a-new-project)
 - [Tests](#tests)
   - [How to run the tests](#how-to-run-the-tests)
   - [Where the tests live](#where-the-tests-live)
@@ -140,6 +141,13 @@ corrections from others.
 
 Because, this code isn't reviewed if no merge request is done to the master branch, it's recommended
 to oftenly create merge requests from the project branch to master.
+
+## Creating a new project
+
+To bootstrap a new Flutter app on top of these packages, see
+[docs/creating-a-project.md](docs/creating-a-project.md). It lists the decisions to make (target
+platforms, locales, authentication, connectivity, ...) and the ordered steps that turn them into a
+running skeleton (global manager, configuration, logging, i18n, theme, routing, error handling).
 
 ## Tests
 
