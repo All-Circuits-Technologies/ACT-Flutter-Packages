@@ -9,7 +9,6 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart' hide FakeGlobalManager;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:get_it/get_it.dart';
 
 import '../fakes/fake_app_config_manager.dart';
 import '../fakes/fake_global_managers.dart';
@@ -26,7 +25,6 @@ void main() {
     FlutterError.onError = initialFlutterHandler;
     await config.disposeLifeCycle();
     FakeAssets.stop();
-    await GetIt.instance.reset();
   });
 
   /// Registers the config manager of the application and the global manager the builder reads it

@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_global_manager/src/types/global_manager_state.dart';
 import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter/widgets.dart';
@@ -17,18 +18,21 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
   @override
   List<Enum> getGlobalManagerStates() => GlobalManagerUiState.getAllColumns();
 
-  /// This is the list of managers registered in the app with UI
-  @protected
-  List<AbsWithLifeCycleAndUi> get registeredManagersWithUi =>
-      registeredManagers.whereType<AbsWithLifeCycleAndUi>().toList(growable: false);
-
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
+    final hasReachedStartInit = isStateReached(GlobalManagerState.startInit);
+
     await super.initLifeCycle();
 
-    await Future.wait(
-      registeredManagersWithUi.map((manager) => manager.initAfterManagersAndBeforeViews()),
+    if (hasReachedStartInit) {
+      // The state was already reached before calling super.initLifeCycle(); therefore, we don't go
+      // further
+      return;
+    }
+
+    await callUiMethodFollowingOrder(
+      method: (manager) async => manager.initAfterManagersAndBeforeViews(),
     );
   }
 
@@ -50,7 +54,7 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
 
     // We don't wait the initialization here to not block the display of the first view
     unawaited(
-      Future.wait(registeredManagersWithUi.map((manager) => manager.initAfterView(context))),
+      callUiMethodFollowingOrder(method: (manager) async => manager.initAfterView(context)),
     );
 
     return true;
@@ -95,6 +99,22 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
     runApp(uiFatalErrorManager?.wrapWithFatalErrorWidget(child: app) ?? app);
   }
 
+  /// Calls [method] on every registered manager which takes part in the UI life cycle, level by
+  /// level, the way [callMethodFollowingOrder] does for every manager.
+  ///
+  /// Only the managers which mix in [MixinUiLifeCycle] are reached, and [method] is given each of
+  /// them already cast to that type. [isFollowingOrder] walks the dependency levels forward for
+  /// initialization and backward for teardown.
+  @protected
+  Future<void> callUiMethodFollowingOrder({
+    required Future<void> Function(MixinUiLifeCycle manager) method,
+    bool isFollowingOrder = true,
+  }) async => callMethodFollowingOrder(
+    method: (manager) async => method(manager as MixinUiLifeCycle),
+    condition: (manager) => manager is MixinUiLifeCycle,
+    isFollowingOrder: isFollowingOrder,
+  );
+
   /// Get the UI fatal error manager if it is registered, otherwise return null.
   UiFatalErrorManager? _getUiFatalErrorManager() =>
       registeredManagers.whereType<UiFatalErrorManager>().firstOrNull;
@@ -109,9 +129,7 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
   /// page being shown (for instance to release resources held back for the normal startup) can only
   /// be reached through this method.
   /// {@endtemplate}
-  Future<void> _notifyFatalErrorPageWillShow(Object error) async {
-    await Future.wait(
-      registeredManagersWithUi.map((manager) => manager.onFatalErrorPageWillShow(error)),
-    );
-  }
+  Future<void> _notifyFatalErrorPageWillShow(Object error) async => callUiMethodFollowingOrder(
+    method: (manager) async => manager.onFatalErrorPageWillShow(error),
+  );
 }

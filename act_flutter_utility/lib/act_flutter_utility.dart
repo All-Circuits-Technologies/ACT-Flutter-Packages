@@ -36,6 +36,7 @@ export 'src/widget/banner_info/banner_information_display.dart';
 export 'src/widget/env_banner.dart';
 export 'src/widget/list_view/draggable_and_scrollable_list_view.dart';
 export 'src/widget/list_view/scrollable_reorderable_list_view.dart';
+export 'src/widget/scroll_view/focus_following_scroll_view.dart';
 export 'src/widget/scroll_view/optional_single_child_scroll_view.dart';
 export 'src/widget/scroll_view/single_expandable_child_scroll_view.dart';
 export 'src/widget/snack_bar/act_snack_bar.dart';
