@@ -1,0 +1,90 @@
+# SPDX-FileCopyrightText: 2026 Dorian Benech <dorian.benech@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_tb_extender_auth
+description: Signs a user in with Keycloak and exchanges the token for
+  ThingsBoard tokens through the tb-extender broker.
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Value equality of the models the broker answers with
+  equatable: ^2.0.7
+
+  # The library which speaks OAuth 2.0 to the provider
+  flutter_appauth: ^9.0.1
+
+  # The transport the broker is reached over
+  http: ^1.6.0
+
+  # Guards the public entry points of the auth service
+  mutex: ^3.1.0
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  # JSON parsing helpers
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  # Default global manager, only reached by the builder
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Easily create services with a life cycle
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # The secret items the Keycloak tokens are kept in
+  act_local_storage_manager:
+    path: ../act_local_storage_manager
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  # Core library for OAuth 2.0
+  act_oauth2_core:
+    path: ../act_oauth2_core
+
+  # The Keycloak provider the sign in runs through
+  act_oauth2_keycloak:
+    path: ../act_oauth2_keycloak
+
+  # Generic and shared elements for the authentication services
+  act_shared_auth:
+    path: ../act_shared_auth
+
+  # The secure storage the two sets of tokens are kept in
+  act_shared_auth_local_storage:
+    path: ../act_shared_auth_local_storage
+
+  # The ThingsBoard client the tokens are refreshed against
+  act_thingsboard_client:
+    path: ../act_thingsboard_client
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
