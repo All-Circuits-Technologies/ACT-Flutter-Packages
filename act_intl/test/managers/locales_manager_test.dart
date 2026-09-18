@@ -176,6 +176,28 @@ void main() {
     });
   });
 
+  group("LocalesManager.currentLocale", () {
+    testWidgets("shows the locale it wants before the view is shown", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+
+      expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("shows the locale of the device before the view is shown when it wants none", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(manager.currentLocale, _deviceLocale);
+    });
+
+    testWidgets("never exposes the undetermined locale before the view is shown", (tester) async {
+      final manager = await aManager();
+
+      expect(manager.currentLocale, isNot(const Locale.fromSubtags()));
+    });
+  });
+
   group("LocalesManager.initAfterView", () {
     testWidgets("shows the application in the locale it wants", (tester) async {
       final manager = await aManager(defaultWantedLocale: "fr-FR");
@@ -306,6 +328,14 @@ void main() {
       manager.wantedLocale = const Locale("fr", "FR");
 
       expect(manager.currentLocaleStrForDateFormat, "fr_FR");
+    });
+
+    testWidgets("gives the date formatting a locale it accepts before the view is shown", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(() => DateFormat.jm(manager.currentLocaleStrForDateFormat), returnsNormally);
     });
   });
 

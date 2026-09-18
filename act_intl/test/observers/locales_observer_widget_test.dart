@@ -84,7 +84,8 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
       await theDeviceReads(tester, const Locale("fr", "FR"));
 
-      expect(manager.currentLocale, const Locale.fromSubtags());
+      // The page is gone, so the locale the device now reads never reaches the manager.
+      expect(manager.currentLocale, isNot(const Locale("fr", "FR")));
     });
   });
 }
