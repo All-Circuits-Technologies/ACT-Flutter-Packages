@@ -61,6 +61,9 @@ Regenerates the GitHub Actions workflows and `ci.sh` from the `mono_pkg.yaml` fi
 the patches the generated files need. It has to be called after any change made to a
 `mono_pkg.yaml` file, and its output has to be committed.
 
+The patches it applies are the `flutter-version` fix and the Flutter SDK cache (`cache: true`) of
+the `subosito/flutter-action` step, plus the self-validate command of the workflow.
+
 ```console
 > tool/mono_repo_generate.sh
 ```
