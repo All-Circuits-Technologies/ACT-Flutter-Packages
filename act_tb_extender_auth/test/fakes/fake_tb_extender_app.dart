@@ -4,6 +4,8 @@
 
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
+import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart';
@@ -60,4 +62,120 @@ class FakeAuthStorage with MixinAuthStorageService {
 
   @override
   Future<void> clearTokens() async => stored = null;
+}
+
+/// The Keycloak provider of the tests, which answers what a test hands it and records what the
+/// service asked of it, rather than opening a browser.
+class FakeKeycloakProvider extends AbsOAuth2ProviderService {
+  /// The library the service handed the provider at init, if it was initialized.
+  FlutterAppAuth? receivedAppAuth;
+
+  /// The storage the service handed the provider, if it handed one.
+  MixinAuthStorageService? receivedStorage;
+
+  /// The result the provider answers a sign in with.
+  AuthSignInResult redirectResult = const AuthSignInResult(status: AuthSignInStatus.done);
+
+  /// The Keycloak tokens the provider holds, null when its session is gone.
+  AuthTokens? tokens;
+
+  /// Whether the service ended the Keycloak session.
+  bool signOutCalled = false;
+
+  /// Class constructor
+  FakeKeycloakProvider() : super(logsCategory: "fakeKeycloak");
+
+  @override
+  Future<DefaultOAuth2Conf> getDefaultOAuth2Conf() async => const DefaultOAuth2Conf(
+    clientId: "a-client-id",
+    issuer: "https://keycloak.example.test/realms/a-realm",
+    discoveryUrl: null,
+    providerUrlConf: null,
+    scopes: ["openid"],
+    appAuthRedirectScheme: "com.example.app",
+  );
+
+  @override
+  Future<void> initProvider({
+    required LogsHelper parentLogsHelper,
+    required FlutterAppAuth appAuth,
+  }) async => receivedAppAuth = appAuth;
+
+  @override
+  Future<void> setStorageService(MixinAuthStorageService? storageService) async =>
+      receivedStorage = storageService;
+
+  @override
+  Future<AuthSignInResult> redirectToExternalUserSignIn() async => redirectResult;
+
+  @override
+  Future<AuthTokens?> getTokens() async => tokens;
+
+  @override
+  Future<bool> isUserSigned() async => tokens != null;
+
+  @override
+  Future<bool> signOut() async {
+    signOutCalled = true;
+    return true;
+  }
+}
+
+/// The broker of the tests, which answers what a test hands it and records the calls it received.
+class FakeBrokerClient extends TbExtenderBrokerClient {
+  /// The answer the broker gives a login, the failure of an unknown error when a test gives none.
+  BrokerLoginResult Function(String keycloakAccessToken)? onLogin;
+
+  /// The number of logins the service asked of the broker.
+  int loginCallCount = 0;
+
+  /// The Keycloak token of the last call the broker received.
+  String? lastToken;
+
+  /// The error the broker answers a deletion with, null when the account is gone.
+  BrokerAuthError? deleteError;
+
+  /// The number of deletions the service asked of the broker.
+  int deleteCallCount = 0;
+
+  /// Class constructor
+  FakeBrokerClient() : super(baseUrlGetter: () => "https://broker.example.test");
+
+  @override
+  Future<BrokerLoginResult> login(String keycloakAccessToken) async {
+    loginCallCount++;
+    lastToken = keycloakAccessToken;
+
+    return onLogin?.call(keycloakAccessToken) ??
+        const BrokerLoginFailure(BrokerAuthError.unknown);
+  }
+
+  @override
+  Future<BrokerAuthError?> deleteAccount(String keycloakAccessToken) async {
+    deleteCallCount++;
+    lastToken = keycloakAccessToken;
+
+    return deleteError;
+  }
+}
+
+/// The refresh of the ThingsBoard tokens, which answers what a test hands it and records its
+/// calls.
+class RecordingTbRefresher {
+  /// The tokens the refresh answers, null when ThingsBoard refused the refresh token.
+  AuthTokens? result;
+
+  /// The number of refreshes the service asked.
+  int callCount = 0;
+
+  /// The refresh token of the last call.
+  String? lastRefreshToken;
+
+  /// Refresh the ThingsBoard tokens with the given [tbRefreshToken].
+  Future<AuthTokens?> call(String tbRefreshToken) async {
+    callCount++;
+    lastRefreshToken = tbRefreshToken;
+
+    return result;
+  }
 }
