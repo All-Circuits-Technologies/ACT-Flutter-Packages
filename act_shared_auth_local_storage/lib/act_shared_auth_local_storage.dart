@@ -10,3 +10,4 @@ export "package:act_shared_auth_local_storage/src/mixins/mixin_auth_secrets.dart
 export 'package:act_shared_auth_local_storage/src/models/auth_user_ids.dart';
 export 'package:act_shared_auth_local_storage/src/not_secure_local_auth_storage.dart';
 export 'package:act_shared_auth_local_storage/src/secure_local_auth_storage.dart';
+export 'package:act_shared_auth_local_storage/src/utilities/memory_storage_utility.dart';
