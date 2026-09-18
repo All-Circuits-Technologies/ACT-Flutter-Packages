@@ -4,6 +4,7 @@
 
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -36,6 +37,20 @@ void main() {
 
   /// Has the server answer that nobody is signed in.
   void signedOut() => when(requestManager.client.getAuthUser).thenReturn(null);
+
+  /// Has the server answer [data] with the HTTP status [status] to a claim.
+  void serverAnswersClaim(Object? data, {int status = 200}) => when(
+    () => requestManager.client.post<dynamic>(
+      any(),
+      data: any(named: "data"),
+      options: any(named: "options"),
+    ),
+  ).thenAnswer((_) async => anAnswer(data, status: status));
+
+  /// Has the server accept the release of a claim.
+  void serverAnswersRelease() => when(
+    () => requestManager.client.delete<void>(any()),
+  ).thenAnswer((_) async => Response<void>(requestOptions: RequestOptions(path: "/")));
 
   group("TbDevicesService.getCurrentCustomerId", () {
     test("answers the customer the user who is signed in belongs to", () async {
@@ -125,70 +140,6 @@ void main() {
       requestManager.answers.addAll([RequestStatus.success, RequestStatus.globalError]);
 
       expect(await service.getCurrentCustomerDevices(), isNull);
-    });
-  });
-
-  group("TbDevicesService.getCurrentCustomerDeviceInfos", () {
-    test("answers the devices of the customer of the user", () async {
-      signedInAs();
-      final page = aPage([aDeviceInfo("a device")]);
-      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => page);
-
-      expect(await service.getCurrentCustomerDeviceInfos(), same(page));
-    });
-
-    test("asks the server for the customer of the user", () async {
-      signedInAs();
-      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
-
-      await service.getCurrentCustomerDeviceInfos();
-
-      final customerId = verify(
-        () => devices.getCustomerDeviceInfos(captureAny(), any()),
-      ).captured.single;
-
-      expect(customerId, "a-customer");
-    });
-
-    test("reads the devices by pages of fifty unless it is told otherwise", () async {
-      signedInAs();
-      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
-
-      await service.getCurrentCustomerDeviceInfos();
-
-      final pageLink = verify(
-        () => devices.getCustomerDeviceInfos(any(), captureAny()),
-      ).captured.single;
-
-      expect((pageLink as PageLink).pageSize, 50);
-    });
-
-    test("reads the page it is asked for", () async {
-      signedInAs();
-      final asked = PageLink(10, 2);
-      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
-
-      await service.getCurrentCustomerDeviceInfos(pageLink: asked);
-
-      final pageLink = verify(
-        () => devices.getCustomerDeviceInfos(any(), captureAny()),
-      ).captured.single;
-
-      expect(pageLink, same(asked));
-    });
-
-    test("answers nothing when the customer of the user is unknown", () async {
-      signedOut();
-
-      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
-      verifyNever(() => devices.getCustomerDeviceInfos(any(), any()));
-    });
-
-    test("answers nothing when the request to the server failed", () async {
-      signedInAs();
-      requestManager.answers.addAll([RequestStatus.success, RequestStatus.globalError]);
-
-      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
     });
   });
 
@@ -311,4 +262,327 @@ void main() {
       expect(requestManager.client.telemetryService.current, isNull);
     });
   });
+
+  group("TbDevicesService.getCurrentCustomerDeviceInfos", () {
+    test("answers the devices of the customer of the user", () async {
+      signedInAs();
+      final page = aPage([aDeviceInfo("a device")]);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => page);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), same(page));
+    });
+
+    test("asks the server for the customer of the user", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final customerId = verify(
+        () => devices.getCustomerDeviceInfos(captureAny(), any()),
+      ).captured.single;
+
+      expect(customerId, "a-customer");
+    });
+
+    test("reads the devices by pages of fifty unless it is told otherwise", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect((pageLink as PageLink).pageSize, 50);
+    });
+
+    test("reads the page it is asked for", () async {
+      signedInAs();
+      final asked = PageLink(10, 2);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos(pageLink: asked);
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect(pageLink, same(asked));
+    });
+
+    test("answers nothing when the customer of the user is unknown", () async {
+      signedOut();
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+      verifyNever(() => devices.getCustomerDeviceInfos(any(), any()));
+    });
+
+    test("answers nothing when the request to the server failed", () async {
+      signedInAs();
+      requestManager.answers.addAll([RequestStatus.success, RequestStatus.globalError]);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+    });
+  });
+
+  group("TbDevicesService.claimDevice", () {
+    test("sends the secret to the claim endpoint of the device", () async {
+      serverAnswersClaim({"response": "SUCCESS"});
+
+      await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      final call = verify(
+        () => requestManager.client.post<dynamic>(
+          captureAny(),
+          data: captureAny(named: "data"),
+          options: any(named: "options"),
+        ),
+      ).captured;
+
+      expect(call.first, "/api/customer/device/a%20device/claim");
+      expect(call.last, {"secretKey": "a secret"});
+    });
+
+    test("answers what the server said and the device it bound", () async {
+      serverAnswersClaim({
+        "response": "SUCCESS",
+        "device": {
+          "id": {"id": "a-device-id"},
+        },
+      });
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.status, RequestStatus.success);
+      expect(attempt.response, ClaimResponse.SUCCESS);
+      expect(attempt.deviceId, "a-device-id");
+      expect(attempt.httpStatus, 200);
+    });
+
+    test("reads the refusal the server answers as a bare string", () async {
+      serverAnswersClaim("CLAIMED");
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.response, ClaimResponse.CLAIMED);
+      expect(attempt.deviceId, isNull);
+    });
+
+    test("answers the status the server refused the claim with", () async {
+      serverAnswersClaim("FAILURE", status: 400);
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.response, ClaimResponse.FAILURE);
+      expect(attempt.httpStatus, 400);
+    });
+
+    test("reads the refusals of the server and leaves the session errors throwing", () async {
+      serverAnswersClaim("FAILURE");
+
+      await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      final options =
+          verify(
+                () => requestManager.client.post<dynamic>(
+                  any(),
+                  data: any(named: "data"),
+                  options: captureAny(named: "options"),
+                ),
+              ).captured.single
+              as Options;
+
+      expect(options.validateStatus?.call(400), isTrue);
+      expect(options.validateStatus?.call(404), isTrue);
+      expect(options.validateStatus?.call(401), isFalse);
+      expect(options.validateStatus?.call(403), isFalse);
+      expect(options.validateStatus?.call(500), isFalse);
+    });
+
+    test("answers the status of the request when the session is over", () async {
+      requestManager.answers.add(RequestStatus.loginError);
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.status, RequestStatus.loginError);
+      expect(attempt.response, isNull);
+      expect(attempt.httpStatus, isNull);
+    });
+  });
+
+  group("TbDevicesService.releaseClaim", () {
+    test("asks the server to release the device", () async {
+      serverAnswersRelease();
+
+      await service.releaseClaim(deviceName: "a device");
+
+      final path = verify(() => requestManager.client.delete<void>(captureAny())).captured.single;
+
+      expect(path, "/api/customer/device/a%20device/claim");
+    });
+
+    test("answers that the request went through", () async {
+      serverAnswersRelease();
+
+      expect((await service.releaseClaim(deviceName: "a device")).isOk, isTrue);
+    });
+
+    test("answers the status of the request when the session is over", () async {
+      requestManager.answers.add(RequestStatus.loginError);
+
+      final response = await service.releaseClaim(deviceName: "a device");
+
+      expect(response.status, RequestStatus.loginError);
+      verifyNever(() => requestManager.client.delete<void>(any()));
+    });
+  });
+
+  group("TbDevicesService.isDeviceVisibleToCustomer", () {
+    test("says that the device is visible when the customer reads it back", () async {
+      when(() => devices.getDevice(any())).thenAnswer((_) async => Device("a device", "a type"));
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isTrue);
+    });
+
+    test("says that the device is not visible when the server answers none", () async {
+      when(() => devices.getDevice(any())).thenAnswer((_) async => null);
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isFalse);
+    });
+
+    test("says that the device is not visible when the request to the server failed", () async {
+      requestManager.answers.add(RequestStatus.globalError);
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isFalse);
+    });
+  });
+
+  group("TbDevicesService.outcomeFromAttempt", () {
+    test("says that the session is over when the request never reached the server", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(
+          anAttempt(status: RequestStatus.loginError, response: ClaimResponse.SUCCESS),
+        ),
+        TbClaimOutcome.loginError,
+      );
+    });
+
+    test("says that the claim worked when the server answered SUCCESS", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.SUCCESS)),
+        TbClaimOutcome.success,
+      );
+    });
+
+    test("says that the device is already claimed when the server answered CLAIMED", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.CLAIMED)),
+        TbClaimOutcome.alreadyClaimed,
+      );
+    });
+
+    test("says that the claim was refused when the server answered FAILURE", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.FAILURE)),
+        TbClaimOutcome.refused,
+      );
+    });
+
+    test("says that the device is unknown when the server answered 404", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 404)),
+        TbClaimOutcome.unknownDevice,
+      );
+    });
+
+    test("says that the secret was refused when the server answered 400", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 400)),
+        TbClaimOutcome.secretRefused,
+      );
+    });
+
+    test("says that the server could not be reached on any other answer", () {
+      expect(
+        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 503)),
+        TbClaimOutcome.communicationError,
+      );
+      expect(TbDevicesService.outcomeFromAttempt(anAttempt()), TbClaimOutcome.communicationError);
+    });
+  });
+
+  group("TbDevicesService.parseDeviceId", () {
+    test("reads the device the server says it bound", () {
+      expect(
+        TbDevicesService.parseDeviceId({
+          "device": {
+            "id": {"id": "a-device-id"},
+          },
+        }),
+        "a-device-id",
+      );
+    });
+
+    test("answers nothing when the answer carries no device", () {
+      expect(TbDevicesService.parseDeviceId(const <String, dynamic>{}), isNull);
+      expect(TbDevicesService.parseDeviceId(const {"device": "a device"}), isNull);
+      expect(TbDevicesService.parseDeviceId(const {"device": <String, dynamic>{}}), isNull);
+      expect(
+        TbDevicesService.parseDeviceId(const {
+          "device": {"id": <String, dynamic>{}},
+        }),
+        isNull,
+      );
+      expect(
+        TbDevicesService.parseDeviceId(const {
+          "device": {
+            "id": {"id": ""},
+          },
+        }),
+        isNull,
+      );
+    });
+
+    test("answers nothing when the server answered a bare string or nothing at all", () {
+      expect(TbDevicesService.parseDeviceId("CLAIMED"), isNull);
+      expect(TbDevicesService.parseDeviceId(null), isNull);
+    });
+  });
+
+  group("TbDevicesService.parseClaimResponse", () {
+    test("reads the claim answer of an answer which is an object", () {
+      expect(
+        TbDevicesService.parseClaimResponse(const {"response": "SUCCESS"}),
+        ClaimResponse.SUCCESS,
+      );
+    });
+
+    test("reads the claim answer the server sent as a bare string", () {
+      expect(TbDevicesService.parseClaimResponse("CLAIMED"), ClaimResponse.CLAIMED);
+      expect(TbDevicesService.parseClaimResponse("FAILURE"), ClaimResponse.FAILURE);
+    });
+
+    test("reads a claim answer whatever its case", () {
+      expect(TbDevicesService.parseClaimResponse("success"), ClaimResponse.SUCCESS);
+    });
+
+    test("answers nothing when the answer carries no claim answer", () {
+      expect(TbDevicesService.parseClaimResponse(null), isNull);
+      expect(TbDevicesService.parseClaimResponse(const <String, dynamic>{}), isNull);
+      expect(TbDevicesService.parseClaimResponse("not a verdict"), isNull);
+    });
+  });
 }
+
+/// The answer of the server to a claim, which carries [data] and the HTTP status [status].
+Response<dynamic> anAnswer(Object? data, {int status = 200}) =>
+    Response<dynamic>(requestOptions: RequestOptions(path: "/"), data: data, statusCode: status);
+
+/// One answer of the server to a claim, as the decision table reads it.
+TbClaimAttempt anAttempt({
+  RequestStatus status = RequestStatus.success,
+  ClaimResponse? response,
+  int? httpStatus,
+}) => TbClaimAttempt(status: status, response: response, httpStatus: httpStatus);
