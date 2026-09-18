@@ -1,0 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Dorian Benech <dorian.benech@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+library;
