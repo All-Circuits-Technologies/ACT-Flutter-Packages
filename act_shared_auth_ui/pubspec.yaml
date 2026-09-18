@@ -25,6 +25,14 @@ dependencies:
 
   equatable: ^2.0.7
 
+  # The config variables the legal pages of an application are read from
+  act_config_manager:
+    path: ../act_config_manager
+
+  # The parsing of the claims of the token of an identity provider
+  act_jwt_utilities:
+    path: ../act_jwt_utilities
+
   # This is the router manager
   act_router_manager:
     path: ../act_router_manager
