@@ -4,6 +4,7 @@
 
 library;
 
+export 'src/builders/keycloak_tb_auth_service_builder.dart';
 export 'src/clients/tb_extender_broker_client.dart';
 export 'src/mixins/mixin_keycloak_auth_secrets.dart';
 export 'src/mixins/mixin_tb_extender_conf.dart';
