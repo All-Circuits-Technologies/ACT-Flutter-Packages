@@ -21,6 +21,7 @@ void main() {
     AuthStatus authStatus = AuthStatus.signedIn,
     FakeAuthRoute? topView,
     bool acceptRedirect = true,
+    FakeAuthRoute? startRoute,
   }) async {
     auth = FakeAuthService(authStatus: authStatus);
     addTearDown(auth.close);
@@ -31,7 +32,11 @@ void main() {
 
     final router = FakeRouterManager(topView: topView)..acceptRedirect = acceptRedirect;
 
-    final service = FakeAuthRedirectService(router: router, authManager: authManager);
+    final service = FakeAuthRedirectService(
+      router: router,
+      authManager: authManager,
+      startRoute: startRoute,
+    );
     service.initAnswer = await service.init();
     addTearDown(service.close);
 
@@ -83,6 +88,28 @@ void main() {
       expect(await service.askFor(FakeAuthRoute.signIn), isNull);
     });
 
+    test("sends a signed in user asking for the sign in page to the start page", () async {
+      final service = await aRedirection(startRoute: FakeAuthRoute.profile);
+
+      expect(await service.askFor(FakeAuthRoute.signIn), FakeAuthRoute.profile);
+    });
+
+    test("leaves a signed in user on the sign in page when no start page is named", () async {
+      final service = await aRedirection();
+
+      expect(await service.askFor(FakeAuthRoute.signIn), isNull);
+    });
+
+    test("lets a signed out user reach the sign in page of an application with a start "
+        "page", () async {
+      final service = await aRedirection(
+        authStatus: AuthStatus.signedOut,
+        startRoute: FakeAuthRoute.profile,
+      );
+
+      expect(await service.askFor(FakeAuthRoute.signIn), isNull);
+    });
+
     test("leaves the page the application itself asked for alone", () async {
       final service = await aRedirection(authStatus: AuthStatus.signedOut)
         ..ownAnswer = FakeAuthRoute.about;
@@ -120,6 +147,45 @@ void main() {
       await pumpEventQueue();
 
       expect(service.router.pushedFirst, isEmpty);
+    });
+
+    test("sends the user who just signed in from the sign in page to the start page", () async {
+      final service = await aRedirection(
+        authStatus: AuthStatus.signedOut,
+        topView: FakeAuthRoute.signIn,
+        startRoute: FakeAuthRoute.profile,
+      );
+
+      auth.updateStatus(AuthStatus.signedIn);
+      await pumpEventQueue();
+
+      expect(service.router.replaced, [FakeAuthRoute.profile]);
+    });
+
+    test("leaves the user who just signed in on the sign in page when no start page is "
+        "named", () async {
+      final service = await aRedirection(
+        authStatus: AuthStatus.signedOut,
+        topView: FakeAuthRoute.signIn,
+      );
+
+      auth.updateStatus(AuthStatus.signedIn);
+      await pumpEventQueue();
+
+      expect(service.router.replaced, isEmpty);
+    });
+
+    test("leaves the user who just signed in elsewhere than the sign in page where it is", () async {
+      final service = await aRedirection(
+        authStatus: AuthStatus.signedOut,
+        topView: FakeAuthRoute.about,
+        startRoute: FakeAuthRoute.profile,
+      );
+
+      auth.updateStatus(AuthStatus.signedIn);
+      await pumpEventQueue();
+
+      expect(service.router.replaced, isEmpty);
     });
 
     test("sends the user away when the session expired", () async {

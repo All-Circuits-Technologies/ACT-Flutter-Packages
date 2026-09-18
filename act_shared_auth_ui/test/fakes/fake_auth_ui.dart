@@ -112,6 +112,9 @@ class FakeRouterManager extends AbstractRouterManager<FakeAuthRoute> {
   /// The pages the router was asked to go to, forgetting everything else.
   final List<FakeAuthRoute> pushedFirst = [];
 
+  /// The pages the router was asked to put in the place of the one on top.
+  final List<FakeAuthRoute> replaced = [];
+
   /// The number of redirections which were registered.
   int registeredRedirects = 0;
 
@@ -146,6 +149,20 @@ class FakeRouterManager extends AbstractRouterManager<FakeAuthRoute> {
     P? popArgument,
   }) async {
     pushedFirst.add(route);
+    topView = route;
+
+    return null;
+  }
+
+  /// {@macro act_router_manager.AbstractRouterManager.replace}
+  @override
+  Future<Y?> replace<Y extends Object?>(
+    FakeAuthRoute route, {
+    Map<String, String> pathParameters = const <String, String>{},
+    Map<String, dynamic> queryParameters = const <String, dynamic>{},
+    Object? extra,
+  }) async {
+    replaced.add(route);
     topView = route;
 
     return null;
@@ -186,11 +203,15 @@ class FakeAuthRedirectService
   /// The authentication manager of the application.
   final FakeAuthManager authManager;
 
+  /// The page a signed in user is sent to when it lands on the sign in page, when the application
+  /// names one.
+  final FakeAuthRoute? startRoute;
+
   /// What the initialization of the redirection answered.
   bool initAnswer = false;
 
   /// Class constructor
-  FakeAuthRedirectService({required this.router, required this.authManager});
+  FakeAuthRedirectService({required this.router, required this.authManager, this.startRoute});
 
   /// {@macro act_router_manager.MixinRedirectService.getRouterManagerFromGlobal}
   @override
@@ -203,6 +224,10 @@ class FakeAuthRedirectService
   /// {@macro act_shared_auth.MixinAuthRedirectService.getSignInPage}
   @override
   FakeAuthRoute getSignInPage() => FakeAuthRoute.signIn;
+
+  /// {@macro act_shared_auth.MixinAuthRedirectService.getStartRoute}
+  @override
+  FakeAuthRoute? getStartRoute() => startRoute;
 
   /// Initializes the redirection the way the application does.
   Future<bool> init() => initRedirectService();

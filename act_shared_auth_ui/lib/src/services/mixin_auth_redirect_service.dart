@@ -11,6 +11,10 @@ import 'package:flutter/widgets.dart';
 
 /// This mixin "overrides" [MixinRedirectService] to redirect the views to the sign in page if no
 /// user is log in the app and the view requires it.
+///
+/// It also sends a signed in user off the sign in page, when the application names the page to
+/// send it to with [getStartRoute]: the user which has just signed in is sent there, and so is the
+/// one which asks for the sign in page while it is already signed in.
 mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService<T> {
   /// The authentication manager
   late final AbsAuthManager _authManager;
@@ -39,6 +43,15 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   @protected
   T getSignInPage();
 
+  /// {@template act_shared_auth.MixinAuthRedirectService.getStartRoute}
+  /// Get the route a signed in user is sent to when it lands on, or is still on, the sign in page
+  ///
+  /// Null, which is the default, keeps the historical behaviour: a signed in user is left on the
+  /// sign in page.
+  /// {@endtemplate}
+  @protected
+  T? getStartRoute() => null;
+
   /// {@macro act_router_manager.MixinRedirectService.initRedirectService}
   @override
   Future<bool> initRedirectService() async {
@@ -60,6 +73,9 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   ///
   /// If no user is connected to the app and the current view needs an authentication, this
   /// redirects to the authentication page.
+  ///
+  /// If a user has just signed in from the sign in page and the app has a start route, this
+  /// redirects to that start route.
   Future<void> _onNewAuthStatus(AuthStatus status) async {
     if (status == _authStatus) {
       // Nothing to do
@@ -69,7 +85,13 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     _authStatus = status;
 
     if (status.isSignedIn) {
-      // Nothing to do
+      final startRoute = getStartRoute();
+
+      if (startRoute != null && routerManager.getCurrentTopView() == _signInRoute) {
+        // The user has just signed in from the sign in page: it has nothing to do there anymore
+        unawaited(routerManager.replace(startRoute));
+      }
+
       return;
     }
 
@@ -94,8 +116,8 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     }
 
     if (route == _signInRoute) {
-      // Nothing to do
-      return null;
+      // A signed in user has nothing to do on the sign in page, when the app says where to send it
+      return _authStatus.isSignedIn ? getStartRoute() : null;
     }
 
     if (!route.isAuthNeeded || _authStatus.isSignedIn) {
