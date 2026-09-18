@@ -5,7 +5,6 @@
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
