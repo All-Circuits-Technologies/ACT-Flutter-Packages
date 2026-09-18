@@ -29,6 +29,10 @@ dependencies:
   act_config_manager:
     path: ../act_config_manager
 
+  # The global manager, which serves the logger of the application
+  act_global_manager:
+    path: ../act_global_manager
+
   # The parsing of the claims of the token of an identity provider
   act_jwt_utilities:
     path: ../act_jwt_utilities
