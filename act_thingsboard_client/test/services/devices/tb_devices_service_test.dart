@@ -128,6 +128,70 @@ void main() {
     });
   });
 
+  group("TbDevicesService.getCurrentCustomerDeviceInfos", () {
+    test("answers the devices of the customer of the user", () async {
+      signedInAs();
+      final page = aPage([aDeviceInfo("a device")]);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => page);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), same(page));
+    });
+
+    test("asks the server for the customer of the user", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final customerId = verify(
+        () => devices.getCustomerDeviceInfos(captureAny(), any()),
+      ).captured.single;
+
+      expect(customerId, "a-customer");
+    });
+
+    test("reads the devices by pages of fifty unless it is told otherwise", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect((pageLink as PageLink).pageSize, 50);
+    });
+
+    test("reads the page it is asked for", () async {
+      signedInAs();
+      final asked = PageLink(10, 2);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos(pageLink: asked);
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect(pageLink, same(asked));
+    });
+
+    test("answers nothing when the customer of the user is unknown", () async {
+      signedOut();
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+      verifyNever(() => devices.getCustomerDeviceInfos(any(), any()));
+    });
+
+    test("answers nothing when the request to the server failed", () async {
+      signedInAs();
+      requestManager.answers.addAll([RequestStatus.success, RequestStatus.globalError]);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+    });
+  });
+
   group("TbDevicesService.getCustomerDeviceByName", () {
     test("answers the device which carries the name", () async {
       signedInAs();

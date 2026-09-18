@@ -104,6 +104,39 @@ class TbDevicesService extends AbsWithLifeCycle {
     return result.requestResponse;
   }
 
+  /// Get the devices of the current user, with the information the server adds to them, the user
+  /// has to be a customer user.
+  ///
+  /// A [DeviceInfo] carries what a [Device] does not: whether the device is active, the title of
+  /// the customer it belongs to and the name of its profile.
+  ///
+  /// Returns null if a problem occurred.
+  Future<PageData<DeviceInfo>?> getCurrentCustomerDeviceInfos({
+    PageLink? pageLink,
+  }) async {
+    final customerId = await getCurrentCustomerId();
+
+    if (customerId == null) {
+      _logsHelper.w("There is a problem with user customer id; we can't get the current customer "
+          "device infos");
+      return null;
+    }
+
+    final result = await _requestManager
+        .request((tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
+              customerId,
+              pageLink ?? PageLink(_devicesNumberByPage),
+            ));
+
+    if (!result.isOk) {
+      _logsHelper.w("A problem occurred when tried to request the customer device infos from the "
+          "server");
+      return null;
+    }
+
+    return result.requestResponse;
+  }
+
   /// Get a device by its name, the device has to be attached to the customer of the current user.
   ///
   /// The current user has to be linked to a customer.
