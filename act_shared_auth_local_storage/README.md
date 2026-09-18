@@ -19,6 +19,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Declare the values of an application](#declare-the-values-of-an-application)
   - [Hand the storage to the authentication](#hand-the-storage-to-the-authentication)
+  - [Two sets of tokens](#two-sets-of-tokens)
 - [Configuration](#configuration)
 - [Testing](#testing)
 
@@ -141,6 +142,29 @@ An application which keeps its tokens in clear text builds the other one:
 final storage = NotSecureLocalAuthStorage<AppPropertiesManager>();
 ```
 
+### Two sets of tokens
+
+An application which holds two sets of tokens, for instance the ones of its identity provider and
+the ones of its server, declares a second item in its secrets and hands it to a second storage:
+
+```dart
+class AppSecretsManager extends AbstractSecretsManager with MixinAuthSecrets {
+  final idpTokens = const SecretItemWithParser<AuthTokens, String>(
+    "IDP_AUTH_TOKENS",
+    parser: MemoryStorageUtility.convertAuthTokensFromStorage,
+    castTo: MemoryStorageUtility.convertAuthTokensForStorage,
+    doNotMigrate: true,
+  );
+}
+
+final idpStorage = SecureLocalAuthStorage<AppConfigManager, AppSecretsManager>(
+  tokensItem: globalGetIt().get<AppSecretsManager>().idpTokens,
+);
+```
+
+The storage without a `tokensItem` writes the `authTokens` item as before, and the credentials of
+the user are read and written by both through the very same item.
+
 ## Configuration
 
 | Key                                     | Default | What it does                              |
@@ -159,7 +183,8 @@ for.
 
 Both storages are covered on the tokens they keep, read back, replace and forget, and on the user
 who was never signed in. The secure one is covered on the credentials it keeps and forgets when the
-application allows it, and on each of the three calls which do nothing when it does not.
+application allows it, on each of the three calls which do nothing when it does not, and on two
+storages built on two items, which neither read nor forget each other's tokens.
 
 The writing of a value is covered on the tokens and the credentials which are written and read
 back, including the tokens of a user who has none, and on the values which cannot be read: the text
