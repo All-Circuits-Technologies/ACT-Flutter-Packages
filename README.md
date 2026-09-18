@@ -90,6 +90,7 @@ To install it globally, you have to call:
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                            |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |
+| [act_oauth2_keycloak](act_oauth2_keycloak/)                               | This package contains the needed elements to connect to a OAuth 2.0 Client through a Keycloak Identity Provider.         |         |
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
