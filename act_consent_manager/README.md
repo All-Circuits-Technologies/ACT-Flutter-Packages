@@ -25,6 +25,11 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 ## Presentation
 
+When the acceptance is held by the identity provider and copied into the token as a claim, this
+package is not what answers: `MixinTermsRedirectService` of
+[`act_shared_auth_ui`](../act_shared_auth_ui/) reads that claim and imposes the terms page on its
+own.
+
 This package holds the consents an application asks its users for: the terms of a service, the
 privacy of their data, whatever else has to be agreed to. It answers one question at a time: does
 this user still have to be asked?

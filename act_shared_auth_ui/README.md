@@ -14,6 +14,9 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [The pages which need a signed in user](#the-pages-which-need-a-signed-in-user)
   - [The two moments a user is sent away](#the-two-moments-a-user-is-sent-away)
   - [What a page of the authentication is given](#what-a-page-of-the-authentication-is-given)
+- [Guards](#guards)
+  - [The terms held by the identity provider](#the-terms-held-by-the-identity-provider)
+  - [Stack them](#stack-them)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Declare the pages of an application](#declare-the-pages-of-an-application)
@@ -89,6 +92,89 @@ that page answers.
 The account and the password of a sign up are what lets a user who was refused on the sign in page
 find a form which is already filled, and the account of a confirmation is what the code is checked
 against, which is why that one is mandatory.
+
+## Guards
+
+A guard is a mixin on `MixinRedirectService`: it reads what the guards written before it answered,
+and only imposes a page of its own when they answered nothing. The order of the mixins is the order
+of priority, and this package brings two of them.
+
+- `MixinAuthRedirectService` imposes the sign in page on a user who is not signed in, and reads
+  `isAuthNeeded` of the route,
+- `MixinTermsRedirectService` imposes the terms page on an acceptance which is too old, and reads
+  `needsAcceptedTerms` of the route.
+
+The authentication comes first: the acceptance of the terms is read from the session, so there is
+nothing to read as long as the user is not signed in.
+
+### The terms held by the identity provider
+
+`MixinTermsRedirectService` fits the applications whose terms are accepted outside of them, on the
+identity provider: the date it happened is copied into the access token as a claim, and the date of
+the text in force is what the application answers. An acceptance older than the text in force is not
+an acceptance of that text, so publishing a new date is what asks every user again. The consents an
+application shows and signs itself are another need, and
+[`act_consent_manager`](../act_consent_manager/) models those.
+
+The guard imposes the terms page at two moments, the same two as the authentication: when the
+application goes to a page which needs accepted terms, and when the user signs in while such a page
+is already open.
+
+Nothing is imposed when anything is missing — no signed in user, an authentication service which
+doesn't mix `MixinRawIdpTokenProvider` in, no token, or no publication date. Locking every user out
+of the application is a worse answer than asking them again at their next sign in.
+
+### Stack them
+
+```dart
+enum AppRoute with MixinRoute, MixinAuthRoute, MixinTermsRoute {
+  signIn(isAuthNeeded: false, needsAcceptedTerms: false),
+  terms(isAuthNeeded: true, needsAcceptedTerms: false),
+  home(isAuthNeeded: true, needsAcceptedTerms: true);
+
+  @override
+  final bool isAuthNeeded;
+
+  @override
+  final bool needsAcceptedTerms;
+
+  const AppRoute({required this.isAuthNeeded, required this.needsAcceptedTerms});
+}
+
+class AppRedirectService
+    with
+        MixinRedirectService<AppRoute>,
+        MixinAuthRedirectService<AppRoute>,
+        MixinTermsRedirectService<AppRoute> {
+  @override
+  AbstractRouterManager<AppRoute> getRouterManagerFromGlobal() =>
+      globalGetIt().get<AppRouterManager>();
+
+  @override
+  AbsAuthManager getAuthenticationManagerFromGlobal() => globalGetIt().get<AppAuthManager>();
+
+  @override
+  AppRoute getSignInPage() => AppRoute.signIn;
+
+  @override
+  AppRoute getTermsRoute() => AppRoute.terms;
+
+  @override
+  DateTime? getTermsPublishedAt() =>
+      DateTime.tryParse(globalGetIt().get<AppConfigManager>().termsPublishedAt.load() ?? "");
+}
+```
+
+The terms page answers false to `needsAcceptedTerms`, otherwise the guard would impose it over and
+over. Both guards ask for the authentication manager through the same hook, so an application writes
+that one once.
+
+Where the publication date comes from is left to the application. `MixinLegalConf` reads it from the
+configuration, next to the base URL of the published legal pages:
+
+```dart
+class AppConfigManager extends AbstractConfigManager with MixinLegalConf {}
+```
 
 ## How to use
 
@@ -177,6 +263,13 @@ which needs none is open, on the user who signs in, and on the status which did 
 The registering is covered on the router which already has a redirection of its own, which stops the
 service before it starts, and on the closing of a service which never started. The extras are
 covered on what each of them carries and on what tells two of them apart.
+
+The terms guard is covered the same way, over an authentication which hands out a token a test
+built: the acceptance which is too old and the one which is up to date, on a navigation and on the
+user who signs in, the page which needs no accepted terms and the terms page itself, and the four
+ways it fails open, which are the user who is not signed in, the service which hands out no raw
+token, the session without a token and the publication date which is unknown. The reading of the
+claim and the comparison of the two dates are covered on their own, tokens and all.
 
 ```console
 > flutter test
