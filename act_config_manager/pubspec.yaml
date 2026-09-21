@@ -34,6 +34,10 @@ dependencies:
   # Load configuration at runtime from a .env file which can be used throughout the application.
   flutter_dotenv: ^5.2.1
 
+  # Pure Dart core of the config manager: models, store, parsers and the file system loader
+  act_dart_config_manager:
+    path: ../dart/act_dart_config_manager
+
   # Contains utilities for Dart
   act_dart_utility:
     path: ../dart/act_dart_utility
@@ -51,10 +55,6 @@ dependencies:
 
   act_platform_manager:
     path: ../act_platform_manager
-
-  # Contains utilities for Dart
-  act_yaml_utility:
-    path: ../act_yaml_utility
 
 # Dependencies used by developer
 dev_dependencies:

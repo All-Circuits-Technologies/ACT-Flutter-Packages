@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_config_manager/src/services/config_singleton.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_test_utility/act_test_utility.dart';
@@ -37,7 +36,7 @@ void main() {
   tearDown(() async {
     FakeAssets.stop();
     dotenv.clean();
-    await ConfigSingleton.instanceOrNull?.disposeLifeCycle();
+    ConfigStore.instanceOrNull?.dispose();
   });
 
   group("AbstractConfigManager", () {

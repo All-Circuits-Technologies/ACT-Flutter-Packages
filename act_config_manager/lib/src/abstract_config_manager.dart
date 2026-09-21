@@ -1,15 +1,13 @@
 // SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
 // SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 - 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2023 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_config_manager/src/data/config_constants.dart' as config_constants;
-import 'package:act_config_manager/src/services/config_singleton.dart';
-import 'package:act_config_manager/src/types/environment.dart';
 import 'package:act_config_manager/src/utilities/config_from_env_utility.dart';
 import 'package:act_config_manager/src/utilities/config_from_yaml_utility.dart';
+import 'package:act_dart_config_manager/act_dart_config_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
@@ -75,11 +73,7 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
       jsonToOverrideWith: envConfigs,
     );
 
-    final configs = ConfigSingleton.createInstance(
-      logger: _logger,
-      configs: finalValue,
-    );
-    await configs.initLifeCycle();
+    ConfigStore.create(logger: _logger, configs: finalValue);
 
     _logger.i("Config manager initialized with environment: $env");
   }
@@ -87,9 +81,9 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
   /// Called when the manager is disposed
   @override
   Future<void> disposeLifeCycle() async {
-    // The singleton doesn't exist when the manager is disposed before it has been initialized, for
+    // The store doesn't exist when the manager is disposed before it has been initialized, for
     // instance when its initialization failed
-    await ConfigSingleton.instanceOrNull?.disposeLifeCycle();
+    ConfigStore.instanceOrNull?.dispose();
     await super.disposeLifeCycle();
   }
 }
