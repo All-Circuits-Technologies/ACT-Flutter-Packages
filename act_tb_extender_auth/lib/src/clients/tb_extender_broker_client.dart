@@ -13,9 +13,10 @@ import 'package:http/http.dart' as http;
 /// A small REST client for the auth broker of tb-extender.
 ///
 /// It offers [login], which exchanges a Keycloak access token for a pair of ThingsBoard tokens,
-/// and [deleteAccount], which erases the account behind such a token. Both calls hold no state and
-/// are idempotent; therefore, they can safely be issued again whenever the ThingsBoard tokens are
-/// lost or refused.
+/// [deleteAccount], which erases the account behind such a token, and [acceptTerms], which writes
+/// on it the version of the terms the user accepted. Every call holds no state and is idempotent;
+/// therefore, they can safely be issued again whenever the ThingsBoard tokens are lost or
+/// refused.
 ///
 /// The base URL is read through a getter rather than given once: the configuration of an
 /// application is loaded after its managers are built, so the URL is only there by the time the
@@ -29,6 +30,12 @@ class TbExtenderBrokerClient {
 
   /// This is the relative path of the account deletion endpoint
   static const _accountPath = "/api/v1/account";
+
+  /// This is the relative path of the terms acceptance endpoint
+  static const _termsAcceptPath = "/api/v1/terms/accept";
+
+  /// This is the key the accepted version is sent to the terms endpoint under
+  static const _versionKey = "version";
 
   /// This is the key the error code of a broker error payload is read from
   static const _errorKey = "error";
@@ -117,6 +124,48 @@ class TbExtenderBrokerClient {
     final code = _readString(_tryDecodeBody(response), _errorKey);
     final error = BrokerAuthError.fromCode(code);
     _logsHelper.w("The account deletion failed with the status ${response.statusCode} "
+        "(code: $code, error: $error)");
+
+    return error;
+  }
+
+  /// Record on the account that the user accepted the [version] of the terms.
+  ///
+  /// Issues `POST <brokerUrl>/api/v1/terms/accept` with an `Authorization: Bearer <token>` header
+  /// and the version as a JSON body.
+  ///
+  /// Return null when the broker recorded it, on a HTTP 204, or the mapped [BrokerAuthError]
+  /// otherwise, a transport error being read as [BrokerAuthError.network].
+  Future<BrokerAuthError?> acceptTerms(
+    String keycloakAccessToken, {
+    required String version,
+  }) async {
+    final uri = _buildUri(_termsAcceptPath);
+    if (uri == null) {
+      _logsHelper.e("The base URL of the broker isn't configured, can't record the terms");
+      return BrokerAuthError.unknown;
+    }
+
+    http.Response response;
+    try {
+      response = await _httpClient.post(
+        uri,
+        headers: {..._headers(keycloakAccessToken), "Content-Type": "application/json"},
+        body: jsonEncode({_versionKey: version}),
+      );
+    } catch (error) {
+      _logsHelper.w("A transport error occurred when calling the terms endpoint of the broker: "
+          "$error");
+      return BrokerAuthError.network;
+    }
+
+    if (response.statusCode == 204) {
+      return null;
+    }
+
+    final code = _readString(_tryDecodeBody(response), _errorKey);
+    final error = BrokerAuthError.fromCode(code);
+    _logsHelper.w("The terms acceptance failed with the status ${response.statusCode} "
         "(code: $code, error: $error)");
 
     return error;
