@@ -55,6 +55,8 @@ A service says what else it can do by mixing a contract in, and an application r
 
 - `MixinRawIdpTokenProvider` hands out the raw access token of the identity provider, for the
   claims an application reads itself.
+- `MixinTermsAcceptor` records on the account the version of the terms the user accepted, for the
+  services whose provider has somewhere to write it.
 
 ```mermaid
 sequenceDiagram
@@ -196,6 +198,9 @@ class MySyncService extends AbsWithLifeCycle
 The tests drive the manager and the services over a provider which answers what the test decided
 and records the calls it received, so the tests read which service a call reached rather than what
 a provider would have done with it.
+
+The two optional contracts are covered on a service which mixes them in and one which does not,
+which is what an application tells apart, and on the version a service is handed over.
 
 They cover the manager handing the storage to the service and following its status, every call of
 the multi provider service reaching the chosen provider, the storage moving from one provider to
