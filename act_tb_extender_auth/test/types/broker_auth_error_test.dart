@@ -9,6 +9,7 @@ void main() {
   group("BrokerAuthError.fromCode", () {
     /// The code of the documented contract, and the error each one is read as.
     const codes = {
+      "invalid_request": BrokerAuthError.invalidRequest,
       "invalid_token": BrokerAuthError.invalidToken,
       "invalid_audience": BrokerAuthError.invalidAudience,
       "email_not_verified": BrokerAuthError.emailNotVerified,
@@ -16,6 +17,7 @@ void main() {
       "thingsboard_unavailable": BrokerAuthError.thingsboardUnavailable,
       "keycloak_unavailable": BrokerAuthError.keycloakUnavailable,
       "deletion_not_configured": BrokerAuthError.deletionNotConfigured,
+      "admin_not_configured": BrokerAuthError.adminNotConfigured,
       "internal_error": BrokerAuthError.internalError,
     };
 
@@ -43,11 +45,13 @@ void main() {
     });
 
     test("says that the errors which come from the account itself are not", () {
+      expect(BrokerAuthError.invalidRequest.retryable, isFalse);
       expect(BrokerAuthError.invalidToken.retryable, isFalse);
       expect(BrokerAuthError.invalidAudience.retryable, isFalse);
       expect(BrokerAuthError.emailNotVerified.retryable, isFalse);
       expect(BrokerAuthError.provisioningConflict.retryable, isFalse);
       expect(BrokerAuthError.deletionNotConfigured.retryable, isFalse);
+      expect(BrokerAuthError.adminNotConfigured.retryable, isFalse);
       expect(BrokerAuthError.unknown.retryable, isFalse);
     });
   });
