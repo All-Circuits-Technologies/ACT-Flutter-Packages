@@ -169,6 +169,7 @@ void main() {
 
       expect(result.status, AuthSignInStatus.networkError);
       expect(service.authStatus, AuthStatus.signedOut);
+      expect(provider.signOutCalled, isTrue);
     });
 
     test("reads a broker which refused the account as a generic error carrying it", () async {
@@ -180,6 +181,7 @@ void main() {
 
       expect(result.status, AuthSignInStatus.genericError);
       expect(result.extra, isA<BrokerLoginFailure>());
+      expect(provider.signOutCalled, isTrue, reason: "the next attempt must ask the credentials");
     });
   });
 
