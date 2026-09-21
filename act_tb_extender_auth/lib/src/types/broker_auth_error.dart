@@ -8,6 +8,9 @@
 /// maps every documented `<code>`, plus the transport failures which never reach it, to a typed
 /// value, and says whether calling it again with the same input may succeed later ([retryable]).
 enum BrokerAuthError {
+  /// HTTP 400 `invalid_request`: the body of the call is missing a field or carries a blank one.
+  invalidRequest(retryable: false),
+
   /// HTTP 401 `invalid_token`: the Keycloak access token is missing, malformed or refused.
   invalidToken(retryable: false),
 
@@ -30,6 +33,10 @@ enum BrokerAuthError {
   /// it can't delete an account at all.
   deletionNotConfigured(retryable: false),
 
+  /// HTTP 501 `admin_not_configured`: this broker tenant has no Keycloak Admin API access, so it
+  /// can't write anything on an account.
+  adminNotConfigured(retryable: false),
+
   /// HTTP 500 `internal_error`: an unexpected error on the side of the broker.
   internalError(retryable: true),
 
@@ -49,6 +56,7 @@ enum BrokerAuthError {
   ///
   /// A code which isn't documented, and a null one, are read as [BrokerAuthError.unknown].
   static BrokerAuthError fromCode(String? code) => switch (code) {
+    "invalid_request" => BrokerAuthError.invalidRequest,
     "invalid_token" => BrokerAuthError.invalidToken,
     "invalid_audience" => BrokerAuthError.invalidAudience,
     "email_not_verified" => BrokerAuthError.emailNotVerified,
@@ -56,6 +64,7 @@ enum BrokerAuthError {
     "thingsboard_unavailable" => BrokerAuthError.thingsboardUnavailable,
     "keycloak_unavailable" => BrokerAuthError.keycloakUnavailable,
     "deletion_not_configured" => BrokerAuthError.deletionNotConfigured,
+    "admin_not_configured" => BrokerAuthError.adminNotConfigured,
     "internal_error" => BrokerAuthError.internalError,
     _ => BrokerAuthError.unknown,
   };
