@@ -47,12 +47,6 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// This is the category used for logging
   static const _logsCategory = "locales";
 
-  /// Sentinel meaning the current locale has not been resolved yet.
-  ///
-  /// Reading [currentLocale] while it holds this value resolves a usable locale on the fly instead
-  /// of exposing the undetermined locale, which callers such as `DateFormat` reject.
-  static const _undeterminedLocale = Locale.fromSubtags();
-
   /// This is how we'll allow subscribing to connection changes
   final StreamController<Locale> _currentLocaleCtrl;
 
@@ -74,19 +68,18 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// This is the list of supported locales in the app.
   late final List<Locale> supportedLocales;
 
-  /// This is the current locale of the application.
-  Locale _currentLocale;
+  /// This is the current locale of the application, or null until [initAfterView] has resolved it.
+  Locale? _currentLocale;
 
   /// This is the stream of the current locale.
   Stream<Locale> get currentLocaleStream => _currentLocaleCtrl.stream;
 
   /// This is the current locale of the application.
   ///
-  /// Before [initAfterView] has seeded it, this falls back to the wanted locale, or to the one Intl
-  /// reports, so it never exposes the unresolved sentinel. The value can still change once, without
-  /// an event, when [initAfterView] runs; listen to [currentLocaleStream] to follow later changes.
-  Locale get currentLocale =>
-      _currentLocale == _undeterminedLocale ? _resolveCurrentLocale() : _currentLocale;
+  /// Before [initAfterView] has resolved it, this falls back to the wanted locale, or to the one
+  /// Intl reports, so it never exposes an unresolved value. Listen to [currentLocaleStream] to
+  /// follow changes, including the one emitted when [initAfterView] resolves the locale.
+  Locale get currentLocale => _currentLocale ?? _resolveCurrentLocale();
 
   /// This is the current locale of the application, formatted for date formatting.
   ///
@@ -154,8 +147,7 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
     required List<Locale> Function() getSupportedLocales,
     required MixinLocaleProperties Function() propertiesGetter,
     required MixinLocaleConfig Function() configGetter,
-  }) : _currentLocale = _undeterminedLocale,
-       _currentLocaleCtrl = StreamController<Locale>.broadcast(),
+  }) : _currentLocaleCtrl = StreamController<Locale>.broadcast(),
        _wantedLocaleCtrl = StreamController<Locale?>.broadcast(),
        _getSupportedLocales = getSupportedLocales,
        _propertiesGetter = propertiesGetter,
@@ -188,12 +180,12 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
       );
     }
 
-    // Seed the authoritative value without emitting: earlier readers already got the same result
-    // through the currentLocale fallback, so there is nothing to notify here.
-    _currentLocale = _resolveCurrentLocale();
+    // Resolve the authoritative value. Readers that used the currentLocale fallback before this
+    // point are notified through the stream, so they can pick up the resolved value.
+    _setCurrentLocale(_resolveCurrentLocale());
   }
 
-  /// Resolves the locale to expose before [initAfterView] has seeded [_currentLocale]: the locale
+  /// Resolves the locale to expose before [initAfterView] has resolved [_currentLocale]: the locale
   /// the user asked for when there is one, otherwise the one Intl reports.
   ///
   /// Intl.getCurrentLocale is assumed never to return an unparsable value, hence the non-null

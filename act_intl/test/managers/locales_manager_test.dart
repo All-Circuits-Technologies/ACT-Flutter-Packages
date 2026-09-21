@@ -190,12 +190,6 @@ void main() {
 
       expect(manager.currentLocale, _deviceLocale);
     });
-
-    testWidgets("never exposes the undetermined locale before the view is shown", (tester) async {
-      final manager = await aManager();
-
-      expect(manager.currentLocale, isNot(const Locale.fromSubtags()));
-    });
   });
 
   group("LocalesManager.initAfterView", () {
@@ -225,6 +219,18 @@ void main() {
       await theViewIsShown(tester, manager, withObserver: false);
 
       expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("tells the application about the locale it resolved", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+      final locales = <Locale>[];
+      final subscription = manager.currentLocaleStream.listen(locales.add);
+      addTearDown(subscription.cancel);
+
+      await theViewIsShown(tester, manager);
+      await tester.pump();
+
+      expect(locales, const [Locale("fr", "FR")]);
     });
   });
 
