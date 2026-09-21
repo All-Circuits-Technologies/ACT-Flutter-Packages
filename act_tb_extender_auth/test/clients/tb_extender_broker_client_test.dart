@@ -19,6 +19,9 @@ const _loginUri = "$_baseUrl/api/v1/auth/login";
 /// The URL the account endpoint of that broker is reached at.
 const _accountUri = "$_baseUrl/api/v1/account";
 
+/// The URL the terms endpoint of that broker is reached at.
+const _termsUri = "$_baseUrl/api/v1/terms/accept";
+
 /// A success payload which follows the contract of tb-extender.
 Map<String, dynamic> _successBody() => {
   "tbToken": "tb-access-jwt",
@@ -263,6 +266,48 @@ void main() {
       final client = aClient((_) async => http.Response("", 204), baseUrl: "");
 
       expect(await client.deleteAccount("kc"), BrokerAuthError.unknown);
+    });
+  });
+
+  group("TbExtenderBrokerClient.acceptTerms", () {
+    test("posts the version as JSON with the Keycloak token", () async {
+      late http.Request captured;
+      final client = aClient((request) async {
+        captured = request;
+        return http.Response("", 204);
+      });
+
+      final error = await client.acceptTerms("kc-token", version: "2026-09-16");
+
+      expect(error, isNull);
+      expect(captured.method, "POST");
+      expect(captured.url.toString(), _termsUri);
+      expect(captured.headers["Authorization"], "Bearer kc-token");
+      expect(captured.headers["Content-Type"], startsWith("application/json"));
+      expect(jsonDecode(captured.body), {"version": "2026-09-16"});
+    });
+
+    test("reads the error code the broker answers", () async {
+      final client = aClient(
+        (_) async => http.Response(jsonEncode({"error": "admin_not_configured"}), 501),
+      );
+
+      expect(
+        await client.acceptTerms("kc-token", version: "v1"),
+        BrokerAuthError.adminNotConfigured,
+      );
+    });
+
+    test("answers a network error when the transport fails", () async {
+      final client = aClient((_) async => throw const _FakeSocketException());
+
+      expect(await client.acceptTerms("kc-token", version: "v1"), BrokerAuthError.network);
+    });
+
+    test("answers unknown without a configured base URL", () async {
+      final client = aClient((_) async => http.Response("", 204), baseUrl: null);
+
+      expect(await client.acceptTerms("kc-token", version: "v1"), BrokerAuthError.unknown);
     });
   });
 }
