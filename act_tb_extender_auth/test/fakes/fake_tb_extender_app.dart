@@ -82,6 +82,12 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   /// Whether the service ended the Keycloak session.
   bool signOutCalled = false;
 
+  /// Whether the provider says it handed fresh tokens over when it was asked for some.
+  bool refreshAnswer = true;
+
+  /// The number of refreshes the service asked of the provider.
+  int refreshCalls = 0;
+
   /// Class constructor
   FakeKeycloakProvider() : super(logsCategory: "fakeKeycloak");
 
@@ -109,7 +115,14 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   Future<AuthSignInResult> redirectToExternalUserSignIn() async => redirectResult;
 
   @override
-  Future<AuthTokens?> getTokens({bool forceRefresh = false}) async => tokens;
+  Future<AuthTokens?> getTokens({bool forceRefresh = false}) async {
+    if (!forceRefresh) {
+      return tokens;
+    }
+
+    refreshCalls++;
+    return refreshAnswer ? tokens : null;
+  }
 
   @override
   Future<bool> isUserSigned() async => tokens != null;
@@ -138,6 +151,15 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The number of deletions the service asked of the broker.
   int deleteCallCount = 0;
 
+  /// The error the broker answers a terms acceptance with, null when it recorded it.
+  BrokerAuthError? acceptTermsError;
+
+  /// The number of terms acceptances the service asked of the broker.
+  int acceptTermsCallCount = 0;
+
+  /// The version of the last terms acceptance the broker received.
+  String? lastAcceptedVersion;
+
   /// Class constructor
   FakeBrokerClient() : super(baseUrlGetter: () => "https://broker.example.test");
 
@@ -156,6 +178,18 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
     lastToken = keycloakAccessToken;
 
     return deleteError;
+  }
+
+  @override
+  Future<BrokerAuthError?> acceptTerms(
+    String keycloakAccessToken, {
+    required String version,
+  }) async {
+    acceptTermsCallCount++;
+    lastToken = keycloakAccessToken;
+    lastAcceptedVersion = version;
+
+    return acceptTermsError;
   }
 }
 
