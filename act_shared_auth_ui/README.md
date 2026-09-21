@@ -76,19 +76,21 @@ compose them instead.
 
 ### Where a signed in user is sent
 
-The redirection works the other way round too, for the applications which name a start page with
-`getStartRoute`. That page is where a signed in user has to be when the sign in page is what it
-would otherwise read:
+An application which names a start page with `getStartRoute` gets one more rule: a signed in user
+is never left on the sign in page, it is sent to the start page instead. The rule is applied at the
+two moments the others are:
 
-- the user which signs in from the sign in page is replaced onto the start page, so that the sign in
-  page is not what it comes back to,
-- the user which asks for the sign in page while it is already signed in is sent to the start page
-  instead.
+- when the application asks for the sign in page while the user is signed in, the redirection
+  answers the start page,
+- when the status becomes signed in while the sign in page is the one which is open, the sign in
+  page is replaced by the start page.
+
+The redirection is the one which leaves the sign in page: a sign in page of such an application
+reports its result and navigates nowhere, otherwise two navigations race for the same click.
 
 `getStartRoute` answers null by default, and an application which leaves it alone keeps the
-behaviour it had: a signed in user is left on the sign in page, and nothing happens when the status
-becomes signed in. Only the sign in page is read here, so a signed in user on any other page is left
-where it is.
+behaviour it had: a signed in user is left on the sign in page. Only the sign in page is read here,
+a signed in user on any other page is left where it is.
 
 ### What a page of the authentication is given
 
@@ -148,7 +150,7 @@ class AppRedirectService with MixinRedirectService<AppRoute>, MixinAuthRedirectS
   @override
   AppRoute getSignInPage() => AppRoute.signIn;
 
-  // Optional: where a signed in user is sent when the sign in page is what it would read.
+  // Optional: where a signed in user is sent instead of the sign in page.
   // Leaving this one out keeps a signed in user on the sign in page.
   @override
   AppRoute? getStartRoute() => AppRoute.home;

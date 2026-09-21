@@ -12,9 +12,8 @@ import 'package:flutter/widgets.dart';
 /// This mixin "overrides" [MixinRedirectService] to redirect the views to the sign in page if no
 /// user is log in the app and the view requires it.
 ///
-/// It also sends a signed in user off the sign in page, when the application names the page to
-/// send it to with [getStartRoute]: the user which has just signed in is sent there, and so is the
-/// one which asks for the sign in page while it is already signed in.
+/// When the application names a start route with [getStartRoute], a signed in user is never left
+/// on the sign in page: it is sent to that route instead.
 mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService<T> {
   /// The authentication manager
   late final AbsAuthManager _authManager;
@@ -44,10 +43,9 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   T getSignInPage();
 
   /// {@template act_shared_auth.MixinAuthRedirectService.getStartRoute}
-  /// Get the route a signed in user is sent to when it lands on, or is still on, the sign in page
+  /// Get the route a signed in user is sent to instead of the sign in page
   ///
-  /// Null, which is the default, keeps the historical behaviour: a signed in user is left on the
-  /// sign in page.
+  /// Null, the default, leaves a signed in user on the sign in page.
   /// {@endtemplate}
   @protected
   T? getStartRoute() => null;
@@ -69,13 +67,9 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     return true;
   }
 
-  /// Called when a new authentication status is detected.
-  ///
-  /// If no user is connected to the app and the current view needs an authentication, this
-  /// redirects to the authentication page.
-  ///
-  /// If a user has just signed in from the sign in page and the app has a start route, this
-  /// redirects to that start route.
+  /// Called when a new authentication status is detected, to apply the rules to the view which is
+  /// open: a signed out user doesn't stay on a view which needs an authentication, and a signed in
+  /// user doesn't stay on the sign in page when the application names a start route.
   Future<void> _onNewAuthStatus(AuthStatus status) async {
     if (status == _authStatus) {
       // Nothing to do
@@ -88,7 +82,7 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
       final startRoute = getStartRoute();
 
       if (startRoute != null && routerManager.getCurrentTopView() == _signInRoute) {
-        // The user has just signed in from the sign in page: it has nothing to do there anymore
+        // A signed in user has nothing to do on the sign in page once the app says where to send it
         unawaited(routerManager.replace(startRoute));
       }
 
