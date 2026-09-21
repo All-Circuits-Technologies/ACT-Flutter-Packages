@@ -15,6 +15,9 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [The two moments a user is sent away](#the-two-moments-a-user-is-sent-away)
   - [Where a signed in user is sent](#where-a-signed-in-user-is-sent)
   - [What a page of the authentication is given](#what-a-page-of-the-authentication-is-given)
+- [Guards](#guards)
+  - [The terms the application has to ask about](#the-terms-the-application-has-to-ask-about)
+  - [Stack them](#stack-them)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Declare the pages of an application](#declare-the-pages-of-an-application)
@@ -108,6 +111,100 @@ that page answers.
 The account and the password of a sign up are what lets a user who was refused on the sign in page
 find a form which is already filled, and the account of a confirmation is what the code is checked
 against, which is why that one is mandatory.
+
+## Guards
+
+A guard is a mixin on `MixinRedirectService`: it reads what the guards written before it answered,
+and only imposes a page of its own when they answered nothing. The order of the mixins is the order
+of priority, and this package brings two of them.
+
+- `MixinAuthRedirectService` imposes the sign in page on a user who is not signed in, and reads
+  `isAuthNeeded` of the route,
+- `MixinTermsRedirectService` imposes the terms page while the terms have to be accepted, and reads
+  `needsAcceptedTerms` of the route.
+
+The authentication comes first: there is no account to read an acceptance of as long as the user is
+not signed in.
+
+### The terms the application has to ask about
+
+`MixinTermsRedirectService` knows neither where the acceptance is kept nor how the version in force
+is known. It asks the application three things:
+
+| Hook | What it answers |
+| --- | --- |
+| `getTermsRoute()` | The page the user is sent to, which answers false to `needsAcceptedTerms` |
+| `mustAcceptTerms()` | Whether the terms have to be accepted, awaited at each navigation |
+| `getTermsChanges()` | A stream which says that the previous answer may have changed, or null |
+
+What an unknown answer means is the application's call, not the package's: blocking is right for an
+application whose terms have to be agreed to before anything, letting through is right for one
+whose terms are a formality. `getTermsChanges` is what sends a user already sitting on a page to
+the terms, at the end of a sign in or of a load, without waiting for their next navigation.
+
+`readTermsAcceptedVersion(rawIdpToken)` reads the version an account accepted out of the claims of
+an identity provider token, for the applications whose acceptance is written on the account:
+`MixinRawIdpTokenProvider` of `act_shared_auth` is what hands that token over. The claim is named
+`terms_accepted_version` unless the application says otherwise.
+
+Backed by [`act_consent_manager`](../act_consent_manager/), which holds the version in force, the
+version the account accepted and the state which comes out of the two:
+
+```dart
+  @override
+  Future<bool> mustAcceptTerms() async {
+    final terms = globalGetIt().get<AppConsentManager>().termsService;
+    await terms.loadAllConsentInfo();
+
+    return terms.consentState != ConsentStateEnum.accepted;
+  }
+
+  @override
+  Stream<Object?>? getTermsChanges() =>
+      globalGetIt().get<AppConsentManager>().termsService.stateStream;
+```
+
+### Stack them
+
+```dart
+enum AppRoute with MixinRoute, MixinAuthRoute, MixinTermsRoute {
+  signIn(isAuthNeeded: false, needsAcceptedTerms: false),
+  terms(isAuthNeeded: true, needsAcceptedTerms: false),
+  home(isAuthNeeded: true, needsAcceptedTerms: true);
+
+  @override
+  final bool isAuthNeeded;
+
+  @override
+  final bool needsAcceptedTerms;
+
+  const AppRoute({required this.isAuthNeeded, required this.needsAcceptedTerms});
+}
+
+class AppRedirectService
+    with
+        MixinRedirectService<AppRoute>,
+        MixinAuthRedirectService<AppRoute>,
+        MixinTermsRedirectService<AppRoute> {
+  @override
+  AbstractRouterManager<AppRoute> getRouterManagerFromGlobal() =>
+      globalGetIt().get<AppRouterManager>();
+
+  @override
+  AbsAuthManager getAuthenticationManagerFromGlobal() => globalGetIt().get<AppAuthManager>();
+
+  @override
+  AppRoute getSignInPage() => AppRoute.signIn;
+
+  @override
+  AppRoute getTermsRoute() => AppRoute.terms;
+
+  // mustAcceptTerms and getTermsChanges, as above
+}
+```
+
+The terms page answers false to `needsAcceptedTerms`, otherwise the guard would impose it over and
+over.
 
 ## How to use
 
@@ -206,6 +303,12 @@ is left alone.
 The registering is covered on the router which already has a redirection of its own, which stops the
 service before it starts, and on the closing of a service which never started. The extras are
 covered on what each of them carries and on what tells two of them apart.
+
+The terms guard is covered over an application which answers what the test decided: the page which
+is imposed and the one which is let through, the routes it asks nothing about, the answer which
+changes while a page which needs accepted terms is open and while one which needs none is, the
+application which hands no stream over, and the redirection which is closed and stops asking. The
+reading of the claim and the decision of the guard are covered on their own, tokens and all.
 
 ```console
 > flutter test
