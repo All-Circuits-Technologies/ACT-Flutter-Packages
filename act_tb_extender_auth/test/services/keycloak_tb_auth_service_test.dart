@@ -386,4 +386,43 @@ void main() {
       expect(provider.signOutCalled, isFalse);
     });
   });
+
+  group("KeycloakTbAuthService.acceptTerms", () {
+    test("hands the version to the broker and refreshes the Keycloak tokens", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      final service = await aSignedInService();
+
+      expect(await service.acceptTerms(version: "2026-09-16"), isTrue);
+      expect(broker.lastToken, "kc-access");
+      expect(broker.lastAcceptedVersion, "2026-09-16");
+      expect(provider.refreshCalls, 1);
+    });
+
+    test("answers false and refreshes nothing when the broker refused", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      broker.acceptTermsError = BrokerAuthError.keycloakUnavailable;
+      final service = await aSignedInService();
+
+      expect(await service.acceptTerms(version: "2026-09-16"), isFalse);
+      expect(provider.refreshCalls, 0);
+    });
+
+    test("doesn't call the broker without a Keycloak session in hand", () async {
+      provider.tokens = null;
+      final service = await aSignedInService();
+
+      expect(await service.acceptTerms(version: "2026-09-16"), isFalse);
+      expect(broker.acceptTermsCallCount, 0);
+      expect(provider.refreshCalls, 0);
+    });
+
+    test("answers true when the account is right and the refresh didn't follow", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      provider.refreshAnswer = false;
+      final service = await aSignedInService();
+
+      expect(await service.acceptTerms(version: "2026-09-16"), isTrue);
+      expect(provider.refreshCalls, 1);
+    });
+  });
 }

@@ -44,8 +44,8 @@ typedef OnSignOut = Future<void> Function();
 /// The tokens [getTokens] answers are the ThingsBoard ones, which is what the rest of an
 /// application signs its calls with, and they are kept by the storage service the authentication
 /// manager sets. The Keycloak ones are held by the Keycloak provider, and kept by the storage
-/// which is handed to it, under another key: they are only ever read to call the broker and to read the
-/// claims [getIdpAccessToken] hands out.
+/// which is handed to it, under another key: they are only ever read to call the broker and to
+/// read the claims [getIdpAccessToken] hands out.
 ///
 /// ## Sign in and refresh
 ///
@@ -55,11 +55,13 @@ typedef OnSignOut = Future<void> Function();
 ///    against ThingsBoard, a Keycloak refresh followed by a new broker login, and finally an
 ///    expired session.
 ///  - [signOut] ends the Keycloak session and drops both sets of tokens.
+///  - [acceptTerms] writes the version of the terms the user accepted on the Keycloak account,
+///    through the broker, then refreshes the Keycloak tokens so that the claim follows.
 ///
 /// Every collaborator is given to the constructor, so this class reaches no service locator;
 /// `KeycloakTbAuthServiceBuilder` is what assembles the ones an application runs with.
 class KeycloakTbAuthService extends AbsWithLifeCycle
-    with MixinAuthService, MixinRawIdpTokenProvider {
+    with MixinAuthService, MixinRawIdpTokenProvider, MixinTermsAcceptor {
   /// This is the logs category linked to the auth service
   static const _logsCategory = "keycloakTbAuth";
 
@@ -215,6 +217,33 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
 
     return (accessToken?.isValid() ?? false) ? accessToken!.raw : null;
   }
+
+  /// {@macro act_shared_auth.MixinTermsAcceptor.acceptTerms}
+  ///
+  /// The broker writes the version on the Keycloak account, then the Keycloak tokens are
+  /// refreshed so that the claim in hand says the same. A refresh which fails isn't an error:
+  /// the account is right, and the next refresh will carry the claim.
+  @override
+  Future<bool> acceptTerms({required String version}) => _mutex.protect(() async {
+    final kcAccessToken = await _validKeycloakAccessToken();
+    if (kcAccessToken == null) {
+      _logsHelper.w("No valid Keycloak session in hand, the terms can't be recorded");
+      return false;
+    }
+
+    final error = await _brokerClient.acceptTerms(kcAccessToken, version: version);
+    if (error != null) {
+      _logsHelper.w("The broker didn't record the terms acceptance: $error");
+      return false;
+    }
+
+    if (!await _provider.refreshTokens()) {
+      _logsHelper.i("The terms are recorded but the tokens couldn't be refreshed yet, the claim "
+          "will follow at the next refresh");
+    }
+
+    return true;
+  });
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override

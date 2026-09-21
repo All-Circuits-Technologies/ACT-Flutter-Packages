@@ -13,6 +13,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [The sign in](#the-sign-in)
   - [The refresh ladder](#the-refresh-ladder)
   - [The deletion of an account](#the-deletion-of-an-account)
+  - [Recording the terms](#recording-the-terms)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Declare the configuration and the secrets](#declare-the-configuration-and-the-secrets)
@@ -37,7 +38,7 @@ server are all named by the configuration of the application.
 ## Architecture
 
 `act_oauth2_keycloak` signs the user in and owns the Keycloak tokens, `TbExtenderBrokerClient`
-speaks the two endpoints of the broker, and `KeycloakTbAuthService` is the `MixinAuthService` the
+speaks the three endpoints of the broker, and `KeycloakTbAuthService` is the `MixinAuthService` the
 rest of an application talks to. What it answers through `getTokens` is the ThingsBoard pair, so
 everything built on `act_thingsboard_client` keeps working untouched; the Keycloak pair is only
 ever read to call the broker, and to hand out the raw token of the identity provider through
@@ -85,6 +86,30 @@ the Keycloak identity, then signs the user out. The sign out is deliberately cal
 mutex which guards the deletion, because it takes the same one, and it only runs once the account
 is gone: at that point the tokens in hand point at nothing.
 
+### Recording the terms
+
+| Endpoint | What it does |
+| --- | --- |
+| `POST /api/v1/auth/login` | Exchanges the Keycloak token for a pair of ThingsBoard tokens |
+| `DELETE /api/v1/account` | Erases the account, on both sides |
+| `POST /api/v1/terms/accept` | Writes on the account the version of the terms the user accepted |
+
+The account is where the acceptance lives, so that a user who signs in on another phone is not
+asked again, and the broker is the only thing which holds the right to write on it. The service
+mixes `MixinTermsAcceptor` in, which is what an application tells apart:
+
+```dart
+final authService = globalGetIt().get<AppAuthManager>().authService;
+
+if (authService is MixinTermsAcceptor) {
+  await authService.acceptTerms(version: currentVersion);
+}
+```
+
+Once the broker answered, the Keycloak tokens are refreshed so that the `terms_accepted_version`
+claim in hand says the same as the account. A refresh which fails isn't an error: the account is
+right, and the next refresh will carry the claim.
+
 ## How to use
 
 ### Installation
@@ -106,7 +131,8 @@ secrets manager the second set of tokens:
 class AppConfigManager extends AbstractConfigManager
     with MixinStoresConf, MixinKeycloakOAuth2Conf, MixinAuthLocalStorageConf, MixinTbExtenderConf {}
 
-class AppSecretsManager extends AbstractSecretsManager with MixinAuthSecrets, MixinKeycloakAuthSecrets {
+class AppSecretsManager extends AbstractSecretsManager
+    with MixinAuthSecrets, MixinKeycloakAuthSecrets {
   AppSecretsManager({required super.propertiesGetter, required super.confGetter});
 }
 ```
@@ -176,17 +202,20 @@ builder.
 
 ## Testing
 
-The broker client is covered over a stubbed transport, on the two endpoints, on the trailing slash
-of the base URL, on a base URL which was never configured, on every documented error code and on
-the transport failures which never reach the broker. The parsing of the payload is covered there
-too, on a body which isn't a JSON object, on one which misses a mandatory field and on one which
-names no first and last name.
+The broker client is covered over a stubbed transport, on the three endpoints, on the trailing
+slash of the base URL, on a base URL which was never configured, on every documented error code
+and on the transport failures which never reach the broker. The parsing of the payload is covered
+there too, on a body which isn't a JSON object, on one which misses a mandatory field and on one
+which names no first and last name.
 
 The service is covered against a fake provider and a fake broker, which is where it already draws
 its boundary: the sign in and what each answer of the broker is read as, the four steps of the
 refresh ladder one by one, the sign out and what the application is told of it, and the deletion of
 an account, which the test names as happening outside of the mutex because a service which called
-the sign out from inside would hang there rather than fail.
+the sign out from inside would hang there rather than fail. The terms acceptance is covered on the
+version which reaches the broker and the refresh which follows it, on the broker which refused, on
+the session which is gone, and on the refresh which didn't follow and leaves the acceptance
+standing.
 
 What is out of reach is the builder: it exists to read the managers of an application out of the
 service locator, so covering it would mean standing up a ThingsBoard request manager and a secure
