@@ -358,6 +358,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
         return AuthSignInResult(status: AuthSignInStatus.done, extra: response.user);
       case BrokerLoginFailure():
         _logsHelper.w("The broker login failed during the sign in: ${loginResult.error}");
+        // The Keycloak session is ended: otherwise the browser would sign the user in silently
+        // at the next attempt, and the broker would refuse the very same account again
+        await _provider.signOut();
         return AuthSignInResult(
           status: (loginResult.error == BrokerAuthError.network)
               ? AuthSignInStatus.networkError
