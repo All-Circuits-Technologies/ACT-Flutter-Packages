@@ -90,6 +90,10 @@ A user is signed in as long as one of the two tokens is still valid. Asking for 
 access one has expired refreshes it; when the refresh one has expired too, nothing is given back
 and the user is signed out.
 
+`refreshTokens()` asks fresh tokens right away, for when the account changed server side: the
+claims of the token in hand are then behind, and waiting for the expiry would mean waiting with
+them.
+
 A provider which hands only a refresh token over is asked for an access token straight away, so
 that what the application gets is always a usable pair. A provider which hands nothing usable over
 is an error, and the user stays signed out.
@@ -222,8 +226,10 @@ token straight away. The sign out is covered on the session which is ended and t
 forgotten, and on the provider which is unreachable and leaves the user signed in.
 
 The tokens are covered on the user who is still signed in, the access token which is refreshed, and
-the refresh token which has expired too. The storage is covered on the tokens it hands over when it
-is set, and on the ones of the run which are kept over the ones it held.
+the refresh token which has expired too, and the refresh on demand on the token which is still
+valid and on the session which has no refresh token to ask with. The storage is covered on the
+tokens it hands over when it is set, and on the ones of the run which are kept over the ones it
+held.
 
 The configurations are covered on every way of naming a provider, on the default issuer of a
 package which knows its own, and on the values which are missing or of the wrong type.

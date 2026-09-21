@@ -236,6 +236,22 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     return _authTokens;
   });
 
+  /// Ask the provider for fresh tokens right away, even when the access token is still valid.
+  ///
+  /// An application calls it when the account changed on the provider side and the claims of the
+  /// token in hand are known to be behind, the acceptance of the terms for instance.
+  ///
+  /// Answers false when there is no valid refresh token, or when the provider refused.
+  Future<bool> refreshTokens() => _mutex.protect(() async {
+    final refreshToken = _authTokens.refreshToken;
+
+    if (refreshToken == null || !refreshToken.isValid()) {
+      return false;
+    }
+
+    return _getTokenFromRefresh(refreshToken: refreshToken.raw);
+  });
+
   /// To call in order to the set the [AuthStatus] and send an event to the [AuthStatus] stream
   @protected
   void setAuthStatus(AuthStatus value) {

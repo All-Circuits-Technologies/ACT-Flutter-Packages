@@ -343,6 +343,27 @@ void main() {
     });
   });
 
+  group("AbsOAuth2ProviderService.refreshTokens", () {
+    test("refreshes the tokens on demand while the access token is still valid", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+      await service.redirectToExternalUserSignIn();
+      appAuth.tokenAnswer = _tokens(refreshToken: "a newer refresh token");
+
+      expect(await service.refreshTokens(), isTrue);
+
+      expect(appAuth.tokenRequests.single.refreshToken, "a refresh token");
+      expect((await service.getTokens())?.accessToken?.raw, "another token");
+    });
+
+    test("answers false and asks nothing without a valid refresh token", () async {
+      final service = await aService();
+
+      expect(await service.refreshTokens(), isFalse);
+      expect(appAuth.tokenRequests, isEmpty);
+    });
+  });
+
   group("AbsOAuth2ProviderService.signInUser", () {
     test("refuses to sign a user in with a password, which a provider owns", () async {
       final service = await aService();
