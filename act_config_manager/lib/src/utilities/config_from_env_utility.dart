@@ -1,21 +1,18 @@
-// SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2024 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:convert';
 
 import 'package:act_config_manager/src/data/config_constants.dart' as config_constants;
-import 'package:act_config_manager/src/models/env_config_mapping_model.dart';
-import 'package:act_config_manager/src/types/env_type.dart';
 import 'package:act_config_manager/src/utilities/env_config_mapping_utility.dart';
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_dart_config_manager/act_dart_config_manager.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
-import 'package:act_yaml_utility/act_yaml_utility.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-/// This class contains useful methods to parse environment variables and returns a structured
-/// config from them.
+/// This class contains useful methods to parse environment variables from assets and returns a
+/// structured config from them.
 ///
 /// The env variables are retrieved from the build and runtime env variables but also the .env file.
 ///
@@ -33,75 +30,13 @@ sealed class ConfigFromEnvUtility {
   /// - build env
   /// - dot env file
   static Future<Map<String, dynamic>> parseFromEnv(String configPath) async {
-    final envConfig = <String, dynamic>{};
-
-    final mappingModels = await EnvConfigMappingUtility.fromAssetBundle(
+    final mapping = await EnvConfigMappingUtility.fromAssetBundle(
       _getConfigFilePath(configPath, config_constants.envConfigMappingFileName),
     );
-    final platformEnv = ActPlatform.instance.environment;
+    final processEnv = ActPlatform.instance.environment;
+    final dotEnv = (await _loadDotEnvFromAsset(configPath)) ?? const {};
 
-    final dotEnv = (await _loadDotEnvFromAsset(configPath)) ?? {};
-
-    for (final envMapModel in mappingModels) {
-      final envValue =
-          _parseFromDotEnv(dotEnv, envMapModel) ?? _parseFromRuntimeEnv(platformEnv, envMapModel);
-
-      if (envValue == null) {
-        // Nothing to do
-        continue;
-      }
-
-      _fillMap(envConfig, envMapModel, envValue);
-    }
-
-    return envConfig;
-  }
-
-  /// This method parses a value from the dot env file.
-  ///
-  /// This method returns null if the env isn't found or if a problem occurred.
-  static dynamic _parseFromDotEnv(Map<String, String> dotEnv, EnvConfigMappingModel model) =>
-      _parseFromMapEnv(dotEnv, model);
-
-  /// This method parses a value from the OS/runtime environment variables.
-  ///
-  /// This method returns null if the env isn't found or if a problem occurred.
-  static dynamic _parseFromRuntimeEnv(
-    Map<String, String> platformEnv,
-    EnvConfigMappingModel model,
-  ) => _parseFromMapEnv(platformEnv, model);
-
-  /// This method parses a value from the [mapEnv] given.
-  ///
-  /// This method returns null if the env isn't found or if a problem occurred.
-  static dynamic _parseFromMapEnv(Map<String, String> mapEnv, EnvConfigMappingModel model) {
-    if (!mapEnv.containsKey(model.envKey)) {
-      return null;
-    }
-
-    return _parseEnv(model, mapEnv[model.envKey]!);
-  }
-
-  /// The method parses the string value from the [model] type
-  ///
-  /// The method raises an exception if the parsing failed.
-  static dynamic _parseEnv(EnvConfigMappingModel model, String value) {
-    switch (model.type) {
-      case EnvType.string:
-        return value;
-
-      case EnvType.bool:
-        return BoolUtility.parse(value);
-
-      case EnvType.number:
-        if (value.contains(config_constants.decimalSeparator)) {
-          return double.parse(value);
-        }
-        return int.parse(value);
-
-      case EnvType.yaml:
-        return YamlFromString.fromYaml(value);
-    }
+    return ConfigFromEnv.parse(mapping: mapping, processEnv: processEnv, dotEnv: dotEnv);
   }
 
   /// The method loads and parses the dot env file and get the Map\<String, String\> values.
@@ -141,33 +76,6 @@ sealed class ConfigFromEnvUtility {
     }
 
     return dotenv.env;
-  }
-
-  /// The method fills the config map thanks to the [model] path and the given value.
-  ///
-  /// The method builds the config structure.
-  // We manipulate json value, so the value retrieved is dynamic
-  // ignore: avoid_annotating_with_dynamic
-  static void _fillMap(Map<String, dynamic> mapToFill, EnvConfigMappingModel model, dynamic value) {
-    final lastIdx = model.path.length - 1;
-    var currentMap = mapToFill;
-    for (var idx = 0; idx <= lastIdx; ++idx) {
-      final pathElem = model.path[idx];
-      if (idx != lastIdx) {
-        // We have to create object
-        var currentValue = currentMap[pathElem];
-        if (currentValue is! Map<String, dynamic>) {
-          currentMap[pathElem] = <String, dynamic>{};
-          currentValue = currentMap[pathElem];
-        }
-
-        // We set the current map with the current value to work with the sub level in the next
-        // iteration
-        currentMap = currentValue as Map<String, dynamic>;
-      } else {
-        currentMap[pathElem] = value;
-      }
-    }
   }
 
   /// The method builds the config file path

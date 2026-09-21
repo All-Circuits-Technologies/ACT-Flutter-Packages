@@ -1,15 +1,13 @@
-// SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2024 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_config_manager/src/errors/act_config_load_exception.dart';
-import 'package:act_config_manager/src/errors/act_config_mapping_format_exception.dart';
+import 'package:act_config_manager/src/utilities/config_asset_loader.dart';
+import 'package:act_dart_config_manager/act_dart_config_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_yaml_utility/act_yaml_utility.dart';
 
-/// This class contains useful methods to parse config variables from files and returns a structured
-/// config from them.
+/// This class contains useful methods to parse config variables from assets files and returns a
+/// structured config from them.
 ///
 /// The files are yaml or json files.
 sealed class ConfigFromYamlUtility {
@@ -42,7 +40,7 @@ sealed class ConfigFromYamlUtility {
   }
 
   /// Parse the config variables file linked to the given [toLoad] environment and returns its
-  /// content
+  /// content.
   ///
   /// If the file is not found the method returns an empty map, if a problem occurred when loading
   /// the file (or if it's not correctly built), the method will raise an exception.
@@ -50,32 +48,8 @@ sealed class ConfigFromYamlUtility {
     String configPath,
     Environment toLoad,
   ) async {
-    final configFilePath = _getConfigFilePath(configPath, toLoad);
-
-    final result = await YamlFromAssets.loadYaml(configFilePath, cache: false);
-
-    if (result.status == AssetsBundleResult.genericError) {
-      throw ActConfigLoadException(
-        "An error occurred when tried to load the yaml config file: $configFilePath",
-      );
-    }
-
-    final content = result.data;
-    if (result.status == AssetsBundleResult.notFound || content == null) {
-      return {};
-    }
-
-    if (content is! Map<String, dynamic>) {
-      throw ActConfigMappingFormatException(
-        "An error occurred when tried to load the yaml config "
-        "file: $configFilePath; the content is not a map.",
-      );
-    }
-
-    return content;
+    final path = "$configPath${toLoad.fileName}";
+    final content = await ConfigAssetLoader.loadRaw(path);
+    return ConfigFileParser.fromContent(content, description: path);
   }
-
-  /// Get the name of the config file
-  static String _getConfigFilePath(String configPath, Environment env) =>
-      "$configPath${env.fileName}";
 }

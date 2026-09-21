@@ -26,6 +26,11 @@ This package contains the fakes and the helpers shared by the unit tests of the 
 exists so that the same fake is written once instead of being copied in every package which needs
 it.
 
+The fakes which do not need Flutter live in `act_dart_test_utility`, so a pure Dart package can use
+them without a Flutter dependency. This package re-exports them, and adds the fakes which do need
+Flutter or which fake an ACT package that is not pure Dart. A Flutter package therefore reaches
+every fake through this single package, whichever side of the split a fake belongs to.
+
 It is only meant to be added as a `dev_dependency`: nothing here is intended to run in an
 application. It contains no test of its own for the other packages either; it only provides the
 tools they use to write theirs.
@@ -46,7 +51,8 @@ The package is organised by the kind of element it provides:
 - `lib/src/models/` contains the data classes those fakes expose to the tests.
 
 Two implementations of the `MixinActLogger` interface of `act_foundation` are available, and the
-choice between them depends on what the test asserts:
+choice between them depends on what the test asserts. Both live in `act_dart_test_utility`, because
+neither needs Flutter, and are re-exported here:
 
 | Class          | Behaviour                                  | Use it when                         |
 | -------------- | ------------------------------------------ | ----------------------------------- |
@@ -70,7 +76,7 @@ flowchart LR
         MixinActLogger[["MixinActLogger"]]
     end
 
-    subgraph act_test_utility
+    subgraph act_dart_test_utility
         FakeLogger --> FakeLogRecord
         SilentLogger
     end

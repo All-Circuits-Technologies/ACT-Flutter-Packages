@@ -33,10 +33,10 @@ dependencies:
     path: ../act_life_cycle
 
   act_dart_result:
-    path: ../act_dart_result
+    path: ../dart/act_dart_result
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   act_global_manager:
     path: ../act_global_manager
@@ -51,7 +51,7 @@ dev_dependencies:
 
   # Log levels the tests assert on
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # The dialog of the platform, which the tests answer for
   file_selector_platform_interface: ^2.7.0

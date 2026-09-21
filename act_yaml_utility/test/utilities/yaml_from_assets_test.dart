@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -46,7 +46,7 @@ void main() {
       final result = await YamlFromAssets.loadYaml("assets/config.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, {
+      expect(result.value, {
         "server": {"host": "example.com"},
       });
     });
@@ -57,7 +57,7 @@ void main() {
       final result = await YamlFromAssets.loadYaml("assets/config", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, {"a": 1});
+      expect(result.value, {"a": 1});
     });
 
     test("tries the extensions in the order it is given", () async {
@@ -66,13 +66,10 @@ void main() {
       final result = await YamlFromAssets.loadYaml(
         "assets/config",
         cache: false,
-        yamlFileTypes: const [
-          YamlFromAssets.jsonFileType,
-          YamlFromAssets.yamlFileType,
-        ],
+        yamlFileTypes: const [YamlFromAssets.jsonFileType, YamlFromAssets.yamlFileType],
       );
 
-      expect(result.data, {"a": 2});
+      expect(result.value, {"a": 2});
     });
 
     test("reads a JSON file, which is valid YAML", () async {
@@ -80,7 +77,7 @@ void main() {
 
       final result = await YamlFromAssets.loadYaml("assets/config.json", cache: false);
 
-      expect(result.data, {"a": 1});
+      expect(result.value, {"a": 1});
     });
 
     test("reports the file as not found when no extension matches", () async {
@@ -89,7 +86,7 @@ void main() {
       final result = await YamlFromAssets.loadYaml("assets/missing", cache: false);
 
       expect(result.status, AssetsBundleResult.notFound);
-      expect(result.data, isNull);
+      expect(result.value, isNull);
     });
 
     test("does not guess the extension when the key already has one", () async {
@@ -106,7 +103,7 @@ void main() {
       final result = await YamlFromAssets.loadYaml("assets/broken.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.genericError);
-      expect(result.data, isNull);
+      expect(result.value, isNull);
     });
   });
 
@@ -117,7 +114,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlMap("assets/config.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, {"a": 1});
+      expect(result.value, {"a": 1});
     });
 
     test("reports a generic error when the root is a list", () async {
@@ -126,7 +123,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlMap("assets/config.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.genericError);
-      expect(result.data, isNull);
+      expect(result.value, isNull);
     });
 
     test("returns an empty object for an empty file", () async {
@@ -135,7 +132,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlMap("assets/config.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, isEmpty);
+      expect(result.value, isEmpty);
     });
 
     test("reports the file as not found when it is not in the bundle", () async {
@@ -144,7 +141,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlMap("assets/missing.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.notFound);
-      expect(result.data, isNull);
+      expect(result.value, isNull);
     });
   });
 
@@ -155,7 +152,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlList("assets/items.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, [1, 2]);
+      expect(result.value, [1, 2]);
     });
 
     test("reports a generic error when the root is an object", () async {
@@ -164,7 +161,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlList("assets/items.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.genericError);
-      expect(result.data, isNull);
+      expect(result.value, isNull);
     });
 
     test("returns an empty list for an empty file", () async {
@@ -173,7 +170,7 @@ void main() {
       final result = await YamlFromAssets.loadYamlList("assets/items.yaml", cache: false);
 
       expect(result.status, AssetsBundleResult.ok);
-      expect(result.data, isEmpty);
+      expect(result.value, isEmpty);
     });
   });
 }

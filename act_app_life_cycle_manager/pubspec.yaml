@@ -36,7 +36,7 @@ dependencies:
 
   # Extend Dart functionalities
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
 # Dependencies used by developer
 dev_dependencies:

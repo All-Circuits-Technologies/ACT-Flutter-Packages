@@ -40,7 +40,7 @@ dependencies:
   qr_code_scanner: ^1.0.1
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../dart/act_dart_utility
 
   act_global_manager:
     path: ../act_global_manager
@@ -54,7 +54,7 @@ dev_dependencies:
 
   # Log levels the tests assert on
   act_foundation:
-    path: ../act_foundation
+    path: ../dart/act_foundation
 
   # Fakes shared by the tests of the ACT packages
   act_test_utility:

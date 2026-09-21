@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2024 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -13,9 +13,3 @@ const dotEnvFileName = ".env";
 
 /// This is the name of the env config mapping file
 const envConfigMappingFileName = "env_config_mapping";
-
-/// This is th decimal separator for numbers
-const decimalSeparator = ".";
-
-/// This is the separator to use in keys to separate the path
-const keyPathsSeparator = ".";
