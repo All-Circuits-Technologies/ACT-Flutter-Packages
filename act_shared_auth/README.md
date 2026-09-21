@@ -50,6 +50,12 @@ there is one current user, one status, one set of tokens.
   one which decides when to read and write, because each provider keeps a different part of the
   data itself.
 
+A service says what else it can do by mixing a contract in, and an application reads that with an
+`is` rather than with a flag of its own:
+
+- `MixinRawIdpTokenProvider` hands out the raw access token of the identity provider, for the
+  claims an application reads itself.
+
 ```mermaid
 sequenceDiagram
     participant app as The application
