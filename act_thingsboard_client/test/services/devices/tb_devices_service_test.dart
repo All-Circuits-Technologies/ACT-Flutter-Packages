@@ -14,16 +14,20 @@ import '../../fakes/fake_thingsboard.dart';
 void main() {
   late FakeTbRequestManager requestManager;
   late FakeDeviceService devices;
+  late FakeAttributeService attributes;
   late TbDevicesService service;
 
   setUpAll(() {
     registerFallbackValue(PageLink(1));
+    registerFallbackValue(DeviceId(aDeviceId));
   });
 
   setUp(() {
     requestManager = FakeTbRequestManager();
     devices = FakeDeviceService();
+    attributes = FakeAttributeService();
     when(requestManager.client.getDeviceService).thenReturn(devices);
+    when(requestManager.client.getAttributeService).thenReturn(attributes);
 
     service = TbDevicesService(
       requestManager: requestManager,
@@ -225,6 +229,93 @@ void main() {
       final result = await service.getCustomerDeviceByName(deviceName: "a device");
 
       expect(result.success, isFalse);
+    });
+  });
+
+  group("TbDevicesService.purgeDeviceTimeseries", () {
+    /// Has the server answer [keys] as the time series keys of the device.
+    void deviceHoldsKeys(List<String> keys) =>
+        when(() => attributes.getTimeseriesKeys(any())).thenAnswer((_) async => keys);
+
+    /// Has the server answer [deleted] when it is asked to delete the time series of a device.
+    void deletionAnswers({required bool deleted}) => when(
+      () => attributes.deleteEntityTimeseries(
+        any(),
+        any(),
+        deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+        startTs: any(named: "startTs"),
+        endTs: any(named: "endTs"),
+        rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+      ),
+    ).thenAnswer((_) async => deleted);
+
+    /// What the server was asked to delete, as the arguments of the single deletion it received.
+    List<dynamic> deletionAskedFor() => verify(
+      () => attributes.deleteEntityTimeseries(
+        captureAny(),
+        captureAny(),
+        deleteAllDataForKeys: captureAny(named: "deleteAllDataForKeys"),
+        startTs: captureAny(named: "startTs"),
+        endTs: captureAny(named: "endTs"),
+        rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+      ),
+    ).captured;
+
+    test("deletes every value of every key the device holds and answers true", () async {
+      deviceHoldsKeys(["temp", "hum"]);
+      deletionAnswers(deleted: true);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isTrue);
+
+      final asked = deletionAskedFor();
+
+      expect((asked[0] as EntityId).id, aDeviceId);
+      expect(asked[1], ["temp", "hum"]);
+      expect(asked[2], isTrue);
+      expect(asked[3], 0);
+      expect(asked[4], 0);
+    });
+
+    test("answers true and deletes nothing when the device holds no time series", () async {
+      deviceHoldsKeys([]);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isTrue);
+
+      verifyNever(
+        () => attributes.deleteEntityTimeseries(
+          any(),
+          any(),
+          deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+          startTs: any(named: "startTs"),
+          endTs: any(named: "endTs"),
+          rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+        ),
+      );
+    });
+
+    test("answers false and deletes nothing when the keys cannot be read", () async {
+      deviceHoldsKeys(["temp"]);
+      requestManager.answers.add(RequestStatus.loginError);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isFalse);
+
+      verifyNever(
+        () => attributes.deleteEntityTimeseries(
+          any(),
+          any(),
+          deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+          startTs: any(named: "startTs"),
+          endTs: any(named: "endTs"),
+          rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+        ),
+      );
+    });
+
+    test("answers false when the server refuses the deletion", () async {
+      deviceHoldsKeys(["temp"]);
+      deletionAnswers(deleted: false);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isFalse);
     });
   });
 

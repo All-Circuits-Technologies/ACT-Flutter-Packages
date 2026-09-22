@@ -198,6 +198,49 @@ class TbDevicesService extends AbsWithLifeCycle {
     return (success: true, deviceInfo: deviceFound);
   }
 
+  /// Delete every time series value the device [deviceId] holds, all keys, all times.
+  ///
+  /// The keys are read first because Thingsboard deletes by key only. A device which holds no time
+  /// series is already purged: the method answers true without asking for any deletion.
+  ///
+  /// Returns false if a problem occurred.
+  Future<bool> purgeDeviceTimeseries({required String deviceId}) async {
+    final entityId = DeviceId(deviceId);
+
+    final keysResult = await _requestManager
+        .request((tbClient) async => tbClient.getAttributeService().getTimeseriesKeys(entityId));
+    final keys = keysResult.requestResponse;
+
+    if (!keysResult.isOk || keys == null) {
+      _logsHelper.w("A problem occurred when tried to request the time series keys of the device "
+          "$deviceId from the server; we can't purge them");
+      return false;
+    }
+
+    if (keys.isEmpty) {
+      return true;
+    }
+
+    final deleteResult = await _requestManager.request(
+      (tbClient) async => tbClient.getAttributeService().deleteEntityTimeseries(
+        entityId,
+        keys,
+        deleteAllDataForKeys: true,
+        startTs: 0,
+        endTs: 0,
+        rewriteLatestIfDeleted: false,
+      ),
+    );
+
+    if (!deleteResult.isOk || !(deleteResult.requestResponse ?? false)) {
+      _logsHelper.w("A problem occurred when tried to delete the time series of the device "
+          "$deviceId on the server");
+      return false;
+    }
+
+    return true;
+  }
+
   /// Ask Thingsboard to bind the device named [deviceName] to the customer of the current user,
   /// with the [secretKey] the device is waiting for.
   ///
