@@ -248,12 +248,20 @@ final infos = await devices.getCurrentCustomerDeviceInfos();
 final (success: found, deviceInfo: device) = await devices.getCustomerDeviceByName(
   deviceName: "a device",
 );
+
+await devices.purgeDeviceTimeseries(deviceId: "a-device-id");
 ```
 
 `getCurrentCustomerDevices` answers `Device`, `getCurrentCustomerDeviceInfos` answers `DeviceInfo`,
 which is the same device plus what the server adds to it: whether it is active, the title of the
 customer it belongs to and the name of its profile. Both read the devices by pages of fifty unless
 they are handed a `PageLink` of their own.
+
+`purgeDeviceTimeseries` deletes every time series value a device holds, all keys and all times. The
+keys are read first, because the server only deletes by key; a device which holds no time series is
+already purged and nothing is deleted. An application which unbinds a device from its user purges it
+before the binding is released: once the device belongs to somebody else, the data of the previous
+owner is out of reach and stays readable by the new one.
 
 Anything the server can be asked which this package does not offer is one call away:
 
@@ -401,7 +409,9 @@ refuses, on the value which is newer and the one which is older, on the update w
 error, and on the closing which gives the subscription up. The handler is covered on the four kinds
 of telemetry, on the keys of another handler it says nothing about, and on the device two handlers
 watch through a single subscription. The devices of a customer are covered on the pages which are
-read until the device is found, and on the list of the device infos.
+read until the device is found, and on the list of the device infos. The purge is covered on the
+keys it reads before it deletes, on the device which holds none and is deleted nothing, on the keys
+which cannot be read and on the deletion the server refuses.
 
 The claim is covered on the whole decision table, one test per row, and on the two parsers, on an
 answer which is an object, on the bare string the server refuses with, on an answer which carries
