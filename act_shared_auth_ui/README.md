@@ -142,11 +142,6 @@ application whose terms have to be agreed to before anything, letting through is
 whose terms are a formality. `getTermsChanges` is what sends a user already sitting on a page to
 the terms, at the end of a sign in or of a load, without waiting for their next navigation.
 
-`readTermsAcceptedVersion(rawIdpToken)` reads the version an account accepted out of the claims of
-an identity provider token, for the applications whose acceptance is written on the account:
-`MixinRawIdpTokenProvider` of `act_shared_auth` is what hands that token over. The claim is named
-`terms_accepted_version` unless the application says otherwise.
-
 Backed by [`act_consent_manager`](../act_consent_manager/), which holds the version in force, the
 version the account accepted and the state which comes out of the two:
 
@@ -307,8 +302,7 @@ covered on what each of them carries and on what tells two of them apart.
 The terms guard is covered over an application which answers what the test decided: the page which
 is imposed and the one which is let through, the routes it asks nothing about, the answer which
 changes while a page which needs accepted terms is open and while one which needs none is, the
-application which hands no stream over, and the redirection which is closed and stops asking. The
-reading of the claim and the decision of the guard are covered on their own, tokens and all.
+application which hands no stream over, and the redirection which is closed and stops asking.
 
 ```console
 > flutter test
