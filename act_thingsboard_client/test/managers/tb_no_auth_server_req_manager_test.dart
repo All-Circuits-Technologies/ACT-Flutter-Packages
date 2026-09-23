@@ -8,6 +8,7 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 import '../fakes/fake_thingsboard.dart';
@@ -187,6 +188,42 @@ void main() {
 
       expect(response.status, RequestStatus.globalError);
       expect(response.requestResponse, isNull);
+    });
+  });
+
+  group("TbNoAuthServerReqManager.refreshTokens", () {
+    test("answers the tokens the client holds once the server refreshed them", () async {
+      final manager = FakeNoAuthReqManager();
+      final token = aJwtToken();
+      final refreshToken = aJwtToken(validFor: const Duration(days: 7));
+      when(
+        () => manager.client.refreshJwtToken(refreshToken: "a refresh token"),
+      ).thenAnswer((_) async {
+        when(manager.client.getJwtToken).thenReturn(token);
+        when(manager.client.getRefreshToken).thenReturn(refreshToken);
+      });
+
+      final tokens = await manager.refreshTokens("a refresh token");
+
+      expect(tokens?.accessToken?.raw, token);
+      expect(tokens?.refreshToken?.raw, refreshToken);
+    });
+
+    test("answers nothing when the server refused the refresh token", () async {
+      final manager = FakeNoAuthReqManager()..answers.add(RequestStatus.loginError);
+
+      expect(await manager.refreshTokens("a refresh token"), isNull);
+    });
+
+    test("answers nothing when the client holds a token which isn't a JWT", () async {
+      final manager = FakeNoAuthReqManager();
+      when(
+        () => manager.client.refreshJwtToken(refreshToken: any(named: "refreshToken")),
+      ).thenAnswer((_) async {});
+      when(manager.client.getJwtToken).thenReturn("not a jwt");
+      when(manager.client.getRefreshToken).thenReturn(null);
+
+      expect(await manager.refreshTokens("a refresh token"), isNull);
     });
   });
 }
