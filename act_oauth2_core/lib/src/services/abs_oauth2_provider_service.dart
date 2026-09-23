@@ -150,8 +150,14 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
       crashUnimplemented("signInUser");
 
   /// {@macro act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
+  ///
+  /// [additionalParameters] are added to the authorization request as they are, for what the
+  /// provider reads there and the service does not know of: the `max_age` of OpenID Connect, for
+  /// an application which needs a recent sign-in before an operation, is one.
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn() => _mutex.protect(() async {
+  Future<AuthSignInResult> redirectToExternalUserSignIn({
+    Map<String, String>? additionalParameters,
+  }) => _mutex.protect(() async {
     final redirectUrl = await buildRedirectUrl();
     AuthSignInStatus? errorStatus;
     AuthorizationTokenResponse? response;
@@ -164,6 +170,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
           scopes: _conf.scopes,
+          additionalParameters: additionalParameters,
         ),
       );
     } on FlutterAppAuthUserCancelledException catch (_) {
