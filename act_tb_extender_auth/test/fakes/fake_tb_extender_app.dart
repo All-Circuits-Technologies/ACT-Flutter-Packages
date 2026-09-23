@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:convert';
+
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -11,6 +13,16 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart';
 import 'package:act_tb_extender_auth/act_tb_extender_auth.dart';
 import 'package:act_test_utility/act_test_utility.dart';
+
+/// Builds a token carrying [payload], the way Keycloak or ThingsBoard would.
+///
+/// The signature is not one: the package only ever reads the claims of a token.
+String fakeJwt(Map<String, dynamic> payload) {
+  String segment(Map<String, dynamic> content) =>
+      base64Url.encode(utf8.encode(jsonEncode(content))).replaceAll("=", "");
+
+  return "${segment({"alg": "RS256", "typ": "JWT"})}.${segment(payload)}.signature";
+}
 
 /// The folder the configuration of the application under test is read from.
 const configPath = "assets/config/";
