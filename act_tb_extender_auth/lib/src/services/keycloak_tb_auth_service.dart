@@ -172,6 +172,10 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
     // Read the ThingsBoard tokens a previous run left behind.
     _tbTokens = await storageService.loadTokens();
 
+    // The broker named the user at the login of a previous run; its token names it too
+    final rawAccessToken = _tbTokens?.accessToken?.raw;
+    _brokerUser = (rawAccessToken == null) ? null : BrokerUser.tryFromTbToken(rawAccessToken);
+
     if (_hasUsableTbTokens()) {
       _setAuthStatus(AuthStatus.signedIn);
     }
@@ -434,14 +438,16 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
 
   /// Build the [AuthTokens] out of a [response] of the broker, keep them and remember the user.
   Future<AuthTokens> _applyBrokerSuccess(BrokerLoginResponse response) async {
+    // A token which isn't a JWT carries no expiry of its own: both are given the lifetime the
+    // broker answered, so that none of them lives forever. A refresh token which expires early
+    // only costs a new broker login, the third step of the ladder.
+    final fallbackExpiration = DateTime.now().toUtc().add(Duration(seconds: response.expiresIn));
     final accessToken =
         AuthToken.fromJwtToken(response.tbToken) ??
-        AuthToken(
-          raw: response.tbToken,
-          expiration: DateTime.now().toUtc().add(Duration(seconds: response.expiresIn)),
-        );
+        AuthToken(raw: response.tbToken, expiration: fallbackExpiration);
     final refreshToken =
-        AuthToken.fromJwtToken(response.tbRefreshToken) ?? AuthToken(raw: response.tbRefreshToken);
+        AuthToken.fromJwtToken(response.tbRefreshToken) ??
+        AuthToken(raw: response.tbRefreshToken, expiration: fallbackExpiration);
 
     final tokens = AuthTokens(accessToken: accessToken, refreshToken: refreshToken);
     _tbTokens = tokens;
