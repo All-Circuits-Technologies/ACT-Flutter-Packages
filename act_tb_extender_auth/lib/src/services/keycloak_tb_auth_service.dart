@@ -247,11 +247,7 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override
   Future<bool> signOut() => _mutex.protect(() async {
-    try {
-      await _provider.signOut();
-    } catch (error) {
-      _logsHelper.w("An error occurred when ending the Keycloak session: $error");
-    }
+    await _endKeycloakSession();
 
     _tbTokens = null;
     _brokerUser = null;
@@ -302,6 +298,20 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// {@macro act_shared_auth.MixinAuthService.getEmailAddress}
   @override
   Future<String?> getEmailAddress() async => _brokerUser?.email;
+
+  /// End the Keycloak session; the provider forgets the Keycloak tokens whatever Keycloak answers.
+  ///
+  /// An error is logged and not rethrown: the caller is signing the user out, and nothing it could
+  /// do with the error would keep the user signed in.
+  Future<void> _endKeycloakSession() async {
+    try {
+      if (!await _provider.signOut()) {
+        _logsHelper.w("Keycloak didn't end its session; the tokens are forgotten all the same");
+      }
+    } catch (error) {
+      _logsHelper.w("An error occurred when ending the Keycloak session: $error");
+    }
+  }
 
   /// Answer the library the provider speaks OAuth 2.0 with.
   ///
@@ -359,7 +369,7 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
         _logsHelper.w("The broker login failed during the sign in: ${loginResult.error}");
         // The Keycloak session is ended: otherwise the browser would sign the user in silently
         // at the next attempt, and the broker would refuse the very same account again
-        await _provider.signOut();
+        await _endKeycloakSession();
         return AuthSignInResult(
           status: (loginResult.error == BrokerAuthError.network)
               ? AuthSignInStatus.networkError
