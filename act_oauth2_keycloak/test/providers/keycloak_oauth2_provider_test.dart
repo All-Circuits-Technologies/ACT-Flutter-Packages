@@ -2,6 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+// The redirect URLs are read the way the core reads them, through its protected builders
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_test_utility/act_test_utility.dart';

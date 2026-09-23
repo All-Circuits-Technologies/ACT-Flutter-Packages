@@ -39,6 +39,12 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   /// The mutex is used to prevent multiple token getting at the same time
   final Mutex _mutex;
 
+  /// The URL the provider sends the user back to after a sign in, when the application names it
+  final String? _redirectUrl;
+
+  /// The URL the provider sends the user back to after a sign out, when the application names it
+  final String? _postLogoutRedirectUrl;
+
   /// The current [AuthStatus]
   AuthStatus _authStatus;
 
@@ -69,12 +75,22 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   Stream<AuthStatus> get authStatusStream => _authStatusCtrl.stream;
 
   /// Class constructor
-  AbsOAuth2ProviderService({required String logsCategory})
-    : _authStatus = AuthStatus.signedOut,
-      _authTokens = const AuthTokens(),
-      _authStatusCtrl = StreamController.broadcast(),
-      _logsCategory = logsCategory,
-      _mutex = Mutex();
+  ///
+  /// [redirectUrl] and [postLogoutRedirectUrl] are the URLs the provider sends the user back to.
+  /// When the application names none, they are built on the scheme of the configuration; a
+  /// provider which checks them against the URLs it was registered with, as Keycloak does, needs
+  /// them named, and the one of the sign out then defaults to [redirectUrl].
+  AbsOAuth2ProviderService({
+    required String logsCategory,
+    String? redirectUrl,
+    String? postLogoutRedirectUrl,
+  }) : _authStatus = AuthStatus.signedOut,
+       _authTokens = const AuthTokens(),
+       _authStatusCtrl = StreamController.broadcast(),
+       _logsCategory = logsCategory,
+       _redirectUrl = redirectUrl,
+       _postLogoutRedirectUrl = postLogoutRedirectUrl,
+       _mutex = Mutex();
 
   /// Initialize the provider.
   ///
@@ -269,11 +285,14 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
 
   /// Build the URL used by the provider to redirect to the app after a sign in
   @protected
-  Future<String> buildRedirectUrl() async => "${_conf.appAuthRedirectScheme}$redirectUrlSuffix";
+  Future<String> buildRedirectUrl() async =>
+      _redirectUrl ?? "${_conf.appAuthRedirectScheme}$redirectUrlSuffix";
 
   /// Build the URL used by the provider to redirect to the app after a sign out
   @protected
   Future<String> buildPostLogoutRedirectUrl() async =>
+      _postLogoutRedirectUrl ??
+      _redirectUrl ??
       "${_conf.appAuthRedirectScheme}$redirectUrlSeparator";
 
   /// The method loads the token from memory and set the local [_authTokens].

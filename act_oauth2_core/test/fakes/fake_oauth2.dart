@@ -100,7 +100,8 @@ class FakeOAuth2Service extends AbsOAuth2ProviderService {
   final DefaultOAuth2Conf conf;
 
   /// Class constructor
-  FakeOAuth2Service({required this.conf}) : super(logsCategory: "aProvider");
+  FakeOAuth2Service({required this.conf, super.redirectUrl, super.postLogoutRedirectUrl})
+    : super(logsCategory: "aProvider");
 
   /// The categories the service logs under, which a test reads to know it built its own logger.
   List<String> get logCategories => logsHelper.categories;
