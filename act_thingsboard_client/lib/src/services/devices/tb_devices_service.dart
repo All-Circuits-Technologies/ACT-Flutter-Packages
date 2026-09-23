@@ -262,6 +262,9 @@ class TbDevicesService extends AbsWithLifeCycle {
   /// Thingsboard lets any customer of the tenant release any device: `reClaimDevice` checks
   /// `CLAIM_DEVICES`, and its permission table grants that operation without ever looking at who
   /// owns the device.
+  ///
+  /// Once the broker of the stack releases the devices itself, an application has no reason left
+  /// to call this one; it stays for the stacks which have no such broker.
   Future<TbRequestResponse<void>> releaseClaim({required String deviceName}) async {
     final response = await _requestManager.request<void>((tbClient) async {
       await tbClient.delete<void>(_claimPath(deviceName));
