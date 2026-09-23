@@ -199,9 +199,13 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// {@macro act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
   ///
   /// Runs the Keycloak PKCE flow, then exchanges the Keycloak access token at the broker.
+  ///
+  /// [additionalParameters] are handed to Keycloak with the authorization request: `max_age`, for
+  /// the recent sign-in the broker asks before it deletes an account, is one.
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn() =>
-      _mutex.protect(_unsafeRedirectToExternalUserSignIn);
+  Future<AuthSignInResult> redirectToExternalUserSignIn({
+    Map<String, String>? additionalParameters,
+  }) => _mutex.protect(() => _unsafeRedirectToExternalUserSignIn(additionalParameters));
 
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
@@ -350,8 +354,12 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   }
 
   /// Run the sign in flow without the protection of the mutex.
-  Future<AuthSignInResult> _unsafeRedirectToExternalUserSignIn() async {
-    final providerResult = await _provider.redirectToExternalUserSignIn();
+  Future<AuthSignInResult> _unsafeRedirectToExternalUserSignIn(
+    Map<String, String>? additionalParameters,
+  ) async {
+    final providerResult = await _provider.redirectToExternalUserSignIn(
+      additionalParameters: additionalParameters,
+    );
     if (providerResult.status != AuthSignInStatus.done) {
       // A cancellation and an error of the provider are answered as they are.
       return providerResult;
