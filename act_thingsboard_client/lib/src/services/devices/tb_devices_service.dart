@@ -209,12 +209,14 @@ class TbDevicesService extends AbsWithLifeCycle {
 
     // The SDK's AttributeService.getTimeseriesKeys casts the JSON list to List<String> and throws;
     // the same request is made here with a loose type. Go back to the SDK once its fork is fixed.
+    final entityPath = "${entityId.entityType.toShortString()}/${entityId.id}";
     final keysResult = await _requestManager.request<List<String>>((tbClient) async {
       final response = await tbClient.get<List<dynamic>>(
-        '/api/plugins/telemetry/${entityId.entityType.toShortString()}/${entityId.id}/keys/timeseries',
+        "/api/plugins/telemetry/$entityPath/keys/timeseries",
         options: defaultHttpOptionsFromConfig(null),
       );
-      return (response.data ?? const []).cast<String>();
+
+      return List<String>.from(response.data ?? const <dynamic>[]);
     });
     final keys = keysResult.requestResponse;
 
