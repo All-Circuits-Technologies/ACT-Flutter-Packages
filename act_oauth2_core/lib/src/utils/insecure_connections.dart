@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_oauth2_core/act_oauth2_core.dart';
+import 'package:flutter/foundation.dart';
 
 /// Say whether [FlutterAppAuth] has to be allowed to open insecure (plain `http`) connections for
 /// the given [conf].
@@ -13,9 +14,20 @@ import 'package:act_oauth2_core/act_oauth2_core.dart';
 /// which is absent or unparseable, never triggers it; therefore, a staging or a production realm
 /// stays secure.
 ///
+/// A release build always gets false: a realm served over plain http is a development stack, and a
+/// release build never opens a connection in clear, whatever its configuration names.
+/// [isReleaseMode] is there for the tests, which never run in release.
+///
 /// This is what an application asks before wrapping its [FlutterAppAuth] in an
 /// `InsecureDevAppAuth`.
-bool shouldAllowInsecureAppAuthConnections(DefaultOAuth2Conf conf) {
+bool shouldAllowInsecureAppAuthConnections(
+  DefaultOAuth2Conf conf, {
+  bool isReleaseMode = kReleaseMode,
+}) {
+  if (isReleaseMode) {
+    return false;
+  }
+
   final urlConf = conf.providerUrlConf;
 
   return isPlainHttpUrl(conf.issuer) ||

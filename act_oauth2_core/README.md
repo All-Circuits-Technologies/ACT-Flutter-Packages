@@ -138,7 +138,8 @@ final appAuth = shouldAllowInsecureAppAuthConnections(conf)
     : const FlutterAppAuth();
 ```
 
-A realm served over `https`, which is what staging and production are, never engages the wrapper.
+A realm served over `https`, which is what staging and production are, never engages the wrapper,
+and neither does a release build, whatever its configuration names.
 
 ### Several providers in one application
 
