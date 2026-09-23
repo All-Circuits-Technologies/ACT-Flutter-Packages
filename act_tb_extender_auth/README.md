@@ -200,6 +200,9 @@ The redirect scheme isn't here either. It is declared by the application, in the
 placeholder and in the URL types of the iOS `Info.plist`, and the URL built on it is given to the
 builder.
 
+A broker which doesn't answer within fifteen seconds is read as a network failure; the client can
+be built with another timeout.
+
 ## Testing
 
 The broker client is covered over a stubbed transport, on the three endpoints, on the trailing
