@@ -302,7 +302,8 @@ covered on what each of them carries and on what tells two of them apart.
 The terms guard is covered over an application which answers what the test decided: the page which
 is imposed and the one which is let through, the routes it asks nothing about, the answer which
 changes while a page which needs accepted terms is open and while one which needs none is, the
-application which hands no stream over, and the redirection which is closed and stops asking.
+application which hands no stream over, and the redirection which is closed and stops asking. Two
+changes which come together send the user to the terms page once.
 
 ```console
 > flutter test
