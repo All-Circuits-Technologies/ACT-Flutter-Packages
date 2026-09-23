@@ -21,6 +21,9 @@ import 'package:http/http.dart' as http;
 /// The base URL is read through a getter rather than given once: the configuration of an
 /// application is loaded after its managers are built, so the URL is only there by the time the
 /// first call is made.
+///
+/// A call the broker doesn't answer within the timeout the client was built with is read as a
+/// transport failure.
 class TbExtenderBrokerClient {
   /// This is the logs category linked to the broker client
   static const _logsCategory = "tbExtenderBroker";
@@ -43,6 +46,10 @@ class TbExtenderBrokerClient {
   /// This is the key the error message of a broker error payload is read from
   static const _messageKey = "message";
 
+  /// The time the broker is given to answer a call, after which the call is read as a transport
+  /// failure
+  static const defaultRequestTimeout = Duration(seconds: 15);
+
   /// The HTTP client the requests are issued with
   final http.Client _httpClient;
 
@@ -52,15 +59,23 @@ class TbExtenderBrokerClient {
   /// The logs helper linked to the client
   final LogsHelper _logsHelper;
 
+  /// The time the broker is given to answer each call
+  final Duration _requestTimeout;
+
   /// Class constructor
   ///
   /// [baseUrlGetter] answers the base URL of the broker, and is called at each request so that the
   /// configuration of an application can be loaded after the client is built. [httpClient]
-  /// defaults to a fresh [http.Client].
-  TbExtenderBrokerClient({required String? Function() baseUrlGetter, http.Client? httpClient})
-    : _baseUrlGetter = baseUrlGetter,
-      _httpClient = httpClient ?? http.Client(),
-      _logsHelper = LogsHelper(category: _logsCategory);
+  /// defaults to a fresh [http.Client], and [requestTimeout] is the time the broker is given to
+  /// answer each call.
+  TbExtenderBrokerClient({
+    required String? Function() baseUrlGetter,
+    http.Client? httpClient,
+    Duration requestTimeout = defaultRequestTimeout,
+  }) : _baseUrlGetter = baseUrlGetter,
+       _httpClient = httpClient ?? http.Client(),
+       _requestTimeout = requestTimeout,
+       _logsHelper = LogsHelper(category: _logsCategory);
 
   /// Exchange the given [keycloakAccessToken] for a pair of ThingsBoard tokens.
   ///
@@ -79,7 +94,9 @@ class TbExtenderBrokerClient {
 
     http.Response response;
     try {
-      response = await _httpClient.post(uri, headers: _headers(keycloakAccessToken));
+      response = await _httpClient
+          .post(uri, headers: _headers(keycloakAccessToken))
+          .timeout(_requestTimeout);
     } catch (error) {
       _logsHelper.w("A transport error occurred when calling the login endpoint of the broker: "
           "$error");
@@ -110,7 +127,9 @@ class TbExtenderBrokerClient {
 
     http.Response response;
     try {
-      response = await _httpClient.delete(uri, headers: _headers(keycloakAccessToken));
+      response = await _httpClient
+          .delete(uri, headers: _headers(keycloakAccessToken))
+          .timeout(_requestTimeout);
     } catch (error) {
       _logsHelper.w("A transport error occurred when calling the account endpoint of the broker: "
           "$error");
@@ -148,11 +167,13 @@ class TbExtenderBrokerClient {
 
     http.Response response;
     try {
-      response = await _httpClient.post(
-        uri,
-        headers: {..._headers(keycloakAccessToken), "Content-Type": "application/json"},
-        body: jsonEncode({_versionKey: version}),
-      );
+      response = await _httpClient
+          .post(
+            uri,
+            headers: {..._headers(keycloakAccessToken), "Content-Type": "application/json"},
+            body: jsonEncode({_versionKey: version}),
+          )
+          .timeout(_requestTimeout);
     } catch (error) {
       _logsHelper.w("A transport error occurred when calling the terms endpoint of the broker: "
           "$error");

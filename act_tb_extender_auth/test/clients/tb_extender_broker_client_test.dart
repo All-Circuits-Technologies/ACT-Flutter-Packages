@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:act_tb_extender_auth/act_tb_extender_auth.dart';
@@ -308,6 +309,32 @@ void main() {
       final client = aClient((_) async => http.Response("", 204), baseUrl: null);
 
       expect(await client.acceptTerms("kc-token", version: "v1"), BrokerAuthError.unknown);
+    });
+  });
+
+  group("TbExtenderBrokerClient, the broker which doesn't answer", () {
+    /// The client of a broker which never answers, and which gives it [timeout] to do so.
+    TbExtenderBrokerClient aSilentClient() => TbExtenderBrokerClient(
+      baseUrlGetter: () => _baseUrl,
+      httpClient: MockClient((_) => Completer<http.Response>().future),
+      requestTimeout: const Duration(milliseconds: 10),
+    );
+
+    test("reads a login which timed out as a network failure", () async {
+      final result = await aSilentClient().login("kc");
+
+      expect((result as BrokerLoginFailure).error, BrokerAuthError.network);
+    });
+
+    test("reads a deletion which timed out as a network failure", () async {
+      expect(await aSilentClient().deleteAccount("kc"), BrokerAuthError.network);
+    });
+
+    test("reads a terms acceptance which timed out as a network failure", () async {
+      expect(
+        await aSilentClient().acceptTerms("kc", version: "2026-09-16"),
+        BrokerAuthError.network,
+      );
     });
   });
 }
