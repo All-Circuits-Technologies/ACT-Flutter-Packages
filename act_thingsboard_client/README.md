@@ -278,7 +278,7 @@ final devices = globalGetIt().get<TbStdAuthServerReqManager>().devicesService;
 
 final attempt = await devices.claimDevice(deviceName: "a device", secretKey: "a secret");
 
-switch (TbDevicesService.outcomeFromAttempt(attempt)) {
+switch (attempt.outcome) {
   case TbClaimOutcome.success:
     final bound = await devices.isDeviceVisibleToCustomer(attempt.deviceId!);
   case TbClaimOutcome.secretRefused:
@@ -292,7 +292,7 @@ await devices.releaseClaim(deviceName: "a device");
 
 `claimDevice` answers a `TbClaimAttempt`, which is what the server said and nothing more: the status
 of the request, the HTTP status, the claim answer when there is one, and the device the server says
-it bound. `outcomeFromAttempt` reads that answer as a `TbClaimOutcome`:
+it bound. Its `outcome` reads that answer as a `TbClaimOutcome`:
 
 | Outcome              | What the server answered                                          |
 | -------------------- | ----------------------------------------------------------------- |

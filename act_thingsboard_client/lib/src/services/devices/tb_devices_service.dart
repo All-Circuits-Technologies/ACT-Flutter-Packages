@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
@@ -10,7 +9,6 @@ import 'package:act_thingsboard_client/src/models/tb_claim_attempt.dart';
 import 'package:act_thingsboard_client/src/models/tb_request_response.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_device_values.dart';
 import 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
-import 'package:act_thingsboard_client/src/types/tb_claim_outcome.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -22,12 +20,6 @@ class TbDevicesService extends AbsWithLifeCycle {
 
   /// The default devices number to get by page
   static const _devicesNumberByPage = 50;
-
-  /// The Thingsboard HTTP status for a device name it does not know
-  static const _notFoundHttpStatus = 404;
-
-  /// The Thingsboard HTTP status for a claim it refuses
-  static const _badRequestHttpStatus = 400;
 
   /// The Thingsboard statuses which have to keep throwing, so that the request manager sees a
   /// session problem, refreshes the token and tries the request once more
@@ -213,7 +205,7 @@ class TbDevicesService extends AbsWithLifeCycle {
   /// packaged `ClaimResult` parser reads `json['device']` unconditionally, and Thingsboard omits
   /// that field precisely on the answers worth telling apart (`CLAIMED`, `FAILURE`).
   ///
-  /// The answer is handed over as it is; [outcomeFromAttempt] is what reads it.
+  /// The answer is handed over as it is, and [TbClaimAttempt.outcome] says what it amounts to.
   Future<TbClaimAttempt> claimDevice({
     required String deviceName,
     required String secretKey,
@@ -289,40 +281,6 @@ class TbDevicesService extends AbsWithLifeCycle {
     );
 
     return response.isOk && response.requestResponse != null;
-  }
-
-  /// Read one answer of Thingsboard to a claim as the outcome the application acts on.
-  ///
-  /// The whole decision table lives here, because it cannot be reached through a real server in a
-  /// unit test.
-  static TbClaimOutcome outcomeFromAttempt(TbClaimAttempt attempt) {
-    if (attempt.status == RequestStatus.loginError) {
-      return TbClaimOutcome.loginError;
-    }
-
-    switch (attempt.response) {
-      case ClaimResponse.SUCCESS:
-        return TbClaimOutcome.success;
-      case ClaimResponse.CLAIMED:
-        return TbClaimOutcome.alreadyClaimed;
-      case ClaimResponse.FAILURE:
-        return TbClaimOutcome.refused;
-      case null:
-        break;
-    }
-
-    // No readable claim answer: tell an unknown device apart from anything else, because that one
-    // means the device was never created and no amount of retrying will help.
-    if (attempt.httpStatus == _notFoundHttpStatus) {
-      return TbClaimOutcome.unknownDevice;
-    }
-
-    if (attempt.httpStatus == _badRequestHttpStatus) {
-      // Thingsboard answers 400 when the secret matches no claim the device is waiting for
-      return TbClaimOutcome.secretRefused;
-    }
-
-    return TbClaimOutcome.communicationError;
   }
 
   /// Read the id of the device Thingsboard says it bound, from the claim answer [body].

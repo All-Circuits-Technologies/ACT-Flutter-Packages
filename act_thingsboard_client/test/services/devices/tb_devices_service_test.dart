@@ -359,6 +359,7 @@ void main() {
       expect(attempt.response, ClaimResponse.SUCCESS);
       expect(attempt.deviceId, "a-device-id");
       expect(attempt.httpStatus, 200);
+      expect(attempt.outcome, TbClaimOutcome.success);
     });
 
     test("reads the refusal the server answers as a bare string", () async {
@@ -377,6 +378,7 @@ void main() {
 
       expect(attempt.response, ClaimResponse.FAILURE);
       expect(attempt.httpStatus, 400);
+      expect(attempt.outcome, TbClaimOutcome.refused);
     });
 
     test("reads the refusals of the server and leaves the session errors throwing", () async {
@@ -459,60 +461,6 @@ void main() {
     });
   });
 
-  group("TbDevicesService.outcomeFromAttempt", () {
-    test("says that the session is over when the request never reached the server", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(
-          anAttempt(status: RequestStatus.loginError, response: ClaimResponse.SUCCESS),
-        ),
-        TbClaimOutcome.loginError,
-      );
-    });
-
-    test("says that the claim worked when the server answered SUCCESS", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.SUCCESS)),
-        TbClaimOutcome.success,
-      );
-    });
-
-    test("says that the device is already claimed when the server answered CLAIMED", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.CLAIMED)),
-        TbClaimOutcome.alreadyClaimed,
-      );
-    });
-
-    test("says that the claim was refused when the server answered FAILURE", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(response: ClaimResponse.FAILURE)),
-        TbClaimOutcome.refused,
-      );
-    });
-
-    test("says that the device is unknown when the server answered 404", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 404)),
-        TbClaimOutcome.unknownDevice,
-      );
-    });
-
-    test("says that the secret was refused when the server answered 400", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 400)),
-        TbClaimOutcome.secretRefused,
-      );
-    });
-
-    test("says that the server could not be reached on any other answer", () {
-      expect(
-        TbDevicesService.outcomeFromAttempt(anAttempt(httpStatus: 503)),
-        TbClaimOutcome.communicationError,
-      );
-      expect(TbDevicesService.outcomeFromAttempt(anAttempt()), TbClaimOutcome.communicationError);
-    });
-  });
-
   group("TbDevicesService.parseDeviceId", () {
     test("reads the device the server says it bound", () {
       expect(
@@ -579,10 +527,3 @@ void main() {
 /// The answer of the server to a claim, which carries [data] and the HTTP status [status].
 Response<dynamic> anAnswer(Object? data, {int status = 200}) =>
     Response<dynamic>(requestOptions: RequestOptions(path: "/"), data: data, statusCode: status);
-
-/// One answer of the server to a claim, as the decision table reads it.
-TbClaimAttempt anAttempt({
-  RequestStatus status = RequestStatus.success,
-  ClaimResponse? response,
-  int? httpStatus,
-}) => TbClaimAttempt(status: status, response: response, httpStatus: httpStatus);
