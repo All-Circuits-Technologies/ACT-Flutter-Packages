@@ -23,6 +23,9 @@ const _accountUri = "$_baseUrl/api/v1/account";
 /// The URL the terms endpoint of that broker is reached at.
 const _termsUri = "$_baseUrl/api/v1/terms/accept";
 
+/// The URL the release endpoint of that broker is reached at, for the serial "AB 12".
+const _releaseUri = "$_baseUrl/api/v1/devices/AB%2012/release";
+
 /// A success payload which follows the contract of tb-extender.
 Map<String, dynamic> _successBody() => {
   "tbToken": "tb-access-jwt",
@@ -304,6 +307,60 @@ void main() {
     });
   });
 
+  group("TbExtenderBrokerClient.releaseDevice", () {
+    test("posts to the release endpoint of the serial, with no body without a secret", () async {
+      late http.Request captured;
+      final client = aClient((request) async {
+        captured = request;
+        return http.Response("", 204);
+      });
+
+      final error = await client.releaseDevice("kc-token", serial: "AB 12");
+
+      expect(error, isNull);
+      expect(captured.method, "POST");
+      expect(captured.url.toString(), _releaseUri);
+      expect(captured.headers["Authorization"], "Bearer kc-token");
+      expect(captured.body, isEmpty);
+    });
+
+    test("sends the claim secret as JSON when one is given", () async {
+      late http.Request captured;
+      final client = aClient((request) async {
+        captured = request;
+        return http.Response("", 204);
+      });
+
+      await client.releaseDevice("kc-token", serial: "AB 12", secret: "cafe");
+
+      expect(captured.headers["Content-Type"], startsWith("application/json"));
+      expect(jsonDecode(captured.body), {"secret": "cafe"});
+    });
+
+    test("reads a release the broker refused", () async {
+      final client = aClient(
+        (_) async => http.Response(jsonEncode({"error": "release_refused"}), 403),
+      );
+
+      expect(
+        await client.releaseDevice("kc-token", serial: "AB 12"),
+        BrokerAuthError.releaseRefused,
+      );
+    });
+
+    test("answers a network error when the transport fails", () async {
+      final client = aClient((_) async => throw const _FakeSocketException());
+
+      expect(await client.releaseDevice("kc-token", serial: "AB 12"), BrokerAuthError.network);
+    });
+
+    test("answers unknown without a configured base URL", () async {
+      final client = aClient((_) async => http.Response("", 204), baseUrl: null);
+
+      expect(await client.releaseDevice("kc-token", serial: "AB 12"), BrokerAuthError.unknown);
+    });
+  });
+
   group("TbExtenderBrokerClient, the broker which doesn't answer", () {
     /// The client of a broker which never answers, and which gives it [timeout] to do so.
     TbExtenderBrokerClient aSilentClient() => TbExtenderBrokerClient(
@@ -327,6 +384,10 @@ void main() {
         await aSilentClient().acceptTerms("kc", version: "2026-09-16"),
         BrokerAuthError.network,
       );
+    });
+
+    test("reads a release which timed out as a network failure", () async {
+      expect(await aSilentClient().releaseDevice("kc", serial: "AB 12"), BrokerAuthError.network);
     });
   });
 }
