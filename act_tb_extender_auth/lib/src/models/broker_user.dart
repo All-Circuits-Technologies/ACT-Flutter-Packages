@@ -4,6 +4,7 @@
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_jwt_utilities/act_jwt_utilities.dart';
 import 'package:equatable/equatable.dart';
 
 /// The user information the tb-extender auth broker answers beside the ThingsBoard tokens.
@@ -24,6 +25,15 @@ class BrokerUser extends Equatable {
 
   /// This is the key used to parse the last name from a JSON object
   static const _lastNameKey = "lastName";
+
+  /// This is the claim of a ThingsBoard token which names the user id
+  static const _tbUserIdClaim = "userId";
+
+  /// This is the claim of a ThingsBoard token which names the customer id
+  static const _tbCustomerIdClaim = "customerId";
+
+  /// ThingsBoard names the email of the user as the subject of its tokens
+  static const _tbEmailClaim = "sub";
 
   /// This is the ThingsBoard user id (UUID) of the signed in user.
   final String tbUserId;
@@ -106,6 +116,35 @@ class BrokerUser extends Equatable {
   }
 
   /// Object properties
+  /// Read the user the claims of the ThingsBoard access token [rawTbToken] name.
+  ///
+  /// The broker names the user at a login only; a run which starts from the tokens a previous one
+  /// kept reads it here. Return null when the token isn't a JWT or misses one of the claims.
+  static BrokerUser? tryFromTbToken(String rawTbToken) {
+    final payload = JwtParserUtility.tryToParseToken(rawTbToken)?.payload;
+    if (payload is! Map) {
+      return null;
+    }
+
+    final tbUserId = payload[_tbUserIdClaim];
+    final customerId = payload[_tbCustomerIdClaim];
+    final email = payload[_tbEmailClaim];
+    if (tbUserId is! String || customerId is! String || email is! String) {
+      return null;
+    }
+
+    final firstName = payload[_firstNameKey];
+    final lastName = payload[_lastNameKey];
+
+    return BrokerUser(
+      tbUserId: tbUserId,
+      customerId: customerId,
+      email: email,
+      firstName: (firstName is String) ? firstName : null,
+      lastName: (lastName is String) ? lastName : null,
+    );
+  }
+
   @override
   List<Object?> get props => [tbUserId, customerId, email, firstName, lastName];
 }
