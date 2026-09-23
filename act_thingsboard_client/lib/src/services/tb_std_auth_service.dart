@@ -98,7 +98,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
   Future<AuthTokens?> getTokens() => _mutex.protect(() async => _unSafeGetTokens(
-        initTokensLoading: _getTokensFromTbClient,
+        initTokensLoading: _noAuthReqManager.readTokensFromClient,
       ));
 
   /// This method is useful to update, if needed, the [AuthStatus] by calling [_setAuthStatus].
@@ -169,7 +169,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   }) =>
       _wrapSetAuthUser(() async {
         if (await _tryToLogInFromTokens(loadTokens: initTokensLoading)) {
-          final tokens = _getTokensFromTbClient();
+          final tokens = _noAuthReqManager.readTokensFromClient();
           if (tokens == null) {
             appLogger()
                 .e("We try to log in from tokens, it succeeds but there is no value stored in "
@@ -191,7 +191,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
           return null;
         }
 
-        final tokens = _getTokensFromTbClient();
+        final tokens = _noAuthReqManager.readTokensFromClient();
         if (tokens == null) {
           appLogger()
               .e("We try to log in from user ids, it succeeds but there is no value stored in "
@@ -289,43 +289,11 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   ///
   /// Return the refreshed token and the token, or null if a problem occurred
   Future<AuthTokens?> _refreshToken(AuthToken refreshToken) async {
-    final response = await _noAuthReqManager.request(
-      (tbClient) async => tbClient.refreshJwtToken(refreshToken: refreshToken.raw),
-    );
-
-    if (response.status != RequestStatus.success) {
+    final tokens = await _noAuthReqManager.refreshTokens(refreshToken.raw);
+    if (tokens == null) {
       _logsHelper.w("A problem occurred when tried to refresh the tb token");
-      return null;
     }
 
-    return _getTokensFromTbClient();
-  }
-
-  /// Get the tokens from the current [ThingsboardClient]
-  ///
-  /// Return null if a problem occurred
-  AuthTokens? _getTokensFromTbClient() {
-    final tbClient = _noAuthReqManager.tbClient;
-    final accessStrToken = tbClient.getJwtToken();
-    final refreshStrToken = tbClient.getRefreshToken();
-    if (accessStrToken == null) {
-      return null;
-    }
-
-    final authToken = AuthToken.fromJwtToken(accessStrToken);
-    if (authToken == null) {
-      return null;
-    }
-
-    AuthToken? refreshToken;
-    if (refreshStrToken != null) {
-      refreshToken = AuthToken.fromJwtToken(refreshStrToken);
-      if (refreshToken == null) {
-        // A problem occurred when parsing the refresh token
-        return null;
-      }
-    }
-
-    return AuthTokens(accessToken: authToken, refreshToken: refreshToken);
+    return tokens;
   }
 }
