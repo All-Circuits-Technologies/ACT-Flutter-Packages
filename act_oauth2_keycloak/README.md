@@ -28,8 +28,8 @@ tokens which come back, belongs to `act_oauth2_core`.
 
 A Keycloak realm is hosted by the one who runs it, so there is no issuer to fill in and no URL to
 remember: the configuration names the realm, and this package exists so that an application which
-signs its users in through Keycloak has one class to register rather than a provider, a
-configuration mixin and a plain-http wrapper to write again.
+signs its users in through Keycloak has one class to register rather than a provider and a
+configuration mixin to write again.
 
 ## Architecture
 
@@ -101,19 +101,8 @@ the same way, so it is the same URI unless the realm registered another one, whi
 
 ### Plain http development stacks
 
-The native library behind `flutter_appauth` on Android refuses any OpenID endpoint which is not
-served over `https`, and a development stack usually serves its realm over plain `http`.
-`shouldAllowInsecureAppAuthConnections` reads the configuration which was loaded and says whether
-that is the case; `InsecureDevAppAuth` is the `FlutterAppAuth` which allows it:
-
-```dart
-final conf = globalGetIt().get<AppConfigManager>().keycloakOAuth2Conf.load()!;
-final appAuth = shouldAllowInsecureAppAuthConnections(conf)
-    ? const InsecureDevAppAuth(FlutterAppAuth())
-    : FlutterAppAuth();
-```
-
-A realm served over `https`, which is what staging and production are, never engages the wrapper.
+A realm served over plain `http` needs the wrapper of `act_oauth2_core`, whose README says how:
+`shouldAllowInsecureAppAuthConnections` and `InsecureDevAppAuth` are shared by every provider.
 
 ## Configuration
 
@@ -150,8 +139,7 @@ through the endpoints one by one, on the configuration which names no client, on
 names no realm at all, and on the one which says nothing of Keycloak. The provider is covered on
 the configuration it answers, on the error it raises when there is none, and on the redirect URLs
 it was built with, the one for the sign out being the one for the sign in until the application
-names another. The plain-http decision is covered on each URL it reads, and the wrapper on each
-request it delegates.
+names another.
 
 What is out of reach is everything which happens once the configuration is answered: the browser
 which is opened and the tokens which come back belong to `act_oauth2_core` and are covered there.

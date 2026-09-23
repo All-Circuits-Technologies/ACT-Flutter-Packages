@@ -5,7 +5,6 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter_appauth/flutter_appauth.dart';
 
 /// The asset key of the configuration file the tests serve.
 const configKey = "assets/config/default.yaml";
@@ -43,83 +42,5 @@ class FakeKeycloakConfigManager extends AbstractConfigManager with MixinKeycloak
     await manager.initLifeCycle();
 
     return manager;
-  }
-}
-
-/// The library which speaks to the provider, which records the request each call receives and
-/// answers a canned response, so the wrapper can be covered without a device.
-class FakeAppAuth implements FlutterAppAuth {
-  /// The authorization and exchange the wrapper delegated, if it delegated one.
-  AuthorizationTokenRequest? authorizeAndExchangeCodeRequest;
-
-  /// The token request the wrapper delegated, if it delegated one.
-  TokenRequest? tokenRequest;
-
-  /// The end session request the wrapper delegated, if it delegated one.
-  EndSessionRequest? endSessionRequest;
-
-  /// The authorization the wrapper delegated, if it delegated one.
-  AuthorizationRequest? authorizeRequest;
-
-  /// The answer to an authorization and exchange.
-  final authorizeAndExchangeCodeResponse = AuthorizationTokenResponse(
-    "access",
-    "refresh",
-    null,
-    "id-token",
-    "Bearer",
-    const <String>[],
-    null,
-    null,
-  );
-
-  /// The answer to a token request.
-  final tokenResponse = TokenResponse(
-    "access",
-    "refresh",
-    null,
-    "id-token",
-    "Bearer",
-    const <String>[],
-    null,
-  );
-
-  /// The answer to an end session request.
-  final endSessionResponse = EndSessionResponse("a state");
-
-  /// The answer to an authorization.
-  final authorizeResponse = const AuthorizationResponse();
-
-  /// Class constructor
-  FakeAppAuth();
-
-  @override
-  Future<AuthorizationTokenResponse> authorizeAndExchangeCode(
-    AuthorizationTokenRequest request,
-  ) async {
-    authorizeAndExchangeCodeRequest = request;
-
-    return authorizeAndExchangeCodeResponse;
-  }
-
-  @override
-  Future<TokenResponse> token(TokenRequest request) async {
-    tokenRequest = request;
-
-    return tokenResponse;
-  }
-
-  @override
-  Future<EndSessionResponse> endSession(EndSessionRequest request) async {
-    endSessionRequest = request;
-
-    return endSessionResponse;
-  }
-
-  @override
-  Future<AuthorizationResponse> authorize(AuthorizationRequest request) async {
-    authorizeRequest = request;
-
-    return authorizeResponse;
   }
 }
