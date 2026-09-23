@@ -224,6 +224,15 @@ void main() {
       expect(request.redirectUrl, "com.example.app:/oauthredirect");
     });
 
+    test("hands the provider the parameters the application adds to the sign in", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn(additionalParameters: {"max_age": "300"});
+
+      expect(appAuth.authorizations.single.additionalParameters, {"max_age": "300"});
+    });
+
     test("opens the provider in an ephemeral session by default", () async {
       final service = await aService();
       appAuth.authorizationAnswer = _authorized();
