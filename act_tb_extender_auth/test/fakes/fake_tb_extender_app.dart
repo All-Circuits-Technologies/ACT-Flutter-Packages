@@ -85,6 +85,9 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   /// The storage the service handed the provider, if it handed one.
   MixinAuthStorageService? receivedStorage;
 
+  /// The parameters the service added to each sign in, in order; null for one which added none.
+  final List<Map<String, String>?> signInParameters = [];
+
   /// The result the provider answers a sign in with.
   AuthSignInResult redirectResult = const AuthSignInResult(status: AuthSignInStatus.done);
 
@@ -130,7 +133,12 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
       receivedStorage = storageService;
 
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn() async => redirectResult;
+  Future<AuthSignInResult> redirectToExternalUserSignIn({
+    Map<String, String>? additionalParameters,
+  }) async {
+    signInParameters.add(additionalParameters);
+    return redirectResult;
+  }
 
   @override
   Future<AuthTokens?> getTokens() async => tokens;
