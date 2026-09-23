@@ -110,6 +110,10 @@ Once the broker answered, the Keycloak tokens are refreshed so that the `terms_a
 claim in hand says the same as the account. A refresh which fails isn't an error: the account is
 right, and the next refresh will carry the claim.
 
+`readTermsAcceptedVersion(rawIdpToken)` reads the version back out of the Keycloak token which
+`getIdpAccessToken` hands out; the claim is named `terms_accepted_version` unless the application
+says otherwise.
+
 ## How to use
 
 ### Installation
