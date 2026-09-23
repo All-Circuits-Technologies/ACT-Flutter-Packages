@@ -131,43 +131,37 @@ void main() {
       expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
     });
 
-    /// Each documented error, the status it comes with and whether it is worth another call.
-    const errorCases = <({int status, String code, BrokerAuthError expected, bool retryable})>[
+    /// Each documented error and the status it comes with.
+    const errorCases = <({int status, String code, BrokerAuthError expected})>[
       (
         status: 401,
         code: "invalid_token",
         expected: BrokerAuthError.invalidToken,
-        retryable: false,
       ),
       (
         status: 403,
         code: "invalid_audience",
         expected: BrokerAuthError.invalidAudience,
-        retryable: false,
       ),
       (
         status: 403,
         code: "email_not_verified",
         expected: BrokerAuthError.emailNotVerified,
-        retryable: false,
       ),
       (
         status: 409,
         code: "provisioning_conflict",
         expected: BrokerAuthError.provisioningConflict,
-        retryable: false,
       ),
       (
         status: 502,
         code: "thingsboard_unavailable",
         expected: BrokerAuthError.thingsboardUnavailable,
-        retryable: true,
       ),
       (
         status: 500,
         code: "internal_error",
         expected: BrokerAuthError.internalError,
-        retryable: true,
       ),
     ];
 
@@ -185,7 +179,6 @@ void main() {
         expect(result, isA<BrokerLoginFailure>());
         final failure = result as BrokerLoginFailure;
         expect(failure.error, testCase.expected);
-        expect(failure.retryable, testCase.retryable);
         expect(failure.message, "boom");
         expect(failure.statusCode, testCase.status);
       });
@@ -207,7 +200,7 @@ void main() {
       expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
     });
 
-    test("reads a transport error as a network failure worth another call", () async {
+    test("reads a transport error as a network failure", () async {
       final client = aClient((_) async => throw const _FakeSocketException());
 
       final result = await client.login("kc");
@@ -215,7 +208,6 @@ void main() {
       expect(result, isA<BrokerLoginFailure>());
       final failure = result as BrokerLoginFailure;
       expect(failure.error, BrokerAuthError.network);
-      expect(failure.retryable, isTrue);
     });
 
     test("fails without asking anything when no base URL is configured", () async {
