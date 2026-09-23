@@ -20,6 +20,7 @@ void main() {
   setUpAll(() {
     registerFallbackValue(PageLink(1));
     registerFallbackValue(DeviceId(aDeviceId));
+    registerFallbackValue(Options());
   });
 
   setUp(() {
@@ -233,9 +234,16 @@ void main() {
   });
 
   group("TbDevicesService.purgeDeviceTimeseries", () {
-    /// Has the server answer [keys] as the time series keys of the device.
-    void deviceHoldsKeys(List<String> keys) =>
-        when(() => attributes.getTimeseriesKeys(any())).thenAnswer((_) async => keys);
+    /// Has the server answer [keys] as the time series keys of the device, as the untyped JSON list
+    /// the HTTP client hands over.
+    void deviceHoldsKeys(List<String> keys) => when(
+      () => requestManager.client.get<List<dynamic>>(
+        "/api/plugins/telemetry/DEVICE/$aDeviceId/keys/timeseries",
+        options: any(named: "options"),
+      ),
+    ).thenAnswer(
+      (_) async => Response<List<dynamic>>(requestOptions: RequestOptions(), data: <dynamic>[...keys]),
+    );
 
     /// Has the server answer [deleted] when it is asked to delete the time series of a device.
     void deletionAnswers({required bool deleted}) => when(

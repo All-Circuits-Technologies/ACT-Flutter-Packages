@@ -78,6 +78,9 @@ dev_dependencies:
   # The client of the server the tests stand in for
   mocktail: ^1.0.4
 
+  # The HTTP responses the fake client answers
+  dio: ^5.3.4
+
   # Fakes shared by the tests of the ACT packages
   act_test_utility:
     path: ../act_test_utility

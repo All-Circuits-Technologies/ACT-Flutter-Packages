@@ -207,8 +207,15 @@ class TbDevicesService extends AbsWithLifeCycle {
   Future<bool> purgeDeviceTimeseries({required String deviceId}) async {
     final entityId = DeviceId(deviceId);
 
-    final keysResult = await _requestManager
-        .request((tbClient) async => tbClient.getAttributeService().getTimeseriesKeys(entityId));
+    // The SDK's AttributeService.getTimeseriesKeys casts the JSON list to List<String> and throws;
+    // the same request is made here with a loose type. Go back to the SDK once its fork is fixed.
+    final keysResult = await _requestManager.request<List<String>>((tbClient) async {
+      final response = await tbClient.get<List<dynamic>>(
+        '/api/plugins/telemetry/${entityId.entityType.toShortString()}/${entityId.id}/keys/timeseries',
+        options: defaultHttpOptionsFromConfig(null),
+      );
+      return (response.data ?? const []).cast<String>();
+    });
     final keys = keysResult.requestResponse;
 
     if (!keysResult.isOk || keys == null) {
