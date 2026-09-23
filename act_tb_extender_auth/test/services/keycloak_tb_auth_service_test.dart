@@ -124,6 +124,23 @@ void main() {
     });
   });
 
+  group("KeycloakTbAuthService.setStorageService", () {
+    test("names the user of the tokens a previous run kept", () async {
+      final kept = fakeJwt({
+        "sub": "kept@example.test",
+        "userId": "kept-user",
+        "customerId": "kept-customer",
+      });
+
+      final service = await aSignedInService(
+        tokens: AuthTokens(accessToken: _validToken(kept)),
+      );
+
+      expect(await service.getCurrentUserId(), "kept-user");
+      expect(await service.getEmailAddress(), "kept@example.test");
+    });
+  });
+
   group("KeycloakTbAuthService.signInUser", () {
     test("answers that it isn't supported rather than crashing", () async {
       final result = await aService().signInUser(username: "u", password: "p");
@@ -181,6 +198,18 @@ void main() {
       expect(result.status, AuthSignInStatus.genericError);
       expect(result.extra, isA<BrokerLoginFailure>());
       expect(provider.signOutCalled, isTrue, reason: "the next attempt must ask the credentials");
+    });
+
+    test("gives the tokens which aren't JWTs the lifetime the broker answered", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      final service = await aSignedInService();
+
+      await service.redirectToExternalUserSignIn();
+
+      final expiration = storage.stored?.refreshToken?.expiration;
+      expect(expiration, isNotNull);
+      expect(expiration!.isBefore(DateTime.now().toUtc().add(const Duration(hours: 2))), isTrue);
     });
 
     test("answers the refusal of the broker even when Keycloak fails to end its session", () async {
