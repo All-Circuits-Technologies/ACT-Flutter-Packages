@@ -3,12 +3,9 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 sdk:
-  - "3.41.9"
+  - "3.44.6"
 
 stages:
-  - analyze:
-      - group:
-          - analyze: --fatal-infos .
-  - test:
-      - group:
-          - test
+  - check:
+      - analyze: --fatal-infos .
+      - test
