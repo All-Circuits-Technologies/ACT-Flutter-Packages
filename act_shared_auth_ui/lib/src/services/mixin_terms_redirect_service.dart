@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:act_shared_auth_ui/src/types/mixin_terms_route.dart';
-import 'package:act_shared_auth_ui/src/utils/terms_acceptance.dart';
 import 'package:flutter/widgets.dart';
 
 /// A route guard which imposes the terms page while the user has to accept the terms.
@@ -105,11 +104,7 @@ mixin MixinTermsRedirectService<T extends MixinTermsRoute> on MixinRedirectServi
       return null;
     }
 
-    return resolveTermsRedirect(
-      mustAcceptTerms: await mustAcceptTerms(),
-      route: route,
-      termsRoute: _termsRoute,
-    );
+    return (await mustAcceptTerms()) ? _termsRoute : null;
   }
 
   /// {@macro act_router_manager.MixinRedirectService.closeRedirectService}
