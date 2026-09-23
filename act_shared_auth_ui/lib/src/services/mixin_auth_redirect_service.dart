@@ -46,6 +46,10 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   /// Get the route a signed in user is sent to instead of the sign in page
   ///
   /// Null, the default, leaves a signed in user on the sign in page.
+  ///
+  /// An application which names a start route leaves the navigation off the sign in page to this
+  /// service: its sign in page reports the result of the sign in and navigates nowhere. Were it to
+  /// navigate as well, the two navigations would race for the same click.
   /// {@endtemplate}
   @protected
   T? getStartRoute() => null;
@@ -82,7 +86,8 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
       final startRoute = getStartRoute();
 
       if (startRoute != null && routerManager.getCurrentTopView() == _signInRoute) {
-        // A signed in user has nothing to do on the sign in page once the app says where to send it
+        // The sign in page doesn't navigate when a start route is named (see getStartRoute); a
+        // page which is no longer on top has been left already, and is left alone
         unawaited(routerManager.replace(startRoute));
       }
 
