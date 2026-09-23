@@ -14,6 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Where this package sits](#where-this-package-sits)
   - [The life of a session](#the-life-of-a-session)
   - [Naming the provider](#naming-the-provider)
+  - [Plain http development stacks](#plain-http-development-stacks)
   - [Several providers in one application](#several-providers-in-one-application)
 - [How to use](#how-to-use)
   - [Installation](#installation)
@@ -123,6 +124,21 @@ three is refused: nothing could be reached with it.
 The scheme the provider comes back to the application through is the one the application registered
 with the platform. The two URLs which are built from it are the one of a sign in, which ends with
 `oauthredirect`, and the one of a sign out, which is the bare scheme.
+
+### Plain http development stacks
+
+The native library behind `flutter_appauth` on Android refuses any OpenID endpoint which isn't
+served over `https`, and a development stack usually serves its realm over plain `http`.
+`shouldAllowInsecureAppAuthConnections` reads the configuration which was loaded and says whether
+that is the case; `InsecureDevAppAuth` is the `FlutterAppAuth` which allows it:
+
+```dart
+final appAuth = shouldAllowInsecureAppAuthConnections(conf)
+    ? const InsecureDevAppAuth(FlutterAppAuth())
+    : const FlutterAppAuth();
+```
+
+A realm served over `https`, which is what staging and production are, never engages the wrapper.
 
 ### Several providers in one application
 
@@ -235,7 +251,8 @@ tokens it hands over when it is set, and on the ones of the run which are kept o
 held.
 
 The configurations are covered on every way of naming a provider, on the default issuer of a
-package which knows its own, and on the values which are missing or of the wrong type.
+package which knows its own, and on the values which are missing or of the wrong type. The
+plain-http decision is covered on each URL it reads, and the wrapper on each request it delegates.
 
 ```console
 > flutter test

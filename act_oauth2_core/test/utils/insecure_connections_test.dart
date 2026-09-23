@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_oauth2_core/act_oauth2_core.dart';
-import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 
