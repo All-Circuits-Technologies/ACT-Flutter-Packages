@@ -409,8 +409,8 @@ nothing and on one this version of the server does not know about. The call itse
 secret which is sent and the endpoint it is sent to, on the refusal which is read rather than
 raised, on the HTTP status which is answered, and on the statuses the options let through: 400 and
 404 are read, 401, 403 and anything from 500 up keep throwing so that the manager of the requests
-sees them. The release is covered on the endpoint it deletes. The barrel is covered on the upstream types it re-exports, which an
-application reaches through it alone.
+sees them. The release is covered on the endpoint it deletes. The barrel is covered on the upstream
+types it re-exports, which an application reaches through it alone.
 
 What is out of reach is the ten seconds a key which is no longer watched is kept for, and the
 address the client is built with: the first is read from the clock of the device rather than from a
