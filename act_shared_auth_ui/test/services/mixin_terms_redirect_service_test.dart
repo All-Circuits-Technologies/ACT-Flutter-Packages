@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -53,6 +55,20 @@ void main() {
   });
 
   group("MixinTermsRedirectService, the answer which changed", () {
+    test("sends the user to the terms page once when two changes come together", () async {
+      final redirection = await aRedirection(topView: FakeTermsRoute.home)
+        ..pendingAnswer = Completer<bool>();
+
+      redirection.changes
+        ..add(null)
+        ..add(null);
+      await pumpEventQueue();
+      redirection.pendingAnswer!.complete(true);
+      await pumpEventQueue();
+
+      expect(redirection.router.replaced, [FakeTermsRoute.terms]);
+    });
+
     test("sends the user of a page which needs accepted terms to the terms page", () async {
       final redirection = await aRedirection(mustAccept: true, topView: FakeTermsRoute.home);
 
