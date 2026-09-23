@@ -82,6 +82,12 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   /// Whether the service ended the Keycloak session.
   bool signOutCalled = false;
 
+  /// What the provider answers a sign out with, true when Keycloak ended its session.
+  bool signOutAnswer = true;
+
+  /// The error the provider raises on a sign out, if it raises one.
+  Exception? signOutError;
+
   /// Whether the provider says it handed fresh tokens over when it was asked for some.
   bool refreshAnswer = true;
 
@@ -129,7 +135,15 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   @override
   Future<bool> signOut() async {
     signOutCalled = true;
-    return true;
+    // Whatever Keycloak answers, the provider forgets its tokens: that is the contract of
+    // act_oauth2_core
+    tokens = null;
+
+    if (signOutError != null) {
+      throw signOutError!;
+    }
+
+    return signOutAnswer;
   }
 }
 

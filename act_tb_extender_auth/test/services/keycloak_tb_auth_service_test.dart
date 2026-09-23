@@ -182,6 +182,20 @@ void main() {
       expect(result.extra, isA<BrokerLoginFailure>());
       expect(provider.signOutCalled, isTrue, reason: "the next attempt must ask the credentials");
     });
+
+    test("answers the refusal of the broker even when Keycloak fails to end its session", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      provider.signOutError = Exception("the page of the browser was closed");
+      broker.onLogin = (_) =>
+          const BrokerLoginFailure(BrokerAuthError.emailNotVerified, statusCode: 403);
+      final service = aService();
+
+      final result = await service.redirectToExternalUserSignIn();
+
+      expect(result.status, AuthSignInStatus.genericError);
+      expect(service.authStatus, AuthStatus.signedOut);
+      expect(await service.getIdpAccessToken(), isNull);
+    });
   });
 
   group("KeycloakTbAuthService.getTokens", () {
@@ -295,6 +309,32 @@ void main() {
   });
 
   group("KeycloakTbAuthService.signOut", () {
+    test("asks nothing of the broker again when Keycloak didn't end its session", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      provider.signOutAnswer = false;
+      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      final service = await aSignedInService(
+        tokens: AuthTokens(accessToken: _expiredToken("old-access")),
+      );
+
+      expect(await service.signOut(), isTrue);
+      expect(service.authStatus, AuthStatus.signedOut);
+
+      expect(await service.getTokens(), isNull);
+      expect(broker.loginCallCount, 0);
+    });
+
+    test("signs the user out when ending the Keycloak session throws", () async {
+      provider.signOutError = Exception("the page of the browser was closed");
+      final service = await aSignedInService(
+        tokens: AuthTokens(accessToken: _validToken("cached-access")),
+      );
+
+      expect(await service.signOut(), isTrue);
+      expect(service.authStatus, AuthStatus.signedOut);
+      expect(storage.stored, isNull);
+    });
+
     test("ends the Keycloak session, drops the ThingsBoard tokens and signs the user out",
         () async {
       final service = await aSignedInService(
