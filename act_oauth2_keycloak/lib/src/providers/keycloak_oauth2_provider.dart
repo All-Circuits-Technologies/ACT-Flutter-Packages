@@ -16,22 +16,14 @@ class KeycloakOAuth2Provider<C extends MixinKeycloakOAuth2Conf> extends AbsOAuth
   /// This is the logs category for Keycloak OAuth2 provider
   static const _logsCategory = "keycloak";
 
-  /// This is the URL the realm sends the user back to after a sign in.
-  ///
-  /// It has to match, character for character, one of the redirect URIs registered on the Keycloak
-  /// client: the `<scheme>:/oauthredirect` the core builds is refused by Keycloak.
-  final String redirectUrl;
-
-  /// This is the URL the realm sends the user back to after a sign out.
-  ///
-  /// Keycloak validates it against the registered redirect URIs as well; therefore, it is
-  /// [redirectUrl] unless the application registered another one for the sign out.
-  final String postLogoutRedirectUrl;
-
   /// Class constructor
-  KeycloakOAuth2Provider({required this.redirectUrl, String? postLogoutRedirectUrl})
-    : postLogoutRedirectUrl = postLogoutRedirectUrl ?? redirectUrl,
-      super(logsCategory: _logsCategory);
+  ///
+  /// [redirectUrl] has to match, character for character, one of the redirect URIs registered on
+  /// the Keycloak client: the `<scheme>:/oauthredirect` the core builds is refused by Keycloak.
+  /// [postLogoutRedirectUrl] is checked the same way, and is [redirectUrl] unless the application
+  /// registered another one for the sign out.
+  KeycloakOAuth2Provider({required String redirectUrl, super.postLogoutRedirectUrl})
+    : super(logsCategory: _logsCategory, redirectUrl: redirectUrl);
 
   /// {@macro act_oauth2_google.AbsOAuth2ProviderService.getDefaultOAuth2Conf}
   @override
@@ -43,12 +35,4 @@ class KeycloakOAuth2Provider<C extends MixinKeycloakOAuth2Conf> extends AbsOAuth
 
     return tmpConf;
   }
-
-  /// Build the URL used by the provider to redirect to the app after a sign in
-  @override
-  Future<String> buildRedirectUrl() async => redirectUrl;
-
-  /// Build the URL used by the provider to redirect to the app after a sign out
-  @override
-  Future<String> buildPostLogoutRedirectUrl() async => postLogoutRedirectUrl;
 }

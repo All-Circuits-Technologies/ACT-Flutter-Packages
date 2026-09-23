@@ -125,6 +125,10 @@ The scheme the provider comes back to the application through is the one the app
 with the platform. The two URLs which are built from it are the one of a sign in, which ends with
 `oauthredirect`, and the one of a sign out, which is the bare scheme.
 
+An application whose provider checks the redirect URLs against the ones it was registered with,
+Keycloak for one, names them instead: `redirectUrl` and `postLogoutRedirectUrl` are given to the
+constructor of the service, and the one of the sign out defaults to the one of the sign in.
+
 ### Plain http development stacks
 
 The native library behind `flutter_appauth` on Android refuses any OpenID endpoint which isn't

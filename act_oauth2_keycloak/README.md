@@ -38,9 +38,8 @@ configuration should the provider be built with, and which URLs should the realm
 to. It reads the configuration from the configuration manager of the application, which mixes
 `MixinKeycloakOAuth2Conf` in, and it raises `NoKeycloakOAuth2ConfError` when there is none to read.
 
-The redirect URLs are given to the constructor, and that is the one thing this provider does which
-the Google one does not. `act_oauth2_core` builds `<scheme>:/oauthredirect`, with a single slash,
-out of the scheme the configuration names. A Keycloak client validates the redirect URI it receives
+The redirect URLs are given to the constructor, which hands them to `act_oauth2_core`. Left to
+itself, `act_oauth2_core` builds `<scheme>:/oauthredirect`, with a single slash, out of the scheme the configuration names. A Keycloak client validates the redirect URI it receives
 against the ones its realm was registered with, character for character, and refuses that form. The
 URI which is registered, `<scheme>://<path>` and whatever path the realm chose, is therefore what
 the application passes, because the scheme belongs to the application: it is the one declared in
