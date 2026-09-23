@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
-import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_tb_extender_auth/src/clients/tb_extender_broker_client.dart';
 import 'package:act_tb_extender_auth/src/models/broker_login_response.dart';
