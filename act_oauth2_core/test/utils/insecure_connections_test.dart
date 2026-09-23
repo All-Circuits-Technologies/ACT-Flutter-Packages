@@ -42,6 +42,16 @@ void main() {
   })!;
 
   group("shouldAllowInsecureAppAuthConnections", () {
+    test("refuses them in a release build, even for a realm served over plain http", () {
+      expect(
+        shouldAllowInsecureAppAuthConnections(
+          aConf(issuer: "http://10.0.0.1:8081/realms/dev"),
+          isReleaseMode: true,
+        ),
+        isFalse,
+      );
+    });
+
     test("allows them when the issuer is served over plain http", () {
       expect(
         shouldAllowInsecureAppAuthConnections(aConf(issuer: "http://10.0.0.1:8081/realms/dev")),
