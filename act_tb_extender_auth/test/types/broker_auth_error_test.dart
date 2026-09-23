@@ -19,6 +19,11 @@ void main() {
       "deletion_not_configured": BrokerAuthError.deletionNotConfigured,
       "admin_not_configured": BrokerAuthError.adminNotConfigured,
       "internal_error": BrokerAuthError.internalError,
+      "reauth_required": BrokerAuthError.reauthRequired,
+      "release_refused": BrokerAuthError.releaseRefused,
+      "terms_outdated": BrokerAuthError.termsOutdated,
+      "terms_source_unavailable": BrokerAuthError.termsSourceUnavailable,
+      "not_configured": BrokerAuthError.notConfigured,
     };
 
     for (final entry in codes.entries) {
