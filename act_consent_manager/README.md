@@ -25,10 +25,6 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 ## Presentation
 
-A consent which has to be agreed to before the application can be used is imposed by a route
-guard, and `MixinTermsRedirectService` of [`act_shared_auth_ui`](../act_shared_auth_ui/) is the one
-which asks this package the question.
-
 This package holds the consents an application asks its users for: the terms of a service, the
 privacy of their data, whatever else has to be agreed to. It answers one question at a time: does
 this user still have to be asked?
@@ -38,6 +34,11 @@ fetching its text, reading what the user already agreed to and saving what the u
 the four things an application writes, once per consent. What this package brings is the state which
 comes out of them, the moment they are read, and the merging of what the user answers with what was
 already known.
+
+This package imposes nothing on the navigation. An application whose terms have to be agreed to
+before it can be used puts a route guard in front of its pages, `MixinTermsRedirectService` of
+[`act_shared_auth_ui`](../act_shared_auth_ui/) for one, and answers the question that guard asks
+from the state of the terms service of this package.
 
 ## Architecture
 

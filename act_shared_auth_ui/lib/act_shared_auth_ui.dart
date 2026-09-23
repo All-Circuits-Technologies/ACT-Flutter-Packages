@@ -12,4 +12,3 @@ export "package:act_shared_auth_ui/src/services/mixin_auth_redirect_service.dart
 export "package:act_shared_auth_ui/src/services/mixin_terms_redirect_service.dart";
 export "package:act_shared_auth_ui/src/types/mixin_auth_route.dart";
 export "package:act_shared_auth_ui/src/types/mixin_terms_route.dart";
-export "package:act_shared_auth_ui/src/utils/terms_acceptance.dart";

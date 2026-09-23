@@ -3,23 +3,11 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:act_shared_auth_ui/act_shared_auth_ui.dart';
 import 'package:flutter/widgets.dart';
-
-/// Builds a token carrying [payload], the way an identity provider would.
-///
-/// The signature is not one: nothing here verifies it, and the server is what checks the tokens
-/// the application actually uses.
-String fakeIdpToken(Map<String, dynamic> payload) {
-  String segment(Map<String, dynamic> content) =>
-      base64Url.encode(utf8.encode(jsonEncode(content))).replaceAll("=", "");
-
-  return "${segment({"alg": "RS256", "typ": "JWT"})}.${segment(payload)}.signature";
-}
 
 /// The pages of an application under test, and whether each of them needs accepted terms.
 enum FakeTermsRoute with MixinRoute, MixinTermsRoute {
