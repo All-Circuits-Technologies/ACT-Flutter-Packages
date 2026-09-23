@@ -167,6 +167,18 @@ void main() {
       expect(await service.getEmailAddress(), "ada@example.test");
     });
 
+    test("hands the provider the parameters the application adds to the sign in", () async {
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      final service = await aSignedInService();
+
+      await service.redirectToExternalUserSignIn(additionalParameters: {"max_age": "300"});
+
+      expect(provider.signInParameters, [
+        {"max_age": "300"},
+      ]);
+    });
+
     test("answers a cancellation of the provider without calling the broker", () async {
       provider.redirectResult = const AuthSignInResult(status: AuthSignInStatus.sessionExpired);
 
