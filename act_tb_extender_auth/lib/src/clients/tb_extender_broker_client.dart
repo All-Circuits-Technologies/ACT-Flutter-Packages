@@ -13,10 +13,10 @@ import 'package:http/http.dart' as http;
 /// A small REST client for the auth broker of tb-extender.
 ///
 /// It offers [login], which exchanges a Keycloak access token for a pair of ThingsBoard tokens,
-/// [deleteAccount], which erases the account behind such a token, and [acceptTerms], which writes
-/// on it the version of the terms the user accepted. Every call holds no state and is idempotent;
-/// therefore, they can safely be issued again whenever the ThingsBoard tokens are lost or
-/// refused.
+/// [deleteAccount], which erases the account behind such a token, [acceptTerms], which writes on
+/// it the version of the terms the user accepted, and [releaseDevice], which hands a device back.
+/// Every call holds no state and is idempotent; therefore, they can safely be issued again
+/// whenever the ThingsBoard tokens are lost or refused.
 ///
 /// The base URL is read through a getter rather than given once: the configuration of an
 /// application is loaded after its managers are built, so the URL is only there by the time the
@@ -36,6 +36,12 @@ class TbExtenderBrokerClient {
 
   /// This is the relative path of the terms acceptance endpoint
   static const _termsAcceptPath = "/api/v1/terms/accept";
+
+  /// This is the relative path of the devices endpoints, the serial and the action follow it
+  static const _devicesPath = "/api/v1/devices";
+
+  /// This is the key the claim secret is sent to the release endpoint under
+  static const _secretKey = "secret";
 
   /// This is the key the accepted version is sent to the terms endpoint under
   static const _versionKey = "version";
@@ -187,6 +193,57 @@ class TbExtenderBrokerClient {
     final code = _readString(_tryDecodeBody(response), _errorKey);
     final error = BrokerAuthError.fromCode(code);
     _logsHelper.w("The terms acceptance failed with the status ${response.statusCode} "
+        "(code: $code, error: $error)");
+
+    return error;
+  }
+
+  /// Release the device named [serial] from the customer which holds it.
+  ///
+  /// Issues `POST <brokerUrl>/api/v1/devices/<serial>/release` with an
+  /// `Authorization: Bearer <token>` header. [secret] is the claim secret the application pushed
+  /// to the device, sent as a JSON body when given: the broker needs it to release a device of
+  /// another customer, and ignores it for a device of the customer of the caller.
+  ///
+  /// Return null on a HTTP 204, the device being released or already free, or the mapped
+  /// [BrokerAuthError] otherwise — [BrokerAuthError.releaseRefused] for an unknown serial or a
+  /// wrong secret — a transport error being read as [BrokerAuthError.network].
+  Future<BrokerAuthError?> releaseDevice(
+    String keycloakAccessToken, {
+    required String serial,
+    String? secret,
+  }) async {
+    final uri = _buildUri("$_devicesPath/${Uri.encodeComponent(serial)}/release");
+    if (uri == null) {
+      _logsHelper.e("The base URL of the broker isn't configured, can't release a device");
+      return BrokerAuthError.unknown;
+    }
+
+    http.Response response;
+    try {
+      response = await _httpClient
+          .post(
+            uri,
+            headers: {
+              ..._headers(keycloakAccessToken),
+              if (secret != null) "Content-Type": "application/json",
+            },
+            body: (secret == null) ? null : jsonEncode({_secretKey: secret}),
+          )
+          .timeout(_requestTimeout);
+    } catch (error) {
+      _logsHelper.w("A transport error occurred when calling the release endpoint of the broker: "
+          "$error");
+      return BrokerAuthError.network;
+    }
+
+    if (response.statusCode == 204) {
+      return null;
+    }
+
+    final code = _readString(_tryDecodeBody(response), _errorKey);
+    final error = BrokerAuthError.fromCode(code);
+    _logsHelper.w("The device release failed with the status ${response.statusCode} "
         "(code: $code, error: $error)");
 
     return error;
