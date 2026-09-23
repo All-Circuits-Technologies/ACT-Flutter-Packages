@@ -97,6 +97,9 @@ class FakeTermsRedirectService
   /// The number of times the guard asked the application.
   int mustAcceptCalls = 0;
 
+  /// The answer the guard waits for when a test wants to hold it, completed by the test.
+  Completer<bool>? pendingAnswer;
+
   /// The events the application tells the guard that its answer may have changed through.
   // The stream belongs to the application, not to the redirection, so a test closes it itself
   // ignore: close_sinks
@@ -125,7 +128,9 @@ class FakeTermsRedirectService
   Future<bool> mustAcceptTerms() async {
     mustAcceptCalls++;
 
-    return mustAccept;
+    final pending = pendingAnswer;
+
+    return (pending != null) ? pending.future : mustAccept;
   }
 
   /// {@macro act_shared_auth_ui.MixinTermsRedirectService.getTermsChanges}

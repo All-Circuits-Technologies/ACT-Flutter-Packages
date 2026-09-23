@@ -27,6 +27,9 @@ mixin MixinTermsRedirectService<T extends MixinTermsRoute> on MixinRedirectServi
   /// application hands no stream over.
   StreamSubscription<Object?>? _changesSub;
 
+  /// Whether a change is being handled, during which the next ones are dropped
+  bool _isHandlingChange = false;
+
   /// {@template act_shared_auth_ui.MixinTermsRedirectService.getTermsRoute}
   /// The page the user is sent to while the terms have to be accepted.
   ///
@@ -74,6 +77,12 @@ mixin MixinTermsRedirectService<T extends MixinTermsRoute> on MixinRedirectServi
   /// which needs accepted terms has to be sent to the terms page without waiting for their next
   /// navigation.
   Future<void> _onTermsChanged(Object? event) async {
+    if (_isHandlingChange) {
+      // A change which comes during the handling of another is dropped, and the answer
+      // read is the one of the first; queue the changes if an application ever needs both
+      return;
+    }
+
     final currentView = routerManager.getCurrentTopView();
 
     if (currentView == null || !currentView.needsAcceptedTerms) {
@@ -81,8 +90,14 @@ mixin MixinTermsRedirectService<T extends MixinTermsRoute> on MixinRedirectServi
       return;
     }
 
-    if (await mustAcceptTerms()) {
-      unawaited(routerManager.replace(_termsRoute));
+    _isHandlingChange = true;
+    try {
+      if (await mustAcceptTerms()) {
+        // Not awaited: the future of a replace only completes when the page is left
+        unawaited(routerManager.replace(_termsRoute));
+      }
+    } finally {
+      _isHandlingChange = false;
     }
   }
 
