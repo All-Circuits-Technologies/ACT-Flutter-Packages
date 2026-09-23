@@ -138,6 +138,51 @@ void main() {
     });
   });
 
+  group("AbsOAuth2ProviderService, the redirect URLs the application names", () {
+    /// The service of an application which names the URLs its provider sends the user back to.
+    Future<FakeOAuth2Service> aNamingService({
+      required String redirectUrl,
+      String? postLogoutRedirectUrl,
+    }) async {
+      final service = FakeOAuth2Service(
+        conf: _conf,
+        redirectUrl: redirectUrl,
+        postLogoutRedirectUrl: postLogoutRedirectUrl,
+      );
+      await service.initProvider(
+        parentLogsHelper: logs.buildHelper(category: "auth"),
+        appAuth: appAuth,
+      );
+      addTearDown(service.disposeLifeCycle);
+
+      return service;
+    }
+
+    test("sends the user back to the URL the application named, sign out included", () async {
+      final service = await aNamingService(redirectUrl: "com.example.app://oauth2redirect");
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn();
+      await service.signOut();
+
+      expect(appAuth.authorizations.single.redirectUrl, "com.example.app://oauth2redirect");
+      expect(appAuth.endSessions.single.postLogoutRedirectUrl, "com.example.app://oauth2redirect");
+    });
+
+    test("sends the user back to the sign out URL the application named for it", () async {
+      final service = await aNamingService(
+        redirectUrl: "com.example.app://oauth2redirect",
+        postLogoutRedirectUrl: "com.example.app://signedout",
+      );
+      appAuth.authorizationAnswer = _authorized();
+      await service.redirectToExternalUserSignIn();
+
+      await service.signOut();
+
+      expect(appAuth.endSessions.single.postLogoutRedirectUrl, "com.example.app://signedout");
+    });
+  });
+
   group("AbsOAuth2ProviderService.redirectToExternalUserSignIn", () {
     test("signs the user in through the provider", () async {
       final service = await aService();
