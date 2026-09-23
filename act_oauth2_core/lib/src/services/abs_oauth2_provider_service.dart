@@ -172,15 +172,21 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   });
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
+  ///
+  /// The tokens are forgotten and the user is signed out whatever the provider answers: a session
+  /// which couldn't be ended at the provider, because the page of the browser was closed or the
+  /// network is down, must not leave tokens behind, otherwise the next call would sign the user in
+  /// again without asking.
+  ///
+  /// Answers false when the provider didn't end its session, which may then still be open there.
   @override
   Future<bool> signOut() => _mutex.protect(() async {
-    final redirectUrl = await buildPostLogoutRedirectUrl();
     var result = false;
     try {
       await appAuth.endSession(
         EndSessionRequest(
           idTokenHint: _authTokens.idToken,
-          postLogoutRedirectUrl: redirectUrl,
+          postLogoutRedirectUrl: await buildPostLogoutRedirectUrl(),
           issuer: _conf.issuer,
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
@@ -188,19 +194,15 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
       );
       result = true;
     } catch (error) {
-      logsHelper.e("An error occurred when tried to sign out the user");
+      logsHelper.e("An error occurred when tried to end the session at the provider: $error");
     }
 
-    if (!result) {
-      return false;
-    }
-
-    // Clean the auth info
+    // Clean the auth info, whatever the provider answered
     await _setOAuthTokens(null);
 
     setAuthStatus(AuthStatus.signedOut);
 
-    return true;
+    return result;
   });
 
   /// {@macro act_shared_auth.MixinAuthService.isUserSigned}

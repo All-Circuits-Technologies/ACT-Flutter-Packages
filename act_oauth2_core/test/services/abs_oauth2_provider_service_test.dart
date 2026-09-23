@@ -254,14 +254,21 @@ void main() {
       expect(service.authStatus, AuthStatus.signedOut);
     });
 
-    test("keeps the user signed in when the provider refused to end the session", () async {
-      final service = await aService();
+    test("forgets the tokens and signs the user out when the provider refused to end the "
+        "session", () async {
+      final storage = FakeTokensStorage();
+      final service = await aService(storage: storage);
       appAuth.authorizationAnswer = _authorized();
       await service.redirectToExternalUserSignIn();
-      appAuth.endSessionError = Exception("the provider is not there");
+      appAuth.endSessionError = Exception("the browser page was closed");
 
       expect(await service.signOut(), isFalse);
-      expect(service.authStatus, AuthStatus.signedIn);
+
+      expect(service.authStatus, AuthStatus.signedOut);
+      expect(storage.tokens, isNull);
+      expect(await service.getTokens(), isNull);
+      expect(await service.isUserSigned(), isFalse);
+      expect(appAuth.tokenRequests, isEmpty, reason: "nothing may sign the user in silently");
     });
   });
 
