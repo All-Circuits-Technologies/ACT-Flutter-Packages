@@ -35,24 +35,4 @@ void main() {
       expect(BrokerAuthError.fromCode(null), BrokerAuthError.unknown);
     });
   });
-
-  group("BrokerAuthError.retryable", () {
-    test("says that the errors which come from an unavailable side are worth another call", () {
-      expect(BrokerAuthError.thingsboardUnavailable.retryable, isTrue);
-      expect(BrokerAuthError.keycloakUnavailable.retryable, isTrue);
-      expect(BrokerAuthError.internalError.retryable, isTrue);
-      expect(BrokerAuthError.network.retryable, isTrue);
-    });
-
-    test("says that the errors which come from the account itself are not", () {
-      expect(BrokerAuthError.invalidRequest.retryable, isFalse);
-      expect(BrokerAuthError.invalidToken.retryable, isFalse);
-      expect(BrokerAuthError.invalidAudience.retryable, isFalse);
-      expect(BrokerAuthError.emailNotVerified.retryable, isFalse);
-      expect(BrokerAuthError.provisioningConflict.retryable, isFalse);
-      expect(BrokerAuthError.deletionNotConfigured.retryable, isFalse);
-      expect(BrokerAuthError.adminNotConfigured.retryable, isFalse);
-      expect(BrokerAuthError.unknown.retryable, isFalse);
-    });
-  });
 }

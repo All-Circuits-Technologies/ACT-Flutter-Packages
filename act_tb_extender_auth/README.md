@@ -152,7 +152,7 @@ class AppAuthManager extends AbsAuthManager {
   Future<MixinAuthService> getAuthService() async {
     final service = const KeycloakTbAuthServiceBuilder<AppConfigManager, AppSecretsManager>().build(
       redirectUrl: "com.example.app://oauth2redirect",
-      onSignOut: () => globalGetIt().get<AppPropertiesManager>().forgetPairedDevice(),
+      onSignOut: () => globalGetIt().get<AppDevicesManager>().clear(),
     );
     await service.initLifeCycle();
 
