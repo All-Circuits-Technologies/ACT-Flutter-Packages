@@ -42,9 +42,6 @@ class BrokerLoginFailure extends BrokerLoginResult {
   /// Class constructor
   const BrokerLoginFailure(this.error, {this.message, this.statusCode});
 
-  /// Says whether calling the broker again with the same input may succeed later.
-  bool get retryable => error.retryable;
-
   /// Object properties
   @override
   List<Object?> get props => [error, message, statusCode];
