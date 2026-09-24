@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:act_tb_extender_auth/src/models/broker_claim_result.dart';
 import 'package:act_tb_extender_auth/src/models/broker_login_response.dart';
 import 'package:act_tb_extender_auth/src/models/broker_login_result.dart';
 import 'package:act_tb_extender_auth/src/types/broker_auth_error.dart';
@@ -14,7 +15,8 @@ import 'package:http/http.dart' as http;
 ///
 /// It offers [login], which exchanges a Keycloak access token for a pair of ThingsBoard tokens,
 /// [deleteAccount], which erases the account behind such a token, [acceptTerms], which writes on
-/// it the version of the terms the user accepted, and [releaseDevice], which hands a device back.
+/// it the version of the terms the user accepted, [claimDevice], which assigns a device to the
+/// customer of the caller, and [releaseDevice], which hands a device back.
 /// Every call holds no state and is idempotent; therefore, they can safely be issued again
 /// whenever the ThingsBoard tokens are lost or refused.
 ///
@@ -40,8 +42,11 @@ class TbExtenderBrokerClient {
   /// This is the relative path of the devices endpoints, the serial and the action follow it
   static const _devicesPath = "/api/v1/devices";
 
-  /// This is the key the claim secret is sent to the release endpoint under
+  /// This is the key the claim secret is sent to the claim and release endpoints under
   static const _secretKey = "secret";
+
+  /// This is the key the id of the claimed device is read from
+  static const _deviceIdKey = "deviceId";
 
   /// This is the key the accepted version is sent to the terms endpoint under
   static const _versionKey = "version";
@@ -196,6 +201,64 @@ class TbExtenderBrokerClient {
         "(code: $code, error: $error)");
 
     return error;
+  }
+
+  /// Assign the device named [serial] to the customer of the caller.
+  ///
+  /// Issues `POST <brokerUrl>/api/v1/devices/<serial>/claim` with an
+  /// `Authorization: Bearer <token>` header and the claim [secret] the application pushed to the
+  /// device as a JSON body. The broker checks it against the secret the device published, which
+  /// is the proof the caller holds the device, and hands over a device held by another customer
+  /// on its own: the caller has nothing more to do.
+  ///
+  /// Return a [BrokerClaimSuccess] naming the device on a HTTP 200, or a [BrokerClaimFailure]
+  /// carrying the mapped [BrokerAuthError] otherwise — [BrokerAuthError.claimRefused] for an
+  /// unknown serial or a wrong, missing or too old secret — a transport error being read as
+  /// [BrokerAuthError.network].
+  Future<BrokerClaimResult> claimDevice(
+    String keycloakAccessToken, {
+    required String serial,
+    required String secret,
+  }) async {
+    final uri = _buildUri("$_devicesPath/${Uri.encodeComponent(serial)}/claim");
+    if (uri == null) {
+      _logsHelper.e("The base URL of the broker isn't configured, can't claim a device");
+      return const BrokerClaimFailure(BrokerAuthError.unknown);
+    }
+
+    http.Response response;
+    try {
+      response = await _httpClient
+          .post(
+            uri,
+            headers: {..._headers(keycloakAccessToken), "Content-Type": "application/json"},
+            body: jsonEncode({_secretKey: secret}),
+          )
+          .timeout(_requestTimeout);
+    } catch (error) {
+      _logsHelper.w("A transport error occurred when calling the claim endpoint of the broker: "
+          "$error");
+      return const BrokerClaimFailure(BrokerAuthError.network);
+    }
+
+    final json = _tryDecodeBody(response);
+
+    if (response.statusCode == 200) {
+      final deviceId = _readString(json, _deviceIdKey);
+      if (deviceId == null) {
+        _logsHelper.w("The broker answered a 200 to the claim without naming the device");
+        return const BrokerClaimFailure(BrokerAuthError.unknown);
+      }
+
+      return BrokerClaimSuccess(deviceId: deviceId);
+    }
+
+    final code = _readString(json, _errorKey);
+    final error = BrokerAuthError.fromCode(code);
+    _logsHelper.w("The device claim failed with the status ${response.statusCode} "
+        "(code: $code, error: $error)");
+
+    return BrokerClaimFailure(error);
   }
 
   /// Release the device named [serial] from the customer which holds it.

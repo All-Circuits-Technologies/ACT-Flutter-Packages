@@ -28,6 +28,10 @@ enum BrokerAuthError {
   /// the secret which comes with it is wrong.
   releaseRefused,
 
+  /// HTTP 403 `claim_refused`: the device to claim is unknown, or the secret which comes with it
+  /// is wrong, missing or too old.
+  claimRefused,
+
   /// HTTP 409 `provisioning_conflict`: the ThingsBoard user couldn't be provisioned unambiguously.
   provisioningConflict,
 
@@ -77,6 +81,7 @@ enum BrokerAuthError {
     "email_not_verified" => BrokerAuthError.emailNotVerified,
     "reauth_required" => BrokerAuthError.reauthRequired,
     "release_refused" => BrokerAuthError.releaseRefused,
+    "claim_refused" => BrokerAuthError.claimRefused,
     "provisioning_conflict" => BrokerAuthError.provisioningConflict,
     "thingsboard_unavailable" => BrokerAuthError.thingsboardUnavailable,
     "keycloak_unavailable" => BrokerAuthError.keycloakUnavailable,
