@@ -8,7 +8,6 @@ github:
     pull_request:
 
 merge_stages:
-  - analyze
-  - test
+  - check
 
-self_validate: analyze
+self_validate: check

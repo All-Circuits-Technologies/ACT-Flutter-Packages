@@ -6,9 +6,6 @@ sdk:
   - "3.41.9"
 
 stages:
-  - analyze:
-      - group:
-          - analyze: --fatal-infos .
-  - test:
-      - group:
-          - test: --platform chrome
+  - check:
+      - analyze: --fatal-infos .
+      - test: --platform chrome
