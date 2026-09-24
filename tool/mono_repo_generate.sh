@@ -5,8 +5,9 @@
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 ## This script wraps `dart pub global run mono_repo generate` to also patch
-## the generated workflow files (flutter-version fix for semver values) and
-## optionally update the Flutter SDK version across all mono_pkg.yaml files.
+## the generated workflow files (flutter-version fix for semver values and
+## Flutter SDK cache) and optionally update the Flutter SDK version across all
+## mono_pkg.yaml files.
 ##
 ## The active version is persisted in tool/.flutter_version so that
 ## subsequent calls without --flutter-version (e.g. after adding a new package)
@@ -149,6 +150,9 @@ fix_self_validate_in_workflows() {
 # After mono_repo generate, subosito/flutter-action receives the sdk value as
 # "channel:", which only accepts channel names. For numeric versions we must
 # replace it with "flutter-version:" in every generated workflow file.
+# The patched step also gets "cache: true", so the Flutter SDK is restored from
+# the action cache instead of being downloaded again by every job. The line is
+# only added when it is missing, which keeps the patch idempotent.
 fix_flutter_action_in_workflows() {
     if ! is_semver "${VERSION}"; then
         return
@@ -164,6 +168,33 @@ fix_flutter_action_in_workflows() {
         # Use extended regex (-E) with optional quotes: channel: "?<version>"?
         if grep -qE "channel: \"?${escaped_version}\"?" "${workflow_file}" 2>/dev/null; then
             sed -i -E "s/channel: \"?${escaped_version}\"?/flutter-version: \"${VERSION}\"/g" "${workflow_file}"
+
+            # Add "cache: true" right under each flutter-version line, with the
+            # same indentation, unless it is already there.
+            local tmp_file
+            tmp_file="$(mktemp)"
+            awk '
+                {
+                    if (cache_line != "") {
+                        if ($0 != cache_line) {
+                            print cache_line
+                        }
+                        cache_line = ""
+                    }
+                    print
+                    if ($0 ~ /^ *flutter-version: /) {
+                        cache_line = $0
+                        sub(/[^ ].*$/, "", cache_line)
+                        cache_line = cache_line "cache: true"
+                    }
+                }
+                END {
+                    if (cache_line != "") {
+                        print cache_line
+                    }
+                }
+            ' "${workflow_file}" > "${tmp_file}" && mv "${tmp_file}" "${workflow_file}"
+
             echo "Fixed flutter-action in: ${workflow_file}"
             count=$((count + 1))
         fi
@@ -179,7 +210,7 @@ run_mono_repo_generate() {
     if "${DRY_RUN}"; then
         echo "[dry-run] Would run: dart pub global run mono_repo generate"
         if is_semver "${VERSION}"; then
-            echo "[dry-run] Would patch flutter-action channel → flutter-version in .github/workflows/"
+            echo "[dry-run] Would patch flutter-action channel → flutter-version and add the Flutter SDK cache in .github/workflows/"
         fi
         return
     fi
