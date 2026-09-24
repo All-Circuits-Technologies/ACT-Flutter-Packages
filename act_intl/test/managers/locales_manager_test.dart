@@ -176,6 +176,22 @@ void main() {
     });
   });
 
+  group("LocalesManager.currentLocale", () {
+    testWidgets("shows the locale it wants before the view is shown", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+
+      expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("shows the locale of the device before the view is shown when it wants none", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(manager.currentLocale, _deviceLocale);
+    });
+  });
+
   group("LocalesManager.initAfterView", () {
     testWidgets("shows the application in the locale it wants", (tester) async {
       final manager = await aManager(defaultWantedLocale: "fr-FR");
@@ -203,6 +219,18 @@ void main() {
       await theViewIsShown(tester, manager, withObserver: false);
 
       expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("tells the application about the locale it resolved", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+      final locales = <Locale>[];
+      final subscription = manager.currentLocaleStream.listen(locales.add);
+      addTearDown(subscription.cancel);
+
+      await theViewIsShown(tester, manager);
+      await tester.pump();
+
+      expect(locales, const [Locale("fr", "FR")]);
     });
   });
 
@@ -306,6 +334,14 @@ void main() {
       manager.wantedLocale = const Locale("fr", "FR");
 
       expect(manager.currentLocaleStrForDateFormat, "fr_FR");
+    });
+
+    testWidgets("gives the date formatting a locale it accepts before the view is shown", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(() => DateFormat.jm(manager.currentLocaleStrForDateFormat), returnsNormally);
     });
   });
 

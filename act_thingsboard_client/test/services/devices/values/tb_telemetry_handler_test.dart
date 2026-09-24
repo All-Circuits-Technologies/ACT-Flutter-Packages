@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:flutter_test/flutter_test.dart';

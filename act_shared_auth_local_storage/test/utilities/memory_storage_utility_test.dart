@@ -5,7 +5,6 @@
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart';
-import 'package:act_shared_auth_local_storage/src/utilities/memory_storage_utility.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 

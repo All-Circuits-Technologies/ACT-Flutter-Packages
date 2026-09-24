@@ -80,11 +80,16 @@ void main() {
 
     testWidgets("stops watching the device once the page is gone", (tester) async {
       await aPage(tester);
+      final locales = <Locale>[];
+      final subscription = manager.currentLocaleStream.listen(locales.add);
+      addTearDown(subscription.cancel);
 
       await tester.pumpWidget(const SizedBox.shrink());
       await theDeviceReads(tester, const Locale("fr", "FR"));
+      await tester.pump();
 
-      expect(manager.currentLocale, const Locale.fromSubtags());
+      // The page is gone, so the locale the device now reads never reaches the manager.
+      expect(locales, isEmpty);
     });
   });
 }
