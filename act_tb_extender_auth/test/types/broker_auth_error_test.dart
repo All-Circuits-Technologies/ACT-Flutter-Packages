@@ -21,6 +21,7 @@ void main() {
       "internal_error": BrokerAuthError.internalError,
       "reauth_required": BrokerAuthError.reauthRequired,
       "release_refused": BrokerAuthError.releaseRefused,
+      "claim_refused": BrokerAuthError.claimRefused,
       "terms_outdated": BrokerAuthError.termsOutdated,
       "terms_source_unavailable": BrokerAuthError.termsSourceUnavailable,
       "not_configured": BrokerAuthError.notConfigured,
