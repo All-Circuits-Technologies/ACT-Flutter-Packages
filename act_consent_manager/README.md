@@ -35,6 +35,11 @@ the four things an application writes, once per consent. What this package bring
 comes out of them, the moment they are read, and the merging of what the user answers with what was
 already known.
 
+This package imposes nothing on the navigation. An application whose terms have to be agreed to
+before it can be used puts a route guard in front of its pages, `MixinTermsRedirectService` of
+[`act_shared_auth_ui`](../act_shared_auth_ui/) for one, and answers the question that guard asks
+from the state of the terms service of this package.
+
 ## Architecture
 
 ### The manager and its services

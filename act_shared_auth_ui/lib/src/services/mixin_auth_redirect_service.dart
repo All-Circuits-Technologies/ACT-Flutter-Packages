@@ -11,6 +11,9 @@ import 'package:flutter/widgets.dart';
 
 /// This mixin "overrides" [MixinRedirectService] to redirect the views to the sign in page if no
 /// user is log in the app and the view requires it.
+///
+/// When the application names a start route with [getStartRoute], a signed in user is never left
+/// on the sign in page: it is sent to that route instead.
 mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService<T> {
   /// The authentication manager
   late final AbsAuthManager _authManager;
@@ -39,6 +42,18 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
   @protected
   T getSignInPage();
 
+  /// {@template act_shared_auth.MixinAuthRedirectService.getStartRoute}
+  /// Get the route a signed in user is sent to instead of the sign in page
+  ///
+  /// Null, the default, leaves a signed in user on the sign in page.
+  ///
+  /// An application which names a start route leaves the navigation off the sign in page to this
+  /// service: its sign in page reports the result of the sign in and navigates nowhere. Were it to
+  /// navigate as well, the two navigations would race for the same click.
+  /// {@endtemplate}
+  @protected
+  T? getStartRoute() => null;
+
   /// {@macro act_router_manager.MixinRedirectService.initRedirectService}
   @override
   Future<bool> initRedirectService() async {
@@ -56,10 +71,9 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     return true;
   }
 
-  /// Called when a new authentication status is detected.
-  ///
-  /// If no user is connected to the app and the current view needs an authentication, this
-  /// redirects to the authentication page.
+  /// Called when a new authentication status is detected, to apply the rules to the view which is
+  /// open: a signed out user doesn't stay on a view which needs an authentication, and a signed in
+  /// user doesn't stay on the sign in page when the application names a start route.
   Future<void> _onNewAuthStatus(AuthStatus status) async {
     if (status == _authStatus) {
       // Nothing to do
@@ -69,7 +83,14 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     _authStatus = status;
 
     if (status.isSignedIn) {
-      // Nothing to do
+      final startRoute = getStartRoute();
+
+      if (startRoute != null && routerManager.getCurrentTopView() == _signInRoute) {
+        // The sign in page doesn't navigate when a start route is named (see getStartRoute); a
+        // page which is no longer on top has been left already, and is left alone
+        unawaited(routerManager.replace(startRoute));
+      }
+
       return;
     }
 
@@ -94,8 +115,8 @@ mixin MixinAuthRedirectService<T extends MixinAuthRoute> on MixinRedirectService
     }
 
     if (route == _signInRoute) {
-      // Nothing to do
-      return null;
+      // A signed in user has nothing to do on the sign in page, when the app says where to send it
+      return _authStatus.isSignedIn ? getStartRoute() : null;
     }
 
     if (!route.isAuthNeeded || _authStatus.isSignedIn) {
