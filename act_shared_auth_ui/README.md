@@ -13,6 +13,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [Architecture](#architecture)
   - [The pages which need a signed in user](#the-pages-which-need-a-signed-in-user)
   - [The two moments a user is sent away](#the-two-moments-a-user-is-sent-away)
+  - [Where a signed in user is sent](#where-a-signed-in-user-is-sent)
   - [What a page of the authentication is given](#what-a-page-of-the-authentication-is-given)
 - [How to use](#how-to-use)
   - [Installation](#installation)
@@ -73,6 +74,24 @@ A router only holds one redirection: registering this one on a router which alre
 false and the redirection never starts, which is what an application reads to know that it has to
 compose them instead.
 
+### Where a signed in user is sent
+
+An application which names a start page with `getStartRoute` gets one more rule: a signed in user
+is never left on the sign in page, it is sent to the start page instead. The rule is applied at the
+two moments the others are:
+
+- when the application asks for the sign in page while the user is signed in, the redirection
+  answers the start page,
+- when the status becomes signed in while the sign in page is the one which is open, the sign in
+  page is replaced by the start page.
+
+The redirection is the one which leaves the sign in page: a sign in page of such an application
+reports its result and navigates nowhere, otherwise two navigations race for the same click.
+
+`getStartRoute` answers null by default, and an application which leaves it alone keeps the
+behaviour it had: a signed in user is left on the sign in page. Only the sign in page is read here,
+a signed in user on any other page is left where it is.
+
 ### What a page of the authentication is given
 
 Every page of the authentication is given an extra when it is pushed, and they all carry the same
@@ -130,6 +149,11 @@ class AppRedirectService with MixinRedirectService<AppRoute>, MixinAuthRedirectS
 
   @override
   AppRoute getSignInPage() => AppRoute.signIn;
+
+  // Optional: where a signed in user is sent instead of the sign in page.
+  // Leaving this one out keeps a signed in user on the sign in page.
+  @override
+  AppRoute? getStartRoute() => AppRoute.home;
 }
 ```
 
@@ -173,6 +197,11 @@ sent to the sign in page, the pages which need no user, the sign in page itself,
 redirection of the application asked for before it. The status of the user is covered on the sign
 out and the session which expires while a page which needs a user is open, on the same while a page
 which needs none is open, on the user who signs in, and on the status which did not change.
+
+The start page is covered on the user which signs in from the sign in page, on the same one on
+another page, and on the signed in user which asks for the sign in page; each of them is covered
+again on an application which names no start page, which is what says that the behaviour of before
+is left alone.
 
 The registering is covered on the router which already has a redirection of its own, which stops the
 service before it starts, and on the closing of a service which never started. The extras are
