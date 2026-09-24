@@ -329,6 +329,36 @@ void main() {
     });
   });
 
+  group("KeycloakTbAuthService.getBrokerUser", () {
+    test("answers the user the broker named at the login, names included", () async {
+      const named = BrokerUser(
+        tbUserId: "user-id",
+        customerId: "customer-id",
+        email: "ada@example.test",
+        firstName: "Ada",
+        lastName: "Lovelace",
+      );
+      provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
+      broker.onLogin = (_) => const BrokerLoginSuccess(
+        BrokerLoginResponse(
+          tbToken: "tb-access",
+          tbRefreshToken: "tb-refresh",
+          expiresIn: 3600,
+          user: named,
+        ),
+      );
+      final service = await aSignedInService();
+
+      await service.redirectToExternalUserSignIn();
+
+      expect(await service.getBrokerUser(), named);
+    });
+
+    test("answers nothing while nobody signed in", () async {
+      expect(await (await aSignedInService()).getBrokerUser(), isNull);
+    });
+  });
+
   group("KeycloakTbAuthService.getIdpAccessToken", () {
     test("answers the raw Keycloak token of a signed in user", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
