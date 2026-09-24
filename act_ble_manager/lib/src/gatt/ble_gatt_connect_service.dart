@@ -13,6 +13,7 @@ import 'package:act_ble_manager/src/types/bond_state.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
+import 'package:clock/clock.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
@@ -138,7 +139,8 @@ class BleGattConnectService extends AbsWithLifeCycle {
   /// Because the connection may fail, this try multiple times the connection
   /// before considering that a problem occurred
   Future<bool> _manageLowLevelConnection(BleDevice device) async {
-    final elapsedTime = Stopwatch();
+    // The clock of the package is the one of the application, which a test moves in its place.
+    final elapsedTime = clock.stopwatch();
     var leftDuration = ble_constants.connectTimeout;
 
     void calculateLeftDuration() {
@@ -214,7 +216,7 @@ class BleGattConnectService extends AbsWithLifeCycle {
         await device.disconnect();
 
         //We wait some times before retrying
-        await Future.delayed(ble_constants.lowLevelConnectTimeout);
+        await Future.delayed(ble_constants.lowLevelConnectRetryDelay);
       }
 
       await connSub.cancel();

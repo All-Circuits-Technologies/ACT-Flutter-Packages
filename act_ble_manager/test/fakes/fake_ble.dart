@@ -340,7 +340,9 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   ) {
     connected.add(id);
 
-    return const Stream<void>.empty();
+    // The plugin reads the states of the device on the stream of the connections, and only once
+    // the connecting itself was answered: this one event is what opens that reading.
+    return Stream<void>.value(null);
   }
 
   @override
