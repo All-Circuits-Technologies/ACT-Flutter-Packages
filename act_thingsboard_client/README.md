@@ -22,6 +22,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Register the managers](#register-the-managers)
   - [Sign the user in](#sign-the-user-in)
   - [Read the devices of the user](#read-the-devices-of-the-user)
+  - [Claim a device](#claim-a-device)
   - [Watch the telemetry of a device](#watch-the-telemetry-of-a-device)
 - [Configuration](#configuration)
 - [Testing](#testing)
@@ -243,10 +244,16 @@ if (result.status == AuthSignInStatus.done) {
 final devices = globalGetIt().get<TbStdAuthServerReqManager>().devicesService;
 
 final page = await devices.getCurrentCustomerDevices();
+final infos = await devices.getCurrentCustomerDeviceInfos();
 final (success: found, deviceInfo: device) = await devices.getCustomerDeviceByName(
   deviceName: "a device",
 );
 ```
+
+`getCurrentCustomerDevices` answers `Device`, `getCurrentCustomerDeviceInfos` answers `DeviceInfo`,
+which is the same device plus what the server adds to it: whether it is active, the title of the
+customer it belongs to and the name of its profile. Both read the devices by pages of fifty unless
+they are handed a `PageLink` of their own.
 
 Anything the server can be asked which this package does not offer is one call away:
 
@@ -259,6 +266,67 @@ if (response.isOk) {
   ...
 }
 ```
+
+### Claim a device
+
+Claiming is what binds a device the server already knows to the customer of the signed-in user. The
+device is told a secret over a channel of its own, it republishes that secret to the server, and the
+application asks the server to match the two.
+
+```dart
+final devices = globalGetIt().get<TbStdAuthServerReqManager>().devicesService;
+
+final attempt = await devices.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+switch (attempt.outcome) {
+  case TbClaimOutcome.success:
+    final bound = await devices.isDeviceVisibleToCustomer(attempt.deviceId!);
+  case TbClaimOutcome.secretRefused:
+    // the device has not republished its secret yet, this one is worth trying again
+  default:
+    ...
+}
+
+await devices.releaseClaim(deviceName: "a device");
+```
+
+`claimDevice` answers a `TbClaimAttempt`, which is what the server said and nothing more: the status
+of the request, the HTTP status, the claim answer when there is one, and the device the server says
+it bound. Its `outcome` reads that answer as a `TbClaimOutcome`:
+
+| Outcome              | What the server answered                                          |
+| -------------------- | ----------------------------------------------------------------- |
+| `loginError`         | Nothing: the session is over, whatever the rest of the answer says |
+| `success`            | `SUCCESS`                                                          |
+| `alreadyClaimed`     | `CLAIMED`                                                          |
+| `refused`            | `FAILURE`                                                          |
+| `unknownDevice`      | No claim answer, and the HTTP status 404                           |
+| `secretRefused`      | No claim answer, and the HTTP status 400                           |
+| `communicationError` | Anything else                                                      |
+
+What the application does with an outcome belongs to the application: how many times a claim is
+tried again, whether a device is released before it is claimed again, and whether the device has to
+be read back once the server says it bound it. `isDeviceVisibleToCustomer` is what answers that last
+question: a customer can only read a device which is assigned to them, so a device which comes back
+is the proof the binding landed.
+
+Three things about that endpoint are worth knowing, because each of them was paid for once:
+
+- The server answers a JSON object when the claim works, but a **bare JSON string** — `"CLAIMED"`,
+  `"FAILURE"` — when it refuses. The request is therefore sent untyped: asking Dio for a `Map` makes
+  the refusals throw a cast error instead of being read, and a refusal is exactly what is worth
+  telling the user about.
+- The claim is called directly rather than through `DeviceService.claimDevice`, because the parser
+  of the packaged `ClaimResult` reads `json['device']` unconditionally, and the server omits that
+  field on the very answers worth telling apart.
+- `secretKey` is always sent, and it is never null: the server dereferences it without checking and
+  answers a 500 when it is missing ([thingsboard/thingsboard#3031][tb-3031]).
+
+The statuses of a session which is over, 401 and 403, are the only 4xx which are left throwing, so
+that the manager of the requests sees a session problem, refreshes the token and tries the request
+once more. Everything under 500 which is not one of those two is read rather than raised.
+
+[tb-3031]: https://github.com/thingsboard/thingsboard/issues/3031
 
 ### Watch the telemetry of a device
 
@@ -333,8 +401,16 @@ refuses, on the value which is newer and the one which is older, on the update w
 error, and on the closing which gives the subscription up. The handler is covered on the four kinds
 of telemetry, on the keys of another handler it says nothing about, and on the device two handlers
 watch through a single subscription. The devices of a customer are covered on the pages which are
-read until the device is found. The barrel is covered on the upstream types it re-exports, which an
-application reaches through it alone.
+read until the device is found, and on the list of the device infos.
+
+The claim is covered on the whole decision table, one test per row, and on the two parsers, on an
+answer which is an object, on the bare string the server refuses with, on an answer which carries
+nothing and on one this version of the server does not know about. The call itself is covered on the
+secret which is sent and the endpoint it is sent to, on the refusal which is read rather than
+raised, on the HTTP status which is answered, and on the statuses the options let through: 400 and
+404 are read, 401, 403 and anything from 500 up keep throwing so that the manager of the requests
+sees them. The release is covered on the endpoint it deletes. The barrel is covered on the upstream
+types it re-exports, which an application reaches through it alone.
 
 What is out of reach is the ten seconds a key which is no longer watched is kept for, and the
 address the client is built with: the first is read from the clock of the device rather than from a
