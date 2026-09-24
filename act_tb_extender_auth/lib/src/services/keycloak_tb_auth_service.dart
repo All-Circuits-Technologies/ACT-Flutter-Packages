@@ -307,6 +307,13 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   @override
   Future<String?> getEmailAddress() async => _brokerUser?.email;
 
+  /// Get the user the broker named at the last login, with the names it gave; null while nobody
+  /// is signed in.
+  ///
+  /// A session restored from the tokens of a previous run only knows what the ThingsBoard token
+  /// names: the ids and the email address, not the names.
+  Future<BrokerUser?> getBrokerUser() async => _brokerUser;
+
   /// End the Keycloak session; the provider forgets the Keycloak tokens whatever Keycloak answers.
   ///
   /// An error is logged and not rethrown: the caller is signing the user out, and nothing it could
