@@ -90,12 +90,18 @@ A user is signed in as long as one of the two tokens is still valid. Asking for 
 access one has expired refreshes it; when the refresh one has expired too, nothing is given back
 and the user is signed out.
 
+`refreshTokens()` asks fresh tokens right away, for when the account changed server side: the
+claims of the token in hand are then behind, and waiting for the expiry would mean waiting with
+them.
+
 A provider which hands only a refresh token over is asked for an access token straight away, so
 that what the application gets is always a usable pair. A provider which hands nothing usable over
 is an error, and the user stays signed out.
 
-Signing out ends the session at the provider first: the tokens are only forgotten once the provider
-answered, so a provider which is unreachable leaves the user signed in rather than half signed out.
+Signing out asks the provider to end its session, then forgets the tokens whatever it answered: a
+provider which is unreachable, or a page of the browser the user closed, must not leave tokens
+behind, otherwise the next call would sign the user in again without asking. `signOut` answers
+false in that case, to say that the session at the provider may still be open.
 
 The two moments which speak to the provider are protected by a mutex, so a page which asks for the
 tokens while a sign in is still running waits rather than starting a second round trip.
@@ -219,11 +225,14 @@ included, which the tests keep in memory.
 The service is covered on the sign in which brings tokens back, the one the user gave up, the one
 the provider refused, and the one which only brings a refresh token back and asks for an access
 token straight away. The sign out is covered on the session which is ended and the tokens which are
-forgotten, and on the provider which is unreachable and leaves the user signed in.
+forgotten, and on the provider which is unreachable, which leaves no token behind and the user
+signed out all the same.
 
 The tokens are covered on the user who is still signed in, the access token which is refreshed, and
-the refresh token which has expired too. The storage is covered on the tokens it hands over when it
-is set, and on the ones of the run which are kept over the ones it held.
+the refresh token which has expired too, and the refresh on demand on the token which is still
+valid and on the session which has no refresh token to ask with. The storage is covered on the
+tokens it hands over when it is set, and on the ones of the run which are kept over the ones it
+held.
 
 The configurations are covered on every way of naming a provider, on the default issuer of a
 package which knows its own, and on the values which are missing or of the wrong type.
