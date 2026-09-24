@@ -16,8 +16,6 @@ void main() {
       "provisioning_conflict": BrokerAuthError.provisioningConflict,
       "thingsboard_unavailable": BrokerAuthError.thingsboardUnavailable,
       "keycloak_unavailable": BrokerAuthError.keycloakUnavailable,
-      "deletion_not_configured": BrokerAuthError.deletionNotConfigured,
-      "admin_not_configured": BrokerAuthError.adminNotConfigured,
       "internal_error": BrokerAuthError.internalError,
       "reauth_required": BrokerAuthError.reauthRequired,
       "release_refused": BrokerAuthError.releaseRefused,

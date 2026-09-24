@@ -247,12 +247,12 @@ void main() {
     test("reads the error code of a deletion the broker refused", () async {
       final client = aClient(
         (_) async => http.Response(
-          jsonEncode({"error": "deletion_not_configured", "message": "nope"}),
+          jsonEncode({"error": "not_configured", "message": "nope"}),
           501,
         ),
       );
 
-      expect(await client.deleteAccount("kc"), BrokerAuthError.deletionNotConfigured);
+      expect(await client.deleteAccount("kc"), BrokerAuthError.notConfigured);
     });
 
     test("reads a transport error as a network failure", () async {
@@ -288,12 +288,12 @@ void main() {
 
     test("reads the error code the broker answers", () async {
       final client = aClient(
-        (_) async => http.Response(jsonEncode({"error": "admin_not_configured"}), 501),
+        (_) async => http.Response(jsonEncode({"error": "not_configured"}), 501),
       );
 
       expect(
         await client.acceptTerms("kc-token", version: "v1"),
-        BrokerAuthError.adminNotConfigured,
+        BrokerAuthError.notConfigured,
       );
     });
 

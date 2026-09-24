@@ -52,16 +52,6 @@ enum BrokerAuthError {
   /// API access or the source of the terms.
   notConfigured,
 
-  /// HTTP 501 `deletion_not_configured`: this broker tenant has no Keycloak Admin API access, so
-  /// it can't delete an account at all. A broker which answers [notConfigured] no longer answers
-  /// this one.
-  deletionNotConfigured,
-
-  /// HTTP 501 `admin_not_configured`: this broker tenant has no Keycloak Admin API access, so it
-  /// can't write anything on an account. A broker which answers [notConfigured] no longer answers
-  /// this one.
-  adminNotConfigured,
-
   /// HTTP 500 `internal_error`: an unexpected error on the side of the broker.
   internalError,
 
@@ -88,8 +78,6 @@ enum BrokerAuthError {
     "terms_outdated" => BrokerAuthError.termsOutdated,
     "terms_source_unavailable" => BrokerAuthError.termsSourceUnavailable,
     "not_configured" => BrokerAuthError.notConfigured,
-    "deletion_not_configured" => BrokerAuthError.deletionNotConfigured,
-    "admin_not_configured" => BrokerAuthError.adminNotConfigured,
     "internal_error" => BrokerAuthError.internalError,
     _ => BrokerAuthError.unknown,
   };
