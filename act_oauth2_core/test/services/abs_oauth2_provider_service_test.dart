@@ -254,14 +254,21 @@ void main() {
       expect(service.authStatus, AuthStatus.signedOut);
     });
 
-    test("keeps the user signed in when the provider refused to end the session", () async {
-      final service = await aService();
+    test("forgets the tokens and signs the user out when the provider refused to end the "
+        "session", () async {
+      final storage = FakeTokensStorage();
+      final service = await aService(storage: storage);
       appAuth.authorizationAnswer = _authorized();
       await service.redirectToExternalUserSignIn();
-      appAuth.endSessionError = Exception("the provider is not there");
+      appAuth.endSessionError = Exception("the browser page was closed");
 
       expect(await service.signOut(), isFalse);
-      expect(service.authStatus, AuthStatus.signedIn);
+
+      expect(service.authStatus, AuthStatus.signedOut);
+      expect(storage.tokens, isNull);
+      expect(await service.getTokens(), isNull);
+      expect(await service.isUserSigned(), isFalse);
+      expect(appAuth.tokenRequests, isEmpty, reason: "nothing may sign the user in silently");
     });
   });
 
@@ -340,6 +347,27 @@ void main() {
       appAuth.tokenError = Exception("the provider is not there");
 
       expect(await service.getTokens(), isNull);
+    });
+  });
+
+  group("AbsOAuth2ProviderService.refreshTokens", () {
+    test("refreshes the tokens on demand while the access token is still valid", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+      await service.redirectToExternalUserSignIn();
+      appAuth.tokenAnswer = _tokens(refreshToken: "a newer refresh token");
+
+      expect(await service.refreshTokens(), isTrue);
+
+      expect(appAuth.tokenRequests.single.refreshToken, "a refresh token");
+      expect((await service.getTokens())?.accessToken?.raw, "another token");
+    });
+
+    test("answers false and asks nothing without a valid refresh token", () async {
+      final service = await aService();
+
+      expect(await service.refreshTokens(), isFalse);
+      expect(appAuth.tokenRequests, isEmpty);
     });
   });
 

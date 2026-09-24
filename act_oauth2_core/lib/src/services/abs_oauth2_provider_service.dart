@@ -172,15 +172,21 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   });
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
+  ///
+  /// The tokens are forgotten and the user is signed out whatever the provider answers: a session
+  /// which couldn't be ended at the provider, because the page of the browser was closed or the
+  /// network is down, must not leave tokens behind, otherwise the next call would sign the user in
+  /// again without asking.
+  ///
+  /// Answers false when the provider didn't end its session, which may then still be open there.
   @override
   Future<bool> signOut() => _mutex.protect(() async {
-    final redirectUrl = await buildPostLogoutRedirectUrl();
     var result = false;
     try {
       await appAuth.endSession(
         EndSessionRequest(
           idTokenHint: _authTokens.idToken,
-          postLogoutRedirectUrl: redirectUrl,
+          postLogoutRedirectUrl: await buildPostLogoutRedirectUrl(),
           issuer: _conf.issuer,
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
@@ -188,19 +194,15 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
       );
       result = true;
     } catch (error) {
-      logsHelper.e("An error occurred when tried to sign out the user");
+      logsHelper.e("An error occurred when tried to end the session at the provider: $error");
     }
 
-    if (!result) {
-      return false;
-    }
-
-    // Clean the auth info
+    // Clean the auth info, whatever the provider answered
     await _setOAuthTokens(null);
 
     setAuthStatus(AuthStatus.signedOut);
 
-    return true;
+    return result;
   });
 
   /// {@macro act_shared_auth.MixinAuthService.isUserSigned}
@@ -234,6 +236,22 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     }
 
     return _authTokens;
+  });
+
+  /// Ask the provider for fresh tokens right away, even when the access token is still valid.
+  ///
+  /// An application calls it when the account changed on the provider side and the claims of the
+  /// token in hand are known to be behind, the acceptance of the terms for instance.
+  ///
+  /// Answers false when there is no valid refresh token, or when the provider refused.
+  Future<bool> refreshTokens() => _mutex.protect(() async {
+    final refreshToken = _authTokens.refreshToken;
+
+    if (refreshToken == null || !refreshToken.isValid()) {
+      return false;
+    }
+
+    return _getTokenFromRefresh(refreshToken: refreshToken.raw);
   });
 
   /// To call in order to the set the [AuthStatus] and send an event to the [AuthStatus] stream
