@@ -4,6 +4,7 @@
 
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
@@ -13,16 +14,21 @@ import '../../fakes/fake_thingsboard.dart';
 void main() {
   late FakeTbRequestManager requestManager;
   late FakeDeviceService devices;
+  late FakeAttributeService attributes;
   late TbDevicesService service;
 
   setUpAll(() {
     registerFallbackValue(PageLink(1));
+    registerFallbackValue(DeviceId(aDeviceId));
+    registerFallbackValue(Options());
   });
 
   setUp(() {
     requestManager = FakeTbRequestManager();
     devices = FakeDeviceService();
+    attributes = FakeAttributeService();
     when(requestManager.client.getDeviceService).thenReturn(devices);
+    when(requestManager.client.getAttributeService).thenReturn(attributes);
 
     service = TbDevicesService(
       requestManager: requestManager,
@@ -36,6 +42,20 @@ void main() {
 
   /// Has the server answer that nobody is signed in.
   void signedOut() => when(requestManager.client.getAuthUser).thenReturn(null);
+
+  /// Has the server answer [data] with the HTTP status [status] to a claim.
+  void serverAnswersClaim(Object? data, {int status = 200}) => when(
+    () => requestManager.client.post<dynamic>(
+      any(),
+      data: any(named: "data"),
+      options: any(named: "options"),
+    ),
+  ).thenAnswer((_) async => anAnswer(data, status: status));
+
+  /// Has the server accept the release of a claim.
+  void serverAnswersRelease() => when(
+    () => requestManager.client.delete<void>(any()),
+  ).thenAnswer((_) async => Response<void>(requestOptions: RequestOptions(path: "/")));
 
   group("TbDevicesService.getCurrentCustomerId", () {
     test("answers the customer the user who is signed in belongs to", () async {
@@ -213,6 +233,100 @@ void main() {
     });
   });
 
+  group("TbDevicesService.purgeDeviceTimeseries", () {
+    /// Has the server answer [keys] as the time series keys of the device, as the untyped JSON list
+    /// the HTTP client hands over.
+    void deviceHoldsKeys(List<String> keys) => when(
+      () => requestManager.client.get<List<dynamic>>(
+        "/api/plugins/telemetry/DEVICE/$aDeviceId/keys/timeseries",
+        options: any(named: "options"),
+      ),
+    ).thenAnswer(
+      (_) async => Response<List<dynamic>>(requestOptions: RequestOptions(), data: <dynamic>[...keys]),
+    );
+
+    /// Has the server answer [deleted] when it is asked to delete the time series of a device.
+    void deletionAnswers({required bool deleted}) => when(
+      () => attributes.deleteEntityTimeseries(
+        any(),
+        any(),
+        deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+        startTs: any(named: "startTs"),
+        endTs: any(named: "endTs"),
+        rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+      ),
+    ).thenAnswer((_) async => deleted);
+
+    /// What the server was asked to delete, as the arguments of the single deletion it received.
+    List<dynamic> deletionAskedFor() => verify(
+      () => attributes.deleteEntityTimeseries(
+        captureAny(),
+        captureAny(),
+        deleteAllDataForKeys: captureAny(named: "deleteAllDataForKeys"),
+        startTs: captureAny(named: "startTs"),
+        endTs: captureAny(named: "endTs"),
+        rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+      ),
+    ).captured;
+
+    test("deletes every value of every key the device holds and answers true", () async {
+      deviceHoldsKeys(["temp", "hum"]);
+      deletionAnswers(deleted: true);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isTrue);
+
+      final asked = deletionAskedFor();
+
+      expect((asked[0] as EntityId).id, aDeviceId);
+      expect(asked[1], ["temp", "hum"]);
+      expect(asked[2], isTrue);
+      expect(asked[3], 0);
+      expect(asked[4], 0);
+    });
+
+    test("answers true and deletes nothing when the device holds no time series", () async {
+      deviceHoldsKeys([]);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isTrue);
+
+      verifyNever(
+        () => attributes.deleteEntityTimeseries(
+          any(),
+          any(),
+          deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+          startTs: any(named: "startTs"),
+          endTs: any(named: "endTs"),
+          rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+        ),
+      );
+    });
+
+    test("answers false and deletes nothing when the keys cannot be read", () async {
+      deviceHoldsKeys(["temp"]);
+      requestManager.answers.add(RequestStatus.loginError);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isFalse);
+
+      verifyNever(
+        () => attributes.deleteEntityTimeseries(
+          any(),
+          any(),
+          deleteAllDataForKeys: any(named: "deleteAllDataForKeys"),
+          startTs: any(named: "startTs"),
+          endTs: any(named: "endTs"),
+          rewriteLatestIfDeleted: any(named: "rewriteLatestIfDeleted"),
+        ),
+      );
+    });
+
+    test("answers false when the server refuses the deletion", () async {
+      deviceHoldsKeys(["temp"]);
+      deletionAnswers(deleted: false);
+
+      expect(await service.purgeDeviceTimeseries(deviceId: aDeviceId), isFalse);
+    });
+  });
+
   group("TbDevicesService.createTelemetryHandler", () {
     test("hands over a handler of the telemetry of the device", () {
       expect(service.createTelemetryHandler(aDeviceId), isA<TbTelemetryHandler>());
@@ -247,4 +361,268 @@ void main() {
       expect(requestManager.client.telemetryService.current, isNull);
     });
   });
+
+  group("TbDevicesService.getCurrentCustomerDeviceInfos", () {
+    test("answers the devices of the customer of the user", () async {
+      signedInAs();
+      final page = aPage([aDeviceInfo("a device")]);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => page);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), same(page));
+    });
+
+    test("asks the server for the customer of the user", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final customerId = verify(
+        () => devices.getCustomerDeviceInfos(captureAny(), any()),
+      ).captured.single;
+
+      expect(customerId, "a-customer");
+    });
+
+    test("reads the devices by pages of fifty unless it is told otherwise", () async {
+      signedInAs();
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos();
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect((pageLink as PageLink).pageSize, 50);
+    });
+
+    test("reads the page it is asked for", () async {
+      signedInAs();
+      final asked = PageLink(10, 2);
+      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer((_) async => aPage([]));
+
+      await service.getCurrentCustomerDeviceInfos(pageLink: asked);
+
+      final pageLink = verify(
+        () => devices.getCustomerDeviceInfos(any(), captureAny()),
+      ).captured.single;
+
+      expect(pageLink, same(asked));
+    });
+
+    test("answers nothing when the customer of the user is unknown", () async {
+      signedOut();
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+      verifyNever(() => devices.getCustomerDeviceInfos(any(), any()));
+    });
+
+    test("answers nothing when the request to the server failed", () async {
+      signedInAs();
+      requestManager.answers.addAll([RequestStatus.success, RequestStatus.globalError]);
+
+      expect(await service.getCurrentCustomerDeviceInfos(), isNull);
+    });
+  });
+
+  group("TbDevicesService.claimDevice", () {
+    test("sends the secret to the claim endpoint of the device", () async {
+      serverAnswersClaim({"response": "SUCCESS"});
+
+      await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      final call = verify(
+        () => requestManager.client.post<dynamic>(
+          captureAny(),
+          data: captureAny(named: "data"),
+          options: any(named: "options"),
+        ),
+      ).captured;
+
+      expect(call.first, "/api/customer/device/a%20device/claim");
+      expect(call.last, {"secretKey": "a secret"});
+    });
+
+    test("answers what the server said and the device it bound", () async {
+      serverAnswersClaim({
+        "response": "SUCCESS",
+        "device": {
+          "id": {"id": "a-device-id"},
+        },
+      });
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.status, RequestStatus.success);
+      expect(attempt.response, ClaimResponse.SUCCESS);
+      expect(attempt.deviceId, "a-device-id");
+      expect(attempt.httpStatus, 200);
+      expect(attempt.outcome, TbClaimOutcome.success);
+    });
+
+    test("reads the refusal the server answers as a bare string", () async {
+      serverAnswersClaim("CLAIMED");
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.response, ClaimResponse.CLAIMED);
+      expect(attempt.deviceId, isNull);
+    });
+
+    test("answers the status the server refused the claim with", () async {
+      serverAnswersClaim("FAILURE", status: 400);
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.response, ClaimResponse.FAILURE);
+      expect(attempt.httpStatus, 400);
+      expect(attempt.outcome, TbClaimOutcome.refused);
+    });
+
+    test("reads the refusals of the server and leaves the session errors throwing", () async {
+      serverAnswersClaim("FAILURE");
+
+      await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      final options =
+          verify(
+                () => requestManager.client.post<dynamic>(
+                  any(),
+                  data: any(named: "data"),
+                  options: captureAny(named: "options"),
+                ),
+              ).captured.single
+              as Options;
+
+      expect(options.validateStatus?.call(400), isTrue);
+      expect(options.validateStatus?.call(404), isTrue);
+      expect(options.validateStatus?.call(401), isFalse);
+      expect(options.validateStatus?.call(403), isFalse);
+      expect(options.validateStatus?.call(500), isFalse);
+    });
+
+    test("answers the status of the request when the session is over", () async {
+      requestManager.answers.add(RequestStatus.loginError);
+
+      final attempt = await service.claimDevice(deviceName: "a device", secretKey: "a secret");
+
+      expect(attempt.status, RequestStatus.loginError);
+      expect(attempt.response, isNull);
+      expect(attempt.httpStatus, isNull);
+    });
+  });
+
+  group("TbDevicesService.releaseClaim", () {
+    test("asks the server to release the device", () async {
+      serverAnswersRelease();
+
+      await service.releaseClaim(deviceName: "a device");
+
+      final path = verify(() => requestManager.client.delete<void>(captureAny())).captured.single;
+
+      expect(path, "/api/customer/device/a%20device/claim");
+    });
+
+    test("answers that the request went through", () async {
+      serverAnswersRelease();
+
+      expect((await service.releaseClaim(deviceName: "a device")).isOk, isTrue);
+    });
+
+    test("answers the status of the request when the session is over", () async {
+      requestManager.answers.add(RequestStatus.loginError);
+
+      final response = await service.releaseClaim(deviceName: "a device");
+
+      expect(response.status, RequestStatus.loginError);
+      verifyNever(() => requestManager.client.delete<void>(any()));
+    });
+  });
+
+  group("TbDevicesService.isDeviceVisibleToCustomer", () {
+    test("says that the device is visible when the customer reads it back", () async {
+      when(() => devices.getDevice(any())).thenAnswer((_) async => Device("a device", "a type"));
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isTrue);
+    });
+
+    test("says that the device is not visible when the server answers none", () async {
+      when(() => devices.getDevice(any())).thenAnswer((_) async => null);
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isFalse);
+    });
+
+    test("says that the device is not visible when the request to the server failed", () async {
+      requestManager.answers.add(RequestStatus.globalError);
+
+      expect(await service.isDeviceVisibleToCustomer(aDeviceId), isFalse);
+    });
+  });
+
+  group("TbDevicesService.parseDeviceId", () {
+    test("reads the device the server says it bound", () {
+      expect(
+        TbDevicesService.parseDeviceId({
+          "device": {
+            "id": {"id": "a-device-id"},
+          },
+        }),
+        "a-device-id",
+      );
+    });
+
+    test("answers nothing when the answer carries no device", () {
+      expect(TbDevicesService.parseDeviceId(const <String, dynamic>{}), isNull);
+      expect(TbDevicesService.parseDeviceId(const {"device": "a device"}), isNull);
+      expect(TbDevicesService.parseDeviceId(const {"device": <String, dynamic>{}}), isNull);
+      expect(
+        TbDevicesService.parseDeviceId(const {
+          "device": {"id": <String, dynamic>{}},
+        }),
+        isNull,
+      );
+      expect(
+        TbDevicesService.parseDeviceId(const {
+          "device": {
+            "id": {"id": ""},
+          },
+        }),
+        isNull,
+      );
+    });
+
+    test("answers nothing when the server answered a bare string or nothing at all", () {
+      expect(TbDevicesService.parseDeviceId("CLAIMED"), isNull);
+      expect(TbDevicesService.parseDeviceId(null), isNull);
+    });
+  });
+
+  group("TbDevicesService.parseClaimResponse", () {
+    test("reads the claim answer of an answer which is an object", () {
+      expect(
+        TbDevicesService.parseClaimResponse(const {"response": "SUCCESS"}),
+        ClaimResponse.SUCCESS,
+      );
+    });
+
+    test("reads the claim answer the server sent as a bare string", () {
+      expect(TbDevicesService.parseClaimResponse("CLAIMED"), ClaimResponse.CLAIMED);
+      expect(TbDevicesService.parseClaimResponse("FAILURE"), ClaimResponse.FAILURE);
+    });
+
+    test("reads a claim answer whatever its case", () {
+      expect(TbDevicesService.parseClaimResponse("success"), ClaimResponse.SUCCESS);
+    });
+
+    test("answers nothing when the answer carries no claim answer", () {
+      expect(TbDevicesService.parseClaimResponse(null), isNull);
+      expect(TbDevicesService.parseClaimResponse(const <String, dynamic>{}), isNull);
+      expect(TbDevicesService.parseClaimResponse("not a verdict"), isNull);
+    });
+  });
 }
+
+/// The answer of the server to a claim, which carries [data] and the HTTP status [status].
+Response<dynamic> anAnswer(Object? data, {int status = 200}) =>
+    Response<dynamic>(requestOptions: RequestOptions(path: "/"), data: data, statusCode: status);

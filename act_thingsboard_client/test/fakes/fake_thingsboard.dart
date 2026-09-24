@@ -215,6 +215,10 @@ class FakeTbClient extends Mock implements ThingsboardClient {
 /// The service of the devices of the server, which answers what the test decided.
 class FakeDeviceService extends Mock implements DeviceService {}
 
+/// The service of the attributes and the time series of the server, which answers what the test
+/// decided.
+class FakeAttributeService extends Mock implements AttributeService {}
+
 /// A manager of the requests to the server which answers what the test decided.
 ///
 /// A real manager builds its client from the configuration of the application and reaches the
