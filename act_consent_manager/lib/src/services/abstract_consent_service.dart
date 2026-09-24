@@ -328,6 +328,24 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
     await loadAllConsentInfo();
   }
 
+  /// Forget everything loaded about the consent, what the user agreed to included.
+  ///
+  /// This is for a change of account: what the previous user agreed to must not be taken for the
+  /// choice of the next one. Nothing is loaded again here; the next [loadAllConsentInfo] reads it
+  /// all, for whoever is signed in by then.
+  Future<void> resetAllConsentInfo() async {
+    _logsHelper.i('Resetting all consent info');
+    await _stateMutex.protect(
+      () async => _loadTextWidgetMutex.protect(() async {
+        final previous = consentState;
+        _textWidget = null;
+        _latestVersion = null;
+        _consentData = null;
+        _emitIfNecessary(previous: previous);
+      }),
+    );
+  }
+
   /// Change the latest version of the consent, publish the new global state if needed
   void _setLatestVersion(String? latestVersion) {
     if (latestVersion == _latestVersion) {

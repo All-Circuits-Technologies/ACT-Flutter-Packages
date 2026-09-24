@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:act_consent_manager/act_consent_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter/widgets.dart';
@@ -318,6 +319,33 @@ void main() {
 
       expect(service.userDataCalls, 1);
       expect(service.consentState, ConsentStateEnum.accepted);
+    });
+  });
+
+  group("AbstractConsentService.resetAllConsentInfo", () {
+    test("reads what the next user agreed to", () async {
+      final service = aService(userData: _agreed());
+      await service.loadAllConsentInfo();
+
+      await service.resetAllConsentInfo();
+      service.userDataAnswer = const ResultWithStatus(status: ConsentLoadStatus.success);
+      await service.loadAllConsentInfo();
+
+      expect(service.userDataCalls, 2);
+      expect(service.latestVersionCalls, 2);
+      expect(service.consentState, ConsentStateEnum.notAccepted);
+    });
+
+    test("does not know where the consent stands until it loads again", () async {
+      final service = aService(userData: _agreed());
+      await service.loadAllConsentInfo();
+
+      final pushed = expectLater(service.stateStream, emits(ConsentStateEnum.unknown));
+      await service.resetAllConsentInfo();
+
+      await pushed;
+      expect(service.consentState, ConsentStateEnum.unknown);
+      expect(service.userDataCalls, 1);
     });
   });
 }
