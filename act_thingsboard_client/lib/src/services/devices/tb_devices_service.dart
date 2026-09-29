@@ -190,12 +190,21 @@ class TbDevicesService extends AbsWithLifeCycle {
     return (success: true, deviceInfo: deviceFound);
   }
 
-  /// Dispose the service
-  @override
-  Future<void> disposeLifeCycle() async {
+  /// Forget the values of every device watched so far: their subscriptions are given up, and the
+  /// next handler asked for a device starts from nothing. The request manager calls it when the
+  /// user leaves, so that nothing of an account reaches the next one.
+  Future<void> clear() async {
     for (final watcher in _deviceValues.values) {
       await watcher.dispose();
     }
+
+    _deviceValues.clear();
+  }
+
+  /// Dispose the service
+  @override
+  Future<void> disposeLifeCycle() async {
+    await clear();
 
     await super.disposeLifeCycle();
   }

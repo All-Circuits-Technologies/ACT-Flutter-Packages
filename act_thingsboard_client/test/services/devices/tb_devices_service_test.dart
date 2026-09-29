@@ -301,6 +301,28 @@ void main() {
     });
   });
 
+  group("TbDevicesService.clear", () {
+    test("gives up the subscriptions of every device it watched", () async {
+      final handler = service.createTelemetryHandler(aDeviceId);
+      await handler.add(tsKeys: ["temp"]);
+
+      await service.clear();
+
+      expect(requestManager.client.telemetryService.current, isNull);
+    });
+
+    test("starts the values of a device from nothing once cleared", () async {
+      final first = service.createTelemetryHandler(aDeviceId);
+      await first.add(tsKeys: ["temp"]);
+      await service.clear();
+
+      final second = service.createTelemetryHandler(aDeviceId);
+      await second.add(tsKeys: ["temp"]);
+
+      expect(requestManager.client.telemetryService.subscribed.length, 2);
+    });
+  });
+
   group("TbDevicesService.disposeLifeCycle", () {
     test("gives up the subscriptions of every device it watched", () async {
       final handler = service.createTelemetryHandler(aDeviceId);

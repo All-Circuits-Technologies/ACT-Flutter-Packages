@@ -72,8 +72,10 @@ server without ever asking who the user is. The authentication builds on it, and
 `AbsTbServerReqManager`, the manager of the requests which need a user.
 
 `TbStdAuthServerReqManager` is the implementation of that manager for a server which signs its users
-in itself. An application whose users are signed in elsewhere writes its own by extending
-`AbsTbServerReqManager`, and only has to say how a token reaches the client.
+in itself. It watches the status of the user, and forgets the values of the devices watched so far
+when the user leaves, so that nothing of an account reaches the next one. An application whose users
+are signed in elsewhere writes its own by extending `AbsTbServerReqManager`, and only has to say how
+a token reaches the client.
 
 ### Where the tokens of the user live
 
@@ -331,7 +333,8 @@ Signing a user in is covered on the three ways of signing a user in again, on th
 are kept and on the ones the server refuses, on the sign out, and on what is pushed on the stream of
 the status. The request which needs a user is covered on the tokens which are handed to the client,
 on the session which is over and has the request done once more, on the second failure which is
-given up on, and on the error which is answered without a second try.
+given up on, and on the error which is answered without a second try. The manager is covered on the
+devices it forgets when the user leaves, and keeps while the user stays.
 
 The telemetry is covered on the keys which are asked of the server and the order they are asked in,
 on the subscription which is rebuilt when a key is added, on the one which is kept when the server
