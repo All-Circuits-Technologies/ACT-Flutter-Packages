@@ -243,10 +243,16 @@ if (result.status == AuthSignInStatus.done) {
 final devices = globalGetIt().get<TbStdAuthServerReqManager>().devicesService;
 
 final page = await devices.getCurrentCustomerDevices();
+final infos = await devices.getCurrentCustomerDeviceInfos();
 final (success: found, deviceInfo: device) = await devices.getCustomerDeviceByName(
   deviceName: "a device",
 );
 ```
+
+`getCurrentCustomerDevices` answers `Device`, `getCurrentCustomerDeviceInfos` answers `DeviceInfo`,
+which is the same device plus what the server adds to it: whether it is active, the title of the
+customer it belongs to and the name of its profile. Both read the devices by pages of fifty unless
+they are handed a `PageLink` of their own.
 
 Anything the server can be asked which this package does not offer is one call away:
 
@@ -333,8 +339,8 @@ refuses, on the value which is newer and the one which is older, on the update w
 error, and on the closing which gives the subscription up. The handler is covered on the four kinds
 of telemetry, on the keys of another handler it says nothing about, and on the device two handlers
 watch through a single subscription. The devices of a customer are covered on the pages which are
-read until the device is found. The barrel is covered on the upstream types it re-exports, which an
-application reaches through it alone.
+read until the device is found, and on the list of the device infos. The barrel is covered on the
+upstream types it re-exports, which an application reaches through it alone.
 
 What is out of reach is the ten seconds a key which is no longer watched is kept for, and the
 address the client is built with: the first is read from the clock of the device rather than from a
