@@ -6,6 +6,7 @@ import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_local_storage_manager/src/mixins/mixin_storage_singleton.dart';
 import 'package:act_local_storage_manager/src/mixins/mixin_string_storage_singleton.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 /// This is the singleton used to (only) access the secrets storage.
@@ -50,6 +51,15 @@ class SecretsSingleton extends AbsWithLifeCycle
     return _instance!;
   }
 
+  /// The iOS options a secret is deleted with
+  ///
+  /// The iOS keychain only deletes the items which match every attribute of the query, and the
+  /// default options name the `unlocked` accessibility while the secrets are written with
+  /// `first_unlock` or `first_unlock_this_device`: nothing matched, and nothing was deleted. Without
+  /// an accessibility, the query matches the item whatever it was written with.
+  @visibleForTesting
+  static const deleteIOSOptions = IOSOptions(accessibility: null);
+
   /// This is the secure storage instance to use for the items
   final FlutterSecureStorage _secureStorage;
 
@@ -71,11 +81,12 @@ class SecretsSingleton extends AbsWithLifeCycle
   /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
   @override
   Future<void> delete({required String key, Object? extra}) async =>
-      _secureStorage.delete(key: key);
+      _secureStorage.delete(key: key, iOptions: deleteIOSOptions);
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAll}
   @override
-  Future<void> deleteAll({Object? extra}) async => _secureStorage.deleteAll();
+  Future<void> deleteAll({Object? extra}) async =>
+      _secureStorage.deleteAll(iOptions: deleteIOSOptions);
 
   /// {@macro act_local_storage_manager.MixinStringStorageSingleton.readValueFromExternalService}
   @override
