@@ -210,6 +210,9 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   /// The devices which were connected to, in the order they were.
   final List<String> connected = [];
 
+  /// The number of scans which were running each time a device was connected to.
+  final List<int> scansRunningOnConnect = [];
+
   /// The devices which were disconnected from, in the order they were.
   final List<String> disconnected = [];
 
@@ -240,6 +243,7 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   void reset() {
     scans.clear();
     connected.clear();
+    scansRunningOnConnect.clear();
     disconnected.clear();
     written.clear();
     subscribed.clear();
@@ -339,6 +343,7 @@ class FakeBlePlatform extends ReactiveBlePlatform {
     Duration? connectionTimeout,
   ) {
     connected.add(id);
+    scansRunningOnConnect.add(runningScans);
 
     // The plugin reads the states of the device on the stream of the connections, and only once
     // the connecting itself was answered: this one event is what opens that reading.

@@ -102,6 +102,24 @@ class BleGapService extends AbsWithLifeCycle {
   /// [BleScanHandler] when you do no more need to use the instance
   BleScanHandler toGenerateScanHandler() => BleScanHandler._(this);
 
+  /// Stops the scan while [action] runs, and starts it again afterwards if it is still asked for.
+  ///
+  /// On Android, a GATT connection which is opened while a scan runs fails with the
+  /// `status 133 GATT_ERROR`: the connection runs its low-level part through this method.
+  Future<T> pauseScanWhile<T>(Future<T> Function() action) async {
+    await _takeAndReleaseMutex.protect(_stopScan);
+
+    try {
+      return await action();
+    } finally {
+      await _takeAndReleaseMutex.protect(() async {
+        if (_isScanHasBeenAsked && _scanSub == null) {
+          await _startScan();
+        }
+      });
+    }
+  }
+
   /// Set advertising service UUIDs for filtering devices
   Future<void> setDeviceAdvServiceUuidsToSearch(Set<Uuid> uuids) async {
     if (setEquals(_deviceAdvServiceUuidToSearch, uuids)) {

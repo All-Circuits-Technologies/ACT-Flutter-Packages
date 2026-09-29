@@ -136,6 +136,23 @@ void main() {
   }
 
   group("BleGattService.connect", () {
+    test("stops the scan before the connection is asked for", () async {
+      final fake = FakeAsync();
+      final handler = manager.bleGapService.toGenerateScanHandler();
+      fake.run((_) => unawaited(handler.startScan()));
+      addTearDown(() async {
+        fake.run((_) => unawaited(handler.dispose()));
+        await letTimePass(fake, _aMargin);
+      });
+      await letTimePass(fake, _aMargin);
+
+      expect(ble.runningScans, 1);
+
+      await startConnecting(fake);
+
+      expect(ble.scansRunningOnConnect, [0]);
+    });
+
     test("tries again a short pause after an attempt which failed", () async {
       final fake = FakeAsync();
       await startConnecting(fake);
