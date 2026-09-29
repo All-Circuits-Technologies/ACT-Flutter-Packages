@@ -78,6 +78,21 @@ void main() {
       expect(validities, [false]);
     });
 
+    test("watches the service it is handed without reaching the global manager", () async {
+      service = FakeAuthService(authStatus: AuthStatus.signedIn);
+      final observer = AuthStreamObserver.ofService(service);
+      addTearDown(observer.dispose);
+      final validities = <bool>[];
+      final subscription = observer.stream.listen(validities.add);
+      addTearDown(subscription.cancel);
+
+      service.updateStatus(AuthStatus.signedOut);
+      await pumpEventQueue();
+
+      expect(observer.isValid, isFalse);
+      expect(validities, [false]);
+    });
+
     test("says nothing when the status changes without the user leaving", () async {
       final observer = await anObserver();
       final validities = <bool>[];
