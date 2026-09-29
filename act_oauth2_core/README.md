@@ -205,9 +205,18 @@ its own configuration:
 | `issuer`                | One of the three | The well known provider                           |
 | `discoveryUrl`          | One of the three | The discovery document of the provider            |
 | `serviceConfiguration`  | One of the three | The endpoints, one by one                         |
+| `ephemeralSession`      | No, true         | See below                                         |
 
 The endpoints of a provider which is named that way are `authorizationEndpoint`, `tokenEndpoint`
 and, for a provider which offers one, `endSessionEndpoint`.
+
+On iOS and macOS, the pages of the provider open in a browser session which shares nothing with
+the browser of the device, unless `ephemeralSession` is false. The system then asks the user
+nothing before opening them, and the session of the provider is not left in the browser, where
+anyone holding the device would find it; the user types their credentials at each sign in. An
+application which wants the single sign on with the browser sets `ephemeralSession` to false, and
+the system asks the user, at each sign in and sign out, whether the application may use the domain
+of the provider. The other platforms don't know of it.
 
 ## Testing
 
