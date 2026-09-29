@@ -103,6 +103,22 @@ void main() {
       expect(DefaultOAuth2Conf.tryToParseFromJson(json), isNull);
     });
 
+    test("opens the provider pages in an ephemeral session when nothing is said", () {
+      expect(DefaultOAuth2Conf.tryToParseFromJson(_json)!.ephemeralSession, isTrue);
+    });
+
+    test("shares the session of the browser when the application asks for it", () {
+      final json = _confWithout("ephemeralSession", and: {"ephemeralSession": false});
+
+      expect(DefaultOAuth2Conf.tryToParseFromJson(json)!.ephemeralSession, isFalse);
+    });
+
+    test("refuses an ephemeral session which is not a boolean", () {
+      final json = _confWithout("ephemeralSession", and: {"ephemeralSession": "yes"});
+
+      expect(DefaultOAuth2Conf.tryToParseFromJson(json), isNull);
+    });
+
     test("refuses a value which is not of the type the key carries", () {
       final json = _confWithout("clientId", and: {"clientId": 42});
 

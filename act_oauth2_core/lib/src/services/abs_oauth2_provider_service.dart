@@ -144,6 +144,11 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     await _loadAndSetTokensFromMemoryIfRelevant(storageService);
   }
 
+  /// The browser the provider pages are opened in, as [DefaultOAuth2Conf.ephemeralSession] asks
+  ExternalUserAgent get _externalUserAgent => _conf.ephemeralSession
+      ? ExternalUserAgent.ephemeralAsWebAuthenticationSession
+      : ExternalUserAgent.asWebAuthenticationSession;
+
   /// {@macro act_shared_auth.MixinAuthService.signInUser}
   @override
   Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
@@ -171,6 +176,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
           scopes: _conf.scopes,
           additionalParameters: additionalParameters,
+          externalUserAgent: _externalUserAgent,
         ),
       );
     } on FlutterAppAuthUserCancelledException catch (_) {
@@ -213,6 +219,7 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
           issuer: _conf.issuer,
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
+          externalUserAgent: _externalUserAgent,
         ),
       );
       result = true;
