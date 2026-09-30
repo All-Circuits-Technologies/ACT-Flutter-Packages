@@ -92,6 +92,9 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
   /// The result the provider answers a sign in with.
   AuthSignInResult redirectResult = const AuthSignInResult(status: AuthSignInStatus.done);
 
+  /// What the sign ins answer, one per call, before [redirectResult] takes over
+  final List<AuthSignInResult> redirectResults = [];
+
   /// The Keycloak tokens the provider holds, null when its session is gone.
   AuthTokens? tokens;
 
@@ -138,7 +141,7 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
     Map<String, String>? additionalParameters,
   }) async {
     signInParameters.add(additionalParameters);
-    return redirectResult;
+    return redirectResults.isEmpty ? redirectResult : redirectResults.removeAt(0);
   }
 
   @override
@@ -183,6 +186,9 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
 
   /// The status the broker answers a deletion with, a success by default.
   BrokerAuthError deleteStatus = BrokerAuthError.success;
+
+  /// What the deletions answer, one per call, before [deleteStatus] takes over
+  final List<BrokerAuthError> deleteStatuses = [];
 
   /// The number of deletions the service asked of the broker.
   int deleteCallCount = 0;
@@ -229,14 +235,11 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
     deleteCallCount++;
     lastToken = idpAccessToken;
 
-    return deleteStatus;
+    return deleteStatuses.isEmpty ? deleteStatus : deleteStatuses.removeAt(0);
   }
 
   @override
-  Future<BrokerAuthError> acceptTerms(
-    String idpAccessToken, {
-    required String version,
-  }) async {
+  Future<BrokerAuthError> acceptTerms(String idpAccessToken, {required String version}) async {
     acceptTermsCallCount++;
     lastToken = idpAccessToken;
     lastAcceptedVersion = version;
