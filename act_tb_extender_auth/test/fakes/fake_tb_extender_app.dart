@@ -171,7 +171,7 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
 /// The broker of the tests, which answers what a test hands it and records the calls it received.
 class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The answer the broker gives a login, the failure of an unknown error when a test gives none.
-  BrokerLoginResult Function(String keycloakAccessToken)? onLogin;
+  BrokerLoginResult Function(String idpAccessToken)? onLogin;
 
   /// The number of logins the service asked of the broker.
   int loginCallCount = 0;
@@ -198,29 +198,29 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   FakeBrokerClient() : super(baseUrlGetter: () => "https://broker.example.test");
 
   @override
-  Future<BrokerLoginResult> login(String keycloakAccessToken) async {
+  Future<BrokerLoginResult> login(String idpAccessToken) async {
     loginCallCount++;
-    lastToken = keycloakAccessToken;
+    lastToken = idpAccessToken;
 
-    return onLogin?.call(keycloakAccessToken) ??
+    return onLogin?.call(idpAccessToken) ??
         const BrokerLoginFailure(BrokerAuthError.unknown);
   }
 
   @override
-  Future<BrokerAuthError?> deleteAccount(String keycloakAccessToken) async {
+  Future<BrokerAuthError?> deleteAccount(String idpAccessToken) async {
     deleteCallCount++;
-    lastToken = keycloakAccessToken;
+    lastToken = idpAccessToken;
 
     return deleteError;
   }
 
   @override
   Future<BrokerAuthError?> acceptTerms(
-    String keycloakAccessToken, {
+    String idpAccessToken, {
     required String version,
   }) async {
     acceptTermsCallCount++;
-    lastToken = keycloakAccessToken;
+    lastToken = idpAccessToken;
     lastAcceptedVersion = version;
 
     return acceptTermsError;
