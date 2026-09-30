@@ -30,10 +30,10 @@ therefore holds two sets of tokens, and something has to turn the first into the
 something is the `tb-extender` broker, which reads a Keycloak access token, provisions the
 ThingsBoard customer user behind it and answers a pair of ThingsBoard tokens.
 
-This package is the side of that contract an application runs: the client which speaks to the
-broker, the errors it answers, and the authentication service which holds the two sets of tokens
-and keeps them alive. It knows nothing of any product: the realm, the broker and the ThingsBoard
-server are all named by the configuration of the application.
+This package is the authentication service of that contract: it signs the user in with
+`act_oauth2_keycloak`, exchanges the token at the broker through `act_tb_extender_client`, holds the
+two sets of tokens and keeps them alive. It re-exports the client, so an application needs no other
+import.
 
 ## Architecture
 
@@ -208,12 +208,6 @@ A broker which doesn't answer within fifteen seconds is read as a network failur
 be built with another timeout.
 
 ## Testing
-
-The broker client is covered over a stubbed transport, on the three endpoints, on the trailing
-slash of the base URL, on a base URL which was never configured, on every documented error code
-and on the transport failures which never reach the broker. The parsing of the payload is covered
-there too, on a body which isn't a JSON object, on one which misses a mandatory field and on one
-which names no first and last name.
 
 The service is covered against a fake provider and a fake broker, which is where it already draws
 its boundary: the sign in and what each answer of the broker is read as, the four steps of the
