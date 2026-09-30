@@ -2,16 +2,15 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+/// Keycloak sign in exchanged for ThingsBoard tokens through the tb-extender broker.
+///
+/// The client of the broker, its models and its errors come from `act_tb_extender_client` and are
+/// re-exported here: an application which signs in through this package needs nothing else.
 library;
 
+export 'package:act_tb_extender_client/act_tb_extender_client.dart';
+
 export 'src/builders/keycloak_tb_auth_service_builder.dart';
-export 'src/clients/tb_extender_broker_client.dart';
 export 'src/mixins/mixin_keycloak_auth_secrets.dart';
 export 'src/mixins/mixin_tb_extender_conf.dart';
-export 'src/models/broker_claim_result.dart';
-export 'src/models/broker_login_response.dart';
-export 'src/models/broker_login_result.dart';
-export 'src/models/broker_user.dart';
 export 'src/services/keycloak_tb_auth_service.dart';
-export 'src/types/broker_auth_error.dart';
-export 'src/utils/terms_accepted_version.dart';

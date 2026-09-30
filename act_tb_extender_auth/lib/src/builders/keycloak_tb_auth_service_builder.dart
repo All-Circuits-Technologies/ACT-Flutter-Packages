@@ -5,10 +5,10 @@
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_oauth2_keycloak/act_oauth2_keycloak.dart';
 import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart';
-import 'package:act_tb_extender_auth/src/clients/tb_extender_broker_client.dart';
 import 'package:act_tb_extender_auth/src/mixins/mixin_keycloak_auth_secrets.dart';
 import 'package:act_tb_extender_auth/src/mixins/mixin_tb_extender_conf.dart';
 import 'package:act_tb_extender_auth/src/services/keycloak_tb_auth_service.dart';
+import 'package:act_tb_extender_client/act_tb_extender_client.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 
 /// Assembles the [KeycloakTbAuthService] of an application out of the managers it registered.
