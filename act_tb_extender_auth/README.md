@@ -14,6 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [The refresh ladder](#the-refresh-ladder)
   - [The deletion of an account](#the-deletion-of-an-account)
   - [Recording the terms](#recording-the-terms)
+  - [Changing the password](#changing-the-password)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Declare the configuration and the secrets](#declare-the-configuration-and-the-secrets)
@@ -37,9 +38,10 @@ import.
 
 ## Architecture
 
-`act_oauth2_keycloak` signs the user in and owns the Keycloak tokens, `TbExtenderBrokerClient`
-speaks the three endpoints of the broker, and `KeycloakTbAuthService` is the `MixinAuthService` the
-rest of an application talks to. What it answers through `getTokens` is the ThingsBoard pair, so
+`act_oauth2_keycloak` signs the user in and owns the Keycloak tokens, `TbExtenderBrokerClient`,
+from `act_tb_extender_client`, speaks to the broker (this service calls three of its five endpoints,
+listed below), and `KeycloakTbAuthService` is the `MixinAuthService` the rest of an application
+talks to. What it answers through `getTokens` is the ThingsBoard pair, so
 everything built on `act_thingsboard_client` keeps working untouched; the Keycloak pair is only
 ever read to call the broker, and to hand out the raw token of the identity provider through
 `MixinRawIdpTokenProvider`.
@@ -86,6 +88,10 @@ the Keycloak identity, then signs the user out. The sign out is deliberately cal
 mutex which guards the deletion, because it takes the same one, and it only runs once the account
 is gone: at that point the tokens in hand point at nothing.
 
+`deleteAccountAfterRecentSignIn` is the whole flow: a sign in with `max_age`, the check that the
+same account came back, the deletion, and one replay when the broker still finds the sign in too
+old. `deleteAccount` alone is for an application which runs that flow its own way.
+
 ### Recording the terms
 
 | Endpoint | What it does |
@@ -113,6 +119,12 @@ right, and the next refresh will carry the claim.
 `TermsAcceptedVersionUtility.readTermsAcceptedVersion(rawIdpToken)` reads the version back out of
 the Keycloak token which `getIdpAccessToken` hands out; the claim is named `terms_accepted_version`
 unless the application says otherwise.
+
+### Changing the password
+
+`changePassword` runs the sign in again with `kc_action=UPDATE_PASSWORD`; Keycloak asks for the new
+password on its own pages. It answers null when the user closed the page, the status of the sign in
+otherwise, and signs the user out when another account came back.
 
 ## How to use
 
@@ -217,6 +229,10 @@ the sign out from inside would hang there rather than fail. The terms acceptance
 version which reaches the broker and the refresh which follows it, on the broker which refused, on
 the session which is gone, and on the refresh which didn't follow and leaves the acceptance
 standing.
+
+The re-login flows are covered in their own file: the deletion which signs in again with
+`max_age` and replays once, the sign in page the user closed, another account coming back on the
+form, and the password change over `kc_action=UPDATE_PASSWORD`.
 
 What is out of reach is the builder: it exists to read the managers of an application out of the
 service locator, so covering it would mean standing up a ThingsBoard request manager and a secure

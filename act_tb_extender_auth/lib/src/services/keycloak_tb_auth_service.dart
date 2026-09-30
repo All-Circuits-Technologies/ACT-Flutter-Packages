@@ -182,12 +182,11 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// This service only signs a user in through Keycloak: there is no username and no password to
   /// give it, and [redirectToExternalUserSignIn] is what an application calls instead.
   @override
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  }) async {
-    _logsHelper.w("signInUser isn't supported by this service, call redirectToExternalUserSignIn "
-        "instead");
+  Future<AuthSignInResult> signInUser({required String username, required String password}) async {
+    _logsHelper.w(
+      "signInUser isn't supported by this service, call redirectToExternalUserSignIn "
+      "instead",
+    );
 
     return const AuthSignInResult(status: AuthSignInStatus.notSupportedYet);
   }
@@ -241,8 +240,10 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
     }
 
     if (await _provider.getTokens(forceRefresh: true) == null) {
-      _logsHelper.i("The terms are recorded but the tokens couldn't be refreshed yet, the claim "
-          "will follow at the next refresh");
+      _logsHelper.i(
+        "The terms are recorded but the tokens couldn't be refreshed yet, the claim "
+        "will follow at the next refresh",
+      );
     }
 
     return true;
@@ -291,6 +292,104 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
     );
   }
 
+  /// The age of the Keycloak sign in the broker deletes an account on, when the application
+  /// names none: it mirrors the default of the broker.
+  static const defaultDeletionMaxSignInAge = Duration(minutes: 5);
+
+  /// Delete the account behind the session, once the user signed in recently enough for the
+  /// broker.
+  ///
+  /// A session lasts thirty days, while the broker only deletes an account on a sign in younger
+  /// than [maxSignInAge]: the user goes through Keycloak again first, with `max_age`, which
+  /// Keycloak answers at once when its own session is that young. When the broker still answers
+  /// [BrokerAuthError.reauthRequired], the sign in and the deletion are run once more, and no
+  /// more.
+  ///
+  /// Returns null when the user left the sign in page without signing in: nothing was deleted,
+  /// and there is nothing to report.
+  ///
+  /// The Keycloak form lets the user sign in as somebody else. When the account behind the new
+  /// sign in is not the one which asked, nothing is deleted and the user is signed out: the
+  /// session would otherwise go on under that other account, with what the first one left in the
+  /// application. The failure then carries [BrokerAuthError.invalidToken].
+  ///
+  /// Not under the mutex: the methods it chains take it, and the mutex is not reentrant.
+  Future<AuthDeleteResult?> deleteAccountAfterRecentSignIn({
+    Duration maxSignInAge = defaultDeletionMaxSignInAge,
+  }) async {
+    final user = await getCurrentUserId();
+    AuthDeleteResult? result;
+
+    for (var attempt = 0; attempt < 2; attempt++) {
+      final signIn = await redirectToExternalUserSignIn(
+        additionalParameters: {"max_age": "${maxSignInAge.inSeconds}"},
+      );
+
+      if (signIn.status == AuthSignInStatus.sessionExpired) {
+        // This is how act_oauth2_core answers a sign in page the user closed
+        return null;
+      }
+
+      if (!signIn.status.isSuccess) {
+        return AuthDeleteResult(
+          status: (signIn.status == AuthSignInStatus.networkError)
+              ? AuthDeleteStatus.networkError
+              : AuthDeleteStatus.genericError,
+        );
+      }
+
+      if (await getCurrentUserId() != user) {
+        await signOut();
+        return const AuthDeleteResult(
+          status: AuthDeleteStatus.genericError,
+          extra: BrokerAuthError.invalidToken,
+        );
+      }
+
+      result = await deleteAccount();
+
+      if (result.extra != BrokerAuthError.reauthRequired) {
+        return result;
+      }
+    }
+
+    return result;
+  }
+
+  /// Change the password of the account behind the session, on the Keycloak pages of the
+  /// application.
+  ///
+  /// This is a Keycloak application-initiated action: the sign in is run again with
+  /// `kc_action=UPDATE_PASSWORD`, and Keycloak asks for the new password once the user signed in.
+  /// No `login_hint` is passed: AppAuth on Android throws on it as an additional parameter. The
+  /// tokens of the sign in replace those of the session, as any sign in does.
+  ///
+  /// Returns null when the user closed the page: there is nothing to report. A password change the
+  /// user cancelled on the Keycloak form is still a sign in which went through, and is answered as
+  /// done. When another account signed in on the form, the user is signed out, as for
+  /// [deleteAccountAfterRecentSignIn], and a generic error is answered.
+  ///
+  /// Not under the mutex: the methods it chains take it, and the mutex is not reentrant.
+  Future<AuthSignInStatus?> changePassword() async {
+    final user = await getCurrentUserId();
+
+    final signIn = await redirectToExternalUserSignIn(
+      additionalParameters: {"kc_action": "UPDATE_PASSWORD"},
+    );
+
+    if (signIn.status == AuthSignInStatus.sessionExpired) {
+      // This is how act_oauth2_core answers a sign in page the user closed
+      return null;
+    }
+
+    if (signIn.status.isSuccess && await getCurrentUserId() != user) {
+      await signOut();
+      return AuthSignInStatus.genericError;
+    }
+
+    return signIn.status;
+  }
+
   /// {@macro act_shared_auth.MixinAuthService.isUserSigned}
   @override
   Future<bool> isUserSigned() => _mutex.protect(() async => _hasUsableTbTokens());
@@ -333,9 +432,11 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   FlutterAppAuth _resolveAppAuth() {
     final conf = _keycloakConfLoader();
     if (conf != null && InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(conf)) {
-      _logsHelper.w("The Keycloak configuration names a plain http endpoint: the insecure "
-          "connections are allowed, which is meant for a local development stack only and must "
-          "never happen against a https realm");
+      _logsHelper.w(
+        "The Keycloak configuration names a plain http endpoint: the insecure "
+        "connections are allowed, which is meant for a local development stack only and must "
+        "never happen against a https realm",
+      );
 
       return InsecureDevAppAuth(_appAuth);
     }
