@@ -8,11 +8,7 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
-import 'package:act_tb_extender_auth/src/clients/tb_extender_broker_client.dart';
-import 'package:act_tb_extender_auth/src/models/broker_login_response.dart';
-import 'package:act_tb_extender_auth/src/models/broker_login_result.dart';
-import 'package:act_tb_extender_auth/src/models/broker_user.dart';
-import 'package:act_tb_extender_auth/src/types/broker_auth_error.dart';
+import 'package:act_tb_extender_client/act_tb_extender_client.dart';
 import 'package:mutex/mutex.dart';
 
 /// Signature of the function which refreshes the ThingsBoard tokens against ThingsBoard itself.
