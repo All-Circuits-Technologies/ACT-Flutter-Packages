@@ -27,6 +27,9 @@ class DefaultOAuth2Conf extends Equatable {
   /// This is the app auth redirect scheme key used to parse information from a JSON conf object
   static const _appAuthRedirectSchemeKey = "appAuthRedirectScheme";
 
+  /// This is the ephemeral session key used to parse information from a JSON conf object
+  static const _ephemeralSessionKey = "ephemeralSession";
+
   /// This is the client id linked to the OAuth2 config.
   ///
   /// This is unique to each client provider.
@@ -60,6 +63,15 @@ class DefaultOAuth2Conf extends Equatable {
   /// This is the redirect scheme to give to the provider to return to the application
   final String appAuthRedirectScheme;
 
+  /// True to open the provider pages in a browser session which shares nothing with the browser
+  /// of the device, on iOS and macOS; the other platforms don't know of it.
+  ///
+  /// The system then asks the user nothing before opening them, and the session of the provider
+  /// doesn't outlive the sign in in the browser, where anyone holding the device would find it.
+  /// The price is that no session of the browser is reused: the user types their credentials at
+  /// each sign in. An application which wants the single sign on with the browser says false.
+  final bool ephemeralSession;
+
   /// Class constructor
   const DefaultOAuth2Conf({
     required this.clientId,
@@ -68,6 +80,7 @@ class DefaultOAuth2Conf extends Equatable {
     required this.providerUrlConf,
     required this.scopes,
     required this.appAuthRedirectScheme,
+    this.ephemeralSession = true,
   });
 
   /// Try to parse the configuration from a [json] object.
@@ -108,6 +121,13 @@ class DefaultOAuth2Conf extends Equatable {
       logger: loggerManager,
     );
 
+    final ephemeralSessionResult = JsonUtility.getOnePrimaryElement<bool>(
+      json: json,
+      key: _ephemeralSessionKey,
+      canBeUndefined: true,
+      logger: loggerManager,
+    );
+
     final serviceConfJson = JsonUtility.getJsonObject(
       json: json,
       key: _serviceConfKey,
@@ -119,6 +139,7 @@ class DefaultOAuth2Conf extends Equatable {
         !discoveryUrlResult.isOk ||
         !issuerResult.isOk ||
         !serviceConfJson.isOk ||
+        !ephemeralSessionResult.isOk ||
         scopes == null ||
         appAuthRedirectScheme == null) {
       loggerManager.w("Can't parse the default oauth2 conf, there is a problem in the given JSON");
@@ -149,6 +170,7 @@ class DefaultOAuth2Conf extends Equatable {
       providerUrlConf: providerUrlConf,
       scopes: scopes,
       appAuthRedirectScheme: appAuthRedirectScheme,
+      ephemeralSession: ephemeralSessionResult.value ?? true,
     );
   }
 
@@ -161,5 +183,6 @@ class DefaultOAuth2Conf extends Equatable {
     providerUrlConf,
     scopes,
     appAuthRedirectScheme,
+    ephemeralSession,
   ];
 }
