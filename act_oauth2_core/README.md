@@ -90,9 +90,9 @@ A user is signed in as long as one of the two tokens is still valid. Asking for 
 access one has expired refreshes it; when the refresh one has expired too, nothing is given back
 and the user is signed out.
 
-`refreshTokens()` asks fresh tokens right away, for when the account changed server side: the
-claims of the token in hand are then behind, and waiting for the expiry would mean waiting with
-them.
+`getTokens(forceRefresh: true)` asks fresh tokens right away, for when the account changed server
+side: the claims of the token in hand are then behind, and waiting for the expiry would mean
+waiting with them.
 
 A provider which hands only a refresh token over is asked for an access token straight away, so
 that what the application gets is always a usable pair. A provider which hands nothing usable over

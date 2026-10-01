@@ -350,23 +350,23 @@ void main() {
     });
   });
 
-  group("AbsOAuth2ProviderService.refreshTokens", () {
+  group("AbsOAuth2ProviderService.getTokens with forceRefresh", () {
     test("refreshes the tokens on demand while the access token is still valid", () async {
       final service = await aService();
       appAuth.authorizationAnswer = _authorized();
       await service.redirectToExternalUserSignIn();
       appAuth.tokenAnswer = _tokens(refreshToken: "a newer refresh token");
 
-      expect(await service.refreshTokens(), isTrue);
+      final tokens = await service.getTokens(forceRefresh: true);
 
+      expect(tokens?.accessToken?.raw, "another token");
       expect(appAuth.tokenRequests.single.refreshToken, "a refresh token");
-      expect((await service.getTokens())?.accessToken?.raw, "another token");
     });
 
-    test("answers false and asks nothing without a valid refresh token", () async {
+    test("answers null and asks nothing without a valid refresh token", () async {
       final service = await aService();
 
-      expect(await service.refreshTokens(), isFalse);
+      expect(await service.getTokens(forceRefresh: true), isNull);
       expect(appAuth.tokenRequests, isEmpty);
     });
   });
