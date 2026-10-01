@@ -181,12 +181,13 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   /// Answers false when the provider didn't end its session, which may then still be open there.
   @override
   Future<bool> signOut() => _mutex.protect(() async {
+    final redirectUrl = await buildPostLogoutRedirectUrl();
     var result = false;
     try {
       await appAuth.endSession(
         EndSessionRequest(
           idTokenHint: _authTokens.idToken,
-          postLogoutRedirectUrl: await buildPostLogoutRedirectUrl(),
+          postLogoutRedirectUrl: redirectUrl,
           issuer: _conf.issuer,
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
