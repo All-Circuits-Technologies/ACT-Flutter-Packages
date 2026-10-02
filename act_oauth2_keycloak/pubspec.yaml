@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Dorian Benech <dorian.benech@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_oauth2_keycloak
+description: This package contains the needed elements to connect to a OAuth 2.0
+  Client through a Keycloak Identity Provider.
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  act_config_manager:
+    path: ../act_config_manager
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # Core library for OAuth 2.0
+  act_oauth2_core:
+    path: ../act_oauth2_core
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
