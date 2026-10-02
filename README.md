@@ -90,6 +90,7 @@ To install it globally, you have to call:
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                            |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |
+| [act_oauth2_keycloak](act_oauth2_keycloak/)                               | This package contains the needed elements to connect to a OAuth 2.0 Client through a Keycloak Identity Provider.         |         |
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
@@ -102,6 +103,8 @@ To install it globally, you have to call:
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.                        |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
 | [act_splash_screen_manager](act_splash_screen_manager/)                   | Keeps the splash screen of the platform displayed until the application is ready                                         |         |
+| [act_tb_extender_auth](act_tb_extender_auth/)                             | Signs a user in with Keycloak and exchanges the token for ThingsBoard tokens through the tb-extender broker.             |         |
+| [act_tb_extender_client](act_tb_extender_client/)                         | Speaks to the tb-extender broker: exchanges an identity provider token for ThingsBoard tokens, claims and frees devices. |         |
 | [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |

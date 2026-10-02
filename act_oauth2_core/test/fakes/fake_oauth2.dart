@@ -30,6 +30,9 @@ class FakeAppAuth implements FlutterAppAuth {
   /// The sessions the service asked to end, in the order it asked.
   final List<EndSessionRequest> endSessions = [];
 
+  /// The authorizations without an exchange the service asked for, in the order it asked.
+  final List<AuthorizationRequest> authorizeRequests = [];
+
   /// The answer of the provider to an authorization, if it answers one.
   AuthorizationTokenResponse? authorizationAnswer;
 
@@ -84,8 +87,11 @@ class FakeAppAuth implements FlutterAppAuth {
   }
 
   @override
-  Future<AuthorizationResponse> authorize(AuthorizationRequest request) async =>
-      throw UnimplementedError("The service under test authorizes and exchanges in one call");
+  Future<AuthorizationResponse> authorize(AuthorizationRequest request) async {
+    authorizeRequests.add(request);
+
+    return const AuthorizationResponse();
+  }
 }
 
 /// The provider service of an application, over the configuration the test gives it.
@@ -94,7 +100,8 @@ class FakeOAuth2Service extends AbsOAuth2ProviderService {
   final DefaultOAuth2Conf conf;
 
   /// Class constructor
-  FakeOAuth2Service({required this.conf}) : super(logsCategory: "aProvider");
+  FakeOAuth2Service({required this.conf, super.redirectUrl, super.postLogoutRedirectUrl})
+    : super(logsCategory: "aProvider");
 
   /// The categories the service logs under, which a test reads to know it built its own logger.
   List<String> get logCategories => logsHelper.categories;
