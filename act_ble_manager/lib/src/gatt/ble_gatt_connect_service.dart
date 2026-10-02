@@ -82,8 +82,9 @@ class BleGattConnectService extends AbsWithLifeCycle {
         await _tryToCleanGattCache(device: device);
 
         device.bondState = BondState.unknown;
-        if (!(await _bleManager.bleGapService
-            .pauseScanWhile(() => _manageLowLevelConnection(device)))) {
+        final isConnected = await _bleManager.bleGapService
+            .pauseScanWhile(() => _manageLowLevelConnection(device));
+        if (!isConnected) {
           return false;
         }
 

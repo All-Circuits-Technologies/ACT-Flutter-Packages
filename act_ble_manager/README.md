@@ -97,10 +97,11 @@ again until the whole time given to a connection is spent, with a short pause be
 Android answers a transient `GATT_ERROR 133` on the first attempt more often than not, and a long
 pause would leave the time for two attempts only. The scanning is stopped while a device is being
 connected to and started again afterwards if a page still asks for it, because Android answers the
-same `GATT_ERROR 133` to a connection which is opened while a scan runs. Reading, writing and
-listening to a characteristic all go through the same three checks: the device is connected, the
-permissions and the service are there, and the characteristic was discovered. Anything else is
-answered as an error rather than raised.
+same `GATT_ERROR 133` to a connection which is opened while a scan runs. A page which asks for a
+scan in the meantime is answered at once, and its scan starts at the end of the connection.
+Reading, writing and listening to a characteristic all go through the same three checks: the
+device is connected, the permissions and the service are there, and the characteristic was
+discovered. Anything else is answered as an error rather than raised.
 
 Two errors of a device are read further than the others: the one which says that the device asks for
 a stronger pairing, which has the pairing of the device marked as failed, and the one which says

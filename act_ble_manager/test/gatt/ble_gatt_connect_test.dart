@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_ble_manager/src/data/constants.dart' as ble_constants;
+import 'package:act_ble_manager/src/data/scan_constants.dart' as ble_scan_constants;
 import 'package:act_contextual_views_manager/act_contextual_views_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_permissions_manager/act_permissions_manager.dart';
@@ -121,7 +122,8 @@ void main() {
       unawaited(manager.bleGattService.connect(device).then(answers.add));
     });
     addTearDown(() => endTheConnection(fake, device));
-    await letTimePass(fake, _aMargin);
+    // The scan which may be running is stopped first, and the connection waits for it to be.
+    await letTimePass(fake, ble_scan_constants.waitAfterStoppingScan + _aMargin);
 
     return (device, answers);
   }
@@ -135,22 +137,92 @@ void main() {
     await letTimePass(fake, _aMargin);
   }
 
+  /// Asks for a scan in [scanMode] through a handler of its own, which is let go when the test is
+  /// over.
+  Future<BleScanHandler> startScanning(
+    FakeAsync fake, {
+    ScanMode scanMode = ScanMode.balanced,
+  }) async {
+    final handler = manager.bleGapService.toGenerateScanHandler();
+    fake.run((_) => unawaited(handler.startScan(scanMode: scanMode)));
+    addTearDown(() async {
+      fake.run((_) => unawaited(handler.dispose()));
+      await letTimePass(fake, _aMargin);
+    });
+    await letTimePass(fake, _aMargin);
+
+    return handler;
+  }
+
   group("BleGattService.connect", () {
     test("stops the scan before the connection is asked for", () async {
       final fake = FakeAsync();
-      final handler = manager.bleGapService.toGenerateScanHandler();
-      fake.run((_) => unawaited(handler.startScan()));
-      addTearDown(() async {
-        fake.run((_) => unawaited(handler.dispose()));
-        await letTimePass(fake, _aMargin);
-      });
-      await letTimePass(fake, _aMargin);
+      await startScanning(fake);
 
       expect(ble.runningScans, 1);
 
       await startConnecting(fake);
 
       expect(ble.scansRunningOnConnect, [0]);
+    });
+
+    test("keeps the scan stopped when one is asked for during the connection", () async {
+      final fake = FakeAsync();
+      await startScanning(fake);
+      await startConnecting(fake);
+
+      // A more demanding mode is what makes the scan be started again in the new one.
+      await startScanning(fake, scanMode: ScanMode.lowLatency);
+
+      expect(ble.runningScans, 0);
+
+      await failTheAttempt(fake);
+      await letTimePass(fake, ble_constants.lowLevelConnectRetryDelay + _aMargin);
+
+      expect(ble.scansRunningOnConnect, [0, 0]);
+    });
+
+    test("starts the scan again in the mode last asked for once the connection failed", () async {
+      final fake = FakeAsync();
+      await startScanning(fake);
+      final (_, answers) = await startConnecting(fake);
+      await startScanning(fake, scanMode: ScanMode.lowLatency);
+
+      await letTimePass(
+        fake,
+        ble_constants.connectTimeout +
+            ble_constants.lowLevelConnectTimeout +
+            ble_constants.lowLevelConnectRetryDelay,
+      );
+
+      expect(answers, [false]);
+      expect(ble.runningScans, 1);
+      expect(ble.scans.last.mode, ScanMode.lowLatency);
+    });
+
+    test("doesn't start the scan again when it was let go during the connection", () async {
+      final fake = FakeAsync();
+      final handler = await startScanning(fake);
+      final (_, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(handler.stopScan()));
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(answers, [true]);
+      expect(ble.runningScans, 0);
+      expect(ble.scans.length, 1);
+    });
+
+    test("starts no scan around a connection when none was asked for", () async {
+      final fake = FakeAsync();
+      final (_, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(answers, [true]);
+      expect(ble.scans, isEmpty);
     });
 
     test("tries again a short pause after an attempt which failed", () async {
