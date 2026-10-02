@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 - 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+# SPDX-FileCopyrightText: 2022 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 # SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
@@ -23,6 +23,7 @@ analyzer:
     missing_required_param: error
     missing_return: error
     missing_enum_constant_in_switch: error
+    unused_element_parameter: ignore
 
   language:
     strict-casts: true
@@ -133,6 +134,9 @@ linter:
 
     # Missing conditional import.
     conditional_uri_does_not_exist: true
+
+    # Control flow statements in finally blocks.
+    control_flow_in_finally: true
 
     # Missing deprecated annotation.
     deprecated_consistency: true
