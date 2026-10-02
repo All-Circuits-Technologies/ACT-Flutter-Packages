@@ -76,6 +76,36 @@ void main() {
     });
   });
 
+  group("TbStdAuthServerReqManager on the user leaving", () {
+    test("forgets the devices watched so far when the user signs out", () async {
+      final manager = await aManager();
+      addTearDown(manager.disposeLifeCycle);
+      final first = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await first.add(tsKeys: ["temp"]);
+
+      authManager.service.updateStatus(AuthStatus.signedOut);
+      await pumpEventQueue();
+      authManager.service.updateStatus(AuthStatus.signedIn);
+      final second = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await second.add(tsKeys: ["temp"]);
+
+      // The values of the device were rebuilt: the second handler subscribed anew
+      expect(noAuthManager.client.telemetryService.subscribed.length, 2);
+    });
+
+    test("keeps the devices while the user stays", () async {
+      final manager = await aManager();
+      addTearDown(manager.disposeLifeCycle);
+      final handler = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await handler.add(tsKeys: ["temp"]);
+
+      authManager.service.updateStatus(AuthStatus.signedIn);
+      await pumpEventQueue();
+
+      expect(noAuthManager.client.telemetryService.current, isNotNull);
+    });
+  });
+
   group("TbStdAuthServerReqManager.request", () {
     test("answers what the server answered", () async {
       final manager = await aManager();
