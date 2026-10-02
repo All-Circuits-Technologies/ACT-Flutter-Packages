@@ -13,3 +13,8 @@ const Duration scanMaxTimeDeviceDisappeared = Duration(seconds: 30);
 
 /// This is the time to wait before restarting scan when the BLE is detected as connected again
 const Duration waitBeforeRestartingScan = Duration(seconds: 2);
+
+/// The time Android takes to stop a scan once it is cancelled, before a connection may be opened
+///
+/// flutter_reactive_ble waits as long before connecting to an advertising device.
+const Duration waitAfterStoppingScan = Duration(milliseconds: 300);

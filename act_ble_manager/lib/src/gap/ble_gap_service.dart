@@ -64,6 +64,12 @@ class BleGapService extends AbsWithLifeCycle {
   /// Say if the other services have asked for scanning
   bool get _isScanHasBeenAsked => _currentScanMode != null;
 
+  /// The number of [pauseScanWhile] which are running
+  int _scanPauses = 0;
+
+  /// Say if the scan is paused: it is then not started, whoever asks for it
+  bool get _isScanPaused => _scanPauses > 0;
+
   /// This is the subscription to listen for discovered device
   // The StreamSubscription is cancel in the method _endScan and the method is called in the dispose
   // method; therefore, it's a false positive
@@ -101,6 +107,41 @@ class BleGapService extends AbsWithLifeCycle {
   /// Important ! Don't forget to call the dispose method of the
   /// [BleScanHandler] when you do no more need to use the instance
   BleScanHandler toGenerateScanHandler() => BleScanHandler._(this);
+
+  /// Stops the scan while [action] runs, and starts it again afterwards if it is still asked for.
+  ///
+  /// On Android, a GATT connection which is opened while a scan runs fails with the
+  /// `status 133 GATT_ERROR`: the connection runs its low-level part through this method.
+  ///
+  /// A scan asked for while [action] runs, or started again by the BLE state, isn't started before
+  /// the end of the pause.
+  // ponytail: one stop and one start per pause; Android allows 5 scan starts per 30 s, delay the
+  // start again if an application chains the connections
+  Future<T> pauseScanWhile<T>(Future<T> Function() action) async {
+    _scanPauses++;
+
+    try {
+      final wasScanning = await _takeAndReleaseMutex.protect(() async {
+        final wasScanning = _scanSub != null;
+        await _stopScan();
+        return wasScanning;
+      });
+
+      if (wasScanning) {
+        await Future.delayed(ble_scan_constants.waitAfterStoppingScan);
+      }
+
+      return await action();
+    } finally {
+      await _takeAndReleaseMutex.protect(() async {
+        _scanPauses--;
+
+        if (!_isScanPaused && _isScanHasBeenAsked && _scanSub == null) {
+          await _startScan();
+        }
+      });
+    }
+  }
 
   /// Set advertising service UUIDs for filtering devices
   Future<void> setDeviceAdvServiceUuidsToSearch(Set<Uuid> uuids) async {
@@ -194,6 +235,11 @@ class BleGapService extends AbsWithLifeCycle {
     if (!_isScanHasBeenAsked) {
       _bleManager.logsHelper.w("We try to start the scan, but it's not wanted");
       return false;
+    }
+
+    if (_isScanPaused) {
+      // The scan is started at the end of the pause, in the mode then asked for
+      return true;
     }
 
     if (!await _bleManager.checkAndAskForPermissionsAndServices()) {
