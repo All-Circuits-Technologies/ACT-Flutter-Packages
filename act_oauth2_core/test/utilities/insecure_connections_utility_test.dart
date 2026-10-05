@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,10 +44,11 @@ void main() {
 
   group("shouldAllowInsecureAppAuthConnections", () {
     test("refuses them in a release build, even for a realm served over plain http", () {
+      _ReleaseGlobalManager.install();
+
       expect(
-        shouldAllowInsecureAppAuthConnections(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConf(issuer: "http://10.0.0.1:8081/realms/dev"),
-          isReleaseMode: true,
         ),
         isFalse,
       );
@@ -54,21 +56,25 @@ void main() {
 
     test("allows them when the issuer is served over plain http", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(aConf(issuer: "http://10.0.0.1:8081/realms/dev")),
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
+          aConf(issuer: "http://10.0.0.1:8081/realms/dev"),
+        ),
         isTrue,
       );
     });
 
     test("refuses them when the issuer is served over https", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(aConf(issuer: "https://keycloak.example.com/realms")),
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
+          aConf(issuer: "https://keycloak.example.com/realms"),
+        ),
         isFalse,
       );
     });
 
     test("allows them when the discovery URL is served over plain http", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConf(discoveryUrl: "http://10.0.0.1:8081/.well-known/openid-configuration"),
         ),
         isTrue,
@@ -77,7 +83,7 @@ void main() {
 
     test("allows them when one named endpoint alone is served over plain http", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
             authorizationEndpoint: "https://keycloak.example.com/auth",
             tokenEndpoint: "http://10.0.0.1:8081/token",
@@ -89,7 +95,7 @@ void main() {
 
     test("allows them when the end session endpoint alone is served over plain http", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
             authorizationEndpoint: "https://keycloak.example.com/auth",
             tokenEndpoint: "https://keycloak.example.com/token",
@@ -102,7 +108,7 @@ void main() {
 
     test("refuses them when every named endpoint is served over https", () {
       expect(
-        shouldAllowInsecureAppAuthConnections(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
             authorizationEndpoint: "https://keycloak.example.com/auth",
             tokenEndpoint: "https://keycloak.example.com/token",
@@ -114,24 +120,35 @@ void main() {
     });
 
     test("refuses them when the configuration names no URL at all", () {
-      expect(shouldAllowInsecureAppAuthConnections(aConf()), isFalse);
+      expect(InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(aConf()), isFalse);
+    });
+
+    test("allows them whatever the case of the http scheme", () {
+      expect(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
+          aConf(issuer: "HTTP://10.0.0.1:8081/realms/dev"),
+        ),
+        isTrue,
+      );
+    });
+
+    test("refuses them when the issuer has no scheme", () {
+      expect(
+        InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
+          aConf(issuer: "keycloak.example.com/realms"),
+        ),
+        isFalse,
+      );
     });
   });
+}
 
-  group("isPlainHttpUrl", () {
-    test("says so of an http URL, whatever the case of its scheme", () {
-      expect(isPlainHttpUrl("http://10.0.0.1:8081"), isTrue);
-      expect(isPlainHttpUrl("HTTP://10.0.0.1:8081"), isTrue);
-    });
+/// A global manager which says the application runs in a release build, which a test never does.
+class _ReleaseGlobalManager extends FakeGlobalManager {
+  /// Says the application runs in a release build.
+  @override
+  bool get isReleaseMode => true;
 
-    test("says nothing of an https URL", () {
-      expect(isPlainHttpUrl("https://keycloak.example.com"), isFalse);
-    });
-
-    test("says nothing of a null, an empty or a scheme-less URL", () {
-      expect(isPlainHttpUrl(null), isFalse);
-      expect(isPlainHttpUrl(""), isFalse);
-      expect(isPlainHttpUrl("keycloak.example.com/realms"), isFalse);
-    });
-  });
+  /// Builds a manager and sets it as the one of the application.
+  static void install() => AbsGlobalManager.setInstance = _ReleaseGlobalManager();
 }

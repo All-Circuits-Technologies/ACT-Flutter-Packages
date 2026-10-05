@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_oauth2_core/src/utils/insecure_connections.dart';
+import 'package:act_oauth2_core/src/utilities/insecure_connections_utility.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 
 /// A [FlutterAppAuth] which allows the insecure connections on every request before delegating it
@@ -14,9 +14,9 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 /// connections.
 ///
 /// This exists for those stacks only: an application asks
-/// [shouldAllowInsecureAppAuthConnections] of the configuration it loaded, and wraps its
-/// [FlutterAppAuth] in this one only when the answer is yes. Because the library only honours the
-/// flag on Android, this changes nothing on the other platforms.
+/// [InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections] of the configuration it
+/// loaded, and wraps its [FlutterAppAuth] in this one only when the answer is yes. Because the
+/// library only honours the flag on Android, this changes nothing on the other platforms.
 class InsecureDevAppAuth implements FlutterAppAuth {
   /// This is the [FlutterAppAuth] every call is delegated to, once the request has been flagged as
   /// allowing the insecure connections

@@ -133,11 +133,12 @@ constructor of the service, and the one of the sign out defaults to the one of t
 
 The native library behind `flutter_appauth` on Android refuses any OpenID endpoint which isn't
 served over `https`, and a development stack usually serves its realm over plain `http`.
-`shouldAllowInsecureAppAuthConnections` reads the configuration which was loaded and says whether
-that is the case; `InsecureDevAppAuth` is the `FlutterAppAuth` which allows it:
+`InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections` reads the configuration which
+was loaded and says whether that is the case; `InsecureDevAppAuth` is the `FlutterAppAuth` which
+allows it:
 
 ```dart
-final appAuth = shouldAllowInsecureAppAuthConnections(conf)
+final appAuth = InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(conf)
     ? const InsecureDevAppAuth(FlutterAppAuth())
     : const FlutterAppAuth();
 ```

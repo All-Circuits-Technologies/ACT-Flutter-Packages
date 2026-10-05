@@ -102,7 +102,7 @@ the same way, so it is the same URI unless the realm registered another one, whi
 ### Plain http development stacks
 
 A realm served over plain `http` needs the wrapper of `act_oauth2_core`, whose README says how:
-`shouldAllowInsecureAppAuthConnections` and `InsecureDevAppAuth` are shared by every provider.
+`InsecureConnectionsUtility` and `InsecureDevAppAuth` are shared by every provider.
 
 ## Configuration
 
