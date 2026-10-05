@@ -332,7 +332,7 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// https, and a configuration which can't be read at all, are handed the library untouched.
   FlutterAppAuth _resolveAppAuth() {
     final conf = _keycloakConfLoader();
-    if (conf != null && shouldAllowInsecureAppAuthConnections(conf)) {
+    if (conf != null && InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(conf)) {
       _logsHelper.w("The Keycloak configuration names a plain http endpoint: the insecure "
           "connections are allowed, which is meant for a local development stack only and must "
           "never happen against a https realm");
