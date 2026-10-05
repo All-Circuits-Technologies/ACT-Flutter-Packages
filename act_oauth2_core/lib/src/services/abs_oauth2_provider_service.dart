@@ -78,8 +78,8 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   ///
   /// [redirectUrl] and [postLogoutRedirectUrl] are the URLs the provider sends the user back to.
   /// When the application names none, they are built on the scheme of the configuration; a
-  /// provider which checks them against the URLs it was registered with, as Keycloak does, needs
-  /// them named, and the one of the sign out then defaults to [redirectUrl].
+  /// provider which checks them against the URLs it was registered with needs them named, and the
+  /// one of the sign out then defaults to [redirectUrl].
   AbsOAuth2ProviderService({
     required String logsCategory,
     String? redirectUrl,

@@ -66,7 +66,7 @@ void main() {
     test("refuses them when the issuer is served over https", () {
       expect(
         InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
-          aConf(issuer: "https://keycloak.example.com/realms"),
+          aConf(issuer: "https://auth.example.com/realms"),
         ),
         isFalse,
       );
@@ -85,7 +85,7 @@ void main() {
       expect(
         InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
-            authorizationEndpoint: "https://keycloak.example.com/auth",
+            authorizationEndpoint: "https://auth.example.com/auth",
             tokenEndpoint: "http://10.0.0.1:8081/token",
           ),
         ),
@@ -97,8 +97,8 @@ void main() {
       expect(
         InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
-            authorizationEndpoint: "https://keycloak.example.com/auth",
-            tokenEndpoint: "https://keycloak.example.com/token",
+            authorizationEndpoint: "https://auth.example.com/auth",
+            tokenEndpoint: "https://auth.example.com/token",
             endSessionEndpoint: "http://10.0.0.1:8081/logout",
           ),
         ),
@@ -110,9 +110,9 @@ void main() {
       expect(
         InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
           aConfWithEndpoints(
-            authorizationEndpoint: "https://keycloak.example.com/auth",
-            tokenEndpoint: "https://keycloak.example.com/token",
-            endSessionEndpoint: "https://keycloak.example.com/logout",
+            authorizationEndpoint: "https://auth.example.com/auth",
+            tokenEndpoint: "https://auth.example.com/token",
+            endSessionEndpoint: "https://auth.example.com/logout",
           ),
         ),
         isFalse,
@@ -135,7 +135,7 @@ void main() {
     test("refuses them when the issuer has no scheme", () {
       expect(
         InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(
-          aConf(issuer: "keycloak.example.com/realms"),
+          aConf(issuer: "auth.example.com/realms"),
         ),
         isFalse,
       );
