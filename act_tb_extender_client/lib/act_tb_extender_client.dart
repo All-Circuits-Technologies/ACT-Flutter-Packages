@@ -12,4 +12,4 @@ export 'src/models/broker_login_response.dart';
 export 'src/models/broker_login_result.dart';
 export 'src/models/broker_user.dart';
 export 'src/types/broker_auth_error.dart';
-export 'src/utils/terms_accepted_version.dart';
+export 'src/utilities/terms_accepted_version_utility.dart';
