@@ -9,4 +9,6 @@ export 'package:flutter_appauth/flutter_appauth.dart' show FlutterAppAuth;
 
 export 'src/models/default_oauth2_conf.dart';
 export 'src/services/abs_oauth2_provider_service.dart';
+export 'src/services/insecure_dev_app_auth.dart';
 export 'src/services/multi_oauth2_service.dart';
+export 'src/utilities/insecure_connections_utility.dart';
