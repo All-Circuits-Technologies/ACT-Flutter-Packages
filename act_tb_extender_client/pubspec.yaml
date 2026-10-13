@@ -27,16 +27,21 @@ dependencies:
   # Value equality of the models the broker answers with
   equatable: ^2.0.7
 
-  # The transport the broker is reached over
-  http: ^1.6.0
-
   # JSON parsing helpers
   act_dart_utility:
     path: ../act_dart_utility
 
+  # The exception thrown when the base URL of the broker isn't configured
+  act_foundation:
+    path: ../act_foundation
+
   # The application logger the models report a malformed payload to
   act_global_manager:
     path: ../act_global_manager
+
+  # The manager the broker is requested through
+  act_http_client_manager:
+    path: ../act_http_client_manager
 
   # The claims of the tokens: the user of a ThingsBoard token, the terms accepted on the account
   act_jwt_utilities:
@@ -51,6 +56,9 @@ dev_dependencies:
     sdk: flutter
 
   flutter_lints: ^6.0.0
+
+  # The stubbed transport the broker of the tests answers over
+  http: ^1.6.0
 
   # Fakes shared by the tests of the ACT packages
   act_test_utility:
