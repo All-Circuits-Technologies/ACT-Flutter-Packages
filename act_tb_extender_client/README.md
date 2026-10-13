@@ -48,10 +48,21 @@ dependencies:
     path: ../act_tb_extender_client
 ```
 
+`TbExtenderBrokerClient` is an `AbsHttpClientManager` of `act_http_client_manager`, without its
+login: each call carries the access token of the identity provider. Its owner initializes it before
+the first call, which is when the base URL is read, and disposes of it at the end:
+
 ```dart
 final client = TbExtenderBrokerClient(baseUrlGetter: () => conf.authBrokerUrl.load());
+await client.initLifeCycle();
+
 final result = await client.login(idpAccessToken);
+
+await client.disposeLifeCycle();
 ```
+
+A base URL which is missing or isn't a URL makes `initLifeCycle` throw an
+`ActMissingConfigException`.
 
 ## What this package does not know
 
@@ -61,9 +72,11 @@ fifteen seconds is read as a network failure; the client can be built with anoth
 
 ## Testing
 
-The broker client is covered over a stubbed transport, on the five endpoints, on the trailing
-slash of the base URL, on a base URL which was never configured, on every documented error code
-and on the transport failures which never reach the broker. The parsing of the payload is covered
+The broker client is covered over a stubbed transport, the HTTP client the requester of
+`act_http_client_manager` opens being the one of `runWithClient`: on the five endpoints, on the
+scheme, the port, the path and the trailing slash of the base URL, on a base URL which was never
+configured, on every documented error code and on the transport failures which never reach the
+broker. The parsing of the payload is covered
 there too, on a body which isn't a JSON object, on one which misses a mandatory field and on one
 which names no first and last name.
 
