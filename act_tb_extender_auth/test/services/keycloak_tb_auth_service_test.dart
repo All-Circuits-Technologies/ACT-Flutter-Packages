@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_tb_extender_auth/act_tb_extender_auth.dart';
@@ -121,6 +122,34 @@ void main() {
       await service.initLifeCycle();
 
       expect(provider.receivedAppAuth, same(baseAppAuth));
+    });
+
+    test("fails when the URL of the broker isn't configured", () async {
+      broker = FakeBrokerClient(baseUrl: null);
+      final service = aService();
+
+      await expectLater(service.initLifeCycle(), throwsA(isA<ActMissingConfigException>()));
+    });
+  });
+
+  group("KeycloakTbAuthService.disposeLifeCycle", () {
+    test("disposes of the broker client", () async {
+      final service = aService();
+      await service.initLifeCycle();
+
+      await service.disposeLifeCycle();
+
+      expect(broker.disposeCallCount, 1);
+    });
+
+    test("leaves alone the broker client which failed to start", () async {
+      broker = FakeBrokerClient(baseUrl: null);
+      final service = aService();
+      await expectLater(service.initLifeCycle(), throwsA(isA<ActMissingConfigException>()));
+
+      await service.disposeLifeCycle();
+
+      expect(broker.disposeCallCount, 0);
     });
   });
 
