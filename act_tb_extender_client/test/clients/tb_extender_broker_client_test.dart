@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_tb_extender_client/act_tb_extender_client.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -43,6 +44,13 @@ Map<String, dynamic> _successBody() => {
   },
 };
 
+/// The headers of an answer of the broker which carries a JSON body.
+const _jsonHeaders = {"content-type": "application/json"};
+
+/// An answer of the broker which carries [json] as a JSON body, with the [status] given.
+http.Response _json(Object? json, [int status = 200]) =>
+    http.Response(jsonEncode(json), status, headers: _jsonHeaders);
+
 void main() {
   late FakeGlobalManager globalManager;
 
@@ -50,22 +58,70 @@ void main() {
 
   tearDown(() => globalManager.reset());
 
-  /// The client of an application whose broker is served at [baseUrl] and answers what [answer]
-  /// says.
-  TbExtenderBrokerClient aClient(
-    Future<http.Response> Function(http.Request request) answer, {
+  /// Have [call] ask a client of the broker served at [baseUrl], which answers what [answer] says
+  /// and is given [requestTimeout] to do so.
+  ///
+  /// The requester of act_http_client_manager opens its own HTTP client: the one it opens in the
+  /// zone of [http.runWithClient] is the stubbed one.
+  Future<T> ask<T>(
+    Future<http.Response> Function(http.Request request) answer,
+    Future<T> Function(TbExtenderBrokerClient client) call, {
     String? baseUrl = _baseUrl,
-  }) => TbExtenderBrokerClient(baseUrlGetter: () => baseUrl, httpClient: MockClient(answer));
+    Duration requestTimeout = TbExtenderBrokerClient.defaultRequestTimeout,
+  }) => http.runWithClient(() async {
+    final client = TbExtenderBrokerClient(
+      baseUrlGetter: () => baseUrl,
+      requestTimeout: requestTimeout,
+    );
+    await client.initLifeCycle();
+
+    try {
+      return await call(client);
+    } finally {
+      await client.disposeLifeCycle();
+    }
+  }, () => MockClient(answer));
+
+  group("TbExtenderBrokerClient.initLifeCycle", () {
+    test("refuses to start without a base URL", () async {
+      final client = TbExtenderBrokerClient(baseUrlGetter: () => null);
+
+      await expectLater(client.initLifeCycle(), throwsA(isA<ActMissingConfigException>()));
+    });
+
+    test("refuses to start with an empty base URL", () async {
+      final client = TbExtenderBrokerClient(baseUrlGetter: () => "");
+
+      await expectLater(client.initLifeCycle(), throwsA(isA<ActMissingConfigException>()));
+    });
+
+    test("reads the base URL when it starts, not when it is built", () async {
+      String? baseUrl;
+      late Uri capturedUri;
+      final client = TbExtenderBrokerClient(baseUrlGetter: () => baseUrl);
+      baseUrl = _baseUrl;
+
+      await http.runWithClient(() async {
+        await client.initLifeCycle();
+        await client.deleteAccount("kc");
+        await client.disposeLifeCycle();
+      }, () => MockClient((request) async {
+        capturedUri = request.url;
+        return http.Response("", 204);
+      }));
+
+      expect(capturedUri.toString(), _accountUri);
+    });
+  });
 
   group("TbExtenderBrokerClient.login", () {
     test("asks the login endpoint with the token of the identity provider and no body", () async {
       late http.Request captured;
-      final client = aClient((request) async {
-        captured = request;
-        return http.Response(jsonEncode(_successBody()), 200);
-      });
 
-      await client.login("kc-access-token");
+      await ask((request) async {
+        captured = request;
+        return _json(_successBody());
+      }, (client) => client.login("kc-access-token"));
 
       expect(captured.method, "POST");
       expect(captured.url.toString(), _loginUri);
@@ -75,20 +131,36 @@ void main() {
 
     test("removes the trailing slash of the configured base URL", () async {
       late Uri capturedUri;
-      final client = aClient((request) async {
-        capturedUri = request.url;
-        return http.Response(jsonEncode(_successBody()), 200);
-      }, baseUrl: "$_baseUrl/");
 
-      await client.login("kc");
+      await ask(
+        (request) async {
+          capturedUri = request.url;
+          return _json(_successBody());
+        },
+        (client) => client.login("kc"),
+        baseUrl: "$_baseUrl/",
+      );
 
       expect(capturedUri.toString(), _loginUri);
     });
 
-    test("reads a 200 as a success carrying the parsed payload", () async {
-      final client = aClient((_) async => http.Response(jsonEncode(_successBody()), 200));
+    test("keeps the scheme, the port and the path of the configured base URL", () async {
+      late Uri capturedUri;
 
-      final result = await client.login("kc");
+      await ask(
+        (request) async {
+          capturedUri = request.url;
+          return _json(_successBody());
+        },
+        (client) => client.login("kc"),
+        baseUrl: "http://broker.example.test:8080/tenant/",
+      );
+
+      expect(capturedUri.toString(), "http://broker.example.test:8080/tenant/api/v1/auth/login");
+    });
+
+    test("reads a 200 as a success carrying the parsed payload", () async {
+      final result = await ask((_) async => _json(_successBody()), (client) => client.login("kc"));
 
       expect(result, isA<BrokerLoginSuccess>());
       final success = result as BrokerLoginSuccess;
@@ -106,9 +178,8 @@ void main() {
       (body["user"] as Map<String, dynamic>)
         ..remove("firstName")
         ..remove("lastName");
-      final client = aClient((_) async => http.Response(jsonEncode(body), 200));
 
-      final result = await client.login("kc");
+      final result = await ask((_) async => _json(body), (client) => client.login("kc"));
 
       expect(result, isA<BrokerLoginSuccess>());
       final user = (result as BrokerLoginSuccess).response.user;
@@ -117,9 +188,10 @@ void main() {
     });
 
     test("reads a 200 whose body isn't a JSON object as an unknown failure", () async {
-      final client = aClient((_) async => http.Response("not-a-json", 200));
-
-      final result = await client.login("kc");
+      final result = await ask(
+        (_) async => http.Response("not-a-json", 200, headers: _jsonHeaders),
+        (client) => client.login("kc"),
+      );
 
       expect(result, isA<BrokerLoginFailure>());
       final failure = result as BrokerLoginFailure;
@@ -129,9 +201,8 @@ void main() {
 
     test("reads a 200 whose payload misses a mandatory field as an unknown failure", () async {
       final body = _successBody()..remove("tbToken");
-      final client = aClient((_) async => http.Response(jsonEncode(body), 200));
 
-      final result = await client.login("kc");
+      final result = await ask((_) async => _json(body), (client) => client.login("kc"));
 
       expect(result, isA<BrokerLoginFailure>());
       expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
@@ -173,14 +244,10 @@ void main() {
 
     for (final testCase in errorCases) {
       test("reads a ${testCase.status} ${testCase.code} as ${testCase.expected.name}", () async {
-        final client = aClient(
-          (_) async => http.Response(
-            jsonEncode({"error": testCase.code, "message": "boom"}),
-            testCase.status,
-          ),
+        final result = await ask(
+          (_) async => _json({"error": testCase.code, "message": "boom"}, testCase.status),
+          (client) => client.login("kc"),
         );
-
-        final result = await client.login("kc");
 
         expect(result, isA<BrokerLoginFailure>());
         final failure = result as BrokerLoginFailure;
@@ -191,134 +258,112 @@ void main() {
     }
 
     test("reads an error code which isn't documented as an unknown failure", () async {
-      final client = aClient((_) async => http.Response(jsonEncode({"error": "teapot"}), 418));
-
-      final result = await client.login("kc");
+      final result = await ask(
+        (_) async => _json({"error": "teapot"}, 418),
+        (client) => client.login("kc"),
+      );
 
       expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
     });
 
     test("reads an answer which isn't a 200 and carries no body as an unknown failure", () async {
-      final client = aClient((_) async => http.Response("", 503));
-
-      final result = await client.login("kc");
+      final result = await ask(
+        (_) async => http.Response("", 503),
+        (client) => client.login("kc"),
+      );
 
       expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
     });
 
     test("reads a transport error as a network failure", () async {
-      final client = aClient((_) async => throw const _FakeSocketException());
-
-      final result = await client.login("kc");
+      final result = await ask(
+        (_) async => throw http.ClientException("connection refused"),
+        (client) => client.login("kc"),
+      );
 
       expect(result, isA<BrokerLoginFailure>());
-      final failure = result as BrokerLoginFailure;
-      expect(failure.error, BrokerAuthError.network);
-    });
-
-    test("fails without asking anything when no base URL is configured", () async {
-      var called = false;
-      final client = aClient((_) async {
-        called = true;
-        return http.Response("", 200);
-      }, baseUrl: null);
-
-      final result = await client.login("kc");
-
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
-      expect(called, isFalse);
+      expect((result as BrokerLoginFailure).error, BrokerAuthError.network);
     });
   });
 
   group("TbExtenderBrokerClient.deleteAccount", () {
     test("asks the account endpoint with the identity provider token, reads 204 as gone", () async {
       late http.Request captured;
-      final client = aClient((request) async {
+
+      final error = await ask((request) async {
         captured = request;
         return http.Response("", 204);
-      });
+      }, (client) => client.deleteAccount("kc-access-token"));
 
-      expect(await client.deleteAccount("kc-access-token"), isNull);
+      expect(error, isNull);
       expect(captured.method, "DELETE");
       expect(captured.url.toString(), _accountUri);
       expect(captured.headers["Authorization"], "Bearer kc-access-token");
     });
 
     test("reads the error code of a deletion the broker refused", () async {
-      final client = aClient(
-        (_) async => http.Response(
-          jsonEncode({"error": "not_configured", "message": "nope"}),
-          501,
-        ),
+      final error = await ask(
+        (_) async => _json({"error": "not_configured", "message": "nope"}, 501),
+        (client) => client.deleteAccount("kc"),
       );
 
-      expect(await client.deleteAccount("kc"), BrokerAuthError.notConfigured);
+      expect(error, BrokerAuthError.notConfigured);
     });
 
     test("reads a transport error as a network failure", () async {
-      final client = aClient((_) async => throw const _FakeSocketException());
+      final error = await ask(
+        (_) async => throw http.ClientException("connection refused"),
+        (client) => client.deleteAccount("kc"),
+      );
 
-      expect(await client.deleteAccount("kc"), BrokerAuthError.network);
-    });
-
-    test("fails when no base URL is configured", () async {
-      final client = aClient((_) async => http.Response("", 204), baseUrl: "");
-
-      expect(await client.deleteAccount("kc"), BrokerAuthError.unknown);
+      expect(error, BrokerAuthError.network);
     });
   });
 
   group("TbExtenderBrokerClient.acceptTerms", () {
     test("posts the version as JSON with the token of the identity provider", () async {
       late http.Request captured;
-      final client = aClient((request) async {
+
+      final error = await ask((request) async {
         captured = request;
         return http.Response("", 204);
-      });
-
-      final error = await client.acceptTerms("kc-token", version: "2026-09-16");
+      }, (client) => client.acceptTerms("kc-token", version: "2026-09-16"));
 
       expect(error, isNull);
       expect(captured.method, "POST");
       expect(captured.url.toString(), _termsUri);
       expect(captured.headers["Authorization"], "Bearer kc-token");
-      expect(captured.headers["Content-Type"], startsWith("application/json"));
+      expect(captured.headers["content-type"], startsWith("application/json"));
       expect(jsonDecode(captured.body), {"version": "2026-09-16"});
     });
 
     test("reads the error code the broker answers", () async {
-      final client = aClient(
-        (_) async => http.Response(jsonEncode({"error": "not_configured"}), 501),
+      final error = await ask(
+        (_) async => _json({"error": "not_configured"}, 501),
+        (client) => client.acceptTerms("kc-token", version: "v1"),
       );
 
-      expect(
-        await client.acceptTerms("kc-token", version: "v1"),
-        BrokerAuthError.notConfigured,
-      );
+      expect(error, BrokerAuthError.notConfigured);
     });
 
     test("answers a network error when the transport fails", () async {
-      final client = aClient((_) async => throw const _FakeSocketException());
+      final error = await ask(
+        (_) async => throw http.ClientException("connection refused"),
+        (client) => client.acceptTerms("kc-token", version: "v1"),
+      );
 
-      expect(await client.acceptTerms("kc-token", version: "v1"), BrokerAuthError.network);
-    });
-
-    test("answers unknown without a configured base URL", () async {
-      final client = aClient((_) async => http.Response("", 204), baseUrl: null);
-
-      expect(await client.acceptTerms("kc-token", version: "v1"), BrokerAuthError.unknown);
+      expect(error, BrokerAuthError.network);
     });
   });
 
   group("TbExtenderBrokerClient.releaseDevice", () {
     test("posts to the release endpoint of the serial, with no body without a secret", () async {
       late http.Request captured;
-      final client = aClient((request) async {
+
+      final error = await ask((request) async {
         captured = request;
         return http.Response("", 204);
-      });
-
-      final error = await client.releaseDevice("kc-token", serial: "AB 12");
+      }, (client) => client.releaseDevice("kc-token", serial: "AB 12"));
 
       expect(error, isNull);
       expect(captured.method, "POST");
@@ -329,148 +374,125 @@ void main() {
 
     test("sends the claim secret as JSON when one is given", () async {
       late http.Request captured;
-      final client = aClient((request) async {
+
+      await ask((request) async {
         captured = request;
         return http.Response("", 204);
-      });
+      }, (client) => client.releaseDevice("kc-token", serial: "AB 12", secret: "cafe"));
 
-      await client.releaseDevice("kc-token", serial: "AB 12", secret: "cafe");
-
-      expect(captured.headers["Content-Type"], startsWith("application/json"));
+      expect(captured.headers["content-type"], startsWith("application/json"));
       expect(jsonDecode(captured.body), {"secret": "cafe"});
     });
 
     test("reads a release the broker refused", () async {
-      final client = aClient(
-        (_) async => http.Response(jsonEncode({"error": "release_refused"}), 403),
+      final error = await ask(
+        (_) async => _json({"error": "release_refused"}, 403),
+        (client) => client.releaseDevice("kc-token", serial: "AB 12"),
       );
 
-      expect(
-        await client.releaseDevice("kc-token", serial: "AB 12"),
-        BrokerAuthError.releaseRefused,
-      );
+      expect(error, BrokerAuthError.releaseRefused);
     });
 
     test("answers a network error when the transport fails", () async {
-      final client = aClient((_) async => throw const _FakeSocketException());
+      final error = await ask(
+        (_) async => throw http.ClientException("connection refused"),
+        (client) => client.releaseDevice("kc-token", serial: "AB 12"),
+      );
 
-      expect(await client.releaseDevice("kc-token", serial: "AB 12"), BrokerAuthError.network);
-    });
-
-    test("answers unknown without a configured base URL", () async {
-      final client = aClient((_) async => http.Response("", 204), baseUrl: null);
-
-      expect(await client.releaseDevice("kc-token", serial: "AB 12"), BrokerAuthError.unknown);
+      expect(error, BrokerAuthError.network);
     });
   });
 
   group("TbExtenderBrokerClient.claimDevice", () {
     test("posts the secret as JSON to the claim endpoint of the serial", () async {
       late http.Request captured;
-      final client = aClient((request) async {
-        captured = request;
-        return http.Response(jsonEncode({"deviceId": "dev-1", "serial": "AB 12"}), 200);
-      });
 
-      await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe");
+      await ask((request) async {
+        captured = request;
+        return _json({"deviceId": "dev-1", "serial": "AB 12"});
+      }, (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"));
 
       expect(captured.method, "POST");
       expect(captured.url.toString(), _claimUri);
       expect(captured.headers["Authorization"], "Bearer kc-token");
-      expect(captured.headers["Content-Type"], startsWith("application/json"));
+      expect(captured.headers["content-type"], startsWith("application/json"));
       expect(jsonDecode(captured.body), {"secret": "cafe"});
     });
 
     test("reads a 200 as a success naming the device", () async {
-      final client = aClient(
-        (_) async => http.Response(jsonEncode({"deviceId": "dev-1", "serial": "AB 12"}), 200),
+      final result = await ask(
+        (_) async => _json({"deviceId": "dev-1", "serial": "AB 12"}),
+        (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(
-        await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
-        const BrokerClaimSuccess(deviceId: "dev-1"),
-      );
+      expect(result, const BrokerClaimSuccess(deviceId: "dev-1"));
     });
 
     test("reads a 200 which names no device as an unknown failure", () async {
-      final client = aClient((_) async => http.Response(jsonEncode({"serial": "AB 12"}), 200));
-
-      expect(
-        await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
-        const BrokerClaimFailure(BrokerAuthError.unknown),
+      final result = await ask(
+        (_) async => _json({"serial": "AB 12"}),
+        (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
+
+      expect(result, const BrokerClaimFailure(BrokerAuthError.unknown));
     });
 
     test("reads a claim the broker refused", () async {
-      final client = aClient(
-        (_) async => http.Response(jsonEncode({"error": "claim_refused"}), 403),
+      final result = await ask(
+        (_) async => _json({"error": "claim_refused"}, 403),
+        (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(
-        await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
-        const BrokerClaimFailure(BrokerAuthError.claimRefused),
-      );
+      expect(result, const BrokerClaimFailure(BrokerAuthError.claimRefused));
     });
 
     test("answers a network error when the transport fails", () async {
-      final client = aClient((_) async => throw const _FakeSocketException());
-
-      expect(
-        await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
-        const BrokerClaimFailure(BrokerAuthError.network),
+      final result = await ask(
+        (_) async => throw http.ClientException("connection refused"),
+        (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
-    });
 
-    test("answers unknown without a configured base URL", () async {
-      final client = aClient((_) async => http.Response("", 200), baseUrl: null);
-
-      expect(
-        await client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
-        const BrokerClaimFailure(BrokerAuthError.unknown),
-      );
+      expect(result, const BrokerClaimFailure(BrokerAuthError.network));
     });
   });
 
   group("TbExtenderBrokerClient, the broker which doesn't answer", () {
-    /// The client of a broker which never answers, and which gives it [timeout] to do so.
-    TbExtenderBrokerClient aSilentClient() => TbExtenderBrokerClient(
-      baseUrlGetter: () => _baseUrl,
-      httpClient: MockClient((_) => Completer<http.Response>().future),
+    /// Have [call] ask a broker which never answers, and which is given little time to do so.
+    Future<T> askSilent<T>(Future<T> Function(TbExtenderBrokerClient client) call) => ask(
+      (_) => Completer<http.Response>().future,
+      call,
       requestTimeout: const Duration(milliseconds: 10),
     );
 
     test("reads a login which timed out as a network failure", () async {
-      final result = await aSilentClient().login("kc");
+      final result = await askSilent((client) => client.login("kc"));
 
       expect((result as BrokerLoginFailure).error, BrokerAuthError.network);
     });
 
     test("reads a deletion which timed out as a network failure", () async {
-      expect(await aSilentClient().deleteAccount("kc"), BrokerAuthError.network);
+      expect(await askSilent((client) => client.deleteAccount("kc")), BrokerAuthError.network);
     });
 
     test("reads a terms acceptance which timed out as a network failure", () async {
       expect(
-        await aSilentClient().acceptTerms("kc", version: "2026-09-16"),
+        await askSilent((client) => client.acceptTerms("kc", version: "2026-09-16")),
         BrokerAuthError.network,
       );
     });
 
     test("reads a release which timed out as a network failure", () async {
-      expect(await aSilentClient().releaseDevice("kc", serial: "AB 12"), BrokerAuthError.network);
+      expect(
+        await askSilent((client) => client.releaseDevice("kc", serial: "AB 12")),
+        BrokerAuthError.network,
+      );
     });
 
     test("reads a claim which timed out as a network failure", () async {
       expect(
-        await aSilentClient().claimDevice("kc", serial: "AB 12", secret: "cafe"),
+        await askSilent((client) => client.claimDevice("kc", serial: "AB 12", secret: "cafe")),
         const BrokerClaimFailure(BrokerAuthError.network),
       );
     });
   });
-}
-
-/// A transport exception which stands in for a connection failure.
-class _FakeSocketException implements Exception {
-  /// Class constructor
-  const _FakeSocketException();
 }
