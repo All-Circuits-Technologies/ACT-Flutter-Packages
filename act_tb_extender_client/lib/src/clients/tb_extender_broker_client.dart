@@ -4,12 +4,13 @@
 
 import 'dart:convert';
 
+import 'package:act_foundation/act_foundation.dart';
+import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_tb_extender_client/src/models/broker_claim_result.dart';
 import 'package:act_tb_extender_client/src/models/broker_login_response.dart';
 import 'package:act_tb_extender_client/src/models/broker_login_result.dart';
 import 'package:act_tb_extender_client/src/types/broker_auth_error.dart';
-import 'package:http/http.dart' as http;
 
 /// A small REST client for the auth broker of tb-extender.
 ///
@@ -21,13 +22,14 @@ import 'package:http/http.dart' as http;
 /// Every call holds no state and is idempotent; therefore, they can safely be issued again
 /// whenever the ThingsBoard tokens are lost or refused.
 ///
-/// The base URL is read through a getter rather than given once: the configuration of an
-/// application is loaded after its managers are built, so the URL is only there by the time the
-/// first call is made.
+/// The requests go through [AbsHttpClientManager], without its login: the broker authenticates
+/// each call by the token of the identity provider it carries. The client has to be initialized
+/// before its first call, which is when the base URL of the broker is read; the configuration of
+/// an application, loaded after its managers are built, is there by then.
 ///
 /// A call the broker doesn't answer within the timeout the client was built with is read as a
 /// transport failure.
-class TbExtenderBrokerClient {
+class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// This is the logs category linked to the broker client
   static const _logsCategory = "tbExtenderBroker";
 
@@ -41,6 +43,9 @@ class TbExtenderBrokerClient {
   static const _termsAcceptPath = "/api/v1/terms/accept";
 
   /// This is the relative path of the devices endpoints, the serial and the action follow it
+  ///
+  /// The requester encodes each segment of the path, but splits it on the slashes first: a serial
+  /// can't hold one.
   static const _devicesPath = "/api/v1/devices";
 
   /// This is the key the claim secret is sent to the claim and release endpoints under
@@ -62,9 +67,6 @@ class TbExtenderBrokerClient {
   /// failure
   static const defaultRequestTimeout = Duration(seconds: 15);
 
-  /// The HTTP client the requests are issued with
-  final http.Client _httpClient;
-
   /// The getter of the base URL of the broker
   final String? Function() _baseUrlGetter;
 
@@ -76,16 +78,13 @@ class TbExtenderBrokerClient {
 
   /// Class constructor
   ///
-  /// [baseUrlGetter] answers the base URL of the broker, and is called at each request so that the
-  /// configuration of an application can be loaded after the client is built. [httpClient]
-  /// defaults to a fresh [http.Client], and [requestTimeout] is the time the broker is given to
-  /// answer each call.
+  /// [baseUrlGetter] answers the base URL of the broker, and is called when the client is
+  /// initialized so that the configuration of an application can be loaded after the client is
+  /// built. [requestTimeout] is the time the broker is given to answer each call.
   TbExtenderBrokerClient({
     required String? Function() baseUrlGetter,
-    http.Client? httpClient,
     Duration requestTimeout = defaultRequestTimeout,
   }) : _baseUrlGetter = baseUrlGetter,
-       _httpClient = httpClient ?? http.Client(),
        _requestTimeout = requestTimeout,
        _logsHelper = LogsHelper(category: _logsCategory);
 
@@ -97,29 +96,23 @@ class TbExtenderBrokerClient {
   /// Return a [BrokerLoginSuccess] on a HTTP 200, or a [BrokerLoginFailure] carrying the mapped
   /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
   Future<BrokerLoginResult> login(String idpAccessToken) async {
-    final uri = _buildUri(_loginPath);
-    if (uri == null) {
-      _logsHelper.e("The base URL of the broker isn't configured, can't exchange the access "
-          "token of the identity provider");
-      return const BrokerLoginFailure(BrokerAuthError.unknown);
+    final answer = await executeRequestWithJsonObjRespBody<BrokerLoginResponse>(
+      requestParam: _requestParam(_loginPath, idpAccessToken),
+      parseRespBody: BrokerLoginResponse.fromJson,
+    );
+
+    final parsed = answer.castedBody;
+    if (answer.status == RequestStatus.success && parsed != null) {
+      return BrokerLoginSuccess(parsed);
     }
 
-    http.Response response;
-    try {
-      response = await _httpClient
-          .post(uri, headers: _headers(idpAccessToken))
-          .timeout(_requestTimeout);
-    } catch (error) {
-      _logsHelper.w("A transport error occurred when calling the login endpoint of the broker: "
-          "$error");
-      return const BrokerLoginFailure(BrokerAuthError.network);
-    }
+    final failure = _readFailure(answer, "login");
 
-    if (response.statusCode == 200) {
-      return _parseSuccess(response);
-    }
-
-    return _parseError(response);
+    return BrokerLoginFailure(
+      failure.error,
+      message: failure.message,
+      statusCode: answer.response?.statusCode,
+    );
   }
 
   /// Erase the account behind the given [idpAccessToken], on the ThingsBoard side as well as
@@ -130,35 +123,10 @@ class TbExtenderBrokerClient {
   ///
   /// Return null on a HTTP 204, the account being gone, or the mapped [BrokerAuthError] otherwise,
   /// a transport error being read as [BrokerAuthError.network].
-  Future<BrokerAuthError?> deleteAccount(String idpAccessToken) async {
-    final uri = _buildUri(_accountPath);
-    if (uri == null) {
-      _logsHelper.e("The base URL of the broker isn't configured, can't delete the account");
-      return BrokerAuthError.unknown;
-    }
-
-    http.Response response;
-    try {
-      response = await _httpClient
-          .delete(uri, headers: _headers(idpAccessToken))
-          .timeout(_requestTimeout);
-    } catch (error) {
-      _logsHelper.w("A transport error occurred when calling the account endpoint of the broker: "
-          "$error");
-      return BrokerAuthError.network;
-    }
-
-    if (response.statusCode == 204) {
-      return null;
-    }
-
-    final code = _readString(_tryDecodeBody(response), _errorKey);
-    final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The account deletion failed with the status ${response.statusCode} "
-        "(code: $code, error: $error)");
-
-    return error;
-  }
+  Future<BrokerAuthError?> deleteAccount(String idpAccessToken) => _requestWithoutAnswer(
+    _requestParam(_accountPath, idpAccessToken, httpMethod: HttpMethods.delete),
+    "account deletion",
+  );
 
   /// Record on the account that the user accepted the [version] of the terms.
   ///
@@ -170,39 +138,10 @@ class TbExtenderBrokerClient {
   Future<BrokerAuthError?> acceptTerms(
     String idpAccessToken, {
     required String version,
-  }) async {
-    final uri = _buildUri(_termsAcceptPath);
-    if (uri == null) {
-      _logsHelper.e("The base URL of the broker isn't configured, can't record the terms");
-      return BrokerAuthError.unknown;
-    }
-
-    http.Response response;
-    try {
-      response = await _httpClient
-          .post(
-            uri,
-            headers: {..._headers(idpAccessToken), "Content-Type": "application/json"},
-            body: jsonEncode({_versionKey: version}),
-          )
-          .timeout(_requestTimeout);
-    } catch (error) {
-      _logsHelper.w("A transport error occurred when calling the terms endpoint of the broker: "
-          "$error");
-      return BrokerAuthError.network;
-    }
-
-    if (response.statusCode == 204) {
-      return null;
-    }
-
-    final code = _readString(_tryDecodeBody(response), _errorKey);
-    final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The terms acceptance failed with the status ${response.statusCode} "
-        "(code: $code, error: $error)");
-
-    return error;
-  }
+  }) => _requestWithoutAnswer(
+    _requestParam(_termsAcceptPath, idpAccessToken, body: {_versionKey: version}),
+    "terms acceptance",
+  );
 
   /// Assign the device named [serial] to the customer of the caller.
   ///
@@ -221,45 +160,21 @@ class TbExtenderBrokerClient {
     required String serial,
     required String secret,
   }) async {
-    final uri = _buildUri("$_devicesPath/${Uri.encodeComponent(serial)}/claim");
-    if (uri == null) {
-      _logsHelper.e("The base URL of the broker isn't configured, can't claim a device");
-      return const BrokerClaimFailure(BrokerAuthError.unknown);
-    }
+    final answer = await executeRequestWithJsonObjRespBody<String>(
+      requestParam: _requestParam(
+        "$_devicesPath/$serial/claim",
+        idpAccessToken,
+        body: {_secretKey: secret},
+      ),
+      parseRespBody: (json) => _readString(json, _deviceIdKey),
+    );
 
-    http.Response response;
-    try {
-      response = await _httpClient
-          .post(
-            uri,
-            headers: {..._headers(idpAccessToken), "Content-Type": "application/json"},
-            body: jsonEncode({_secretKey: secret}),
-          )
-          .timeout(_requestTimeout);
-    } catch (error) {
-      _logsHelper.w("A transport error occurred when calling the claim endpoint of the broker: "
-          "$error");
-      return const BrokerClaimFailure(BrokerAuthError.network);
-    }
-
-    final json = _tryDecodeBody(response);
-
-    if (response.statusCode == 200) {
-      final deviceId = _readString(json, _deviceIdKey);
-      if (deviceId == null) {
-        _logsHelper.w("The broker answered a 200 to the claim without naming the device");
-        return const BrokerClaimFailure(BrokerAuthError.unknown);
-      }
-
+    final deviceId = answer.castedBody;
+    if (answer.status == RequestStatus.success && deviceId != null) {
       return BrokerClaimSuccess(deviceId: deviceId);
     }
 
-    final code = _readString(json, _errorKey);
-    final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The device claim failed with the status ${response.statusCode} "
-        "(code: $code, error: $error)");
-
-    return BrokerClaimFailure(error);
+    return BrokerClaimFailure(_readFailure(answer, "device claim").error);
   }
 
   /// Release the device named [serial] from the customer which holds it.
@@ -276,97 +191,99 @@ class TbExtenderBrokerClient {
     String idpAccessToken, {
     required String serial,
     String? secret,
-  }) async {
-    final uri = _buildUri("$_devicesPath/${Uri.encodeComponent(serial)}/release");
-    if (uri == null) {
-      _logsHelper.e("The base URL of the broker isn't configured, can't release a device");
-      return BrokerAuthError.unknown;
-    }
+  }) => _requestWithoutAnswer(
+    _requestParam(
+      "$_devicesPath/$serial/release",
+      idpAccessToken,
+      body: (secret == null) ? null : {_secretKey: secret},
+    ),
+    "device release",
+  );
 
-    http.Response response;
-    try {
-      response = await _httpClient
-          .post(
-            uri,
-            headers: {
-              ..._headers(idpAccessToken),
-              if (secret != null) "Content-Type": "application/json",
-            },
-            body: (secret == null) ? null : jsonEncode({_secretKey: secret}),
-          )
-          .timeout(_requestTimeout);
-    } catch (error) {
-      _logsHelper.w("A transport error occurred when calling the release endpoint of the broker: "
-          "$error");
-      return BrokerAuthError.network;
-    }
-
-    if (response.statusCode == 204) {
-      return null;
-    }
-
-    final code = _readString(_tryDecodeBody(response), _errorKey);
-    final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The device release failed with the status ${response.statusCode} "
-        "(code: $code, error: $error)");
-
-    return error;
-  }
-
-  /// Close the HTTP client underneath and release its resources.
-  void close() => _httpClient.close();
-
-  /// Build the URI of the [path] endpoint out of the base URL the getter answers.
+  /// {@macro act_http_client_manager.AbsServerReqManager.getRequesterConfig}
   ///
-  /// Return null when no base URL was configured, a single trailing slash on it being removed so
-  /// that the concatenation stays clean.
-  Uri? _buildUri(String path) {
+  /// The base URL of the broker is read here, and its absence makes the initialization fail.
+  @override
+  Future<RequesterConfig> getRequesterConfig() async {
     final baseUrl = _baseUrlGetter();
-    if (baseUrl == null || baseUrl.isEmpty) {
+    final uri = (baseUrl == null) ? null : Uri.tryParse(baseUrl);
+    if (uri == null || uri.host.isEmpty) {
+      const configName = "tb-extender broker base URL";
+      _logsHelper.e("The configuration value: $configName, is missing or isn't a valid URL");
+      throw ActMissingConfigException(configName);
+    }
+
+    return RequesterConfig(
+      loggerEnabled: true,
+      loggerCategory: _logsCategory,
+      defaultTimeout: _requestTimeout,
+      defaultServerInfo: RequesterServerUrlConfig(
+        isUsingSsl: uri.isScheme("https"),
+        hostname: uri.host,
+        port: uri.hasPort ? uri.port : null,
+        baseUrl: uri.path,
+      ),
+    );
+  }
+
+  /// {@macro act_http_client_manager.AbsServerReqManager.createServerLogin}
+  ///
+  /// The broker has no login of its own: each call carries the token of the identity provider.
+  @override
+  Future<AbsHttpClientLogin?> createServerLogin({
+    required ServerRequester serverRequester,
+    required LogsHelper parentLogsHelper,
+  }) async => null;
+
+  /// Build the request of the [route] endpoint, which carries the [idpAccessToken] the broker
+  /// authenticates the caller with and, when given, the [body] as JSON.
+  RequestParam _requestParam(
+    String route,
+    String idpAccessToken, {
+    HttpMethods httpMethod = HttpMethods.post,
+    Map<String, dynamic>? body,
+  }) => RequestParam(
+    httpMethod: httpMethod,
+    relativeRoute: route,
+    headers: {"Authorization": "Bearer $idpAccessToken", "Accept": "application/json"},
+    body: body,
+  );
+
+  /// Issue the [requestParam] of an endpoint which answers no body, the [callName] naming it in
+  /// the logs.
+  ///
+  /// Return null on a success, or the mapped [BrokerAuthError] otherwise.
+  Future<BrokerAuthError?> _requestWithoutAnswer(RequestParam requestParam, String callName) async {
+    final answer = await executeRequest<Object, Object>(requestParam: requestParam);
+    if (answer.status == RequestStatus.success) {
       return null;
     }
 
-    final trimmed = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length - 1) : baseUrl;
-
-    return Uri.parse("$trimmed$path");
+    return _readFailure(answer, callName).error;
   }
 
-  /// Build the headers every call of the broker carries, which name the [idpAccessToken] the
-  /// broker authenticates the caller with.
-  Map<String, String> _headers(String idpAccessToken) => {
-    "Authorization": "Bearer $idpAccessToken",
-    "Accept": "application/json",
-  };
-
-  /// Parse a HTTP 200 [response] of the broker into a [BrokerLoginSuccess], or into the failure of
-  /// a malformed body.
-  BrokerLoginResult _parseSuccess(http.Response response) {
-    final json = _tryDecodeBody(response);
-    if (json == null) {
-      _logsHelper.w("The broker answered a 200 with a body which isn't a JSON object");
-      return const BrokerLoginFailure(BrokerAuthError.unknown, statusCode: 200);
+  /// Read the error and the message of the broker [answer] to the [callName] call which didn't
+  /// succeed.
+  ///
+  /// A call which got no answer at all, because of a transport error or a timeout, is read as
+  /// [BrokerAuthError.network].
+  ({BrokerAuthError error, String? message}) _readFailure(
+    RequestResponse<Object?> answer,
+    String callName,
+  ) {
+    final response = answer.response;
+    if (response == null) {
+      _logsHelper.w("The $callName got no answer from the broker (${answer.status})");
+      return (error: BrokerAuthError.network, message: null);
     }
 
-    final parsed = BrokerLoginResponse.fromJson(json);
-    if (parsed == null) {
-      _logsHelper.w("The broker answered a 200 but its payload couldn't be parsed");
-      return const BrokerLoginFailure(BrokerAuthError.unknown, statusCode: 200);
-    }
-
-    return BrokerLoginSuccess(parsed);
-  }
-
-  /// Parse a [response] of the broker which isn't a 200 into a typed [BrokerLoginFailure].
-  BrokerLoginResult _parseError(http.Response response) {
     final json = _tryDecodeBody(response);
     final code = _readString(json, _errorKey);
-    final message = _readString(json, _messageKey);
-
     final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The broker login failed with the status ${response.statusCode} (code: $code, "
+    _logsHelper.w("The $callName failed with the status ${response.statusCode} (code: $code, "
         "error: $error)");
 
-    return BrokerLoginFailure(error, message: message, statusCode: response.statusCode);
+    return (error: error, message: _readString(json, _messageKey));
   }
 
   /// Read the [key] of the [json] the broker answered, when it holds a string.
@@ -377,7 +294,7 @@ class TbExtenderBrokerClient {
   }
 
   /// Try to decode the body of the [response] as a JSON object, returning null on any failure.
-  Map<String, dynamic>? _tryDecodeBody(http.Response response) {
+  Map<String, dynamic>? _tryDecodeBody(Response response) {
     if (response.body.isEmpty) {
       return null;
     }
