@@ -174,6 +174,10 @@ The `redirectUrl` is the URI registered on the Keycloak client, and `postLogoutR
 given when the realm registered another one for the sign out. `onSignOut` is what the application
 forgets the account which is leaving with.
 
+The service starts the broker client in its `initLifeCycle`, which is when `auth.broker.url` is
+read, and releases it in its `disposeLifeCycle`. A URL which is missing or isn't a URL makes
+`initLifeCycle` throw an `ActMissingConfigException`.
+
 ## Configuration
 
 | Key                | Type   | What it is                                               |

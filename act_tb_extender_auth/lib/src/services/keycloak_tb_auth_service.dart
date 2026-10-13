@@ -102,6 +102,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   /// The storage the ThingsBoard tokens are kept in, which the authentication manager sets
   MixinAuthStorageService? _storageService;
 
+  /// True once the [_brokerClient] is initialized, which is when it can be disposed of
+  bool _brokerClientInitialized = false;
+
   /// {@macro act_shared_auth.MixinAuthService.storageService}
   @override
   MixinAuthStorageService? get storageService => _storageService;
@@ -142,11 +145,16 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
        _mutex = Mutex(),
        _logsHelper = LogsHelper(category: _logsCategory);
 
-  /// Init the service, which hands the provider the storage of the Keycloak tokens and the library
-  /// it speaks OAuth 2.0 with.
+  /// Init the service, which initializes the broker client and hands the provider the storage of
+  /// the Keycloak tokens and the library it speaks OAuth 2.0 with.
+  ///
+  /// Throw an `ActMissingConfigException` when the URL of the broker isn't configured.
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
+
+    await _brokerClient.initLifeCycle();
+    _brokerClientInitialized = true;
 
     await _provider.setStorageService(_keycloakStorageService);
     await _provider.initProvider(parentLogsHelper: _logsHelper, appAuth: _resolveAppAuth());
@@ -495,7 +503,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   @override
   Future<void> disposeLifeCycle() async {
     await _provider.disposeLifeCycle();
-    _brokerClient.close();
+    if (_brokerClientInitialized) {
+      await _brokerClient.disposeLifeCycle();
+    }
     await _authStatusCtrl.close();
 
     return super.disposeLifeCycle();

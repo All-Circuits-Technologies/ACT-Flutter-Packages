@@ -194,8 +194,22 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The version of the last terms acceptance the broker received.
   String? lastAcceptedVersion;
 
+  /// The number of times the service disposed of the client.
+  int disposeCallCount = 0;
+
   /// Class constructor
-  FakeBrokerClient() : super(baseUrlGetter: () => "https://broker.example.test");
+  ///
+  /// [baseUrl] is the URL the client reads when it is initialized, null when the application didn't
+  /// configure it.
+  FakeBrokerClient({String? baseUrl = "https://broker.example.test"})
+    : super(baseUrlGetter: () => baseUrl);
+
+  @override
+  Future<void> disposeLifeCycle() async {
+    disposeCallCount++;
+
+    return super.disposeLifeCycle();
+  }
 
   @override
   Future<BrokerLoginResult> login(String idpAccessToken) async {
