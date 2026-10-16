@@ -16,5 +16,9 @@ const Duration waitBeforeRestartingScan = Duration(seconds: 2);
 
 /// The time Android takes to stop a scan once it is cancelled, before a connection may be opened
 ///
-/// flutter_reactive_ble waits as long before connecting to an advertising device.
+/// Some Android phones fail to connect right after a scan was stopped
+/// (https://github.com/googlesamples/android-BluetoothLeGatt/issues/44). The value is the one of
+/// flutter_reactive_ble, found by experience: it means to wait as long after every scan which is
+/// cancelled on Android (`DeviceScannerImpl`), but awaits a single `Future` built with the plugin,
+/// which is over a few hundred milliseconds after the application started. The wait is done here.
 const Duration waitAfterStoppingScan = Duration(milliseconds: 300);
