@@ -274,4 +274,21 @@ void main() {
       expect(ble.connected.length, 2);
     });
   });
+
+  group("BleGapService.pauseScanWhile", () {
+    test("starts the scan again when what ran during the pause threw", () async {
+      final fake = FakeAsync();
+      await startScanning(fake);
+      final errors = <Object>[];
+
+      fake.run((_) => unawaited(manager.bleGapService
+          .pauseScanWhile<void>(() async => throw StateError("The plugin failed"))
+          .catchError(errors.add)));
+      await letTimePass(fake, ble_scan_constants.waitAfterStoppingScan + _aMargin);
+
+      expect(errors, [isStateError]);
+      expect(ble.runningScans, 1);
+      expect(ble.scans.length, 2);
+    });
+  });
 }
