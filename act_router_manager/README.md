@@ -1,6 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2023 Nicolas Butet <nicolas.butet@allcircuits.com>
-SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+SPDX-FileCopyrightText: 2024 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
@@ -170,6 +170,9 @@ class AppRoutesHelper extends AbstractRoutesHelper<AppRoute> {
 }
 ```
 
+The error route is optional. When the helper is given one (`errorRoute`), its page is displayed for
+a location which matches no route; without it, `GoRouter` displays its own default error page.
+
 ### Register the manager
 
 ```dart
@@ -181,8 +184,9 @@ class AppRouterManager extends AbstractRouterManager<AppRoute> {
 ```
 
 ```dart
-GlobalManager.instance.register(
-  AbstractRouterBuilder<AppRouterManager>(factory: AppRouterManager.new),
+// In the registerManagers() of the global manager of the application:
+registerManagerAsync(
+  const AbstractRouterBuilder<AppRouterManager>(factory: AppRouterManager.new),
 );
 ```
 
