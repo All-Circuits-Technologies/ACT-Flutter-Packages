@@ -27,9 +27,9 @@ jobs:
           sudo apt-get install --yes clang cmake ninja-build pkg-config libgtk-3-dev
 
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.6"
 
       - name: Build the example and the unit tests
         working-directory: act_splash_screen_manager/example
@@ -51,9 +51,9 @@ jobs:
         uses: actions/checkout@v6
 
       - name: Setup Flutter SDK
-        uses: subosito/flutter-action@f2c4f6686ca8e8d6e6d0f28410eeef506ed66aff
+        uses: subosito/flutter-action@1a449444c387b1966244ae4d4f8c696479add0b2
         with:
-          flutter-version: "3.41.9"
+          flutter-version: "3.44.6"
 
       # The plugin is reached through a symlink nested deep under the example, and the name of the
       # package is repeated three times along the path of a header pulled that way: it passes the

@@ -68,26 +68,25 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
   /// This is the list of supported locales in the app.
   late final List<Locale> supportedLocales;
 
-  /// This is the current locale of the application.
-  Locale _currentLocale;
+  /// This is the current locale of the application, or null until [initAfterView] has resolved it.
+  Locale? _currentLocale;
 
   /// This is the stream of the current locale.
   Stream<Locale> get currentLocaleStream => _currentLocaleCtrl.stream;
 
   /// This is the current locale of the application.
-  /// If you want to be sure that the locale is set, you should wait for the [initAfterView] method
-  /// to be ended.
-  Locale get currentLocale => _currentLocale;
+  ///
+  /// Before [initAfterView] has resolved it, this falls back to the wanted locale, or to the one
+  /// Intl reports, so it never exposes an unresolved value. Listen to [currentLocaleStream] to
+  /// follow changes, including the one emitted when [initAfterView] resolves the locale.
+  Locale get currentLocale => _currentLocale ?? _resolveCurrentLocale();
 
   /// This is the current locale of the application, formatted for date formatting.
   ///
   /// DateFormat in Intl package requires locale in the format "en_US" instead of "en-US". This
   /// method provides the current locale in the correct format for date formatting.
-  ///
-  /// If you want to be sure that the locale is set, you should wait for the [initAfterView] method
-  /// to be ended.
   String get currentLocaleStrForDateFormat => LocaleUtility.localeToString(
-    locale: _currentLocale,
+    locale: currentLocale,
     separator: LocaleUtility.underscoreSeparator,
   );
 
@@ -148,8 +147,7 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
     required List<Locale> Function() getSupportedLocales,
     required MixinLocaleProperties Function() propertiesGetter,
     required MixinLocaleConfig Function() configGetter,
-  }) : _currentLocale = const Locale.fromSubtags(),
-       _currentLocaleCtrl = StreamController<Locale>.broadcast(),
+  }) : _currentLocaleCtrl = StreamController<Locale>.broadcast(),
        _wantedLocaleCtrl = StreamController<Locale?>.broadcast(),
        _getSupportedLocales = getSupportedLocales,
        _propertiesGetter = propertiesGetter,
@@ -182,14 +180,18 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
       );
     }
 
-    _currentLocale =
-        _wantedLocale ??
-        // Because the locale is returned by Intl.getCurrentLocale, we suppose that it can't return a
-        // wrong value. That's why we expect the Locale created to be not null.
-        // We don't call _setCurrentLocale to not emit an event here. We expect that no manager or view
-        // call currentLocale getter before this line; therefore, emit an event would be overkill.
-        LocaleUtility.localeFromString(string: Intl.getCurrentLocale())!;
+    // Resolve the authoritative value. Readers that used the currentLocale fallback before this
+    // point are notified through the stream, so they can pick up the resolved value.
+    _setCurrentLocale(_resolveCurrentLocale());
   }
+
+  /// Resolves the locale to expose before [initAfterView] has resolved [_currentLocale]: the locale
+  /// the user asked for when there is one, otherwise the one Intl reports.
+  ///
+  /// Intl.getCurrentLocale is assumed never to return an unparsable value, hence the non-null
+  /// assertion.
+  Locale _resolveCurrentLocale() =>
+      _wantedLocale ?? LocaleUtility.localeFromString(string: Intl.getCurrentLocale())!;
 
   /// This method is used to set the current locale of the application.
   /// It will emit an event on the [currentLocaleStream] stream if the locale is different.

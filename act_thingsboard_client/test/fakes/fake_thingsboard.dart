@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';

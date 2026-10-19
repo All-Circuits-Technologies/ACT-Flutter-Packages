@@ -104,6 +104,12 @@ void main() {
     });
   });
 
+  group("SecretsSingleton.deleteIOSOptions", () {
+    test("name no accessibility, so that the keychain deletes the secrets written with any", () {
+      expect(SecretsSingleton.deleteIOSOptions.toMap(), isNot(contains("accessibility")));
+    });
+  });
+
   group("SecretsSingleton.deleteAll", () {
     test("forgets every secret which was kept", () async {
       await secrets.store<String>(key: "aKey", value: "a value");

@@ -4,6 +4,7 @@
 
 library;
 
+export 'package:act_http_client_manager/act_http_client_manager.dart' show RequestStatus;
 export 'package:act_thingsboard_client/src/constants/tb_constants.dart';
 export 'package:act_thingsboard_client/src/managers/abs_tb_server_req_manager.dart';
 export 'package:act_thingsboard_client/src/managers/tb_no_auth_server_req_manager.dart';
@@ -18,4 +19,5 @@ export 'package:act_thingsboard_client/src/services/devices/values/tb_device_val
 export 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_handler.dart';
 export 'package:act_thingsboard_client/src/services/tb_std_auth_service.dart';
 export 'package:act_thingsboard_client/src/utils/tb_telemetries_helper.dart';
-export 'package:thingsboard_client/thingsboard_client.dart' show AttributeScope;
+export 'package:thingsboard_client/thingsboard_client.dart'
+    show AttributeScope, ClaimRequest, ClaimResponse, ClaimResult;

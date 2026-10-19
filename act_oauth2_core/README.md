@@ -14,6 +14,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Where this package sits](#where-this-package-sits)
   - [The life of a session](#the-life-of-a-session)
   - [Naming the provider](#naming-the-provider)
+  - [Plain http development stacks](#plain-http-development-stacks)
   - [Several providers in one application](#several-providers-in-one-application)
 - [How to use](#how-to-use)
   - [Installation](#installation)
@@ -90,12 +91,18 @@ A user is signed in as long as one of the two tokens is still valid. Asking for 
 access one has expired refreshes it; when the refresh one has expired too, nothing is given back
 and the user is signed out.
 
+`getTokens(forceRefresh: true)` asks fresh tokens right away, for when the account changed server
+side: the claims of the token in hand are then behind, and waiting for the expiry would mean
+waiting with them.
+
 A provider which hands only a refresh token over is asked for an access token straight away, so
 that what the application gets is always a usable pair. A provider which hands nothing usable over
 is an error, and the user stays signed out.
 
-Signing out ends the session at the provider first: the tokens are only forgotten once the provider
-answered, so a provider which is unreachable leaves the user signed in rather than half signed out.
+Signing out asks the provider to end its session, then forgets the tokens whatever it answered: a
+provider which is unreachable, or a page of the browser the user closed, must not leave tokens
+behind, otherwise the next call would sign the user in again without asking. `signOut` answers
+false in that case, to say that the session at the provider may still be open.
 
 The two moments which speak to the provider are protected by a mutex, so a page which asks for the
 tokens while a sign in is still running waits rather than starting a second round trip.
@@ -117,6 +124,27 @@ three is refused: nothing could be reached with it.
 The scheme the provider comes back to the application through is the one the application registered
 with the platform. The two URLs which are built from it are the one of a sign in, which ends with
 `oauthredirect`, and the one of a sign out, which is the bare scheme.
+
+An application whose provider checks the redirect URLs against the ones it was registered with
+names them instead: `redirectUrl` and `postLogoutRedirectUrl` are given to the constructor of the
+service, and the one of the sign out defaults to the one of the sign in.
+
+### Plain http development stacks
+
+The native library behind `flutter_appauth` on Android refuses any OpenID endpoint which isn't
+served over `https`, and a development stack usually serves its realm over plain `http`.
+`InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections` reads the configuration which
+was loaded and says whether that is the case; `InsecureDevAppAuth` is the `FlutterAppAuth` which
+allows it:
+
+```dart
+final appAuth = InsecureConnectionsUtility.shouldAllowInsecureAppAuthConnections(conf)
+    ? const InsecureDevAppAuth(FlutterAppAuth())
+    : const FlutterAppAuth();
+```
+
+A realm served over `https`, which is what staging and production are, never engages the wrapper,
+and neither does a release build, whatever its configuration names.
 
 ### Several providers in one application
 
@@ -205,9 +233,18 @@ its own configuration:
 | `issuer`                | One of the three | The well known provider                           |
 | `discoveryUrl`          | One of the three | The discovery document of the provider            |
 | `serviceConfiguration`  | One of the three | The endpoints, one by one                         |
+| `ephemeralSession`      | No, true         | See below                                         |
 
 The endpoints of a provider which is named that way are `authorizationEndpoint`, `tokenEndpoint`
 and, for a provider which offers one, `endSessionEndpoint`.
+
+On iOS and macOS, the pages of the provider open in a browser session which shares nothing with
+the browser of the device, unless `ephemeralSession` is false. The system then asks the user
+nothing before opening them, and the session of the provider is not left in the browser, where
+anyone holding the device would find it; the user types their credentials at each sign in. An
+application which wants the single sign on with the browser sets `ephemeralSession` to false, and
+the system asks the user, at each sign in and sign out, whether the application may use the domain
+of the provider. The other platforms don't know of it.
 
 ## Testing
 
@@ -219,14 +256,18 @@ included, which the tests keep in memory.
 The service is covered on the sign in which brings tokens back, the one the user gave up, the one
 the provider refused, and the one which only brings a refresh token back and asks for an access
 token straight away. The sign out is covered on the session which is ended and the tokens which are
-forgotten, and on the provider which is unreachable and leaves the user signed in.
+forgotten, and on the provider which is unreachable, which leaves no token behind and the user
+signed out all the same.
 
 The tokens are covered on the user who is still signed in, the access token which is refreshed, and
-the refresh token which has expired too. The storage is covered on the tokens it hands over when it
-is set, and on the ones of the run which are kept over the ones it held.
+the refresh token which has expired too, and the refresh on demand on the token which is still
+valid and on the session which has no refresh token to ask with. The storage is covered on the
+tokens it hands over when it is set, and on the ones of the run which are kept over the ones it
+held.
 
 The configurations are covered on every way of naming a provider, on the default issuer of a
-package which knows its own, and on the values which are missing or of the wrong type.
+package which knows its own, and on the values which are missing or of the wrong type. The
+plain-http decision is covered on each URL it reads, and the wrapper on each request it delegates.
 
 ```console
 > flutter test

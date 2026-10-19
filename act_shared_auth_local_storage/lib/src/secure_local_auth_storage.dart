@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_shared_auth_local_storage/src/mixins/mixin_auth_local_storage_conf.dart';
 import 'package:act_shared_auth_local_storage/src/mixins/mixin_auth_secrets.dart';
@@ -17,10 +18,20 @@ class SecureLocalAuthStorage<C extends MixinAuthLocalStorageConf, S extends Mixi
   /// The secrets manager
   final S _secretsManager;
 
+  /// The item the tokens are kept in
+  late final SecretItemWithParser<AuthTokens, String> _tokensItem;
+
   /// Class constructor
-  SecureLocalAuthStorage()
+  ///
+  /// [tokensItem] is the item the tokens are kept in, [MixinAuthSecrets.authTokens] when it's not
+  /// given. An application which holds two sets of tokens, for instance the ones of its identity
+  /// provider and the ones of its server, declares a second item in its secrets manager and hands
+  /// it to a second storage, instead of copying this class to write under another key.
+  SecureLocalAuthStorage({SecretItemWithParser<AuthTokens, String>? tokensItem})
     : _confManager = globalGetIt().get<C>(),
-      _secretsManager = globalGetIt().get<S>();
+      _secretsManager = globalGetIt().get<S>() {
+    _tokensItem = tokensItem ?? _secretsManager.authTokens;
+  }
 
   /// {@macro act_shared_auth.MixinAuthStorageService.isUserIdsStorageSupported}
   @override
@@ -29,17 +40,17 @@ class SecureLocalAuthStorage<C extends MixinAuthLocalStorageConf, S extends Mixi
   /// {@macro act_shared_auth.MixinAuthStorageService.storeTokens}
   @override
   Future<bool> storeTokens({required AuthTokens tokens}) async {
-    await _secretsManager.authTokens.store(tokens);
+    await _tokensItem.store(tokens);
     return true;
   }
 
   /// {@macro act_shared_auth.MixinAuthStorageService.loadTokens}
   @override
-  Future<AuthTokens?> loadTokens() async => _secretsManager.authTokens.load();
+  Future<AuthTokens?> loadTokens() async => _tokensItem.load();
 
   /// {@macro act_shared_auth.MixinAuthStorageService.clearTokens}
   @override
-  Future<void> clearTokens() async => _secretsManager.authTokens.delete();
+  Future<void> clearTokens() async => _tokensItem.delete();
 
   /// {@macro act_shared_auth.MixinAuthStorageService.storeTokens}
   @override
