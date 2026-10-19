@@ -60,7 +60,7 @@ class DraggableAndScrollableListView extends StatelessWidget {
     return ScrollableReorderableListView(
       parentScrollController: parentScrollController,
       scrollable: scrollable,
-      onReorder: dragReorder!,
+      onReorderItem: dragReorder!,
       buildDefaultDragHandles: !isLoading,
       children: children,
     );

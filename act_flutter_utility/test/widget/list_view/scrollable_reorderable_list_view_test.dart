@@ -21,7 +21,7 @@ void main() {
     final list = ScrollableReorderableListView(
       parentScrollController: controller,
       scrollable: scrollable,
-      onReorder: (oldIndex, newIndex) {},
+      onReorderItem: (oldIndex, newIndex) {},
       children: [
         for (var index = 0; index < _itemCount; index++)
           SizedBox(key: ValueKey(index), height: _itemHeight, child: Text("item $index")),
