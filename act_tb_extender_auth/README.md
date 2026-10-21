@@ -42,7 +42,7 @@ speaks the three endpoints of the broker, and `KeycloakTbAuthService` is the `Mi
 rest of an application talks to. What it answers through `getTokens` is the ThingsBoard pair, so
 everything built on `act_thingsboard_client` keeps working untouched; the Keycloak pair is only
 ever read to call the broker, and to hand out the raw token of the identity provider through
-`MixinRawIdpTokenProvider`.
+`getIdpAccessToken`.
 
 ### The sign in
 
@@ -95,15 +95,13 @@ is gone: at that point the tokens in hand point at nothing.
 | `POST /api/v1/terms/accept` | Writes on the account the version of the terms the user accepted |
 
 The account is where the acceptance lives, so that a user who signs in on another phone is not
-asked again, and the broker is the only thing which holds the right to write on it. The service
-mixes `MixinTermsAcceptor` in, which is what an application tells apart:
+asked again, and the broker is the only thing which holds the right to write on it. The application
+built that service, so it knows its type and calls it directly:
 
 ```dart
-final authService = globalGetIt().get<AppAuthManager>().authService;
+final authService = globalGetIt().get<AppAuthManager>().authService as KeycloakTbAuthService;
 
-if (authService is MixinTermsAcceptor) {
-  await authService.acceptTerms(version: currentVersion);
-}
+await authService.acceptTerms(version: currentVersion);
 ```
 
 Once the broker answered, the Keycloak tokens are refreshed so that the `terms_accepted_version`
