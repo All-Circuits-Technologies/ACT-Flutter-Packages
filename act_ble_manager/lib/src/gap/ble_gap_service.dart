@@ -115,32 +115,34 @@ class BleGapService extends AbsWithLifeCycle {
   ///
   /// A scan asked for while [action] runs, or started again by the BLE state, isn't started before
   /// the end of the pause.
+  ///
+  /// [action] must not throw: the scan would never be started again.
   // ponytail: one stop and one start per pause; Android allows 5 scan starts per 30 s, delay the
   // start again if an application chains the connections
   Future<T> pauseScanWhile<T>(Future<T> Function() action) async {
     _scanPauses++;
 
-    try {
-      final wasScanning = await _takeAndReleaseMutex.protect(() async {
-        final wasScanning = _scanSub != null;
-        await _stopScan();
-        return wasScanning;
-      });
+    final wasScanning = await _takeAndReleaseMutex.protect(() async {
+      final wasScanning = _scanSub != null;
+      await _stopScan();
+      return wasScanning;
+    });
 
-      if (wasScanning) {
-        await Future.delayed(ble_scan_constants.waitAfterStoppingScan);
-      }
-
-      return await action();
-    } finally {
-      await _takeAndReleaseMutex.protect(() async {
-        _scanPauses--;
-
-        if (!_isScanPaused && _isScanHasBeenAsked && _scanSub == null) {
-          await _startScan();
-        }
-      });
+    if (wasScanning) {
+      await Future.delayed(ble_scan_constants.waitAfterStoppingScan);
     }
+
+    final result = await action();
+
+    await _takeAndReleaseMutex.protect(() async {
+      _scanPauses--;
+
+      if (!_isScanPaused && _isScanHasBeenAsked && _scanSub == null) {
+        await _startScan();
+      }
+    });
+
+    return result;
   }
 
   /// Set advertising service UUIDs for filtering devices
