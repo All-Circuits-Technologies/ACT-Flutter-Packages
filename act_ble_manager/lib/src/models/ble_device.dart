@@ -147,7 +147,14 @@ class BleDevice {
       return;
     }
 
-    await _connectionSub?.cancel();
+    try {
+      await _connectionSub?.cancel();
+    } catch (error) {
+      // The plugin cancels the connection by a native call, which may fail: the device is let go
+      // anyway
+      _logsHelper.w("The disconnection of the device: $id, failed: $error");
+    }
+
     _connectionSub = null;
 
     _connectionStateUpdate(
