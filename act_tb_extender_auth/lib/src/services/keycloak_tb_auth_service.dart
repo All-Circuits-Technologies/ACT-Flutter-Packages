@@ -55,8 +55,7 @@ typedef OnSignOut = Future<void> Function();
 ///
 /// Every collaborator is given to the constructor, so this class reaches no service locator;
 /// `KeycloakTbAuthServiceBuilder` is what assembles the ones an application runs with.
-class KeycloakTbAuthService extends AbsWithLifeCycle
-    with MixinAuthService, MixinRawIdpTokenProvider, MixinTermsAcceptor {
+class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// This is the logs category linked to the auth service
   static const _logsCategory = "keycloakTbAuth";
 
@@ -215,13 +214,14 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
   @override
   Future<AuthTokens?> getTokens() => _mutex.protect(_unsafeGetTokens);
 
-  /// {@macro act_shared_auth.MixinRawIdpTokenProvider.getIdpAccessToken}
+  /// Get the raw access token delivered by the identity provider.
+  ///
+  /// Returns null when no user is signed in, or when the token can't be obtained.
   ///
   /// [getTokens] answers the ThingsBoard tokens, which is what the rest of an application talks
   /// with. This one is the Keycloak token, which only what Keycloak itself owns needs: the
   /// deletion of an account, and the claims an application reads, such as the date its terms were
   /// accepted on.
-  @override
   Future<String?> getIdpAccessToken() async {
     final tokens = await _provider.getTokens();
     final accessToken = tokens?.accessToken;
@@ -229,12 +229,13 @@ class KeycloakTbAuthService extends AbsWithLifeCycle
     return (accessToken?.isValid() ?? false) ? accessToken!.raw : null;
   }
 
-  /// {@macro act_shared_auth.MixinTermsAcceptor.acceptTerms}
+  /// Record that the user accepted the [version] of the terms.
+  ///
+  /// Answers true once the account carries it, false when it couldn't be recorded.
   ///
   /// The broker writes the version on the Keycloak account, then the Keycloak tokens are
   /// refreshed so that the claim in hand says the same. A refresh which fails isn't an error:
   /// the account is right, and the next refresh will carry the claim.
-  @override
   Future<bool> acceptTerms({required String version}) => _mutex.protect(() async {
     final kcAccessToken = await _validKeycloakAccessToken();
     if (kcAccessToken == null) {
