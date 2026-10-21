@@ -9,11 +9,13 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 /// [AuthStreamObserver] is a [StreamObserver] that listens to the authentication status.
 /// Check [StreamObserver] for more information.
 class AuthStreamObserver<A extends AbsAuthManager> extends StreamObserver<AuthStatus> {
-  /// Factory constructor to create a [AuthStreamObserver] instance.
-  factory AuthStreamObserver() {
-    // Get the auth service
-    final authService = globalGetIt().get<A>().authService;
+  /// Factory constructor to create a [AuthStreamObserver] instance, which watches the
+  /// authentication service of the [A] manager registered in the global manager.
+  factory AuthStreamObserver() => AuthStreamObserver.ofService(globalGetIt().get<A>().authService);
 
+  /// Creates an observer of the status of [authService], for the classes which hold the service
+  /// rather than the type of its manager.
+  factory AuthStreamObserver.ofService(MixinAuthService authService) {
     AuthStatus get() => authService.authStatus;
 
     return AuthStreamObserver._(
