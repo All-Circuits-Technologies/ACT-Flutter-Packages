@@ -4,6 +4,7 @@
 
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/act_halo_ble_layer.dart';
@@ -29,12 +30,14 @@ void main() {
   late FakeBleConfigManager config;
   late HaloBleConfig halo;
   late HaloBleCompanion companion;
+  late FakeLogger logger;
 
   setUpAll(() => ble = FakeBlePlatform.install());
 
   setUp(() async {
     ble.reset();
-    globalManager = FakeGlobalManager.install();
+    logger = FakeLogger();
+    globalManager = FakeGlobalManager.install(logger: logger);
     FakePermissionsPlatform.install();
     lifeCycle = FakeAppLifeCycleManager();
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
@@ -132,6 +135,80 @@ void main() {
         toWriteInto: halo.charJRequestToDeviceCmd,
         dataToWrite: someData(),
       ), HaloErrorType.commError);
+    });
+  });
+
+  group("HaloBleCompanion.packetSize", () {
+    test("is the one of the application while no device is given", () {
+      expect(companion.packetSize, 20);
+    });
+
+    test("is capped by the max size of the characteristics", () async {
+      final capped = HaloBleCompanion(
+        haloBleConfig: aHaloConfig(maxCharacteristicByteSize: 18),
+        bleManager: manager,
+      );
+      final device = await aHaloDevice()
+        ..packetSize = 244;
+      await capped.onNewHaloBleDevice(device);
+
+      expect(capped.packetSize, 18);
+      await capped.onDisconnection();
+    });
+
+    test("is the one of the device when the cap allows it", () async {
+      final wide = HaloBleCompanion(
+        haloBleConfig: aHaloConfig(maxCharacteristicByteSize: 244),
+        bleManager: manager,
+      );
+      final device = await aHaloDevice()
+        ..packetSize = 244;
+      await wide.onNewHaloBleDevice(device);
+
+      expect(wide.packetSize, 244);
+      await wide.onDisconnection();
+    });
+  });
+
+  group("HaloBleCompanion.onNewHaloBleDevice result", () {
+    test("is true when every subscription succeeds", () async {
+      expect(await companion.onNewHaloBleDevice(await aHaloDevice()), isTrue);
+    });
+
+    test("is false when a subscription fails", () async {
+      // The characteristics of this device were never discovered, so none can be subscribed to
+      final device = BleDevice(BleScannedDevice(aDiscoveredDevice()));
+
+      expect(await companion.onNewHaloBleDevice(device), isFalse);
+    });
+  });
+
+  group("HaloBleCompanion trace", () {
+    test("logs a write with the letter of the characteristic and the bytes in hex", () async {
+      await aDeviceOfTheCompanion();
+
+      await companion.onlyWrite(
+        toWriteInto: halo.charJRequestToDeviceCmd,
+        dataToWrite: Uint8List.fromList(const [0x02, 0x01, 0x00, 0x00]),
+      );
+
+      expect(
+        logger.recordsAtLevel(LogsLevel.debug).map((record) => record.message),
+        contains("[HALO] > J 02 01 00 00"),
+      );
+    });
+
+    test("logs a notification with the letter of the characteristic and the bytes in hex",
+        () async {
+      await aDeviceOfTheCompanion();
+
+      await theDeviceNotifies(const [0x07, 0x00, 0x03, 0x01]);
+      await pumpHalo();
+
+      expect(
+        logger.recordsAtLevel(LogsLevel.debug).map((record) => record.message),
+        contains("[HALO] < J 07 00 03 01"),
+      );
     });
   });
 

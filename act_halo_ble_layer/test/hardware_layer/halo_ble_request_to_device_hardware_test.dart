@@ -191,6 +191,41 @@ void main() {
       );
     });
 
+    test("cuts the parameters at the packet size of the device, under the cap", () async {
+      final aLongParameter = "a parameter which does not fit in one packet of the device";
+      companion.forcedPacketSize = 10;
+
+      await hardware.callProcedure(
+        request: aRequest(
+          requestId: FakeHaloRequestId.aProcedure,
+          nbValues: const [1],
+          parameters: [aLongParameter],
+        ),
+      );
+
+      final writes = companion.writesInto(halo.charKRequestToDeviceTmp.uuid);
+      expect(writes.length, ((aLongParameter.length + 2) / 10).ceil());
+      expect(writes.every((write) => write.length <= 10), isTrue);
+    });
+
+    test("cuts the parameters at the packet size of the device, over the cap", () async {
+      final aLongParameter = "a parameter which does not fit in one packet of the device";
+      companion.forcedPacketSize = 30;
+
+      await hardware.callProcedure(
+        request: aRequest(
+          requestId: FakeHaloRequestId.aProcedure,
+          nbValues: const [1],
+          parameters: [aLongParameter],
+        ),
+      );
+
+      expect(
+        companion.writesInto(halo.charKRequestToDeviceTmp.uuid).length,
+        ((aLongParameter.length + 2) / 30).ceil(),
+      );
+    });
+
     test("says that the parameters could not be handed over", () async {
       companion.answers.addAll([
         (HaloErrorType.noError, anAck(requestId: FakeHaloRequestId.aProcedure)),

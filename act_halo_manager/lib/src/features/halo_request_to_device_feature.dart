@@ -224,25 +224,26 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
   }) async {
     await haloManagerConfig.actionMutex.acquire();
 
-    final service = haloManagerConfig.hardwareLayer.hardwareServices[hardwareType]?.haloHardware;
+    try {
+      final service = haloManagerConfig.hardwareLayer.hardwareServices[hardwareType]?.haloHardware;
 
-    if (service == null) {
-      appLogger().w("The hardware layer is unknown, we can't call request to the device");
+      if (service == null) {
+        appLogger().w("The hardware layer is unknown, we can't call request to the device");
+        return errorDefaultResult;
+      }
+
+      var result = errorDefaultResult;
+      var nbTry = 0;
+
+      while (isMakingSensToRetry(result) && nbTry < haloManagerConfig.retryNbBeforeReturningError) {
+        result = await callRequest(service);
+        nbTry++;
+      }
+
+      return result;
+    } finally {
       haloManagerConfig.actionMutex.release();
-      return errorDefaultResult;
     }
-
-    var result = errorDefaultResult;
-    var nbTry = 0;
-
-    while (isMakingSensToRetry(result) && nbTry < haloManagerConfig.retryNbBeforeReturningError) {
-      result = await callRequest(service);
-      nbTry++;
-    }
-
-    haloManagerConfig.actionMutex.release();
-
-    return result;
   }
 
   /// Get the request execution timeout, the [forcedExecutionTimeout] value prevails on the

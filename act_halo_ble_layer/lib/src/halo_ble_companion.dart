@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
@@ -17,6 +18,9 @@ import 'package:mutex/mutex.dart';
 /// Companion of the HALO BLE hardware layer,
 /// This contains useful method to write and read in BLE characteristics
 class HaloBleCompanion {
+  /// The BLE packet size when no MTU has been negotiated (the one of [BleDevice.packetSize])
+  static const int _defaultPacketSize = 20;
+
   /// This contains the BLE config
   final HaloBleConfig haloBleConfig;
 
@@ -39,18 +43,43 @@ class HaloBleCompanion {
   /// characteristics.
   ///
   /// If [bleDevice] is null, this calls the method [_onUnsafeDisconnection]
-  Future<void> onNewHaloBleDevice(BleDevice? bleDevice) => _bleMutex.protect(() async {
+  ///
+  /// Returns false if a subscription failed (the device is then given up), true otherwise
+  Future<bool> onNewHaloBleDevice(BleDevice? bleDevice) => _bleMutex.protect(() async {
         if (bleDevice == null) {
-          return _onUnsafeDisconnection();
+          await _onUnsafeDisconnection();
+          return true;
         }
 
         _bleDevice = bleDevice;
         _bleDeviceState = _bleDevice!.connectionStateStream.listen(_onDeviceBleStateUpdate);
 
         if (!(await _subscribeToNotifs(bleDevice: bleDevice))) {
-          return;
+          await _onUnsafeDisconnection();
+          return false;
         }
+
+        return true;
       });
+
+  /// The size of the packets written to the device: the one negotiated with the current device,
+  /// capped by the [haloBleConfig] max characteristic byte size.
+  /// Without device, this is the default BLE packet size
+  int get packetSize => (_bleDevice == null)
+      ? _defaultPacketSize
+      : min(_bleDevice!.packetSize, haloBleConfig.maxCharacteristicByteSize);
+
+  /// Returns the trace line of the [data] exchanged with the characteristic [char]:
+  /// `[HALO] <direction> <letter A..M> <upper-case hex bytes separated by spaces>`
+  /// where [direction] is `>` for a write and `<` for a notification
+  String _trace(String direction, AbstractHaloCharacteristic char, List<int> data) {
+    final letter = String.fromCharCode(
+      0x41 + haloBleConfig.allHaloCharacteristics.indexOf(char),
+    );
+    final hex = data.map((byte) => byte.toRadixString(16).toUpperCase().padLeft(2, "0"));
+
+    return "[HALO] $direction $letter ${hex.join(" ")}";
+  }
 
   /// Called when the current BLE device [_bleDevice] is disconnected from us
   Future<void> onDisconnection() => _bleMutex.protect(_onUnsafeDisconnection);
@@ -96,6 +125,8 @@ class HaloBleCompanion {
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
   }) async {
+    appLogger().d(_trace(">", toWriteInto, dataToWrite));
+
     if (!(await bleManager.bleGattService
             .writeBleCharacteristic(_bleDevice!, toWriteInto.uuid, dataToWrite))
         .isSuccess) {
@@ -163,7 +194,13 @@ class HaloBleCompanion {
         return false;
       }
 
-      await charToSub.onStreamUpdate(stream, bleDevice.connectionStateStream);
+      await charToSub.onStreamUpdate(
+        stream.map((value) {
+          appLogger().d(_trace("<", charToSub, value));
+          return value;
+        }),
+        bleDevice.connectionStateStream,
+      );
     }
 
     return true;
