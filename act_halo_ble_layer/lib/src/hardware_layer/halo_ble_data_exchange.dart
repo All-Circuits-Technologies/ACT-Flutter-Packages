@@ -3,22 +3,25 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
-import 'dart:typed_data';
 
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 
-/// The exchanges of a service of data of the device (attributes or instant data) over BLE
+/// The exchanges of a service of data of the device (attributes, instant data or historical data)
+/// over BLE
 ///
-/// The commands are written on the command characteristic as `[CMD_ID, VALUE_NB, ID]`, the device
-/// answers on it as `[ERROR_ENUM, VALUE_NB, ID]` and the values go through the exchange
-/// characteristic. The flags characteristic notifies the flags of the data which changed.
+/// The commands are written on the command characteristic as `[CMD_ID, VALUE_NB, ID...]`, the
+/// device answers on it as `[ERROR_ENUM, VALUE_NB, ID...]` and the values go through the exchange
+/// characteristic. The ID is one byte for an attribute or an instant data, two bytes (the key,
+/// LSB first) for a historical data. For the first ones the flags characteristic notifies the
+/// flags of the data which changed.
 class HaloBleDataExchange {
-  /// The size of the commands and of the results on the characteristic B
-  static const int _cmdSize = 3;
+  /// The size of the commands and of the results without their ID
+  static const int _cmdHeaderSize = 2;
 
   /// The most values a data holds, `VALUE_NB` being an U1
   static const int _maxValueNb = 255;
@@ -29,40 +32,36 @@ class HaloBleDataExchange {
   /// What the service exchanges, for the logs
   final String _label;
 
-  /// The characteristic which notifies the flags (A or D)
-  final MixCharNotification _flagsChar;
-
   /// The characteristic of the commands and of their results (B or E)
   final MixCharNotification _cmdChar;
 
   /// The characteristic of the exchange area (C or F)
   final MixCharNotification _tmpChar;
 
-  /// Called with the new value of every data whose flag was raised
-  final void Function(HaloPacket packet) _onNewValue;
-
   /// Mutex which keeps the steps of two exchanges from mixing on the characteristics B and C
   final Mutex _exchangeMutex;
 
   /// The subscription to the flags notified on the characteristic A
-  late final StreamSubscription<Uint8List> _flagsSubscription;
+  late final StreamSubscription<Uint8List>? _flagsSubscription;
 
   /// Class constructor
+  ///
+  /// The [flags] are given by the services which have flags: the characteristic which notifies
+  /// them and what is called with the new value of every data whose flag was raised
   HaloBleDataExchange({
     required HaloBleCompanion bleCompanion,
     required String label,
-    required MixCharNotification flagsChar,
     required MixCharNotification cmdChar,
     required MixCharNotification tmpChar,
-    required void Function(HaloPacket packet) onNewValue,
+    ({MixCharNotification char, void Function(HaloPacket packet) onNewValue})? flags,
   }) : _bleCompanion = bleCompanion,
        _label = label,
-       _flagsChar = flagsChar,
        _cmdChar = cmdChar,
        _tmpChar = tmpChar,
-       _onNewValue = onNewValue,
        _exchangeMutex = Mutex() {
-    _flagsSubscription = _flagsChar.notificationStream.listen(_onFlags);
+    _flagsSubscription = flags?.char.notificationStream.listen(
+      (value) => _onFlags(value, flags.onNewValue),
+    );
   }
 
   /// Writes the [packet] to the device
@@ -70,7 +69,7 @@ class HaloBleDataExchange {
   /// The frame is cut in packets of the size of the companion, each one is acknowledged by the
   /// device
   Future<HaloErrorType> write({required HaloPacket packet}) => _exchangeMutex.protect(() async {
-    final id = packet.dataId.id;
+    final id = [packet.dataId.id];
     final valueNb = packet.payload.elementsNb;
 
     if (valueNb == 0 || valueNb > _maxValueNb) {
@@ -105,7 +104,28 @@ class HaloBleDataExchange {
 
   /// Reads [dataId], the caller holds the [_exchangeMutex]
   Future<(HaloErrorType, HaloPacket?)> _unsafeRead(HaloDataId dataId) async {
-    final id = dataId.id;
+    final (error, packets) = await _unsafeReadPackets([dataId.id]);
+
+    if (error != HaloErrorType.noError) {
+      return (error, null);
+    }
+
+    final payload = HaloPayloadPacket.fromDevice(packets!);
+
+    if (payload == null) {
+      appLogger().w("The values received for the $_label: ${dataId.id} can't be parsed");
+      return (HaloErrorType.formatError, null);
+    }
+
+    return (HaloErrorType.noError, HaloPacket(dataId: dataId, payload: payload));
+  }
+
+  /// Reads the packets which hold the frame of [id], as the device sends them
+  Future<(HaloErrorType, List<Uint8List>?)> readPackets({required List<int> id}) =>
+      _exchangeMutex.protect(() => _unsafeReadPackets(id));
+
+  /// Reads the packets of [id], the caller holds the [_exchangeMutex]
+  Future<(HaloErrorType, List<Uint8List>?)> _unsafeReadPackets(List<int> id) async {
     final (error, _) = await _sendCmd(cmdId: HaloCmdId.read, valueNb: 0, id: id);
 
     if (error != HaloErrorType.noError) {
@@ -147,18 +167,11 @@ class HaloBleDataExchange {
       packets.add(cleaned);
     }
 
-    final payload = HaloPayloadPacket.fromDevice(packets);
-
-    if (payload == null) {
-      appLogger().w("The values received for the $_label: $id can't be parsed");
-      return (HaloErrorType.formatError, null);
-    }
-
-    return (HaloErrorType.noError, HaloPacket(dataId: dataId, payload: payload));
+    return (HaloErrorType.noError, packets);
   }
 
   /// Sends the command [cmdId] which has no values, for [id], and returns its result
-  Future<HaloErrorType> sendCmdNoValue({required HaloCmdId cmdId, required int id}) =>
+  Future<HaloErrorType> sendCmdNoValue({required HaloCmdId cmdId, required List<int> id}) =>
       _exchangeMutex.protect(() async {
         final (error, _) = await _sendCmd(cmdId: cmdId, valueNb: 0, id: id);
 
@@ -169,8 +182,8 @@ class HaloBleDataExchange {
   ///
   /// The flags are little endian, of any length from 2 bytes, bit `n` being the ID `n`. Each data
   /// whose flag is raised is read (which clears its flag in the device) and its new value is given
-  /// to the owner. A read which fails is logged and the next flag is handled.
-  Future<void> _onFlags(Uint8List flags) async {
+  /// to [onNewValue]. A read which fails is logged and the next flag is handled.
+  Future<void> _onFlags(Uint8List flags, void Function(HaloPacket packet) onNewValue) async {
     if (flags.length < 2) {
       appLogger().w("The $_label flags received are too short: ${flags.length} byte(s)");
       return;
@@ -190,7 +203,7 @@ class HaloBleDataExchange {
         if (error != HaloErrorType.noError) {
           appLogger().w("The $_label: $id has changed but we couldn't read it: $error");
         } else {
-          _onNewValue(packet!);
+          onNewValue(packet!);
         }
       } catch (e) {
         // A failing read must neither stop the other ones nor the listening of the flags
@@ -199,15 +212,15 @@ class HaloBleDataExchange {
     }
   }
 
-  /// Builds the command `[CMD_ID, VALUE_NB, ATTR_ID]`
-  Uint8List _cmd({required HaloCmdId cmdId, required int valueNb, required int id}) =>
-      Uint8List.fromList([cmdId.rawValue, valueNb, id]);
+  /// Builds the command `[CMD_ID, VALUE_NB, ID...]`
+  Uint8List _cmd({required HaloCmdId cmdId, required int valueNb, required List<int> id}) =>
+      Uint8List.fromList([cmdId.rawValue, valueNb, ...id]);
 
   /// Writes the command to the device and returns its result: the error and the `VALUE_NB`
   Future<(HaloErrorType, int)> _sendCmd({
     required HaloCmdId cmdId,
     required int valueNb,
-    required int id,
+    required List<int> id,
   }) => _writeAndWaitResult(
     char: _cmdChar,
     data: _cmd(cmdId: cmdId, valueNb: valueNb, id: id),
@@ -219,7 +232,7 @@ class HaloBleDataExchange {
   Future<(HaloErrorType, int)> _writeAndWaitResult({
     required MixCharNotification char,
     required Uint8List data,
-    required int id,
+    required List<int> id,
   }) async {
     final (error, result) = await _bleCompanion.writeAndWaitNotifResult(
       toWriteInto: char,
@@ -231,7 +244,8 @@ class HaloBleDataExchange {
       return (error, 0);
     }
 
-    if (result!.length != _cmdSize || result[2] != id) {
+    if (result!.length != _cmdHeaderSize + id.length ||
+        !listEquals(result.sublist(_cmdHeaderSize), id)) {
       appLogger().w("The result received for the $_label: $id is malformed: $result");
       return (HaloErrorType.formatError, 0);
     }
@@ -240,5 +254,5 @@ class HaloBleDataExchange {
   }
 
   /// Stops listening to the flags, to call by the owner of the class when it closes
-  Future<void> close() => _flagsSubscription.cancel();
+  Future<void> close() async => _flagsSubscription?.cancel();
 }

@@ -45,18 +45,13 @@ void main() {
           "instant_data_exchange_zone",
           "record_data_notification",
           "record_data_command_and_result",
+          "record_data_exchange_zone",
           "request_to_device_command_and_result",
           "request_to_device_exchange_zone",
           "request_to_client_command_and_result",
           "request_to_client_exchange_zone",
         ],
       );
-    });
-
-    test("says that the exchange zone of the historical data notifies nothing", () {
-      final config = aHaloConfig();
-
-      expect(config.charIRecordTmp.hasNotification, isFalse);
     });
 
     test("says which way each characteristic is read and written", () {
