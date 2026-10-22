@@ -177,22 +177,65 @@ class FakeAttributeHardware extends AbstractHaloAttributeHardware {
       _answer("unsub", dataId);
 }
 
-/// The instant data of a device an application under test does not read.
+/// The instant data of a device, answered by the test.
+///
+/// It answers the errors the test lined up, one per call, and repeats the last one once they run
+/// out. That is what lets a test drive the retries of the manager.
 class FakeInstantDataHardware extends AbstractHaloInstantDataHardware {
+  /// The errors the device answers with, one per call.
+  final List<HaloErrorType> errors;
+
+  /// The values the device answers a read with, if it answers any.
+  final HaloPayloadPacket? result;
+
+  /// The calls the device received, in the order it received them, as `<method> <id>`.
+  final List<String> calls = [];
+
+  /// When true, the next call throws instead of answering, then the device answers again.
+  bool throwOnNextCall = false;
+
+  /// Class constructor
+  FakeInstantDataHardware({List<HaloErrorType> errors = const [HaloErrorType.noError], this.result})
+    : errors = List<HaloErrorType>.from(errors);
+
+  /// Records the call and answers the error the test lined up for it.
+  HaloErrorType _answer(String method, HaloDataId dataId) {
+    final error = errors[calls.length < errors.length ? calls.length : errors.length - 1];
+    calls.add("$method ${dataId.id}");
+
+    if (throwOnNextCall) {
+      throwOnNextCall = false;
+      throw StateError("the hardware broke");
+    }
+
+    return error;
+  }
+
+  /// Tells the application that the device sent the new value [packet] of an instant data.
+  void tellNewValue(HaloPacket packet) => instantDataNewValueCtrl.add(packet);
+
   @override
   Future<HaloErrorType> writeInstantData({required HaloPacket packet}) async =>
-      HaloErrorType.noError;
+      _answer("write", packet.dataId);
 
   @override
-  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId}) async =>
-      (HaloErrorType.noError, null);
+  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId}) async {
+    final error = _answer("read", dataId);
+
+    if (error != HaloErrorType.noError || result == null) {
+      return (error, null);
+    }
+
+    return (error, HaloPacket(dataId: dataId, payload: result!));
+  }
 
   @override
-  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async => HaloErrorType.noError;
+  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async =>
+      _answer("sub", dataId);
 
   @override
   Future<HaloErrorType> unSubInstantData({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+      _answer("unsub", dataId);
 }
 
 /// The records of a device an application under test does not read.
@@ -231,9 +274,10 @@ class FakeHaloHardware extends AbstractHaloHardware {
   FakeHaloHardware({
     required FakeRequestToDeviceHardware requestToDevice,
     FakeAttributeHardware? attribute,
+    FakeInstantDataHardware? instantData,
   }) : super(
          attributeHardware: attribute ?? FakeAttributeHardware(),
-         instantDataHardware: FakeInstantDataHardware(),
+         instantDataHardware: instantData ?? FakeInstantDataHardware(),
          recordDataHardware: FakeRecordDataHardware(),
          requestFromDeviceHardware: FakeRequestFromDeviceHardware(),
          requestToDeviceHardware: requestToDevice,
@@ -250,11 +294,16 @@ class FakeHwTypeHelper extends AbstractHaloHwTypeHelper<FakeHwType> {
     required FakeHwType type,
     required FakeRequestToDeviceHardware requestToDevice,
     FakeAttributeHardware? attribute,
+    FakeInstantDataHardware? instantData,
   }) => FakeHwTypeHelper(
     hardwareServices: {
       type: HaloHardwareType<FakeHwType>(
         type: type,
-        haloHardware: FakeHaloHardware(requestToDevice: requestToDevice, attribute: attribute),
+        haloHardware: FakeHaloHardware(
+          requestToDevice: requestToDevice,
+          attribute: attribute,
+          instantData: instantData,
+        ),
       ),
     },
   );
@@ -278,8 +327,16 @@ class FakeHaloManager extends AbstractHaloManager<FakeHwType> {
   /// The attribute feature the manager builds, if the application builds one of its own.
   final HaloAttributeFeature<FakeHwType>? ownAttributeFeature;
 
+  /// The instant data feature the manager builds, if the application builds one of its own.
+  final HaloInstantDataFeature<FakeHwType>? ownInstantDataFeature;
+
   /// Class constructor
-  FakeHaloManager({this.config, this.ownFeature, this.ownAttributeFeature});
+  FakeHaloManager({
+    this.config,
+    this.ownFeature,
+    this.ownAttributeFeature,
+    this.ownInstantDataFeature,
+  });
 
   @override
   Future<HaloManagerConfig<FakeHwType>?> initHaloManagerConfig() async => config;
@@ -295,6 +352,12 @@ class FakeHaloManager extends AbstractHaloManager<FakeHwType> {
     required HaloManagerConfig<FakeHwType> haloManagerConfig,
   }) async =>
       ownAttributeFeature ?? super.createAttributeFeature(haloManagerConfig: haloManagerConfig);
+
+  @override
+  Future<HaloInstantDataFeature<FakeHwType>> createInstantDataFeature({
+    required HaloManagerConfig<FakeHwType> haloManagerConfig,
+  }) async =>
+      ownInstantDataFeature ?? super.createInstantDataFeature(haloManagerConfig: haloManagerConfig);
 }
 
 /// The builder of the HALO manager of an application under test.

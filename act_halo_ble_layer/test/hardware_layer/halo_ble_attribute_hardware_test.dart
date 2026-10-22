@@ -370,6 +370,17 @@ void main() {
       expect(packets.single.dataId.id, 0x05);
     });
 
+    test("goes on with the next flag when a read throws, and keeps listening", () async {
+      companion.throwOnNextWait = true;
+      companion.answers.addAll([...readAnswers(0x05, 7), ...readAnswers(0x06, 8)]);
+
+      final first = await notified([0x30, 0x00], 1);
+      final second = await notified([0x40, 0x00], 1);
+
+      expect(first.single.dataId.id, 0x05);
+      expect(second.single.dataId.id, 0x06);
+    });
+
     test("ignores flags which are too short to be flags", () async {
       notificationsOfA.add([0x30]);
       await pumpHalo();

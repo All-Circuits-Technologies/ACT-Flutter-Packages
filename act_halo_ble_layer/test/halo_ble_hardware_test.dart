@@ -62,11 +62,7 @@ void main() {
       expect(result, HaloErrorType.commError);
     });
 
-    test("carries nothing of the data of a device yet", () {
-      expect(
-        () => hardware.instantDataHardware.subInstantData(dataId: aDataId),
-        throwsUnimplementedError,
-      );
+    test("carries nothing of the historical data of a device yet", () {
       expect(
         () => hardware.recordDataHardware.getAllRecordDataKeys(dataId: aDataId),
         throwsUnimplementedError,
