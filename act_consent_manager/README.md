@@ -163,6 +163,11 @@ they answered nothing. The order of the mixins is the order of priority: stack i
 of as long as the user is not signed in. The terms page itself answers false to
 `needsAcceptedTerms`, otherwise the guard would impose it over and over.
 
+The guard does not follow the account, the service of the terms keeps what it loaded: the
+application calls `resetLocalConsentInfo` on that service when the user signs out, otherwise the
+next user to sign in is taken for having accepted what the previous one accepted. Give that service
+an observer of the sign in, so that it waits for the next user before loading anything.
+
 ## How to use
 
 ### Installation

@@ -14,10 +14,14 @@ import 'package:flutter/widgets.dart';
 ///
 /// It reads the state of the consent from the service of the terms the application hands over:
 /// anything else than [ConsentStateEnum.accepted] imposes the terms page, [ConsentStateEnum.unknown]
-/// included. As long as the service could not read the version in force or what the user agreed
-/// to, nothing is claimed of the user, so the page is not shown; this is not configurable.
+/// included: as long as the service could not read the version in force or what the user agreed
+/// to, a page which needs accepted terms is not shown; this is not configurable.
 ///
 /// Stack it after the authentication guard: the mixin order is the redirection priority.
+///
+/// The guard does not follow the account: the application calls
+/// [AbstractConsentService.resetLocalConsentInfo] when the user signs out, otherwise the next user
+/// is taken for having accepted what the previous one accepted.
 mixin MixinTermsRedirectService<T extends MixinTermsRoute> on MixinRedirectService<T> {
   /// The route of the page the terms are accepted on.
   late final T _termsRoute;
