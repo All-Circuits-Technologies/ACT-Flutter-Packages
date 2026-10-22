@@ -6,6 +6,7 @@
 import 'dart:async';
 
 import 'package:act_ble_manager/src/ble_manager.dart';
+import 'package:act_ble_manager/src/gatt/ble_packet_size.dart';
 import 'package:act_ble_manager/src/models/ble_scanned_device.dart';
 import 'package:act_ble_manager/src/types/bond_state.dart';
 import 'package:act_global_manager/act_global_manager.dart';
@@ -19,6 +20,11 @@ class BleDevice {
 
   /// Device mac address
   final String id;
+
+  /// The size of the packets which can be written to the device
+  ///
+  /// This is [defaultPacketSize] until the MTU is negotiated at the connection.
+  int packetSize = defaultPacketSize;
 
   /// Device BLE characteristics
   final List<QualifiedCharacteristic> _characteristics;

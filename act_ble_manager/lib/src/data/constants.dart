@@ -23,6 +23,9 @@ const Duration lowLevelConnectTimeout = Duration(seconds: 10);
 /// pause before the next one is enough.
 const Duration lowLevelConnectRetryDelay = Duration(seconds: 2);
 
+/// The ATT MTU asked to the devices once connected, the maximum of the BLE 4.2 data length
+const int requestedMtu = 247;
+
 /// Timer after which popup disconnect is sent
 const Duration disconnectPopupTimeout = Duration(milliseconds: 5000);
 

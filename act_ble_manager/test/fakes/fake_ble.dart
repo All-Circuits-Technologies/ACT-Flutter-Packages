@@ -195,6 +195,18 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   final StreamController<CharacteristicValue> _valueCtrl =
       StreamController<CharacteristicValue>.broadcast();
 
+  /// What the device answers to a request of MTU, or null to answer the MTU which is asked for.
+  int? mtuAnswer;
+
+  /// The error a request of MTU fails with, or null when it succeeds.
+  Exception? mtuError;
+
+  /// Whether a request of MTU is never answered.
+  bool mtuNeverAnswers = false;
+
+  /// The MTU which were asked for, in the order they were.
+  final List<int?> mtuRequests = [];
+
   /// The number of times the Bluetooth was initialized.
   int initCount = 0;
 
@@ -249,6 +261,10 @@ class FakeBlePlatform extends ReactiveBlePlatform {
     subscribed.clear();
     services = [];
     error = null;
+    mtuAnswer = null;
+    mtuError = null;
+    mtuNeverAnswers = false;
+    mtuRequests.clear();
     runningScans = 0;
   }
 
@@ -440,7 +456,17 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   Future<void> stopSubscribingToNotifications(CharacteristicInstance characteristic) async {}
 
   @override
-  Future<int> requestMtuSize(String deviceId, int? mtu) async => mtu ?? 23;
+  Future<int> requestMtuSize(String deviceId, int? mtu) async {
+    mtuRequests.add(mtu);
+    if (mtuNeverAnswers) {
+      return Completer<int>().future;
+    }
+    if (mtuError != null) {
+      throw mtuError!;
+    }
+
+    return mtuAnswer ?? mtu ?? 23;
+  }
 }
 
 /// A device as the Bluetooth of the device answers it once it is scanned.
