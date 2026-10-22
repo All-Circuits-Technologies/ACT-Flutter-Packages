@@ -119,6 +119,23 @@ void main() {
       expect(device.calls, isEmpty);
     });
 
+    test("goes on answering after the hardware threw", () async {
+      final (:feature, :device) = aFeature(
+        result: _aPayload((packet) => packet.addString("20 degrees")),
+      );
+      device.throwOnNextCall = true;
+
+      await expectLater(
+        feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest()),
+        throwsStateError,
+      );
+      final result = await feature
+          .callFunction(hardwareType: FakeHwType.ble, request: aRequest())
+          .timeout(const Duration(seconds: 2));
+
+      expect(result.error, HaloErrorType.noError);
+    });
+
     test("goes on answering after it could not reach the device", () async {
       final (:feature, :device) = aFeature(
         result: _aPayload((packet) => packet.addString("20 degrees")),

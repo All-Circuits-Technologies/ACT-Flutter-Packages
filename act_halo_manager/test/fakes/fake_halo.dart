@@ -58,6 +58,9 @@ class FakeRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware {
   /// True once the component has been closed.
   bool isClosed = false;
 
+  /// When true, the next call throws instead of answering, then the device answers again.
+  bool throwOnNextCall = false;
+
   /// Class constructor
   FakeRequestToDeviceHardware({
     List<HaloErrorType> errors = const [HaloErrorType.noError],
@@ -76,6 +79,11 @@ class FakeRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware {
     final error = _errorOf(calls.length);
     calls.add(request.requestId);
     timeouts.add(executionTimeout);
+
+    if (throwOnNextCall) {
+      throwOnNextCall = false;
+      throw StateError("the hardware broke");
+    }
 
     if (error != HaloErrorType.noError) {
       return HaloRequestResult.error(requestId: request.requestId, status: error);

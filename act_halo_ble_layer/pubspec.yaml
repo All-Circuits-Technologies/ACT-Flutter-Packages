@@ -74,6 +74,10 @@ dev_dependencies:
   # The Bluetooth of the device the tests read through
   flutter_reactive_ble: ^5.4.0
 
+  # Log levels the tests assert on
+  act_foundation:
+    path: ../act_foundation
+
   # The life cycle of an application under test
   act_app_life_cycle_manager:
     path: ../act_app_life_cycle_manager
