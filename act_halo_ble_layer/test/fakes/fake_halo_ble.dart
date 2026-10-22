@@ -421,6 +421,9 @@ class FakeHaloCompanion extends HaloBleCompanion {
   /// The packet size the companion reports, instead of the one of its (missing) device.
   int? forcedPacketSize;
 
+  /// When true, the next writing which waits for an answer throws, then the device answers again.
+  bool throwOnNextWait = false;
+
   /// Class constructor
   FakeHaloCompanion({
     required super.haloBleConfig,
@@ -453,6 +456,11 @@ class FakeHaloCompanion extends HaloBleCompanion {
     Duration? timeout,
   }) async {
     writes.add((characteristic: toWriteInto.uuid, data: dataToWrite, waited: true));
+
+    if (throwOnNextWait) {
+      throwOnNextWait = false;
+      throw StateError("the companion broke");
+    }
 
     if (answers.isEmpty) {
       return ResultWithRequiredValue(
