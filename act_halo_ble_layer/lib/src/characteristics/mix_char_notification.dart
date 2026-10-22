@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
@@ -12,6 +13,9 @@ import 'package:async/async.dart';
 
 /// Useful mixin for managing characteristics with notifications
 mixin MixCharNotification on AbstractHaloCharacteristic {
+  /// The controller which hands every notification received over to the ones who listen to them
+  final _notificationCtrl = StreamController<Uint8List>.broadcast();
+
   /// Contains all the current response waiter
   final _packetResponseWaiter = <ResponseWaiter>[];
 
@@ -24,6 +28,9 @@ mixin MixCharNotification on AbstractHaloCharacteristic {
   /// Redefined the has notification getter
   @override
   bool get hasNotification => true;
+
+  /// Every notification received from the characteristic, whether somebody waits for it or not
+  Stream<Uint8List> get notificationStream => _notificationCtrl.stream;
 
   /// Has to be called when succeeded to subscribe to the characteristic (in order to give the
   /// stream update)
@@ -55,6 +62,7 @@ mixin MixCharNotification on AbstractHaloCharacteristic {
   Future<void> _onNotificationReceived(List<int> value) async {
     globalGetIt().get<BleManager>().logsHelper.d('Notification received for characteristic: '
         '$uuid, with value: $value');
+    _notificationCtrl.add(Uint8List.fromList(value));
     _completeValue(value);
   }
 

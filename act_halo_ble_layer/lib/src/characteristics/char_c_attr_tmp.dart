@@ -6,9 +6,11 @@ import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteristic.dart';
+import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
 
 /// The HALO characteristic C for attribute temporary exchange
-class CharCAttrTmp extends AbstractHaloCharacteristic {
+class CharCAttrTmp extends AbstractHaloCharacteristic
+    with MixCharNotification {
   /// The characteristic name
   static const characteristicName = "attribute_exchange_zone";
 

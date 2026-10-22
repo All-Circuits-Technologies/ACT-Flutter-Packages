@@ -56,6 +56,25 @@ void main() {
       expect(manager.requestToDeviceFeature?.haloManagerConfig, config);
     });
 
+    test("builds the feature which exchanges the attributes", () async {
+      final (:config, device: _) = aConfig();
+      final manager = FakeHaloManager(config: config);
+
+      await manager.initLifeCycle();
+
+      expect(manager.attributeFeature?.haloManagerConfig, config);
+    });
+
+    test("uses the attribute feature the application built when it built one", () async {
+      final (:config, device: _) = aConfig();
+      final feature = HaloAttributeFeature<FakeHwType>(haloManagerConfig: config);
+      final manager = FakeHaloManager(config: config, ownAttributeFeature: feature);
+
+      await manager.initLifeCycle();
+
+      expect(manager.attributeFeature, feature);
+    });
+
     test("uses the feature the application built when it built one", () async {
       final (:config, device: _) = aConfig();
       final feature = HaloRequestToDeviceFeature<FakeHwType>(haloManagerConfig: config);

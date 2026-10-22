@@ -39,6 +39,7 @@ void main() {
         [
           "attribute_notification",
           "attribute_command_and_result",
+          "attribute_exchange_zone",
           "instant_data_notification",
           "instant_data_command_and_result",
           "record_data_notification",
@@ -51,10 +52,9 @@ void main() {
       );
     });
 
-    test("says that the exchange zones of the attributes and of the data notify nothing", () {
+    test("says that the exchange zones of the data notify nothing", () {
       final config = aHaloConfig();
 
-      expect(config.charCAttrTmp.hasNotification, isFalse);
       expect(config.charFInstTmp.hasNotification, isFalse);
       expect(config.charIRecordTmp.hasNotification, isFalse);
     });
