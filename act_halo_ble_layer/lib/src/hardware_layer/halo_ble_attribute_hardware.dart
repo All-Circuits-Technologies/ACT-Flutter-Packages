@@ -22,14 +22,16 @@ class HaloBleAttributeHardware extends AbstractHaloAttributeHardware {
     _exchange = HaloBleDataExchange(
       bleCompanion: bleCompanion,
       label: "attribute",
-      flagsChar: config.charAAttrNotify,
       cmdChar: config.charBAttrCmd,
       tmpChar: config.charCAttrTmp,
-      onNewValue: (packet) {
-        if (!attributeNewValueCtrl.isClosed) {
-          attributeNewValueCtrl.add(packet);
-        }
-      },
+      flags: (
+        char: config.charAAttrNotify,
+        onNewValue: (packet) {
+          if (!attributeNewValueCtrl.isClosed) {
+            attributeNewValueCtrl.add(packet);
+          }
+        },
+      ),
     );
   }
 
@@ -50,7 +52,7 @@ class HaloBleAttributeHardware extends AbstractHaloAttributeHardware {
   /// the Firmware) what are the attributes to send update
   @override
   Future<HaloErrorType> subAttribute({required HaloDataId dataId}) =>
-      _exchange.sendCmdNoValue(cmdId: HaloCmdId.sub, id: dataId.id);
+      _exchange.sendCmdNoValue(cmdId: HaloCmdId.sub, id: [dataId.id]);
 
   /// This method allows to unsubscribe from the modification of a specific attribute thanks to the
   /// [HaloDataId] given
@@ -58,7 +60,7 @@ class HaloBleAttributeHardware extends AbstractHaloAttributeHardware {
   /// the Firmware) what are the attributes to send update
   @override
   Future<HaloErrorType> unSubAttribute({required HaloDataId dataId}) =>
-      _exchange.sendCmdNoValue(cmdId: HaloCmdId.unSub, id: dataId.id);
+      _exchange.sendCmdNoValue(cmdId: HaloCmdId.unSub, id: [dataId.id]);
 
   /// Manage the close of all the resources at the end of the class
   /// Need to be called by the owner of the class

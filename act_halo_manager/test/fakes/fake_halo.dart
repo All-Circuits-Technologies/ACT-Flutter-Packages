@@ -238,31 +238,107 @@ class FakeInstantDataHardware extends AbstractHaloInstantDataHardware {
       _answer("unsub", dataId);
 }
 
-/// The records of a device an application under test does not read.
+/// The historical data of a device, answered by the test.
+///
+/// The device stores archives of the data (their unique indexes, oldest first) and exposes the
+/// first [windowSize] of them. It frees an archive when it is acknowledged, which moves the window.
+/// It answers the errors the test lined up, one per call, and repeats the last one once they run
+/// out. That is what lets a test drive the retries of the manager.
 class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
+  /// The errors the device answers with, one per call.
+  final List<HaloErrorType> errors;
+
+  /// The unique indexes of the archives the device stores, oldest first.
+  final List<int> stored;
+
+  /// How many archives the device exposes at a time.
+  final int windowSize;
+
+  /// The calls the device received, in the order it received them, as `<method> <id>[/<index>]`.
+  final List<String> calls = [];
+
+  /// When true, the next call throws instead of answering, then the device answers again.
+  bool throwOnNextCall = false;
+
+  /// Class constructor
+  FakeRecordDataHardware({
+    List<HaloErrorType> errors = const [HaloErrorType.noError],
+    List<int> stored = const [],
+    this.windowSize = 255,
+  }) : errors = List<HaloErrorType>.from(errors),
+       stored = List<int>.from(stored);
+
+  /// Records the call and answers the error the test lined up for it.
+  HaloErrorType _answer(String call) {
+    final error = errors[calls.length < errors.length ? calls.length : errors.length - 1];
+    calls.add(call);
+
+    if (throwOnNextCall) {
+      throwOnNextCall = false;
+      throw StateError("the hardware broke");
+    }
+
+    return error;
+  }
+
+  /// Tells the application that the device holds the new archive [key].
+  void tellNewKey(HaloRecordKey key) => recordKeysNewValueCtrl.add(key);
+
   @override
   Future<HaloErrorType> subRecordData({
     required HaloDataId dataId,
     bool onlyNotifyKey = false,
-  }) async => HaloErrorType.noError;
+  }) async => _answer("sub ${dataId.id}");
 
   @override
   Future<HaloErrorType> unSubRecordData({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+      _answer("unsub ${dataId.id}");
 
   @override
   Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({
     required HaloRecordKey recordKey,
-  }) async => (HaloErrorType.noError, null);
+  }) async {
+    final error = _answer("read ${recordKey.dataId.id}/${recordKey.uniqueIndex}");
+
+    if (error != HaloErrorType.noError) {
+      return (error, null);
+    }
+
+    // The archive holds its own index, so that a test knows what it was given
+    final payload = HaloPayloadPacket()..addUInt16(recordKey.uniqueIndex);
+
+    return (error, HaloRecordPacket(recordKey: recordKey, payload: payload));
+  }
 
   @override
   Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({
     required HaloDataId dataId,
-  }) async => (HaloErrorType.noError, null);
+  }) async {
+    final error = _answer("getall ${dataId.id}");
+
+    if (error != HaloErrorType.noError) {
+      return (error, null);
+    }
+
+    return (
+      error,
+      [
+        for (final index in stored.take(windowSize))
+          HaloRecordKey(dataId: dataId, uniqueIndex: index),
+      ],
+    );
+  }
 
   @override
-  Future<HaloErrorType> ackRecordData({required HaloRecordKey recordKey}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> ackRecordData({required HaloRecordKey recordKey}) async {
+    final error = _answer("ack ${recordKey.dataId.id}/${recordKey.uniqueIndex}");
+
+    if (error == HaloErrorType.noError) {
+      stored.remove(recordKey.uniqueIndex);
+    }
+
+    return error;
+  }
 }
 
 /// The requests a device makes of an application under test.
@@ -275,10 +351,11 @@ class FakeHaloHardware extends AbstractHaloHardware {
     required FakeRequestToDeviceHardware requestToDevice,
     FakeAttributeHardware? attribute,
     FakeInstantDataHardware? instantData,
+    FakeRecordDataHardware? record,
   }) : super(
          attributeHardware: attribute ?? FakeAttributeHardware(),
          instantDataHardware: instantData ?? FakeInstantDataHardware(),
-         recordDataHardware: FakeRecordDataHardware(),
+         recordDataHardware: record ?? FakeRecordDataHardware(),
          requestFromDeviceHardware: FakeRequestFromDeviceHardware(),
          requestToDeviceHardware: requestToDevice,
        );
@@ -295,6 +372,7 @@ class FakeHwTypeHelper extends AbstractHaloHwTypeHelper<FakeHwType> {
     required FakeRequestToDeviceHardware requestToDevice,
     FakeAttributeHardware? attribute,
     FakeInstantDataHardware? instantData,
+    FakeRecordDataHardware? record,
   }) => FakeHwTypeHelper(
     hardwareServices: {
       type: HaloHardwareType<FakeHwType>(
@@ -303,6 +381,7 @@ class FakeHwTypeHelper extends AbstractHaloHwTypeHelper<FakeHwType> {
           requestToDevice: requestToDevice,
           attribute: attribute,
           instantData: instantData,
+          record: record,
         ),
       ),
     },
@@ -330,12 +409,16 @@ class FakeHaloManager extends AbstractHaloManager<FakeHwType> {
   /// The instant data feature the manager builds, if the application builds one of its own.
   final HaloInstantDataFeature<FakeHwType>? ownInstantDataFeature;
 
+  /// The record data feature the manager builds, if the application builds one of its own.
+  final HaloRecordDataFeature<FakeHwType>? ownRecordDataFeature;
+
   /// Class constructor
   FakeHaloManager({
     this.config,
     this.ownFeature,
     this.ownAttributeFeature,
     this.ownInstantDataFeature,
+    this.ownRecordDataFeature,
   });
 
   @override
@@ -358,6 +441,12 @@ class FakeHaloManager extends AbstractHaloManager<FakeHwType> {
     required HaloManagerConfig<FakeHwType> haloManagerConfig,
   }) async =>
       ownInstantDataFeature ?? super.createInstantDataFeature(haloManagerConfig: haloManagerConfig);
+
+  @override
+  Future<HaloRecordDataFeature<FakeHwType>> createRecordDataFeature({
+    required HaloManagerConfig<FakeHwType> haloManagerConfig,
+  }) async =>
+      ownRecordDataFeature ?? super.createRecordDataFeature(haloManagerConfig: haloManagerConfig);
 }
 
 /// The builder of the HALO manager of an application under test.

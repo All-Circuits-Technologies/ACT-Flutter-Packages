@@ -24,14 +24,16 @@ class HaloBleInstantDataHardware extends AbstractHaloInstantDataHardware {
     _exchange = HaloBleDataExchange(
       bleCompanion: bleCompanion,
       label: "instant data",
-      flagsChar: config.charDInstNotify,
       cmdChar: config.charEInstCmd,
       tmpChar: config.charFInstTmp,
-      onNewValue: (packet) {
-        if (!instantDataNewValueCtrl.isClosed) {
-          instantDataNewValueCtrl.add(packet);
-        }
-      },
+      flags: (
+        char: config.charDInstNotify,
+        onNewValue: (packet) {
+          if (!instantDataNewValueCtrl.isClosed) {
+            instantDataNewValueCtrl.add(packet);
+          }
+        },
+      ),
     );
   }
 
@@ -47,7 +49,7 @@ class HaloBleInstantDataHardware extends AbstractHaloInstantDataHardware {
   /// the Firmware) what are the instant data to send update
   @override
   Future<HaloErrorType> subInstantData({required HaloDataId dataId}) =>
-      _exchange.sendCmdNoValue(cmdId: HaloCmdId.sub, id: dataId.id);
+      _exchange.sendCmdNoValue(cmdId: HaloCmdId.sub, id: [dataId.id]);
 
   /// This method allows to unsubscribe from the modification of a specific instant data thanks to
   /// the [HaloDataId] given
@@ -55,7 +57,7 @@ class HaloBleInstantDataHardware extends AbstractHaloInstantDataHardware {
   /// the Firmware) what are the instant data to send update
   @override
   Future<HaloErrorType> unSubInstantData({required HaloDataId dataId}) =>
-      _exchange.sendCmdNoValue(cmdId: HaloCmdId.unSub, id: dataId.id);
+      _exchange.sendCmdNoValue(cmdId: HaloCmdId.unSub, id: [dataId.id]);
 
   /// The instant data can't be written over BLE (the API stays for the WebSocket), nothing is sent
   @override

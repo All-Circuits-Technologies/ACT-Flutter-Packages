@@ -41,9 +41,6 @@ void main() {
     await globalManager.reset();
   });
 
-  /// A datum of the device an application reads.
-  const aDataId = HaloDataId<int>(id: 1, value: 1);
-
   group("HaloBleHardware", () {
     test("hands over one layer per part of the protocol", () {
       expect(hardware.attributeHardware, isNotNull);
@@ -60,13 +57,6 @@ void main() {
 
       // There is no device to write to, which is as far as a request goes without one
       expect(result, HaloErrorType.commError);
-    });
-
-    test("carries nothing of the historical data of a device yet", () {
-      expect(
-        () => hardware.recordDataHardware.getAllRecordDataKeys(dataId: aDataId),
-        throwsUnimplementedError,
-      );
     });
   });
 }

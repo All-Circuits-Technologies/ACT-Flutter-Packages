@@ -84,6 +84,25 @@ void main() {
       expect(manager.instantDataFeature, feature);
     });
 
+    test("builds the feature which exchanges the historical data", () async {
+      final (:config, device: _) = aConfig();
+      final manager = FakeHaloManager(config: config);
+
+      await manager.initLifeCycle();
+
+      expect(manager.recordDataFeature?.haloManagerConfig, config);
+    });
+
+    test("uses the record data feature the application built when it built one", () async {
+      final (:config, device: _) = aConfig();
+      final feature = HaloRecordDataFeature<FakeHwType>(haloManagerConfig: config);
+      final manager = FakeHaloManager(config: config, ownRecordDataFeature: feature);
+
+      await manager.initLifeCycle();
+
+      expect(manager.recordDataFeature, feature);
+    });
+
     test("uses the attribute feature the application built when it built one", () async {
       final (:config, device: _) = aConfig();
       final feature = HaloAttributeFeature<FakeHwType>(haloManagerConfig: config);

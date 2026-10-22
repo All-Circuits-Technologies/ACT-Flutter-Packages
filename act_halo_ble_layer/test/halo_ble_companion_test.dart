@@ -94,15 +94,6 @@ void main() {
       );
     });
 
-    test("listens to nothing of the characteristics which are only exchange zones", () async {
-      await aDeviceOfTheCompanion();
-
-      expect(
-        ble.subscribed.map((uuid) => uuid.toString()),
-        isNot(contains(halo.charIRecordTmp.uuid)),
-      );
-    });
-
     test("listens to nothing when there is no device any more", () async {
       await companion.onNewHaloBleDevice(null);
 
