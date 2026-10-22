@@ -314,36 +314,25 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
         }
       });
 
-  /// Reset the local consent info, i.e. the latest version and the text widget.
-  /// This method is useful when you want to reload the consent info from the server.
+  /// Reset the local consent info, i.e. the latest version, the text widget and what the user
+  /// agreed to, then load it all again.
+  ///
+  /// This is useful when the locale changes, and when the user changes: what the previous user
+  /// agreed to must not be taken for the choice of the next one. The load waits for the observers,
+  /// so after a sign out it reads the consent of whoever signs in next.
   Future<void> resetLocalConsentInfo() async {
-    // First we clean the latest version and text widget
+    // First we forget everything which has been loaded
     _logsHelper.i('Resetting local consent info');
     await _stateMutex.protect(() async => _loadTextWidgetMutex.protect(() async {
+          final previous = consentState;
           _textWidget = null;
-          _setLatestVersion(null);
+          _latestVersion = null;
+          _consentData = null;
+          _emitIfNecessary(previous: previous);
         }));
 
     // Then we retry to get the info
     await loadAllConsentInfo();
-  }
-
-  /// Forget everything loaded about the consent, what the user agreed to included.
-  ///
-  /// This is for a change of account: what the previous user agreed to must not be taken for the
-  /// choice of the next one. Nothing is loaded again here; the next [loadAllConsentInfo] reads it
-  /// all, for whoever is signed in by then.
-  Future<void> resetAllConsentInfo() async {
-    _logsHelper.i('Resetting all consent info');
-    await _stateMutex.protect(
-      () async => _loadTextWidgetMutex.protect(() async {
-        final previous = consentState;
-        _textWidget = null;
-        _latestVersion = null;
-        _consentData = null;
-        _emitIfNecessary(previous: previous);
-      }),
-    );
   }
 
   /// Change the latest version of the consent, publish the new global state if needed

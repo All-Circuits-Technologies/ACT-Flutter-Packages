@@ -311,41 +311,38 @@ void main() {
       expect(service.askedTexts, ["v2", "v2"]);
     });
 
-    test("keeps what the user agreed to", () async {
-      final service = aService(userData: _agreed());
-      await service.loadAllConsentInfo();
-
-      await service.resetLocalConsentInfo();
-
-      expect(service.userDataCalls, 1);
-      expect(service.consentState, ConsentStateEnum.accepted);
-    });
-  });
-
-  group("AbstractConsentService.resetAllConsentInfo", () {
     test("reads what the next user agreed to", () async {
       final service = aService(userData: _agreed());
       await service.loadAllConsentInfo();
 
-      await service.resetAllConsentInfo();
       service.userDataAnswer = const ResultWithStatus(status: ConsentLoadStatus.success);
-      await service.loadAllConsentInfo();
+      await service.resetLocalConsentInfo();
 
       expect(service.userDataCalls, 2);
-      expect(service.latestVersionCalls, 2);
       expect(service.consentState, ConsentStateEnum.notAccepted);
     });
 
-    test("does not know where the consent stands until it loads again", () async {
-      final service = aService(userData: _agreed());
+    test("waits for the next user once the previous one signed out", () async {
+      final controller = StreamController<bool>.broadcast();
+      addTearDown(controller.close);
+      final observer = FakeObserver(stream: controller.stream, get: () => true);
+      final service = aService(userData: _agreed(), observers: [observer]);
       await service.loadAllConsentInfo();
 
+      controller.add(false);
+      await pumpEventQueue();
       final pushed = expectLater(service.stateStream, emits(ConsentStateEnum.unknown));
-      await service.resetAllConsentInfo();
+      await service.resetLocalConsentInfo();
 
       await pushed;
       expect(service.consentState, ConsentStateEnum.unknown);
       expect(service.userDataCalls, 1);
+
+      controller.add(true);
+      await pumpEventQueue();
+
+      expect(service.userDataCalls, 2);
+      expect(service.consentState, ConsentStateEnum.accepted);
     });
   });
 }

@@ -125,8 +125,7 @@ void main() {
       final redirection = await aRedirection(terms, topView: FakeTermsRoute.home);
 
       // The first change is still being handled when the second one comes
-      unawaited(terms.resetAllConsentInfo());
-      unawaited(terms.loadAllConsentInfo());
+      unawaited(terms.resetLocalConsentInfo());
       await pumpEventQueue();
 
       expect(redirection.router.replaced, [FakeTermsRoute.terms]);
