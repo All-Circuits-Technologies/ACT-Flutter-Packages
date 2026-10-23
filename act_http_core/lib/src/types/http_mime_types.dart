@@ -22,6 +22,9 @@ enum HttpMimeTypes with MixinStringValueType {
   /// This is an application gzip mime type
   gzip(stringValueOverride: "application/gzip", bodyType: HttpBodyTypes.binary),
 
+  /// This is an application zip mime type
+  zip(stringValueOverride: "application/zip", bodyType: HttpBodyTypes.binary),
+
   /// This is a form url encoded mime type
   formUrlEncoded(
     stringValueOverride: "application/x-www-form-urlencoded",

@@ -203,6 +203,16 @@ void main() {
       expect(request.bodyBytes, [1, 2, 3]);
     });
 
+    test("sends the bytes of a zip body with the zip MIME type", () {
+      final request = formatRequest(
+        body: Uint8List.fromList([1, 2, 3]),
+        requestMimeType: HttpMimeTypes.zip,
+      )! as Request;
+
+      expect(request.headers[HeaderConstants.contentTypeHeaderKey], "application/zip");
+      expect(request.bodyBytes, [1, 2, 3]);
+    });
+
     test("sends a file as the only part of a multipart request", () {
       final request =
           formatRequest(body: MultipartFile.fromString("a file", "content"))! as MultipartRequest;
@@ -344,6 +354,16 @@ void main() {
         body: "abc",
         contentType: "application/octet-stream",
         expectedMimeType: HttpMimeTypes.applicationOctetStream,
+      );
+
+      expect(response.castedBody, utf8.encode("abc"));
+    });
+
+    test("reads the bytes of a zip body the request expected", () {
+      final response = formatResponse<Uint8List, Uint8List>(
+        body: "abc",
+        contentType: "application/zip",
+        expectedMimeType: HttpMimeTypes.zip,
       );
 
       expect(response.castedBody, utf8.encode("abc"));
