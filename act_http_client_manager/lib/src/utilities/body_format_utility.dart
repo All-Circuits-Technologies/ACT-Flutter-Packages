@@ -197,6 +197,7 @@ sealed class BodyFormatUtility {
         return null;
       case HttpMimeTypes.applicationOctetStream:
       case HttpMimeTypes.gzip:
+      case HttpMimeTypes.zip:
       case HttpMimeTypes.csvText:
         if (requestBody is! Uint8List && requestBody is! List<int>) {
           logsHelper.w("We expect to have an Uint8List or List<int> body for the request "
@@ -366,6 +367,7 @@ sealed class BodyFormatUtility {
         case HttpMimeTypes.multipartFormData:
         case HttpMimeTypes.applicationOctetStream:
         case HttpMimeTypes.gzip:
+        case HttpMimeTypes.zip:
         case HttpMimeTypes.csvText:
           body = responseReceived.bodyBytes as Body;
           break;
@@ -408,6 +410,7 @@ sealed class BodyFormatUtility {
           break;
         case HttpMimeTypes.applicationOctetStream:
         case HttpMimeTypes.gzip:
+        case HttpMimeTypes.zip:
         case HttpMimeTypes.csvText:
           tmpRequest.bodyBytes = convertedBody.body! as Uint8List;
           break;
