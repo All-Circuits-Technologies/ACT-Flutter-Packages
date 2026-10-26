@@ -92,10 +92,16 @@ follows both and starts the scanning as soon as they are there.
 
 ### Reaching a device
 
-One device is connected at a time, and the GATT service holds it. Reading, writing and listening to
-a characteristic all go through the same three checks: the device is connected, the permissions and
-the service are there, and the characteristic was discovered. Anything else is answered as an error
-rather than raised.
+One device is connected at a time, and the GATT service holds it. A connection which fails is tried
+again until the whole time given to a connection is spent, with a short pause between two attempts:
+Android answers a transient `GATT_ERROR 133` on the first attempt more often than not, and a long
+pause would leave the time for two attempts only. The scanning is stopped while a device is being
+connected to and started again afterwards if a page still asks for it, because Android answers the
+same `GATT_ERROR 133` to a connection which is opened while a scan runs. A page which asks for a
+scan in the meantime is answered at once, and its scan starts at the end of the connection.
+Reading, writing and listening to a characteristic all go through the same three checks: the
+device is connected, the permissions and the service are there, and the characteristic was
+discovered. Anything else is answered as an error rather than raised.
 
 Two errors of a device are read further than the others: the one which says that the device asks for
 a stronger pairing, which has the pairing of the device marked as failed, and the one which says
@@ -269,9 +275,14 @@ not connected and the characteristic which was never discovered, on the device w
 the Bluetooth taken again, on the pairing which is asked for again, and on the permission of a
 characteristic which is missing.
 
-What is out of reach is the scanning itself and the connecting: the plugin of the Bluetooth keeps
-one instance for the whole application, and both are driven by the clock of the device rather than
-by a timer a test can move.
+The connecting is covered on the attempt which failed and is tried again a short pause later, on
+the device which answers on the second attempt, and on the whole time of a connection which is
+spent. The time a connection takes is read on the clock of the package, which those tests move in
+place of the one of the device.
+
+What is out of reach is the scanning itself: the plugin of the Bluetooth keeps one instance for the
+whole application, and the scanning is driven by the clock of the device rather than by a timer a
+test can move.
 
 ```console
 > flutter test
