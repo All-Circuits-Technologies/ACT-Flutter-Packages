@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2023, 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+SPDX-FileCopyrightText: 2023, 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
@@ -90,6 +90,7 @@ To install it globally, you have to call:
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                            |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |
+| [act_oauth2_keycloak](act_oauth2_keycloak/)                               | This package contains the needed elements to connect to a OAuth 2.0 Client through a Keycloak Identity Provider.         |         |
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
@@ -123,23 +124,19 @@ This will print a markdown table to copy/paste here each time we add or remove a
 
 ## How to use the packages in your project
 
-To use the libraries in your project, we recommend you to bind this repo as a /actlibs git submodule
-in your project.
-
-In the `pubspec.yaml` you will have to link them like this:
+Add this repository as a git submodule of the project, by default in an `actlibs/` folder at its
+root, and reference each package by its local path in `pubspec.yaml`:
 
 ```yaml
 act_life_cycle:
-  git:
-    path: actlibs/act_life_cycle
+  path: actlibs/act_life_cycle
 ```
 
-For each project which includes those libs, you have to create a branch in this repository and point
-on it. This way, you are independent of the others projects but can get improvements or bugs
-corrections from others.
+A fresh clone of the project fetches the submodule with `git submodule update --init`.
 
-Because, this code isn't reviewed if no merge request is done to the master branch, it's recommended
-to oftenly create merge requests from the project branch to master.
+The submodule points at `master`. A change a project needs gets its own issue here, independent of
+the project; while that change is under review, the submodule of the project may point at its
+branch, then returns to `master` once it is merged.
 
 ## Tests
 

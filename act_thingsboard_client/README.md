@@ -180,6 +180,10 @@ hands the enum values over rather than strings.
 
 ## How to use
 
+The package re-exports the upstream types it exposes in its own signatures, `RequestStatus` and the
+models of `thingsboard_client`, so an application never depends on `thingsboard_client` or on
+`act_http_client_manager` directly for them.
+
 ### Installation
 
 Add the package to the `dependencies` of your package:
@@ -329,7 +333,8 @@ refuses, on the value which is newer and the one which is older, on the update w
 error, and on the closing which gives the subscription up. The handler is covered on the four kinds
 of telemetry, on the keys of another handler it says nothing about, and on the device two handlers
 watch through a single subscription. The devices of a customer are covered on the pages which are
-read until the device is found.
+read until the device is found. The barrel is covered on the upstream types it re-exports, which an
+application reaches through it alone.
 
 What is out of reach is the ten seconds a key which is no longer watched is kept for, and the
 address the client is built with: the first is read from the clock of the device rather than from a

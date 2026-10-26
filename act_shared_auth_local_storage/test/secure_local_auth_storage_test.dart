@@ -19,6 +19,9 @@ final _tokens = AuthTokens(
   idToken: "an id token",
 );
 
+/// The tokens the same user holds on the second identity provider of the application.
+const _idpTokens = AuthTokens(accessToken: AuthToken(raw: "an idp token"));
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -110,6 +113,35 @@ void main() {
       await storage.clearTokens();
 
       expect(await storage.loadTokens(), isNull);
+    });
+  });
+
+  group("SecureLocalAuthStorage.tokensItem", () {
+    test("keeps the tokens of two storages apart when each one has its own item", () async {
+      final storage = await aStorage();
+      final idpStorage = SecureLocalAuthStorage<FakeAuthConfig, FakeAuthSecrets>(
+        tokensItem: secrets.idpTokens,
+      );
+
+      await storage.storeTokens(tokens: _tokens);
+      await idpStorage.storeTokens(tokens: _idpTokens);
+
+      expect(await storage.loadTokens(), _tokens);
+      expect(await idpStorage.loadTokens(), _idpTokens);
+    });
+
+    test("forgets the tokens of the storage which is cleared and no other", () async {
+      final storage = await aStorage();
+      final idpStorage = SecureLocalAuthStorage<FakeAuthConfig, FakeAuthSecrets>(
+        tokensItem: secrets.idpTokens,
+      );
+      await storage.storeTokens(tokens: _tokens);
+      await idpStorage.storeTokens(tokens: _idpTokens);
+
+      await storage.clearTokens();
+
+      expect(await storage.loadTokens(), isNull);
+      expect(await idpStorage.loadTokens(), _idpTokens);
     });
   });
 

@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
@@ -288,6 +290,29 @@ void main() {
             connectionState: DeviceConnectionState.connected,
             failure: null,
           ),
+        ),
+      );
+      await pumpEventQueue();
+
+      await device.disconnect();
+
+      expect(device.connectionState, DeviceConnectionState.disconnected);
+    });
+
+    test("says that it is disconnected when the plugin fails to disconnect it", () async {
+      final device = BleDevice(BleScannedDevice(aDiscoveredDevice()));
+      addTearDown(device.dispose);
+      // The plugin cancels a connection by a native call, which may fail
+      final connection = StreamController<ConnectionStateUpdate>(
+        onCancel: () => Future<void>.error(StateError("The native disconnection failed")),
+      );
+      addTearDown(connection.close);
+      await device.setConnectionStream(connection.stream);
+      connection.add(
+        const ConnectionStateUpdate(
+          deviceId: aDeviceId,
+          connectionState: DeviceConnectionState.connected,
+          failure: null,
         ),
       );
       await pumpEventQueue();

@@ -39,6 +39,12 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   /// The mutex is used to prevent multiple token getting at the same time
   final Mutex _mutex;
 
+  /// The URL the provider sends the user back to after a sign in, when the application names it
+  final String? _redirectUrl;
+
+  /// The URL the provider sends the user back to after a sign out, when the application names it
+  final String? _postLogoutRedirectUrl;
+
   /// The current [AuthStatus]
   AuthStatus _authStatus;
 
@@ -69,12 +75,22 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   Stream<AuthStatus> get authStatusStream => _authStatusCtrl.stream;
 
   /// Class constructor
-  AbsOAuth2ProviderService({required String logsCategory})
-    : _authStatus = AuthStatus.signedOut,
-      _authTokens = const AuthTokens(),
-      _authStatusCtrl = StreamController.broadcast(),
-      _logsCategory = logsCategory,
-      _mutex = Mutex();
+  ///
+  /// [redirectUrl] and [postLogoutRedirectUrl] are the URLs the provider sends the user back to.
+  /// When the application names none, they are built on the scheme of the configuration; a
+  /// provider which checks them against the URLs it was registered with needs them named, and the
+  /// one of the sign out then defaults to [redirectUrl].
+  AbsOAuth2ProviderService({
+    required String logsCategory,
+    String? redirectUrl,
+    String? postLogoutRedirectUrl,
+  }) : _authStatus = AuthStatus.signedOut,
+       _authTokens = const AuthTokens(),
+       _authStatusCtrl = StreamController.broadcast(),
+       _logsCategory = logsCategory,
+       _redirectUrl = redirectUrl,
+       _postLogoutRedirectUrl = postLogoutRedirectUrl,
+       _mutex = Mutex();
 
   /// Initialize the provider.
   ///
@@ -128,14 +144,25 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
     await _loadAndSetTokensFromMemoryIfRelevant(storageService);
   }
 
+  /// The browser the provider pages are opened in, as [DefaultOAuth2Conf.ephemeralSession] asks
+  ExternalUserAgent get _externalUserAgent => _conf.ephemeralSession
+      ? ExternalUserAgent.ephemeralAsWebAuthenticationSession
+      : ExternalUserAgent.asWebAuthenticationSession;
+
   /// {@macro act_shared_auth.MixinAuthService.signInUser}
   @override
   Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
       crashUnimplemented("signInUser");
 
   /// {@macro act_shared_auth.MixinAuthService.redirectToExternalUserSignIn}
+  ///
+  /// [additionalParameters] are added to the authorization request as they are, for what the
+  /// provider reads there and the service does not know of: the `max_age` of OpenID Connect, for
+  /// an application which needs a recent sign-in before an operation, is one.
   @override
-  Future<AuthSignInResult> redirectToExternalUserSignIn() => _mutex.protect(() async {
+  Future<AuthSignInResult> redirectToExternalUserSignIn({
+    Map<String, String>? additionalParameters,
+  }) => _mutex.protect(() async {
     final redirectUrl = await buildRedirectUrl();
     AuthSignInStatus? errorStatus;
     AuthorizationTokenResponse? response;
@@ -148,6 +175,8 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
           scopes: _conf.scopes,
+          additionalParameters: additionalParameters,
+          externalUserAgent: _externalUserAgent,
         ),
       );
     } on FlutterAppAuthUserCancelledException catch (_) {
@@ -172,6 +201,13 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   });
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
+  ///
+  /// The tokens are forgotten and the user is signed out whatever the provider answers: a session
+  /// which couldn't be ended at the provider, because the page of the browser was closed or the
+  /// network is down, must not leave tokens behind, otherwise the next call would sign the user in
+  /// again without asking.
+  ///
+  /// Answers false when the provider didn't end its session, which may then still be open there.
   @override
   Future<bool> signOut() => _mutex.protect(() async {
     final redirectUrl = await buildPostLogoutRedirectUrl();
@@ -184,23 +220,20 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
           issuer: _conf.issuer,
           discoveryUrl: _conf.discoveryUrl,
           serviceConfiguration: _conf.providerUrlConf?.toServiceConf(),
+          externalUserAgent: _externalUserAgent,
         ),
       );
       result = true;
     } catch (error) {
-      logsHelper.e("An error occurred when tried to sign out the user");
+      logsHelper.e("An error occurred when tried to end the session at the provider: $error");
     }
 
-    if (!result) {
-      return false;
-    }
-
-    // Clean the auth info
+    // Clean the auth info, whatever the provider answered
     await _setOAuthTokens(null);
 
     setAuthStatus(AuthStatus.signedOut);
 
-    return true;
+    return result;
   });
 
   /// {@macro act_shared_auth.MixinAuthService.isUserSigned}
@@ -218,9 +251,13 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
   });
 
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
+  ///
+  /// When [forceRefresh] is true, fresh tokens are asked to the provider even if the access token
+  /// is still valid: an application asks it when the account changed on the provider side and the
+  /// claims of the token in hand are known to be behind, the acceptance of the terms for instance.
   @override
-  Future<AuthTokens?> getTokens() => _mutex.protect(() async {
-    if (_authTokens.accessToken?.isValid() ?? false) {
+  Future<AuthTokens?> getTokens({bool forceRefresh = false}) => _mutex.protect(() async {
+    if (!forceRefresh && (_authTokens.accessToken?.isValid() ?? false)) {
       return _authTokens;
     }
 
@@ -251,11 +288,14 @@ abstract class AbsOAuth2ProviderService extends AbsWithLifeCycle with MixinAuthS
 
   /// Build the URL used by the provider to redirect to the app after a sign in
   @protected
-  Future<String> buildRedirectUrl() async => "${_conf.appAuthRedirectScheme}$redirectUrlSuffix";
+  Future<String> buildRedirectUrl() async =>
+      _redirectUrl ?? "${_conf.appAuthRedirectScheme}$redirectUrlSuffix";
 
   /// Build the URL used by the provider to redirect to the app after a sign out
   @protected
   Future<String> buildPostLogoutRedirectUrl() async =>
+      _postLogoutRedirectUrl ??
+      _redirectUrl ??
       "${_conf.appAuthRedirectScheme}$redirectUrlSeparator";
 
   /// The method loads the token from memory and set the local [_authTokens].

@@ -9,9 +9,10 @@ import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
-import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client/src/act_tb_storage.dart';
 import 'package:act_thingsboard_client/src/constants/tb_constants.dart' as tb_constants;
+import 'package:act_thingsboard_client/src/mixins/mixin_thingsboard_conf.dart';
+import 'package:act_thingsboard_client/src/models/tb_request_response.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// This is the builder of the [TbNoAuthServerReqManager] class

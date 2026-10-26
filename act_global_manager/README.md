@@ -1,6 +1,6 @@
 <!--
 SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
-SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+SPDX-FileCopyrightText: 2023 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
@@ -24,6 +24,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Start the application](#start-the-application)
   - [Add a fatal error page](#add-a-fatal-error-page)
   - [Reach a manager](#reach-a-manager)
+  - [Test an application](#test-an-application)
 - [Testing](#testing)
 
 ## Presentation
@@ -60,11 +61,13 @@ a view, which `GlobalManagerUiState` adds to the states above.
 ### The order the managers are initialized in
 
 A manager is registered with its builder, which lists the managers it depends on. The global manager
-registers them in `GetIt` as asynchronous singletons and waits for all of them to be ready; `GetIt`
-initializes a manager only once the ones it depends on are.
+first records every registration; once `registerManagers` returns, it sorts the managers level by
+level from these dependencies, registers them in `GetIt` as asynchronous singletons in that order,
+and waits for all of them to be ready. `GetIt` initializes a manager only once the ones it depends
+on are.
 
-A manager has to be registered after the ones it depends on: `GetIt` refuses a dependency which is
-not registered yet.
+A dependency which is never registered, or managers which depend on each other, cannot be sorted:
+the global manager raises an `ActManagerRegisteringDeadLoopError`.
 
 The managers are kept in the order they finished their initialization, and they are disposed
 together when the global manager is.
@@ -163,8 +166,8 @@ class AppGlobalManager extends AbsUiGlobalManager {
 }
 ```
 
-The managers are registered in the order of their dependencies: the config manager first, then the
-logger manager which reads it, then the ones which log.
+Each builder declares the managers it depends on, and the global manager initializes them in that
+order.
 
 ### Start the application
 
@@ -237,6 +240,26 @@ A manager which has to release a resource before the error page can run override
 
 ```dart
 final ticManager = globalGetIt().get<TicManager>();
+```
+
+### Test an application
+
+Once the managers are ready, the global manager reads the information of the application package
+with `package_info_plus`, which has no implementation under `flutter test`: a test which starts the
+global manager without mocking it never completes, and fails once it times out. Add
+`package_info_plus` to the `dev_dependencies` of the application and mock its values before
+starting the global manager:
+
+```dart
+setUp(
+  () => PackageInfo.setMockInitialValues(
+    appName: "app",
+    packageName: "com.example.app",
+    version: "1.0.0",
+    buildNumber: "1",
+    buildSignature: "",
+  ),
+);
 ```
 
 ## Testing

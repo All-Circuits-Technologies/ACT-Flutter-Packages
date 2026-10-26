@@ -4,7 +4,6 @@
 
 import 'dart:async';
 
-import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_internet_connectivity_manager/act_internet_connectivity_manager.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:mocktail/mocktail.dart';

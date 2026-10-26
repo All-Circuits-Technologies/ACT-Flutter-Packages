@@ -4,6 +4,7 @@
 
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
+import 'package:act_shared_auth/act_shared_auth.dart';
 import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 
@@ -23,6 +24,15 @@ class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecu
 /// The secrets of the application under test, which hold the tokens where the platform keeps its
 /// secrets.
 class FakeAuthSecrets extends AbstractSecretsManager with MixinAuthSecrets {
+  /// The tokens of the second identity provider the application under test talks to, kept beside
+  /// the ones of its own authentication.
+  final idpTokens = const SecretItemWithParser<AuthTokens, String>(
+    "IDP_AUTH_TOKENS",
+    parser: MemoryStorageUtility.convertAuthTokensFromStorage,
+    castTo: MemoryStorageUtility.convertAuthTokensForStorage,
+    doNotMigrate: true,
+  );
+
   /// Class constructor
   FakeAuthSecrets({required super.propertiesGetter, required super.confGetter});
 }
