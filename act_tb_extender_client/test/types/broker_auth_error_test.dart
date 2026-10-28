@@ -36,12 +36,33 @@ void main() {
     });
 
     test("reads the names of the members without a broker code as unknown", () {
+      expect(BrokerAuthError.fromCode("success"), BrokerAuthError.unknown);
       expect(BrokerAuthError.fromCode("network"), BrokerAuthError.unknown);
       expect(BrokerAuthError.fromCode("unknown"), BrokerAuthError.unknown);
     });
 
     test("reads an answer without any code as unknown", () {
       expect(BrokerAuthError.fromCode(null), BrokerAuthError.unknown);
+    });
+  });
+
+  group("BrokerAuthError as a result status", () {
+    test("is a success only for success", () {
+      for (final status in BrokerAuthError.values) {
+        expect(status.isSuccess, status == BrokerAuthError.success, reason: status.name);
+      }
+    });
+
+    test("can be retried only after a failure which may not happen again", () {
+      final retryable = BrokerAuthError.values.where((status) => status.canBeRetried).toSet();
+
+      expect(retryable, {
+        BrokerAuthError.thingsboardUnavailable,
+        BrokerAuthError.keycloakUnavailable,
+        BrokerAuthError.termsSourceUnavailable,
+        BrokerAuthError.internalError,
+        BrokerAuthError.network,
+      });
     });
   });
 }

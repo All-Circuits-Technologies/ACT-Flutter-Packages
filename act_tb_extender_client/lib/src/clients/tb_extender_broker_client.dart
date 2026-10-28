@@ -4,11 +4,10 @@
 
 import 'dart:convert';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_tb_extender_client/src/models/abs_broker_claim_result.dart';
-import 'package:act_tb_extender_client/src/models/abs_broker_login_result.dart';
 import 'package:act_tb_extender_client/src/models/broker_login_response.dart';
 import 'package:act_tb_extender_client/src/types/broker_auth_error.dart';
 
@@ -93,9 +92,12 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// Issues `POST <brokerUrl>/api/v1/auth/login` with an `Authorization: Bearer <token>` header
   /// and no body.
   ///
-  /// Return a [BrokerLoginSuccess] on a HTTP 200, or a [BrokerLoginFailure] carrying the mapped
-  /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
-  Future<AbsBrokerLoginResult> login(String idpAccessToken) async {
+  /// Return the [BrokerLoginResponse] on a HTTP 200, or the mapped [BrokerAuthError] otherwise,
+  /// with the message of the broker as extra info, a transport error being read as
+  /// [BrokerAuthError.network].
+  Future<ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse>> login(
+    String idpAccessToken,
+  ) async {
     final answer = await executeRequestWithJsonObjRespBody<BrokerLoginResponse>(
       requestParam: _requestParam(_loginPath, idpAccessToken),
       parseRespBody: BrokerLoginResponse.fromJson,
@@ -103,16 +105,12 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
 
     final parsed = answer.castedBody;
     if (answer.status == RequestStatus.success && parsed != null) {
-      return BrokerLoginSuccess(parsed);
+      return ResultWithRequiredValue(status: BrokerAuthError.success, value: parsed);
     }
 
     final failure = _readFailure(answer, "login");
 
-    return BrokerLoginFailure(
-      failure.error,
-      message: failure.message,
-      statusCode: answer.response?.statusCode,
-    );
+    return ResultWithRequiredValue(status: failure.error, extraInfo: failure.message);
   }
 
   /// Erase the account behind the given [idpAccessToken], on the ThingsBoard side as well as
@@ -121,9 +119,9 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// Issues `DELETE <brokerUrl>/api/v1/account` with an `Authorization: Bearer <token>` header and
   /// no body.
   ///
-  /// Return null on a HTTP 204, the account being gone, or the mapped [BrokerAuthError] otherwise,
-  /// a transport error being read as [BrokerAuthError.network].
-  Future<BrokerAuthError?> deleteAccount(String idpAccessToken) => _requestWithoutAnswer(
+  /// Return [BrokerAuthError.success] on a HTTP 204, the account being gone, or the mapped
+  /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
+  Future<BrokerAuthError> deleteAccount(String idpAccessToken) => _requestWithoutAnswer(
     _requestParam(_accountPath, idpAccessToken, httpMethod: HttpMethods.delete),
     "account deletion",
   );
@@ -133,9 +131,9 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// Issues `POST <brokerUrl>/api/v1/terms/accept` with an `Authorization: Bearer <token>` header
   /// and the version as a JSON body.
   ///
-  /// Return null when the broker recorded it, on a HTTP 204, or the mapped [BrokerAuthError]
-  /// otherwise, a transport error being read as [BrokerAuthError.network].
-  Future<BrokerAuthError?> acceptTerms(
+  /// Return [BrokerAuthError.success] when the broker recorded it, on a HTTP 204, or the mapped
+  /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
+  Future<BrokerAuthError> acceptTerms(
     String idpAccessToken, {
     required String version,
   }) => _requestWithoutAnswer(
@@ -151,11 +149,10 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// is the proof the caller holds the device, and hands over a device held by another customer
   /// on its own: the caller has nothing more to do.
   ///
-  /// Return a [BrokerClaimSuccess] naming the device on a HTTP 200, or a [BrokerClaimFailure]
-  /// carrying the mapped [BrokerAuthError] otherwise — [BrokerAuthError.claimRefused] for an
-  /// unknown serial or a wrong, missing or too old secret — a transport error being read as
-  /// [BrokerAuthError.network].
-  Future<AbsBrokerClaimResult> claimDevice(
+  /// Return the ThingsBoard id of the claimed device on a HTTP 200, or the mapped [BrokerAuthError]
+  /// otherwise — [BrokerAuthError.claimRefused] for an unknown serial or a wrong, missing or too
+  /// old secret — a transport error being read as [BrokerAuthError.network].
+  Future<ResultWithRequiredValue<BrokerAuthError, String>> claimDevice(
     String idpAccessToken, {
     required String serial,
     required String secret,
@@ -171,10 +168,10 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
 
     final deviceId = answer.castedBody;
     if (answer.status == RequestStatus.success && deviceId != null) {
-      return BrokerClaimSuccess(deviceId: deviceId);
+      return ResultWithRequiredValue(status: BrokerAuthError.success, value: deviceId);
     }
 
-    return BrokerClaimFailure(_readFailure(answer, "device claim").error);
+    return ResultWithRequiredValue(status: _readFailure(answer, "device claim").error);
   }
 
   /// Release the device named [serial] from the customer which holds it.
@@ -184,10 +181,10 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// to the device, sent as a JSON body when given: the broker needs it to release a device of
   /// another customer, and ignores it for a device of the customer of the caller.
   ///
-  /// Return null on a HTTP 204, the device being released or already free, or the mapped
-  /// [BrokerAuthError] otherwise — [BrokerAuthError.releaseRefused] for an unknown serial or a
-  /// wrong secret — a transport error being read as [BrokerAuthError.network].
-  Future<BrokerAuthError?> releaseDevice(
+  /// Return [BrokerAuthError.success] on a HTTP 204, the device being released or already free, or
+  /// the mapped [BrokerAuthError] otherwise — [BrokerAuthError.releaseRefused] for an unknown
+  /// serial or a wrong secret — a transport error being read as [BrokerAuthError.network].
+  Future<BrokerAuthError> releaseDevice(
     String idpAccessToken, {
     required String serial,
     String? secret,
@@ -252,11 +249,11 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// Issue the [requestParam] of an endpoint which answers no body, the [callName] naming it in
   /// the logs.
   ///
-  /// Return null on a success, or the mapped [BrokerAuthError] otherwise.
-  Future<BrokerAuthError?> _requestWithoutAnswer(RequestParam requestParam, String callName) async {
+  /// Return [BrokerAuthError.success] on a success, or the mapped [BrokerAuthError] otherwise.
+  Future<BrokerAuthError> _requestWithoutAnswer(RequestParam requestParam, String callName) async {
     final answer = await executeRequest<Object, Object>(requestParam: requestParam);
     if (answer.status == RequestStatus.success) {
-      return null;
+      return BrokerAuthError.success;
     }
 
     return _readFailure(answer, callName).error;

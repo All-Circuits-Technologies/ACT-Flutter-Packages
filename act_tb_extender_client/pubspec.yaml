@@ -27,6 +27,10 @@ dependencies:
   # Value equality of the models the broker answers with
   equatable: ^2.0.7
 
+  # The result the calls of the broker answer
+  act_dart_result:
+    path: ../act_dart_result
+
   # JSON parsing helpers
   act_dart_utility:
     path: ../act_dart_utility

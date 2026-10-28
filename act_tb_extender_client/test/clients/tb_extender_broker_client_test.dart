@@ -162,15 +162,15 @@ void main() {
     test("reads a 200 as a success carrying the parsed payload", () async {
       final result = await ask((_) async => _json(_successBody()), (client) => client.login("kc"));
 
-      expect(result, isA<BrokerLoginSuccess>());
-      final success = result as BrokerLoginSuccess;
-      expect(success.response.tbToken, "tb-access-jwt");
-      expect(success.response.tbRefreshToken, "tb-refresh-jwt");
-      expect(success.response.expiresIn, 3600);
-      expect(success.response.user.tbUserId, "11111111-1111-1111-1111-111111111111");
-      expect(success.response.user.email, "user@example.test");
-      expect(success.response.user.firstName, "Ada");
-      expect(success.response.user.lastName, "Lovelace");
+      expect(result.status, BrokerAuthError.success);
+      final response = result.value!;
+      expect(response.tbToken, "tb-access-jwt");
+      expect(response.tbRefreshToken, "tb-refresh-jwt");
+      expect(response.expiresIn, 3600);
+      expect(response.user.tbUserId, "11111111-1111-1111-1111-111111111111");
+      expect(response.user.email, "user@example.test");
+      expect(response.user.firstName, "Ada");
+      expect(response.user.lastName, "Lovelace");
     });
 
     test("reads a success payload which names no first and last name", () async {
@@ -181,8 +181,8 @@ void main() {
 
       final result = await ask((_) async => _json(body), (client) => client.login("kc"));
 
-      expect(result, isA<BrokerLoginSuccess>());
-      final user = (result as BrokerLoginSuccess).response.user;
+      expect(result.isSuccess, isTrue);
+      final user = result.value!.user;
       expect(user.firstName, isNull);
       expect(user.lastName, isNull);
     });
@@ -193,10 +193,8 @@ void main() {
         (client) => client.login("kc"),
       );
 
-      expect(result, isA<BrokerLoginFailure>());
-      final failure = result as BrokerLoginFailure;
-      expect(failure.error, BrokerAuthError.unknown);
-      expect(failure.statusCode, 200);
+      expect(result.status, BrokerAuthError.unknown);
+      expect(result.value, isNull);
     });
 
     test("reads a 200 whose payload misses a mandatory field as an unknown failure", () async {
@@ -204,8 +202,7 @@ void main() {
 
       final result = await ask((_) async => _json(body), (client) => client.login("kc"));
 
-      expect(result, isA<BrokerLoginFailure>());
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
+      expect(result.status, BrokerAuthError.unknown);
     });
 
     /// Each documented error and the status it comes with.
@@ -249,11 +246,8 @@ void main() {
           (client) => client.login("kc"),
         );
 
-        expect(result, isA<BrokerLoginFailure>());
-        final failure = result as BrokerLoginFailure;
-        expect(failure.error, testCase.expected);
-        expect(failure.message, "boom");
-        expect(failure.statusCode, testCase.status);
+        expect(result.status, testCase.expected);
+        expect(result.extraInfo, "boom");
       });
     }
 
@@ -263,7 +257,7 @@ void main() {
         (client) => client.login("kc"),
       );
 
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
+      expect(result.status, BrokerAuthError.unknown);
     });
 
     test("reads an answer which isn't a 200 and carries no body as an unknown failure", () async {
@@ -272,7 +266,7 @@ void main() {
         (client) => client.login("kc"),
       );
 
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.unknown);
+      expect(result.status, BrokerAuthError.unknown);
     });
 
     test("reads a transport error as a network failure", () async {
@@ -281,8 +275,7 @@ void main() {
         (client) => client.login("kc"),
       );
 
-      expect(result, isA<BrokerLoginFailure>());
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.network);
+      expect(result.status, BrokerAuthError.network);
     });
   });
 
@@ -295,7 +288,7 @@ void main() {
         return http.Response("", 204);
       }, (client) => client.deleteAccount("kc-access-token"));
 
-      expect(error, isNull);
+      expect(error, BrokerAuthError.success);
       expect(captured.method, "DELETE");
       expect(captured.url.toString(), _accountUri);
       expect(captured.headers["Authorization"], "Bearer kc-access-token");
@@ -329,7 +322,7 @@ void main() {
         return http.Response("", 204);
       }, (client) => client.acceptTerms("kc-token", version: "2026-09-16"));
 
-      expect(error, isNull);
+      expect(error, BrokerAuthError.success);
       expect(captured.method, "POST");
       expect(captured.url.toString(), _termsUri);
       expect(captured.headers["Authorization"], "Bearer kc-token");
@@ -365,7 +358,7 @@ void main() {
         return http.Response("", 204);
       }, (client) => client.releaseDevice("kc-token", serial: "AB 12"));
 
-      expect(error, isNull);
+      expect(error, BrokerAuthError.success);
       expect(captured.method, "POST");
       expect(captured.url.toString(), _releaseUri);
       expect(captured.headers["Authorization"], "Bearer kc-token");
@@ -425,7 +418,8 @@ void main() {
         (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(result, const BrokerClaimSuccess(deviceId: "dev-1"));
+      expect(result.status, BrokerAuthError.success);
+      expect(result.value, "dev-1");
     });
 
     test("reads a 200 which names no device as an unknown failure", () async {
@@ -434,7 +428,7 @@ void main() {
         (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(result, const BrokerClaimFailure(BrokerAuthError.unknown));
+      expect(result.status, BrokerAuthError.unknown);
     });
 
     test("reads a claim the broker refused", () async {
@@ -443,7 +437,7 @@ void main() {
         (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(result, const BrokerClaimFailure(BrokerAuthError.claimRefused));
+      expect(result.status, BrokerAuthError.claimRefused);
     });
 
     test("answers a network error when the transport fails", () async {
@@ -452,7 +446,7 @@ void main() {
         (client) => client.claimDevice("kc-token", serial: "AB 12", secret: "cafe"),
       );
 
-      expect(result, const BrokerClaimFailure(BrokerAuthError.network));
+      expect(result.status, BrokerAuthError.network);
     });
   });
 
@@ -467,7 +461,7 @@ void main() {
     test("reads a login which timed out as a network failure", () async {
       final result = await askSilent((client) => client.login("kc"));
 
-      expect((result as BrokerLoginFailure).error, BrokerAuthError.network);
+      expect(result.status, BrokerAuthError.network);
     });
 
     test("reads a deletion which timed out as a network failure", () async {
@@ -489,10 +483,11 @@ void main() {
     });
 
     test("reads a claim which timed out as a network failure", () async {
-      expect(
-        await askSilent((client) => client.claimDevice("kc", serial: "AB 12", secret: "cafe")),
-        const BrokerClaimFailure(BrokerAuthError.network),
+      final result = await askSilent(
+        (client) => client.claimDevice("kc", serial: "AB 12", secret: "cafe"),
       );
+
+      expect(result.status, BrokerAuthError.network);
     });
   });
 }
