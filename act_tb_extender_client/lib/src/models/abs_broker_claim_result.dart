@@ -10,13 +10,13 @@ import 'package:equatable/equatable.dart';
 ///
 /// A call either yields a [BrokerClaimSuccess], which names the device now assigned to the
 /// customer of the caller, or a [BrokerClaimFailure], which carries a typed [BrokerAuthError].
-sealed class BrokerClaimResult extends Equatable {
+sealed class AbsBrokerClaimResult extends Equatable {
   /// Class constructor
-  const BrokerClaimResult();
+  const AbsBrokerClaimResult();
 }
 
 /// A claim the broker accepted: the device is assigned to the customer of the caller.
-class BrokerClaimSuccess extends BrokerClaimResult {
+class BrokerClaimSuccess extends AbsBrokerClaimResult {
   /// The ThingsBoard id of the claimed device.
   final String deviceId;
 
@@ -29,7 +29,7 @@ class BrokerClaimSuccess extends BrokerClaimResult {
 }
 
 /// A claim which failed, carrying the typed error.
-class BrokerClaimFailure extends BrokerClaimResult {
+class BrokerClaimFailure extends AbsBrokerClaimResult {
   /// The typed error of the broker.
   final BrokerAuthError error;
 

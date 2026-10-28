@@ -10,13 +10,13 @@ import 'package:equatable/equatable.dart';
 ///
 /// A call either yields a [BrokerLoginSuccess], which carries the ThingsBoard tokens, or a
 /// [BrokerLoginFailure], which carries a typed [BrokerAuthError].
-sealed class BrokerLoginResult extends Equatable {
+sealed class AbsBrokerLoginResult extends Equatable {
   /// Class constructor
-  const BrokerLoginResult();
+  const AbsBrokerLoginResult();
 }
 
 /// A broker login which succeeded, carrying the ThingsBoard tokens and the user information.
-class BrokerLoginSuccess extends BrokerLoginResult {
+class BrokerLoginSuccess extends AbsBrokerLoginResult {
   /// The parsed success payload of the broker.
   final BrokerLoginResponse response;
 
@@ -29,7 +29,7 @@ class BrokerLoginSuccess extends BrokerLoginResult {
 }
 
 /// A broker login which failed, carrying the typed error and the message of the broker.
-class BrokerLoginFailure extends BrokerLoginResult {
+class BrokerLoginFailure extends AbsBrokerLoginResult {
   /// The typed error of the broker.
   final BrokerAuthError error;
 

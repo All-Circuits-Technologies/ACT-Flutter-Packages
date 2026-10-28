@@ -7,9 +7,9 @@ import 'dart:convert';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:act_tb_extender_client/src/models/broker_claim_result.dart';
+import 'package:act_tb_extender_client/src/models/abs_broker_claim_result.dart';
+import 'package:act_tb_extender_client/src/models/abs_broker_login_result.dart';
 import 'package:act_tb_extender_client/src/models/broker_login_response.dart';
-import 'package:act_tb_extender_client/src/models/broker_login_result.dart';
 import 'package:act_tb_extender_client/src/types/broker_auth_error.dart';
 
 /// A small REST client for the auth broker of tb-extender.
@@ -95,7 +95,7 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   ///
   /// Return a [BrokerLoginSuccess] on a HTTP 200, or a [BrokerLoginFailure] carrying the mapped
   /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
-  Future<BrokerLoginResult> login(String idpAccessToken) async {
+  Future<AbsBrokerLoginResult> login(String idpAccessToken) async {
     final answer = await executeRequestWithJsonObjRespBody<BrokerLoginResponse>(
       requestParam: _requestParam(_loginPath, idpAccessToken),
       parseRespBody: BrokerLoginResponse.fromJson,
@@ -155,7 +155,7 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   /// carrying the mapped [BrokerAuthError] otherwise — [BrokerAuthError.claimRefused] for an
   /// unknown serial or a wrong, missing or too old secret — a transport error being read as
   /// [BrokerAuthError.network].
-  Future<BrokerClaimResult> claimDevice(
+  Future<AbsBrokerClaimResult> claimDevice(
     String idpAccessToken, {
     required String serial,
     required String secret,
