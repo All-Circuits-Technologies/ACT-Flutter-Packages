@@ -7,6 +7,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteristic.dart';
@@ -18,6 +19,9 @@ import 'package:mutex/mutex.dart';
 /// Companion of the HALO BLE hardware layer,
 /// This contains useful method to write and read in BLE characteristics
 class HaloBleCompanion {
+  /// The logs category of the HALO trace: the packets exchanged with the device
+  static const traceLogsCategory = "haloTrace";
+
   /// The BLE packet size when no MTU has been negotiated (the one of [BleDevice.packetSize])
   static const int _defaultPacketSize = 20;
 
@@ -36,8 +40,13 @@ class HaloBleCompanion {
   /// Mutex used to manage concurrency inside halo BLE companion
   final Mutex _bleMutex;
 
+  /// Logs the HALO trace, in the category [traceLogsCategory]
+  final MixinActLogger _traceLogger;
+
   /// Class constructor
-  HaloBleCompanion({required this.haloBleConfig, required this.bleManager}) : _bleMutex = Mutex();
+  HaloBleCompanion({required this.haloBleConfig, required this.bleManager})
+      : _bleMutex = Mutex(),
+        _traceLogger = appLogger().createAbsSubLogger(subCategory: traceLogsCategory);
 
   /// Called when a new HALO BLE device is connected. This manages the subscription to all the
   /// characteristics.
@@ -125,7 +134,7 @@ class HaloBleCompanion {
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
   }) async {
-    appLogger().d(_trace(">", toWriteInto, dataToWrite));
+    _traceLogger.d(_trace(">", toWriteInto, dataToWrite));
 
     if (!(await bleManager.bleGattService
             .writeBleCharacteristic(_bleDevice!, toWriteInto.uuid, dataToWrite))
@@ -196,7 +205,7 @@ class HaloBleCompanion {
 
       await charToSub.onStreamUpdate(
         stream.map((value) {
-          appLogger().d(_trace("<", charToSub, value));
+          _traceLogger.d(_trace("<", charToSub, value));
           return value;
         }),
         bleDevice.connectionStateStream,

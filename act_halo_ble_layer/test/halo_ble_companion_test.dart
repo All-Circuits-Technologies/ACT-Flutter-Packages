@@ -178,7 +178,7 @@ void main() {
   });
 
   group("HaloBleCompanion trace", () {
-    test("logs a write with the letter of the characteristic and the bytes in hex", () async {
+    test("logs a write in the trace category, with the letter and the bytes in hex", () async {
       await aDeviceOfTheCompanion();
 
       await companion.onlyWrite(
@@ -187,12 +187,15 @@ void main() {
       );
 
       expect(
-        logger.recordsAtLevel(LogsLevel.debug).map((record) => record.message),
+        logger
+            .recordsAtLevel(LogsLevel.debug)
+            .where((record) => record.categories.contains(HaloBleCompanion.traceLogsCategory))
+            .map((record) => record.message),
         contains("[HALO] > J 02 01 00 00"),
       );
     });
 
-    test("logs a notification with the letter of the characteristic and the bytes in hex",
+    test("logs a notification in the trace category, with the letter and the bytes in hex",
         () async {
       await aDeviceOfTheCompanion();
 
@@ -200,7 +203,10 @@ void main() {
       await pumpHalo();
 
       expect(
-        logger.recordsAtLevel(LogsLevel.debug).map((record) => record.message),
+        logger
+            .recordsAtLevel(LogsLevel.debug)
+            .where((record) => record.categories.contains(HaloBleCompanion.traceLogsCategory))
+            .map((record) => record.message),
         contains("[HALO] < J 07 00 03 01"),
       );
     });
