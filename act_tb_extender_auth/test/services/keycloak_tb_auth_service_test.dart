@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
@@ -25,6 +26,16 @@ const _successResponse = BrokerLoginResponse(
   expiresIn: 3600,
   user: _user,
 );
+
+/// The answer of a broker which accepted the login with [response].
+ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse> _loginSuccess(
+  BrokerLoginResponse response,
+) => ResultWithRequiredValue(status: BrokerAuthError.success, value: response);
+
+/// The answer of a broker which refused the login with [error].
+ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse> _loginFailure(
+  BrokerAuthError error,
+) => ResultWithRequiredValue(status: error);
 
 /// A token which never expires.
 AuthToken _validToken(String raw) => AuthToken(raw: raw);
@@ -181,7 +192,7 @@ void main() {
   group("KeycloakTbAuthService.redirectToExternalUserSignIn", () {
     test("runs the Keycloak flow, exchanges at the broker and signs the user in", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      broker.onLogin = (_) => _loginSuccess(_successResponse);
       final service = await aSignedInService();
 
       final result = await service.redirectToExternalUserSignIn();
@@ -198,7 +209,7 @@ void main() {
 
     test("hands the provider the parameters the application adds to the sign in", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      broker.onLogin = (_) => _loginSuccess(_successResponse);
       final service = await aSignedInService();
 
       await service.redirectToExternalUserSignIn(additionalParameters: {"max_age": "300"});
@@ -219,7 +230,7 @@ void main() {
 
     test("reads a broker which couldn't be reached as a network error", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) => const BrokerLoginFailure(BrokerAuthError.network);
+      broker.onLogin = (_) => _loginFailure(BrokerAuthError.network);
       final service = aService();
 
       final result = await service.redirectToExternalUserSignIn();
@@ -231,19 +242,25 @@ void main() {
 
     test("reads a broker which refused the account as a generic error carrying it", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) =>
-          const BrokerLoginFailure(BrokerAuthError.emailNotVerified, statusCode: 403);
+      broker.onLogin = (_) => _loginFailure(BrokerAuthError.emailNotVerified);
 
       final result = await aService().redirectToExternalUserSignIn();
 
       expect(result.status, AuthSignInStatus.genericError);
-      expect(result.extra, isA<BrokerLoginFailure>());
+      expect(
+        result.extra,
+        isA<ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse>>().having(
+          (loginResult) => loginResult.status,
+          "status",
+          BrokerAuthError.emailNotVerified,
+        ),
+      );
       expect(provider.signOutCalled, isTrue, reason: "the next attempt must ask the credentials");
     });
 
     test("gives the tokens which aren't JWTs the lifetime the broker answered", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      broker.onLogin = (_) => _loginSuccess(_successResponse);
       final service = await aSignedInService();
 
       await service.redirectToExternalUserSignIn();
@@ -256,8 +273,7 @@ void main() {
     test("answers the refusal of the broker even when Keycloak fails to end its session", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
       provider.signOutError = Exception("the page of the browser was closed");
-      broker.onLogin = (_) =>
-          const BrokerLoginFailure(BrokerAuthError.emailNotVerified, statusCode: 403);
+      broker.onLogin = (_) => _loginFailure(BrokerAuthError.emailNotVerified);
       final service = aService();
 
       final result = await service.redirectToExternalUserSignIn();
@@ -308,7 +324,7 @@ void main() {
     test("falls back to the Keycloak refresh and a new broker login", () async {
       refresher.result = null;
       provider.tokens = AuthTokens(accessToken: _validToken("kc-fresh"));
-      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      broker.onLogin = (_) => _loginSuccess(_successResponse);
       final service = await aSignedInService(
         tokens: AuthTokens(
           accessToken: _expiredToken("old-access"),
@@ -343,7 +359,7 @@ void main() {
     test("reports an expired session when the broker refuses the new login", () async {
       refresher.result = null;
       provider.tokens = AuthTokens(accessToken: _validToken("kc-fresh"));
-      broker.onLogin = (_) => const BrokerLoginFailure(BrokerAuthError.thingsboardUnavailable);
+      broker.onLogin = (_) => _loginFailure(BrokerAuthError.thingsboardUnavailable);
       final service = await aSignedInService(
         tokens: AuthTokens(
           accessToken: _expiredToken("old-access"),
@@ -368,8 +384,8 @@ void main() {
         lastName: "Lovelace",
       );
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.onLogin = (_) => const BrokerLoginSuccess(
-        BrokerLoginResponse(
+      broker.onLogin = (_) => _loginSuccess(
+        const BrokerLoginResponse(
           tbToken: "tb-access",
           tbRefreshToken: "tb-refresh",
           expiresIn: 3600,
@@ -412,7 +428,7 @@ void main() {
     test("asks nothing of the broker again when Keycloak didn't end its session", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
       provider.signOutAnswer = false;
-      broker.onLogin = (_) => const BrokerLoginSuccess(_successResponse);
+      broker.onLogin = (_) => _loginSuccess(_successResponse);
       final service = await aSignedInService(
         tokens: AuthTokens(accessToken: _expiredToken("old-access")),
       );
@@ -498,7 +514,7 @@ void main() {
 
     test("keeps the session when the broker refused the deletion", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.deleteError = BrokerAuthError.thingsboardUnavailable;
+      broker.deleteStatus = BrokerAuthError.thingsboardUnavailable;
       final service = await aSignedInService();
 
       final result = await service.deleteAccount();
@@ -510,7 +526,7 @@ void main() {
 
     test("reads a broker which couldn't be reached as a network error", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.deleteError = BrokerAuthError.network;
+      broker.deleteStatus = BrokerAuthError.network;
       final service = await aSignedInService();
 
       expect((await service.deleteAccount()).status, AuthDeleteStatus.networkError);
@@ -541,7 +557,7 @@ void main() {
 
     test("answers false and refreshes nothing when the broker refused", () async {
       provider.tokens = AuthTokens(accessToken: _validToken("kc-access"));
-      broker.acceptTermsError = BrokerAuthError.keycloakUnavailable;
+      broker.acceptTermsStatus = BrokerAuthError.keycloakUnavailable;
       final service = await aSignedInService();
 
       expect(await service.acceptTerms(version: "2026-09-16"), isFalse);

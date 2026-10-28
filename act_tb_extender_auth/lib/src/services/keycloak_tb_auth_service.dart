@@ -243,9 +243,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
       return false;
     }
 
-    final error = await _brokerClient.acceptTerms(kcAccessToken, version: version);
-    if (error != null) {
-      _logsHelper.w("The broker didn't record the terms acceptance: $error");
+    final status = await _brokerClient.acceptTerms(kcAccessToken, version: version);
+    if (status.isError) {
+      _logsHelper.w("The broker didn't record the terms acceptance: $status");
       return false;
     }
 
@@ -285,18 +285,18 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// point at nothing.
   @override
   Future<AuthDeleteResult> deleteAccount() async {
-    final error = await _mutex.protect(_unsafeDeleteAccount);
+    final status = await _mutex.protect(_unsafeDeleteAccount);
 
-    if (error == null) {
+    if (status.isSuccess) {
       await signOut();
       return const AuthDeleteResult(status: AuthDeleteStatus.done);
     }
 
     return AuthDeleteResult(
-      status: (error == BrokerAuthError.network)
+      status: (status == BrokerAuthError.network)
           ? AuthDeleteStatus.networkError
           : AuthDeleteStatus.genericError,
-      extra: error,
+      extra: status,
     );
   }
 
@@ -354,8 +354,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
 
   /// Ask the broker to erase the account, without the protection of the mutex.
   ///
-  /// Return null when the account is gone, or the error which stopped the deletion.
-  Future<BrokerAuthError?> _unsafeDeleteAccount() async {
+  /// Return [BrokerAuthError.success] when the account is gone, or the error which stopped the
+  /// deletion.
+  Future<BrokerAuthError> _unsafeDeleteAccount() async {
     final kcAccessToken = await _validKeycloakAccessToken();
     if (kcAccessToken == null) {
       _logsHelper.w("No valid Keycloak session in hand, the account can't be deleted");
@@ -384,23 +385,23 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
     }
 
     final loginResult = await _brokerClient.login(kcAccessToken);
-    switch (loginResult) {
-      case BrokerLoginSuccess(:final response):
-        await _applyBrokerSuccess(response);
-        _setAuthStatus(AuthStatus.signedIn);
-        return AuthSignInResult(status: AuthSignInStatus.done, extra: response.user);
-      case BrokerLoginFailure():
-        _logsHelper.w("The broker login failed during the sign in: ${loginResult.error}");
-        // The Keycloak session is ended: otherwise the browser would sign the user in silently
-        // at the next attempt, and the broker would refuse the very same account again
-        await _endKeycloakSession();
-        return AuthSignInResult(
-          status: (loginResult.error == BrokerAuthError.network)
-              ? AuthSignInStatus.networkError
-              : AuthSignInStatus.genericError,
-          extra: loginResult,
-        );
+    final response = loginResult.value;
+    if (loginResult.isError || response == null) {
+      _logsHelper.w("The broker login failed during the sign in: ${loginResult.status}");
+      // The Keycloak session is ended: otherwise the browser would sign the user in silently
+      // at the next attempt, and the broker would refuse the very same account again
+      await _endKeycloakSession();
+      return AuthSignInResult(
+        status: (loginResult.status == BrokerAuthError.network)
+            ? AuthSignInStatus.networkError
+            : AuthSignInStatus.genericError,
+        extra: loginResult,
+      );
     }
+
+    await _applyBrokerSuccess(response);
+    _setAuthStatus(AuthStatus.signedIn);
+    return AuthSignInResult(status: AuthSignInStatus.done, extra: response.user);
   }
 
   /// Get valid ThingsBoard tokens without the protection of the mutex, climbing the four steps of
@@ -431,8 +432,9 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
     final kcAccessToken = await _validKeycloakAccessToken();
     if (kcAccessToken != null) {
       final loginResult = await _brokerClient.login(kcAccessToken);
-      if (loginResult is BrokerLoginSuccess) {
-        final tokens = await _applyBrokerSuccess(loginResult.response);
+      final response = loginResult.value;
+      if (loginResult.isSuccess && response != null) {
+        final tokens = await _applyBrokerSuccess(response);
         _setAuthStatus(AuthStatus.signedIn);
         return tokens;
       }

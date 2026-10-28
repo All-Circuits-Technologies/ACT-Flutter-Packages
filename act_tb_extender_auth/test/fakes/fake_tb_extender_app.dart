@@ -5,6 +5,7 @@
 import 'dart:convert';
 
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_oauth2_core/act_oauth2_core.dart';
@@ -171,7 +172,8 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
 /// The broker of the tests, which answers what a test hands it and records the calls it received.
 class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The answer the broker gives a login, the failure of an unknown error when a test gives none.
-  AbsBrokerLoginResult Function(String idpAccessToken)? onLogin;
+  ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse> Function(String idpAccessToken)?
+  onLogin;
 
   /// The number of logins the service asked of the broker.
   int loginCallCount = 0;
@@ -179,14 +181,14 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The Keycloak token of the last call the broker received.
   String? lastToken;
 
-  /// The error the broker answers a deletion with, null when the account is gone.
-  BrokerAuthError? deleteError;
+  /// The status the broker answers a deletion with, a success by default.
+  BrokerAuthError deleteStatus = BrokerAuthError.success;
 
   /// The number of deletions the service asked of the broker.
   int deleteCallCount = 0;
 
-  /// The error the broker answers a terms acceptance with, null when it recorded it.
-  BrokerAuthError? acceptTermsError;
+  /// The status the broker answers a terms acceptance with, a success by default.
+  BrokerAuthError acceptTermsStatus = BrokerAuthError.success;
 
   /// The number of terms acceptances the service asked of the broker.
   int acceptTermsCallCount = 0;
@@ -212,24 +214,26 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   }
 
   @override
-  Future<AbsBrokerLoginResult> login(String idpAccessToken) async {
+  Future<ResultWithRequiredValue<BrokerAuthError, BrokerLoginResponse>> login(
+    String idpAccessToken,
+  ) async {
     loginCallCount++;
     lastToken = idpAccessToken;
 
     return onLogin?.call(idpAccessToken) ??
-        const BrokerLoginFailure(BrokerAuthError.unknown);
+        const ResultWithRequiredValue(status: BrokerAuthError.unknown);
   }
 
   @override
-  Future<BrokerAuthError?> deleteAccount(String idpAccessToken) async {
+  Future<BrokerAuthError> deleteAccount(String idpAccessToken) async {
     deleteCallCount++;
     lastToken = idpAccessToken;
 
-    return deleteError;
+    return deleteStatus;
   }
 
   @override
-  Future<BrokerAuthError?> acceptTerms(
+  Future<BrokerAuthError> acceptTerms(
     String idpAccessToken, {
     required String version,
   }) async {
@@ -237,7 +241,7 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
     lastToken = idpAccessToken;
     lastAcceptedVersion = version;
 
-    return acceptTermsError;
+    return acceptTermsStatus;
   }
 }
 
