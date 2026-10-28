@@ -171,7 +171,7 @@ class FakeKeycloakProvider extends AbsOAuth2ProviderService {
 /// The broker of the tests, which answers what a test hands it and records the calls it received.
 class FakeBrokerClient extends TbExtenderBrokerClient {
   /// The answer the broker gives a login, the failure of an unknown error when a test gives none.
-  BrokerLoginResult Function(String idpAccessToken)? onLogin;
+  AbsBrokerLoginResult Function(String idpAccessToken)? onLogin;
 
   /// The number of logins the service asked of the broker.
   int loginCallCount = 0;
@@ -212,7 +212,7 @@ class FakeBrokerClient extends TbExtenderBrokerClient {
   }
 
   @override
-  Future<BrokerLoginResult> login(String idpAccessToken) async {
+  Future<AbsBrokerLoginResult> login(String idpAccessToken) async {
     loginCallCount++;
     lastToken = idpAccessToken;
 
