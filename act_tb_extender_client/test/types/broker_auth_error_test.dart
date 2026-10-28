@@ -35,6 +35,11 @@ void main() {
       expect(BrokerAuthError.fromCode("teapot"), BrokerAuthError.unknown);
     });
 
+    test("reads the names of the members without a broker code as unknown", () {
+      expect(BrokerAuthError.fromCode("network"), BrokerAuthError.unknown);
+      expect(BrokerAuthError.fromCode("unknown"), BrokerAuthError.unknown);
+    });
+
     test("reads an answer without any code as unknown", () {
       expect(BrokerAuthError.fromCode(null), BrokerAuthError.unknown);
     });
