@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:act_consent_manager/act_consent_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter/widgets.dart';
@@ -310,13 +311,37 @@ void main() {
       expect(service.askedTexts, ["v2", "v2"]);
     });
 
-    test("keeps what the user agreed to", () async {
+    test("reads what the next user agreed to", () async {
       final service = aService(userData: _agreed());
       await service.loadAllConsentInfo();
 
+      service.userDataAnswer = const ResultWithStatus(status: ConsentLoadStatus.success);
       await service.resetLocalConsentInfo();
 
+      expect(service.userDataCalls, 2);
+      expect(service.consentState, ConsentStateEnum.notAccepted);
+    });
+
+    test("waits for the next user once the previous one signed out", () async {
+      final controller = StreamController<bool>.broadcast();
+      addTearDown(controller.close);
+      final observer = FakeObserver(stream: controller.stream, get: () => true);
+      final service = aService(userData: _agreed(), observers: [observer]);
+      await service.loadAllConsentInfo();
+
+      controller.add(false);
+      await pumpEventQueue();
+      final pushed = expectLater(service.stateStream, emits(ConsentStateEnum.unknown));
+      await service.resetLocalConsentInfo();
+
+      await pushed;
+      expect(service.consentState, ConsentStateEnum.unknown);
       expect(service.userDataCalls, 1);
+
+      controller.add(true);
+      await pumpEventQueue();
+
+      expect(service.userDataCalls, 2);
       expect(service.consentState, ConsentStateEnum.accepted);
     });
   });
