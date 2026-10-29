@@ -58,11 +58,15 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
     await super.initLifeCycle();
 
     _signedIn = AuthStreamObserver.ofService(_authGetter().authService);
-    _signedInSub = _signedIn.stream.listen((signedIn) {
-      if (!signedIn) {
-        unawaited(devicesService.clear());
-      }
-    });
+    _signedInSub = _signedIn.stream.listen(_onSignedInChanged);
+  }
+
+  /// Forget the values of the devices watched so far when the user leaves, so that nothing of an
+  /// account reaches the next one
+  Future<void> _onSignedInChanged(bool signedIn) async {
+    if (!signedIn) {
+      await devicesService.clear();
+    }
   }
 
   /// This encapsulates the Thingsboard request and allow to do multiple retry request if fails but
