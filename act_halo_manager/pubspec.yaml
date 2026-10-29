@@ -33,6 +33,10 @@ dependencies:
   act_life_cycle:
     path: ../act_life_cycle
 
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
+
   # Extend Dart functionalities
   act_dart_utility:
     path: ../act_dart_utility

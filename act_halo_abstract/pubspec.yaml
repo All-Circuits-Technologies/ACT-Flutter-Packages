@@ -27,6 +27,10 @@ dependencies:
   # Help to implement value based equality without explicit override
   equatable: ^2.0.7
 
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
+
   # Extend Dart functionalities
   act_dart_utility:
     path: ../act_dart_utility

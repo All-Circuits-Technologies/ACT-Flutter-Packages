@@ -71,12 +71,17 @@ decimals as an integer multiplied by a power of ten which the device knows.
 
 ### The services and what they exchange
 
-| Service      | What it holds                    | Exchanged as        |
-| ------------ | -------------------------------- | ------------------- |
-| Attribute    | A value the device keeps         | `HaloPacket`        |
-| Instant data | A value the device measures      | `HaloPacket`        |
-| Record data  | The values the device has stored | `HaloRecordPacket`  |
-| Request      | An action the device runs        | `HaloRequestResult` |
+| Service      | What it holds                    | Exchanged as                                                    |
+| ------------ | -------------------------------- | --------------------------------------------------------------- |
+| Attribute    | A value the device keeps         | `ResultWithRequiredValue<HaloErrorType, HaloPacket>`            |
+| Instant data | A value the device measures      | `ResultWithRequiredValue<HaloErrorType, HaloPacket>`            |
+| Record data  | The values the device has stored | `ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>`      |
+| Request      | An action the device runs        | `HaloRequestResult`, a `ResultWithStatus` carrying the payload  |
+
+The reads of the hardware layer return the types of the `act_dart_result` package: a read which
+succeeds always carries its value, and a read which fails carries the `HaloErrorType` the device
+answered with. A `HaloRequestResult` carries the same status in `status`, and its payload in
+`value`, which stays null for a procedure or an order which succeeds without a payload.
 
 A request is of one of three kinds, and the kind says what the caller gets back:
 
@@ -86,9 +91,11 @@ A request is of one of three kinds, and the kind says what the caller gets back:
 | Procedure | Yes          | No              |
 | Order     | No           | No              |
 
-`HaloErrorType` is what a device answers with. Three of its errors are transient, and
-`isMakingSensToRetry` is how a caller knows it is worth sending the request again rather than
-giving up.
+`HaloErrorType` is what a device answers with, and it is a result status of the `act_dart_result`
+package: `isSuccess` is true for `noError` only, and `isError` is its opposite. Three of its errors
+are transient, and `canBeRetried` is how a caller knows it is worth sending the request again
+rather than giving up. `canBeRetried` is also true for `noError`, as it is for the successes of
+`act_dart_result`: test `isError && canBeRetried` to decide whether to send a request again.
 
 ### The hardware layer
 
@@ -178,7 +185,10 @@ enum DeviceRequest with MixinHaloType, MixinHaloRequestId {
 ### Build a payload and read one
 
 The `add` methods return false when the value does not fit in the size asked for, and the `get`
-methods return null when the element is missing or does not hold what the caller expects:
+methods return an error result when the element is missing or does not hold what the caller
+expects. A success carries a `HaloTimestampedValue`, which holds the decoded value in `data` and
+the timestamp the sender attached to it, if any, in `timestamp`. The `data` and `timestamp` getters
+of the result read them directly, and answer null when the result is an error:
 
 ```dart
 final payload = HaloPayloadPacket()..addString("setpoint");
@@ -191,9 +201,10 @@ final parts = payload.getDataToSend(maxPacketSize: mtu);
 
 ```dart
 final received = HaloPayloadPacket.fromDevice(parts);
-final value = received?.getInt(0);
-if (value != null) {
-  final (temperature, measuredAt) = value;
+final result = received?.getInt(0);
+final temperature = result?.data;
+if (temperature != null) {
+  final measuredAt = result!.timestamp;
 }
 ```
 

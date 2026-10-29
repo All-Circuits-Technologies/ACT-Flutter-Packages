@@ -305,6 +305,12 @@ class FakeTokensAuthService with MixinAuthService {
   Future<bool> isUserSigned() async => tokens != null;
 
   /// Stops telling the application about the status of the user.
+  /// Moves the user to [status], with tokens when the user is signed in and none otherwise.
+  void updateStatus(AuthStatus status) {
+    tokens = status.isSignedIn ? const AuthTokens(accessToken: AuthToken(raw: "a token")) : null;
+    _statusCtrl.add(status);
+  }
+
   Future<void> close() => _statusCtrl.close();
 }
 

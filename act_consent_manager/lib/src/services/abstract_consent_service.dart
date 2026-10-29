@@ -314,14 +314,21 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
         }
       });
 
-  /// Reset the local consent info, i.e. the latest version and the text widget.
-  /// This method is useful when you want to reload the consent info from the server.
+  /// Reset the local consent info, i.e. the latest version, the text widget and what the user
+  /// agreed to, then load it all again.
+  ///
+  /// This is useful when the locale changes, and when the user changes: what the previous user
+  /// agreed to must not be taken for the choice of the next one. The load waits for the observers,
+  /// so after a sign out it reads the consent of whoever signs in next.
   Future<void> resetLocalConsentInfo() async {
-    // First we clean the latest version and text widget
+    // First we forget everything which has been loaded
     _logsHelper.i('Resetting local consent info');
     await _stateMutex.protect(() async => _loadTextWidgetMutex.protect(() async {
+          final previous = consentState;
           _textWidget = null;
-          _setLatestVersion(null);
+          _latestVersion = null;
+          _consentData = null;
+          _emitIfNecessary(previous: previous);
         }));
 
     // Then we retry to get the info

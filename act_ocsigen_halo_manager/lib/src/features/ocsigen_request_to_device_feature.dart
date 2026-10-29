@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/act_halo_manager.dart';
@@ -19,9 +20,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   });
 
   /// Claim a device for a particular user
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<bool?> claimDevice({
+  ///
+  /// The result value is true if the request succeeds in the device or false if not in the device.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> claimDevice({
     required HardwareType hardwareType,
     required String key,
     Duration? executionTimeout,
@@ -43,9 +45,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }
 
   /// Scan the WiFi seen by the device and returns a SSID list
-  /// Returns the list of the scanned WiFi SSID.
-  /// Returns null if a problem occurred in the process
-  Future<List<String>?> wiFiSsidScan({
+  ///
+  /// The result value is the list of the scanned WiFi SSID.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, List<String>>> wiFiSsidScan({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async {
@@ -57,27 +60,34 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the wifi ssid scan function, can't proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    final resultPacket = result.result!;
+    final resultPacket = result.value;
 
-    final value = resultPacket.getListString(0);
+    if (resultPacket == null) {
+      appLogger().w("The wifi ssid scan function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final value = resultPacket.getListString(0).data;
 
     if (value == null) {
       appLogger().w("The claim device returned value isn't a string list");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return value.$1;
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value);
   }
 
   /// Scan the WiFi seen by the device and returns complete scan result
-  /// Returns the list of the scanned WiFi.
-  /// Returns null if a problem occurred in the process
-  Future<List<OcsigenWiFiCompleteScanResult>?> wiFiCompleteScan({
+  ///
+  /// The result value is the list of the scanned WiFi.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, List<OcsigenWiFiCompleteScanResult>>>
+      wiFiCompleteScan({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async {
@@ -89,13 +99,27 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the wifi complete scan function, can't "
           "proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    return OcsigenWiFiCompleteScanResult.parseFromDevice(result.result!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi complete scan function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiCompleteScanResult.parseFromDevice(resultPacket);
+
+    if (parsed == null) {
+      appLogger().w("The wifi complete scan returned value isn't well formatted");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: parsed);
   }
 
   /// Try to connect to the WiFi thanks to the ids given
@@ -103,9 +127,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   /// For supporting backwards compatibility on old boards, when [supportAuthMode] is equals to
   /// false and [authMode] is equals to the [defaultAuthMode], we don't add the parameters.
   ///
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<OcsigenWiFiConnectResult?> wiFiConnect({
+  /// The result value is the connection result sent by the device.
+  /// If a problem occurred in the process (for instance when the auth mode isn't supported), the
+  /// result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, OcsigenWiFiConnectResult>> wiFiConnect({
     required HardwareType hardwareType,
     required String ssid,
     required String password,
@@ -116,7 +141,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
     if (authMode != defaultAuthMode && !supportAuthMode) {
       appLogger().w("We don't support the auth mode but the calling method has set an auth mode, "
           "different to the default mode: $defaultAuthMode");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     final payload = HaloPayloadPacket();
@@ -142,18 +167,33 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the wifi connect function, can't proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    return OcsigenWiFiConnectResult.parseFromDevice(result.result!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi connect function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiConnectResult.parseFromDevice(resultPacket);
+
+    if (parsed == null) {
+      appLogger().w("The wifi connect returned value isn't well formatted");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: parsed);
   }
 
   /// Disconnect from the WiFi
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<bool?> wiFiDisconnect({
+  ///
+  /// The result value is true if the request succeeds in the device or false if not in the device.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> wiFiDisconnect({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async =>
@@ -166,9 +206,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       );
 
   /// Try to get the current WiFi status on the device
-  /// Returns the WiFi status
-  /// Returns null if a problem occurred in the process
-  Future<List<OcsigenWiFiStatusResult>?> wiFiGetStatus({
+  ///
+  /// The result value is the WiFi status.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, List<OcsigenWiFiStatusResult>>> wiFiGetStatus({
     required HardwareType materialType,
     Duration? executionTimeout,
   }) async {
@@ -180,19 +221,34 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the wifi get status function, can't "
           "proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    return OcsigenWiFiStatusResult.parseFromDevice(result.result!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi get status function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiStatusResult.parseFromDevice(resultPacket);
+
+    if (parsed == null) {
+      appLogger().w("The wifi get status returned value isn't well formatted");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: parsed);
   }
 
   /// Get the MAC address linked to the device WiFi module
-  /// Returns the mac address linked to the WiFi module.
-  /// Returns null if a problem occurred in the process
-  Future<String?> wiFiGetMacAddress({
+  ///
+  /// The result value is the mac address linked to the WiFi module.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, String>> wiFiGetMacAddress({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async =>
@@ -205,9 +261,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       );
 
   /// Try to activate the WiFi access point
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<bool?> apWiFiEnable({
+  ///
+  /// The result value is true if the request succeeds in the device or false if not in the device.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> apWiFiEnable({
     required HardwareType hardwareType,
     bool enable = true,
     Duration? executionTimeout,
@@ -229,9 +286,11 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }
 
   /// Ask for the device to echo the param sent
-  /// Returns the value you ask to echo
-  /// Returns null if a problem occurred in the process
-  Future<int?> echo({
+  ///
+  /// The result value is the value you ask to echo.
+  /// If a problem occurred in the process (for instance when [uInt8ToRepeat] isn't an uint8), the
+  /// result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, int>> echo({
     required HardwareType hardwareType,
     required int uInt8ToRepeat,
     Duration? executionTimeout,
@@ -239,7 +298,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
     final payload = HaloPayloadPacket();
     if (!payload.addUInt8(uInt8ToRepeat)) {
       appLogger().w("The parameter given is not an uint8, we can't call the echo function");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     final packet = HaloRequestParamsPacket(
@@ -256,9 +315,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }
 
   /// Get the serial number of the device
-  /// Returns the serial number of the device
-  /// Returns null if a problem occurred in the process
-  Future<String?> getSerialNumber({
+  ///
+  /// The result value is the serial number of the device.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, String>> getSerialNumber({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async =>
@@ -279,9 +339,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   /// For instance, if you want to send the [latitude] : 20.123456789, with a number of digits after
   /// comma equals to 5 (via the parameter [decimalPoint]), the method will send the value: 2012345.
   ///
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<bool?> setGpsCoordinates({
+  /// The result value is true if the request succeeds in the device or false if not in the device.
+  /// If a problem occurred in the process (for instance when a value can't be added to the
+  /// payload), the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> setGpsCoordinates({
     required HardwareType hardwareType,
     required double latitude,
     required double longitude,
@@ -291,17 +352,17 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
     final payload = HaloPayloadPacket();
     if (!payload.addDoubleViaInt32(latitude, decimalPoint)) {
       appLogger().w("We can't add the latitude value to the payload packet");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     if (!payload.addDoubleViaInt32(longitude, decimalPoint)) {
       appLogger().w("We can't add the longitude value to the payload packet");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     if (!payload.addUInt8(decimalPoint)) {
       appLogger().w("We can't add the decimal point value to the payload packet");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     final packet = HaloRequestParamsPacket(
@@ -318,9 +379,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }
 
   /// Get the SSIDs of the WiFi saved in the device
-  /// Returns the list of the saved WiFi SSID.
-  /// Returns null if a problem occurred in the process
-  Future<List<String>?> getSavedWiFi({
+  ///
+  /// The result value is the list of the saved WiFi SSID.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, List<String>>> getSavedWiFi({
     required HardwareType hardwareType,
     Duration? executionTimeout,
   }) async {
@@ -332,28 +394,33 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the get saved WiFi function, can't proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    final resultPacket = result.result!;
+    final resultPacket = result.value;
 
-    final value = resultPacket.getListString(0);
+    if (resultPacket == null) {
+      appLogger().w("The get saved WiFi function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final value = resultPacket.getListString(0).data;
 
     if (value == null) {
       appLogger().w("The saved WiFi returned value isn't a string list");
-      return null;
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return value.$1;
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value);
   }
 
   /// Forget the saved WiFi SSID
   ///
-  /// Returns true if the request succeeds in the device or false if not in the device.
-  /// Returns null if a problem occurred in the process
-  Future<bool?> forgetSavedWiFi({
+  /// The result value is true if the request succeeds in the device or false if not in the device.
+  /// If a problem occurred in the process, the result status is the error.
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> forgetSavedWiFi({
     required HardwareType hardwareType,
     required String wiFiSsid,
     Duration? executionTimeout,
@@ -383,8 +450,9 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   /// In your project, you can use your own enum but you have to know that the raw values of the
   /// restricted statuses will be interpreted by the devices on already defined ways.
   ///
-  /// Returns false if a problem occurred in the process
-  Future<bool> quitCommunication({
+  /// Returns the status of the procedure call: [HaloErrorType.noError] if everything went well,
+  /// the error otherwise.
+  Future<HaloErrorType> quitCommunication({
     required HardwareType hardwareType,
     required MixinHaloType endComStatus,
     Duration? executionTimeout,
@@ -404,12 +472,11 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       executionTimeout: executionTimeout,
     );
 
-    if (result != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the QUIT Communication procedure, can't "
           "proceed");
-      return false;
     }
 
-    return true;
+    return result;
   }
 }

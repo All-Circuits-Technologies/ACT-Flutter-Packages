@@ -35,11 +35,11 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
       executionTimeout: executionTimeout,
     );
 
-    if (result.error == HaloErrorType.noError && result.result == null) {
+    if (result.isSuccess && result.value == null) {
       appLogger().w("The function: ${request.requestId} succeeds but no result has been returned");
       return HaloRequestResult.error(
         requestId: request.requestId,
-        error: HaloErrorType.genericError,
+        status: HaloErrorType.genericError,
       );
     }
 
@@ -63,7 +63,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
   }) async {
     final error = _verifyRequest(request: request, expectedType: HaloRequestType.procedure);
     if (error != null) {
-      return error.error;
+      return error.status;
     }
 
     return implCallProcedure(
@@ -87,7 +87,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
   Future<HaloErrorType> callOrder({required HaloRequestParamsPacket request}) async {
     final error = _verifyRequest(request: request, expectedType: HaloRequestType.order);
     if (error != null) {
-      return error.error;
+      return error.status;
     }
 
     return implCallOrder(request: request);
@@ -110,8 +110,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
           "$expectedType, but the request id is: ${request.requestId}");
       return HaloRequestResult(
         requestId: request.requestId,
-        result: null,
-        error: HaloErrorType.formatError,
+        status: HaloErrorType.formatError,
       );
     }
 

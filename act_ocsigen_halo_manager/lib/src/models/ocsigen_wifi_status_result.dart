@@ -65,57 +65,57 @@ class OcsigenWiFiStatusResult extends Equatable {
 
     final elements = <OcsigenWiFiStatusResult>[];
     for (var idx = 0; idx < length; idx = idx + elementsNb) {
-      final ssidResult = packet.getString(idx + ssidIdx);
+      final ssid = packet.getString(idx + ssidIdx).data;
 
-      if (ssidResult == null) {
+      if (ssid == null) {
         appLogger().w("The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
             "parse the Ocsigen WiFi status result");
         return null;
       }
 
-      final ipResult = packet.getString(idx + ipIdx);
+      final ip = packet.getString(idx + ipIdx).data;
 
-      if (ipResult == null) {
+      if (ip == null) {
         appLogger().w("The element at the idx: ${idx + ipIdx} isn't a string ip, we can't "
             "parse the Ocsigen WiFi status result");
         return null;
       }
 
-      final netmaskResult = packet.getString(idx + netmaskIdx);
+      final netmask = packet.getString(idx + netmaskIdx).data;
 
-      if (netmaskResult == null) {
+      if (netmask == null) {
         appLogger().w("The element at the idx: ${idx + netmaskIdx} isn't a string netmask, we "
             "can't parse the Ocsigen WiFi status result");
         return null;
       }
 
-      final gatewayResult = packet.getString(idx + gatewayIdx);
+      final gateway = packet.getString(idx + gatewayIdx).data;
 
-      if (gatewayResult == null) {
+      if (gateway == null) {
         appLogger().w("The element at the idx: ${idx + gatewayIdx} isn't a string gateway, we "
             "can't parse the Ocsigen WiFi status result");
         return null;
       }
 
-      final urcResult = packet.getUInt(idx + urcIdx);
+      final urcValue = packet.getUInt(idx + urcIdx).data;
 
-      if (urcResult == null) {
+      if (urcValue == null) {
         appLogger().w("The element at the idx: ${idx + gatewayIdx} isn't a uint8 urc, we "
             "can't parse the Ocsigen WiFi status result");
         return null;
       }
 
-      final urc = OcsigenWiFiUrc.parseValue(urcResult.$1);
+      final urc = OcsigenWiFiUrc.parseValue(urcValue);
 
       if (urc == OcsigenWiFiUrc.unknown) {
         appLogger().w("The ocsigen WiFi urc isn't known, we continue");
       }
 
       elements.add(OcsigenWiFiStatusResult._(
-          ssid: ssidResult.$1,
-          ip: ipResult.$1,
-          netmask: netmaskResult.$1,
-          gateway: gatewayResult.$1,
+          ssid: ssid,
+          ip: ip,
+          netmask: netmask,
+          gateway: gateway,
           urc: urc));
     }
 
