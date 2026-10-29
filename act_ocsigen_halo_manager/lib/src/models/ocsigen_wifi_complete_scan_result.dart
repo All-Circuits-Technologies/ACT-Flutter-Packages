@@ -60,7 +60,7 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
     for (var idx = 0; idx < length; idx = idx + elementsNb) {
       final ssidResult = packet.getString(idx + ssidIdx);
 
-      if (ssidResult == null) {
+      if (ssidResult.isError) {
         appLogger().w("The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
             "parse the Ocsigen WiFi complete scan result");
         return null;
@@ -68,7 +68,7 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
 
       final rssiResult = packet.getInt(idx + rssiIdx);
 
-      if (rssiResult == null) {
+      if (rssiResult.isError) {
         appLogger().w("The element at the idx: ${idx + rssiIdx} isn't an int rssi, we can't "
             "parse the Ocsigen WiFi complete scan result");
         return null;
@@ -76,7 +76,7 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
 
       final channelNbResult = packet.getUInt(idx + channelNbIdx);
 
-      if (channelNbResult == null) {
+      if (channelNbResult.isError) {
         appLogger().w("The element at the idx: ${idx + channelNbIdx} isn't an uint channel nb, we "
             "can't parse the Ocsigen WiFi complete scan result");
         return null;
@@ -84,22 +84,23 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
 
       final tmpAuthMode = packet.getUInt(idx + authModeIdx);
 
-      if (tmpAuthMode == null) {
+      if (tmpAuthMode.isError) {
         appLogger().w("The element at the idx: ${idx + authModeIdx} isn't an uint auth mode, we "
             "can't parse the Ocsigen WiFi complete scan result");
         return null;
       }
 
-      final authMode = OcsigenWiFiAuthMode.parseValue(tmpAuthMode.$1);
+      final authModeValue = tmpAuthMode.value!.value;
+      final authMode = OcsigenWiFiAuthMode.parseValue(authModeValue);
 
       if (authMode == OcsigenWiFiAuthMode.wiFiAuthUnknown) {
-        appLogger().w("The ocsigen WiFi auth mode isn't known: ${tmpAuthMode.$1}, we continue");
+        appLogger().w("The ocsigen WiFi auth mode isn't known: $authModeValue, we continue");
       }
 
       elements.add(OcsigenWiFiCompleteScanResult._(
-        ssid: ssidResult.$1,
-        rssi: rssiResult.$1,
-        channelNb: channelNbResult.$1,
+        ssid: ssidResult.value!.value,
+        rssi: rssiResult.value!.value,
+        channelNb: channelNbResult.value!.value,
         authMode: authMode,
       ));
     }
