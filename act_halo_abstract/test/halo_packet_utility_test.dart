@@ -33,7 +33,7 @@ const _escapeMask = 0x20;
 /// [timestamp]
 BoolResultWithRequiredValue<HaloTimestampedValue<T>> _ok<T>(T value, [DateTime? timestamp]) =>
     BoolResultWithRequiredValue.fromValue(
-      value: HaloTimestampedValue(value: value, timestamp: timestamp),
+      value: HaloTimestampedValue(data: value, timestamp: timestamp),
     );
 
 void main() {

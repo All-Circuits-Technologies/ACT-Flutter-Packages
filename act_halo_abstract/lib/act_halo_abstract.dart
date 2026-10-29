@@ -5,6 +5,7 @@
 library;
 
 export 'src/abstract_halo_hardware.dart';
+export 'src/extensions/halo_timestamped_result_extension.dart';
 export 'src/halo_constants.dart';
 export 'src/hardware_layer/abstract_halo_attribute_hardware.dart';
 export 'src/hardware_layer/abstract_halo_component_hardware.dart';

@@ -34,15 +34,13 @@ class OcsigenWiFiConnectResult extends Equatable {
       return null;
     }
 
-    final tmpErrorResult = packet.getUInt(0);
+    final tmpErrorValue = packet.getUInt(0).data;
 
-    if (tmpErrorResult.isError) {
+    if (tmpErrorValue == null) {
       appLogger().w("The first element isn't an unsigned integer, we can't parse the Ocsigen WiFi "
           "connect result");
       return null;
     }
-
-    final tmpErrorValue = tmpErrorResult.value!.value;
 
     final tmpStatus = OcsigenWiFiConnectStatus.parseValue(tmpErrorValue);
 

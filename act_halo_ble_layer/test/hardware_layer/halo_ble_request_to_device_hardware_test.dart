@@ -258,7 +258,7 @@ void main() {
       final result = await hardware.callFunction(request: aRequest());
 
       expect(result.status, HaloErrorType.noError);
-      expect(result.value?.getString(0).value?.value, "a result");
+      expect(result.value?.getString(0).data, "a result");
     });
 
     test("asks the device to hand its result over", () async {
@@ -275,7 +275,7 @@ void main() {
       final result = await hardware.callFunction(request: aRequest());
 
       expect(result.status, HaloErrorType.noError);
-      expect(result.value?.getString(0).value?.value, "a result which does not fit in one packet");
+      expect(result.value?.getString(0).data, "a result which does not fit in one packet");
     });
 
     test("reads every value of a result which carries several", () async {
@@ -284,7 +284,7 @@ void main() {
       final result = await hardware.callFunction(request: aRequest());
 
       expect(result.value?.elementsNb, 2);
-      expect(result.value?.getString(1).value?.value, "the second");
+      expect(result.value?.getString(1).data, "the second");
     });
 
     test("says that the result of the device could not be read", () async {

@@ -8,14 +8,14 @@ import 'package:equatable/equatable.dart';
 /// attached to it
 class HaloTimestampedValue<T> extends Equatable {
   /// The decoded value
-  final T value;
+  final T data;
 
   /// The timestamp attached to the value, null if the element didn't carry one
   final DateTime? timestamp;
 
   /// Class constructor
-  const HaloTimestampedValue({required this.value, this.timestamp});
+  const HaloTimestampedValue({required this.data, this.timestamp});
 
   @override
-  List<Object?> get props => [value, timestamp];
+  List<Object?> get props => [data, timestamp];
 }

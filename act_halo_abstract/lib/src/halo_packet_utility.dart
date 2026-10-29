@@ -169,7 +169,7 @@ abstract class HaloPacketUtility {
 
     return BoolResultWithRequiredValue.fromValue(
       value: HaloTimestampedValue(
-        value: String.fromCharCodes(extracted.value),
+        data: String.fromCharCodes(extracted.data),
         timestamp: extracted.timestamp,
       ),
     );
@@ -204,7 +204,7 @@ abstract class HaloPacketUtility {
     }
 
     final extracted = tmp.value!;
-    final data = extracted.value;
+    final data = extracted.data;
 
     if (data.isEmpty) {
       appLogger().w("We can't get a boolean from an empty payload packet element");
@@ -213,7 +213,7 @@ abstract class HaloPacketUtility {
 
     return BoolResultWithRequiredValue.fromValue(
       value: HaloTimestampedValue(
-        value: data[0] == HaloPacketUtility._trueValue,
+        data: data[0] == HaloPacketUtility._trueValue,
         timestamp: extracted.timestamp,
       ),
     );
@@ -342,7 +342,7 @@ abstract class HaloPacketUtility {
 
     final extracted = tmp.value!;
 
-    final value = ByteUtility.convertFromLsb(lsbNumber: extracted.value, isSigned: isSigned);
+    final value = ByteUtility.convertFromLsb(lsbNumber: extracted.data, isSigned: isSigned);
 
     if (value == null) {
       appLogger().w("A problem occurred when tried to convert the byte list to a number");
@@ -350,7 +350,7 @@ abstract class HaloPacketUtility {
     }
 
     return BoolResultWithRequiredValue.fromValue(
-      value: HaloTimestampedValue(value: value, timestamp: extracted.timestamp),
+      value: HaloTimestampedValue(data: value, timestamp: extracted.timestamp),
     );
   }
 
@@ -459,7 +459,7 @@ abstract class HaloPacketUtility {
     }
 
     return BoolResultWithRequiredValue.fromValue(
-      value: HaloTimestampedValue(value: unTmpElem, timestamp: ts),
+      value: HaloTimestampedValue(data: unTmpElem, timestamp: ts),
     );
   }
 

@@ -72,14 +72,14 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    final value = resultPacket.getListString(0);
+    final value = resultPacket.getListString(0).data;
 
-    if (value.isError) {
+    if (value == null) {
       appLogger().w("The claim device returned value isn't a string list");
       return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value.value!.value);
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value);
   }
 
   /// Scan the WiFi seen by the device and returns complete scan result
@@ -406,14 +406,14 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    final value = resultPacket.getListString(0);
+    final value = resultPacket.getListString(0).data;
 
-    if (value.isError) {
+    if (value == null) {
       appLogger().w("The saved WiFi returned value isn't a string list");
       return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value.value!.value);
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: value);
   }
 
   /// Forget the saved WiFi SSID

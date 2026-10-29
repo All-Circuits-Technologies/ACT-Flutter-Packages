@@ -186,8 +186,9 @@ enum DeviceRequest with MixinHaloType, MixinHaloRequestId {
 
 The `add` methods return false when the value does not fit in the size asked for, and the `get`
 methods return an error result when the element is missing or does not hold what the caller
-expects. A success carries a `HaloTimestampedValue`, which holds the value and the timestamp the
-sender attached to it, if any:
+expects. A success carries a `HaloTimestampedValue`, which holds the decoded value in `data` and
+the timestamp the sender attached to it, if any, in `timestamp`. The `data` and `timestamp` getters
+of the result read them directly, and answer null when the result is an error:
 
 ```dart
 final payload = HaloPayloadPacket()..addString("setpoint");
@@ -201,9 +202,9 @@ final parts = payload.getDataToSend(maxPacketSize: mtu);
 ```dart
 final received = HaloPayloadPacket.fromDevice(parts);
 final result = received?.getInt(0);
-if (result != null && result.isSuccess) {
-  final temperature = result.value!.value;
-  final measuredAt = result.value!.timestamp;
+final temperature = result?.data;
+if (temperature != null) {
+  final measuredAt = result!.timestamp;
 }
 ```
 

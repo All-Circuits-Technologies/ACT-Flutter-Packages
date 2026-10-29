@@ -200,7 +200,7 @@ final result = await hardware.requestToDeviceHardware.callFunction(
 );
 
 if (result.isSuccess) {
-  final serialNumber = result.value!.getString(0).value!.value;
+  final serialNumber = result.value!.getString(0).data;
 }
 ```
 

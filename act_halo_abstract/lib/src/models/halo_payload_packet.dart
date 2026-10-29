@@ -136,11 +136,11 @@ class HaloPayloadPacket {
 
       firstTimestamp ??= extracted.timestamp;
 
-      elements.add(extracted.value);
+      elements.add(extracted.data);
     }
 
     return BoolResultWithRequiredValue.fromValue(
-      value: HaloTimestampedValue(value: elements, timestamp: firstTimestamp),
+      value: HaloTimestampedValue(data: elements, timestamp: firstTimestamp),
     );
   }
 

@@ -58,39 +58,38 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
 
     final elements = <OcsigenWiFiCompleteScanResult>[];
     for (var idx = 0; idx < length; idx = idx + elementsNb) {
-      final ssidResult = packet.getString(idx + ssidIdx);
+      final ssid = packet.getString(idx + ssidIdx).data;
 
-      if (ssidResult.isError) {
+      if (ssid == null) {
         appLogger().w("The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
             "parse the Ocsigen WiFi complete scan result");
         return null;
       }
 
-      final rssiResult = packet.getInt(idx + rssiIdx);
+      final rssi = packet.getInt(idx + rssiIdx).data;
 
-      if (rssiResult.isError) {
+      if (rssi == null) {
         appLogger().w("The element at the idx: ${idx + rssiIdx} isn't an int rssi, we can't "
             "parse the Ocsigen WiFi complete scan result");
         return null;
       }
 
-      final channelNbResult = packet.getUInt(idx + channelNbIdx);
+      final channelNb = packet.getUInt(idx + channelNbIdx).data;
 
-      if (channelNbResult.isError) {
+      if (channelNb == null) {
         appLogger().w("The element at the idx: ${idx + channelNbIdx} isn't an uint channel nb, we "
             "can't parse the Ocsigen WiFi complete scan result");
         return null;
       }
 
-      final tmpAuthMode = packet.getUInt(idx + authModeIdx);
+      final authModeValue = packet.getUInt(idx + authModeIdx).data;
 
-      if (tmpAuthMode.isError) {
+      if (authModeValue == null) {
         appLogger().w("The element at the idx: ${idx + authModeIdx} isn't an uint auth mode, we "
             "can't parse the Ocsigen WiFi complete scan result");
         return null;
       }
 
-      final authModeValue = tmpAuthMode.value!.value;
       final authMode = OcsigenWiFiAuthMode.parseValue(authModeValue);
 
       if (authMode == OcsigenWiFiAuthMode.wiFiAuthUnknown) {
@@ -98,9 +97,9 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
       }
 
       elements.add(OcsigenWiFiCompleteScanResult._(
-        ssid: ssidResult.value!.value,
-        rssi: rssiResult.value!.value,
-        channelNb: channelNbResult.value!.value,
+        ssid: ssid,
+        rssi: rssi,
+        channelNb: channelNb,
         authMode: authMode,
       ));
     }

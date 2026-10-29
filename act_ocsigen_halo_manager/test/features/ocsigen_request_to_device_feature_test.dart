@@ -59,7 +59,7 @@ void main() {
       expect(result.isSuccess, isTrue);
       expect(result.value, isTrue);
       expect(device.call.requestId, OcsigenRequestId.claimDevice);
-      expect(device.call.parameters.getString(0).value?.value, "a key");
+      expect(device.call.parameters.getString(0).data, "a key");
     });
 
     test("answers the error when the device could not be reached", () async {
@@ -143,10 +143,10 @@ void main() {
       );
 
       expect(result.value?.status, OcsigenWiFiConnectStatus.success);
-      expect(device.call.parameters.getString(0).value?.value, "a network");
-      expect(device.call.parameters.getString(1).value?.value, "a password");
+      expect(device.call.parameters.getString(0).data, "a network");
+      expect(device.call.parameters.getString(1).data, "a password");
       expect(
-        device.call.parameters.getUInt(2).value?.value,
+        device.call.parameters.getUInt(2).data,
         OcsigenWiFiAuthMode.wiFiAuthWpa2Psk.rawValue,
       );
     });
@@ -269,7 +269,7 @@ void main() {
       final result = await feature.apWiFiEnable(hardwareType: FakeHwType.ble);
 
       expect(result.value, isTrue);
-      expect(device.call.parameters.getBoolean(0).value?.value, isTrue);
+      expect(device.call.parameters.getBoolean(0).data, isTrue);
     });
 
     test("asks the device to close its own access point", () async {
@@ -277,7 +277,7 @@ void main() {
 
       await feature.apWiFiEnable(hardwareType: FakeHwType.ble, enable: false);
 
-      expect(device.call.parameters.getBoolean(0).value?.value, isFalse);
+      expect(device.call.parameters.getBoolean(0).data, isFalse);
     });
   });
 
@@ -288,7 +288,7 @@ void main() {
       final result = await feature.echo(hardwareType: FakeHwType.ble, uInt8ToRepeat: 42);
 
       expect(result.value, 42);
-      expect(device.call.parameters.getUInt(0).value?.value, 42);
+      expect(device.call.parameters.getUInt(0).data, 42);
     });
 
     test("refuses a value which does not fit in what the device reads", () async {
@@ -323,9 +323,9 @@ void main() {
       );
 
       expect(result.value, isTrue);
-      expect(device.call.parameters.getInt(0).value?.value, 2050);
-      expect(device.call.parameters.getInt(1).value?.value, -125);
-      expect(device.call.parameters.getUInt(2).value?.value, 2);
+      expect(device.call.parameters.getInt(0).data, 2050);
+      expect(device.call.parameters.getInt(1).data, -125);
+      expect(device.call.parameters.getUInt(2).data, 2);
     });
 
     test("refuses coordinates which do not fit in what the device reads", () async {
@@ -383,7 +383,7 @@ void main() {
       );
 
       expect(result.value, isTrue);
-      expect(device.call.parameters.getString(0).value?.value, "a network");
+      expect(device.call.parameters.getString(0).data, "a network");
     });
   });
 
@@ -399,7 +399,7 @@ void main() {
       expect(result, HaloErrorType.noError);
       expect(device.call.requestId, OcsigenRequestId.quitCommunication);
       expect(
-        device.call.parameters.getUInt(0).value?.value,
+        device.call.parameters.getUInt(0).data,
         RestrictedEndComStatus.endComOk.rawValue,
       );
     });

@@ -134,31 +134,31 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
       return ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    final BoolResultWithRequiredValue<HaloTimestampedValue<Object>> decoded;
+    final Object? decoded;
 
     switch (type) {
       case _OneReturnType.bool:
-        decoded = resultPacket.getBoolean(0);
+        decoded = resultPacket.getBoolean(0).data;
         break;
       case _OneReturnType.string:
-        decoded = resultPacket.getString(0);
+        decoded = resultPacket.getString(0).data;
         break;
       case _OneReturnType.int:
-        decoded = resultPacket.getInt(0);
+        decoded = resultPacket.getInt(0).data;
         break;
       case _OneReturnType.uInt:
-        decoded = resultPacket.getUInt(0);
+        decoded = resultPacket.getUInt(0).data;
         break;
     }
 
-    if (decoded.isError) {
+    if (decoded == null) {
       appLogger().w("The ${request.requestId} returned value isn't a $type");
       return ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
     return ResultWithRequiredValue(
       status: HaloErrorType.noError,
-      value: decoded.value!.value as T,
+      value: decoded as T,
     );
   }
 
