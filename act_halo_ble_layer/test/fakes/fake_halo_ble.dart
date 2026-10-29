@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_config_manager/act_config_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/act_halo_ble_layer.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
@@ -409,7 +410,7 @@ class FakeHaloCompanion extends HaloBleCompanion {
   /// The answers the device gives, one per writing which waits for one, in order.
   ///
   /// Once the list is empty, every writing is acknowledged for [ackFor].
-  final List<(HaloErrorType, Uint8List?)> answers = [];
+  final List<ResultWithRequiredValue<HaloErrorType, Uint8List>> answers = [];
 
   /// The request the acknowledgments of the device are for.
   MixinHaloRequestId ackFor;
@@ -438,7 +439,7 @@ class FakeHaloCompanion extends HaloBleCompanion {
 
   /// Records what was written and answers what the test lined up for the device.
   @override
-  Future<(HaloErrorType, Uint8List?)> writeAndWaitNotifResult({
+  Future<ResultWithRequiredValue<HaloErrorType, Uint8List>> writeAndWaitNotifResult({
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
     required MixCharNotification toWaitNotifyFrom,
@@ -447,7 +448,10 @@ class FakeHaloCompanion extends HaloBleCompanion {
     writes.add((characteristic: toWriteInto.uuid, data: dataToWrite, waited: true));
 
     if (answers.isEmpty) {
-      return (HaloErrorType.noError, anAck(requestId: ackFor));
+      return ResultWithRequiredValue(
+        status: HaloErrorType.noError,
+        value: anAck(requestId: ackFor),
+      );
     }
 
     return answers.removeAt(0);

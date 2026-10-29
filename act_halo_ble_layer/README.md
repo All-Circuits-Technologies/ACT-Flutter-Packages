@@ -199,8 +199,8 @@ final result = await hardware.requestToDeviceHardware.callFunction(
   ),
 );
 
-if (result.error == HaloErrorType.noError) {
-  final (serialNumber, _) = result.result!.getString(0)!;
+if (result.isSuccess) {
+  final serialNumber = result.value!.getString(0).value!.value;
 }
 ```
 
