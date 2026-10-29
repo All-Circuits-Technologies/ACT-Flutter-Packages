@@ -35,6 +35,10 @@ dependencies:
   act_ble_manager:
     path: ../act_ble_manager
 
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
+
   # Extend Dart functionalities
   act_dart_utility:
     path: ../act_dart_utility

@@ -17,6 +17,19 @@ HaloPayloadPacket _aPayload(void Function(HaloPayloadPacket packet) fill) {
   return packet;
 }
 
+/// A feature whose function calls succeed without carrying any payload.
+class _PayloadlessFeature extends OcsigenRequestToDeviceFeature<FakeHwType> {
+  /// Class constructor
+  _PayloadlessFeature({required super.haloManagerConfig});
+
+  @override
+  Future<HaloRequestResult> callFunction({
+    required FakeHwType hardwareType,
+    required HaloRequestParamsPacket request,
+    Duration? executionTimeout,
+  }) async => HaloRequestResult(requestId: request.requestId, status: HaloErrorType.noError);
+}
+
 void main() {
   late FakeOcsigenDevice device;
 
@@ -43,15 +56,19 @@ void main() {
 
       final result = await feature.claimDevice(hardwareType: FakeHwType.ble, key: "a key");
 
-      expect(result, isTrue);
+      expect(result.isSuccess, isTrue);
+      expect(result.value, isTrue);
       expect(device.call.requestId, OcsigenRequestId.claimDevice);
-      expect(device.call.parameters.getString(0)?.$1, "a key");
+      expect(device.call.parameters.getString(0).data, "a key");
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
-      expect(await feature.claimDevice(hardwareType: FakeHwType.ble, key: "a key"), isNull);
+      final result = await feature.claimDevice(hardwareType: FakeHwType.ble, key: "a key");
+
+      expect(result.status, HaloErrorType.commError);
+      expect(result.value, isNull);
     });
   });
 
@@ -63,20 +80,26 @@ void main() {
 
       final result = await feature.wiFiSsidScan(hardwareType: FakeHwType.ble);
 
-      expect(result, ["a network", "another network"]);
+      expect(result.isSuccess, isTrue);
+      expect(result.value, ["a network", "another network"]);
       expect(device.call.requestId, OcsigenRequestId.wiFiSsidScan);
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
-      expect(await feature.wiFiSsidScan(hardwareType: FakeHwType.ble), isNull);
+      final result = await feature.wiFiSsidScan(hardwareType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.commError);
     });
 
     test("answers no network when the device saw none", () async {
       final feature = aFeature(result: HaloPayloadPacket());
 
-      expect(await feature.wiFiSsidScan(hardwareType: FakeHwType.ble), isEmpty);
+      final result = await feature.wiFiSsidScan(hardwareType: FakeHwType.ble);
+
+      expect(result.isSuccess, isTrue);
+      expect(result.value, isEmpty);
     });
   });
 
@@ -93,16 +116,18 @@ void main() {
 
       final result = await feature.wiFiCompleteScan(hardwareType: FakeHwType.ble);
 
-      expect(result?.single.ssid, "a network");
-      expect(result?.single.rssi, -60);
-      expect(result?.single.channelNb, 6);
-      expect(result?.single.authMode, OcsigenWiFiAuthMode.wiFiAuthWpa2Psk);
+      expect(result.value?.single.ssid, "a network");
+      expect(result.value?.single.rssi, -60);
+      expect(result.value?.single.channelNb, 6);
+      expect(result.value?.single.authMode, OcsigenWiFiAuthMode.wiFiAuthWpa2Psk);
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
-      expect(await feature.wiFiCompleteScan(hardwareType: FakeHwType.ble), isNull);
+      final result = await feature.wiFiCompleteScan(hardwareType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.commError);
     });
   });
 
@@ -117,11 +142,11 @@ void main() {
         authMode: OcsigenWiFiAuthMode.wiFiAuthWpa2Psk,
       );
 
-      expect(result?.status, OcsigenWiFiConnectStatus.success);
-      expect(device.call.parameters.getString(0)?.$1, "a network");
-      expect(device.call.parameters.getString(1)?.$1, "a password");
+      expect(result.value?.status, OcsigenWiFiConnectStatus.success);
+      expect(device.call.parameters.getString(0).data, "a network");
+      expect(device.call.parameters.getString(1).data, "a password");
       expect(
-        device.call.parameters.getUInt(2)?.$1,
+        device.call.parameters.getUInt(2).data,
         OcsigenWiFiAuthMode.wiFiAuthWpa2Psk.rawValue,
       );
     });
@@ -150,7 +175,7 @@ void main() {
         supportAuthMode: false,
       );
 
-      expect(result, isNull);
+      expect(result.status, HaloErrorType.formatError);
       expect(device.calls, isEmpty);
     });
 
@@ -167,11 +192,11 @@ void main() {
         password: "a password",
       );
 
-      expect(result?.status, OcsigenWiFiConnectStatus.wrongPasswordError);
-      expect(result?.status.isError, isTrue);
+      expect(result.value?.status, OcsigenWiFiConnectStatus.wrongPasswordError);
+      expect(result.value?.status.isError, isTrue);
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
       final result = await feature.wiFiConnect(
@@ -180,7 +205,7 @@ void main() {
         password: "a password",
       );
 
-      expect(result, isNull);
+      expect(result.status, HaloErrorType.commError);
     });
   });
 
@@ -188,7 +213,9 @@ void main() {
     test("asks the device to leave the network it is on", () async {
       final feature = aFeature(result: _aPayload((packet) => packet.addBoolean(true)));
 
-      expect(await feature.wiFiDisconnect(hardwareType: FakeHwType.ble), isTrue);
+      final result = await feature.wiFiDisconnect(hardwareType: FakeHwType.ble);
+
+      expect(result.value, isTrue);
       expect(device.call.requestId, OcsigenRequestId.wiFiDisconnect);
     });
   });
@@ -207,17 +234,19 @@ void main() {
 
       final result = await feature.wiFiGetStatus(materialType: FakeHwType.ble);
 
-      expect(result?.single.ssid, "a network");
-      expect(result?.single.ip, "192.168.1.20");
-      expect(result?.single.netmask, "255.255.255.0");
-      expect(result?.single.gateway, "192.168.1.1");
-      expect(result?.single.urc, OcsigenWiFiUrc.ok);
+      expect(result.value?.single.ssid, "a network");
+      expect(result.value?.single.ip, "192.168.1.20");
+      expect(result.value?.single.netmask, "255.255.255.0");
+      expect(result.value?.single.gateway, "192.168.1.1");
+      expect(result.value?.single.urc, OcsigenWiFiUrc.ok);
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
-      expect(await feature.wiFiGetStatus(materialType: FakeHwType.ble), isNull);
+      final result = await feature.wiFiGetStatus(materialType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.commError);
     });
   });
 
@@ -227,10 +256,9 @@ void main() {
         result: _aPayload((packet) => packet.addString("00:11:22:33:44:55")),
       );
 
-      expect(
-        await feature.wiFiGetMacAddress(hardwareType: FakeHwType.ble),
-        "00:11:22:33:44:55",
-      );
+      final result = await feature.wiFiGetMacAddress(hardwareType: FakeHwType.ble);
+
+      expect(result.value, "00:11:22:33:44:55");
     });
   });
 
@@ -238,8 +266,10 @@ void main() {
     test("asks the device to open its own access point", () async {
       final feature = aFeature(result: _aPayload((packet) => packet.addBoolean(true)));
 
-      expect(await feature.apWiFiEnable(hardwareType: FakeHwType.ble), isTrue);
-      expect(device.call.parameters.getBoolean(0)?.$1, isTrue);
+      final result = await feature.apWiFiEnable(hardwareType: FakeHwType.ble);
+
+      expect(result.value, isTrue);
+      expect(device.call.parameters.getBoolean(0).data, isTrue);
     });
 
     test("asks the device to close its own access point", () async {
@@ -247,7 +277,7 @@ void main() {
 
       await feature.apWiFiEnable(hardwareType: FakeHwType.ble, enable: false);
 
-      expect(device.call.parameters.getBoolean(0)?.$1, isFalse);
+      expect(device.call.parameters.getBoolean(0).data, isFalse);
     });
   });
 
@@ -255,14 +285,18 @@ void main() {
     test("answers the value the device repeated", () async {
       final feature = aFeature(result: _aPayload((packet) => packet.addUInt8(42)));
 
-      expect(await feature.echo(hardwareType: FakeHwType.ble, uInt8ToRepeat: 42), 42);
-      expect(device.call.parameters.getUInt(0)?.$1, 42);
+      final result = await feature.echo(hardwareType: FakeHwType.ble, uInt8ToRepeat: 42);
+
+      expect(result.value, 42);
+      expect(device.call.parameters.getUInt(0).data, 42);
     });
 
     test("refuses a value which does not fit in what the device reads", () async {
       final feature = aFeature(result: _aPayload((packet) => packet.addUInt8(42)));
 
-      expect(await feature.echo(hardwareType: FakeHwType.ble, uInt8ToRepeat: 300), isNull);
+      final result = await feature.echo(hardwareType: FakeHwType.ble, uInt8ToRepeat: 300);
+
+      expect(result.status, HaloErrorType.formatError);
       expect(device.calls, isEmpty);
     });
   });
@@ -271,7 +305,9 @@ void main() {
     test("answers the serial number of the device", () async {
       final feature = aFeature(result: _aPayload((packet) => packet.addString("a serial number")));
 
-      expect(await feature.getSerialNumber(hardwareType: FakeHwType.ble), "a serial number");
+      final result = await feature.getSerialNumber(hardwareType: FakeHwType.ble);
+
+      expect(result.value, "a serial number");
     });
   });
 
@@ -286,10 +322,10 @@ void main() {
         decimalPoint: 2,
       );
 
-      expect(result, isTrue);
-      expect(device.call.parameters.getInt(0)?.$1, 2050);
-      expect(device.call.parameters.getInt(1)?.$1, -125);
-      expect(device.call.parameters.getUInt(2)?.$1, 2);
+      expect(result.value, isTrue);
+      expect(device.call.parameters.getInt(0).data, 2050);
+      expect(device.call.parameters.getInt(1).data, -125);
+      expect(device.call.parameters.getUInt(2).data, 2);
     });
 
     test("refuses coordinates which do not fit in what the device reads", () async {
@@ -302,7 +338,7 @@ void main() {
         decimalPoint: 9,
       );
 
-      expect(result, isNull);
+      expect(result.status, HaloErrorType.formatError);
       expect(device.calls, isEmpty);
     });
   });
@@ -313,20 +349,27 @@ void main() {
         result: _aPayload((packet) => packet.addStringList(["a network"])),
       );
 
-      expect(await feature.getSavedWiFi(hardwareType: FakeHwType.ble), ["a network"]);
+      final result = await feature.getSavedWiFi(hardwareType: FakeHwType.ble);
+
+      expect(result.value, ["a network"]);
       expect(device.call.requestId, OcsigenRequestId.getSavedWiFi);
     });
 
-    test("answers nothing when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
-      expect(await feature.getSavedWiFi(hardwareType: FakeHwType.ble), isNull);
+      final result = await feature.getSavedWiFi(hardwareType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.commError);
     });
 
     test("answers no network for a device which comes back to none", () async {
       final feature = aFeature(result: HaloPayloadPacket());
 
-      expect(await feature.getSavedWiFi(hardwareType: FakeHwType.ble), isEmpty);
+      final result = await feature.getSavedWiFi(hardwareType: FakeHwType.ble);
+
+      expect(result.isSuccess, isTrue);
+      expect(result.value, isEmpty);
     });
   });
 
@@ -339,8 +382,8 @@ void main() {
         wiFiSsid: "a network",
       );
 
-      expect(result, isTrue);
-      expect(device.call.parameters.getString(0)?.$1, "a network");
+      expect(result.value, isTrue);
+      expect(device.call.parameters.getString(0).data, "a network");
     });
   });
 
@@ -353,12 +396,15 @@ void main() {
         endComStatus: RestrictedEndComStatus.endComOk,
       );
 
-      expect(result, isTrue);
+      expect(result, HaloErrorType.noError);
       expect(device.call.requestId, OcsigenRequestId.quitCommunication);
-      expect(device.call.parameters.getUInt(0)?.$1, RestrictedEndComStatus.endComOk.rawValue);
+      expect(
+        device.call.parameters.getUInt(0).data,
+        RestrictedEndComStatus.endComOk.rawValue,
+      );
     });
 
-    test("says that it failed when the device could not be reached", () async {
+    test("answers the error when the device could not be reached", () async {
       final feature = aFeature(error: HaloErrorType.commError);
 
       final result = await feature.quitCommunication(
@@ -366,7 +412,42 @@ void main() {
         endComStatus: RestrictedEndComStatus.endComGenericError,
       );
 
-      expect(result, isFalse);
+      expect(result, HaloErrorType.commError);
+    });
+  });
+
+  group("OcsigenRequestToDeviceFeature on a call which succeeds without a payload", () {
+    /// The feature of an application whose function calls succeed without a payload.
+    OcsigenRequestToDeviceFeature<FakeHwType> aPayloadlessFeature() => _PayloadlessFeature(
+      haloManagerConfig: HaloManagerConfig<FakeHwType>(
+        hardwareLayer: FakeHwTypeHelper.only(device: FakeOcsigenDevice()),
+        requestIdHelper: OcsigenRequestIdHelper(),
+      ),
+    );
+
+    test("answers a format error to a complete scan", () async {
+      final result = await aPayloadlessFeature().wiFiCompleteScan(hardwareType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
+    });
+
+    test("answers a format error to a connection", () async {
+      final result = await aPayloadlessFeature().wiFiConnect(
+        hardwareType: FakeHwType.ble,
+        ssid: "a network",
+        password: "a password",
+      );
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
+    });
+
+    test("answers a format error to a status request", () async {
+      final result = await aPayloadlessFeature().wiFiGetStatus(materialType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
     });
   });
 }

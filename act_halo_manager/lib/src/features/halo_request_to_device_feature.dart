@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/features/abstract_halo_feature.dart';
@@ -39,7 +40,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
 
   /// Call function with boolean return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
-  Future<bool?> callBooleanFunction({
+  /// The result holds the HALO error if the call failed, [HaloErrorType.formatError] if the device
+  /// hasn't answered exactly one value of the expected type, and the decoded value otherwise
+  Future<ResultWithRequiredValue<HaloErrorType, bool>> callBooleanFunction({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
@@ -53,7 +56,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
 
   /// Call function with string return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
-  Future<String?> callStringFunction({
+  /// The result holds the HALO error if the call failed, [HaloErrorType.formatError] if the device
+  /// hasn't answered exactly one value of the expected type, and the decoded value otherwise
+  Future<ResultWithRequiredValue<HaloErrorType, String>> callStringFunction({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
@@ -67,7 +72,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
 
   /// Call function with signed integer return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
-  Future<int?> callIntFunction({
+  /// The result holds the HALO error if the call failed, [HaloErrorType.formatError] if the device
+  /// hasn't answered exactly one value of the expected type, and the decoded value otherwise
+  Future<ResultWithRequiredValue<HaloErrorType, int>> callIntFunction({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
@@ -81,7 +88,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
 
   /// Call function with unsigned integer return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
-  Future<int?> callUIntFunction({
+  /// The result holds the HALO error if the call failed, [HaloErrorType.formatError] if the device
+  /// hasn't answered exactly one value of the expected type, and the decoded value otherwise
+  Future<ResultWithRequiredValue<HaloErrorType, int>> callUIntFunction({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
@@ -96,7 +105,11 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
   /// Call a function a specify the expected result type
   /// With [hardwareType] you specify through what hardware you want to request the device
   /// Be careful, the generic template has to match the [type] given
-  Future<T?> _callOneReturnFunction<T>({
+  ///
+  /// The returned status is the one of the call if it failed, [HaloErrorType.formatError] if the
+  /// device hasn't answered exactly one value of the expected type, and [HaloErrorType.noError]
+  /// with the decoded value otherwise
+  Future<ResultWithRequiredValue<HaloErrorType, T>> _callOneReturnFunction<T>({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     required _OneReturnType type,
@@ -108,42 +121,45 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
       executionTimeout: executionTimeout,
     );
 
-    if (result.error != HaloErrorType.noError) {
+    if (result.isError) {
       appLogger().w("A problem occurred when calling the ${request.requestId} function, can't "
           "proceed");
-      return null;
+      return ResultWithRequiredValue(status: result.status);
     }
 
-    final resultPacket = result.result!;
+    final resultPacket = result.value;
 
-    if (resultPacket.elementsNb != 1) {
+    if (resultPacket == null || resultPacket.elementsNb != 1) {
       appLogger().w("The ${request.requestId} call hasn't returned the expected return");
-      return null;
+      return ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    T? value;
+    final Object? decoded;
 
     switch (type) {
       case _OneReturnType.bool:
-        value = result.result!.getBoolean(0)?.$1 as T?;
+        decoded = resultPacket.getBoolean(0).data;
         break;
       case _OneReturnType.string:
-        value = result.result!.getString(0)?.$1 as T?;
+        decoded = resultPacket.getString(0).data;
         break;
       case _OneReturnType.int:
-        value = result.result!.getInt(0)?.$1 as T?;
+        decoded = resultPacket.getInt(0).data;
         break;
       case _OneReturnType.uInt:
-        value = result.result!.getUInt(0)?.$1 as T?;
+        decoded = resultPacket.getUInt(0).data;
         break;
     }
 
-    if (value == null) {
+    if (decoded == null) {
       appLogger().w("The ${request.requestId} returned value isn't a $type");
-      return null;
+      return ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return value;
+    return ResultWithRequiredValue(
+      status: HaloErrorType.noError,
+      value: decoded as T,
+    );
   }
 
   /// Call procedure in the device and wait for the result
@@ -186,7 +202,6 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
         requestId: requestId,
         errorDefaultResult: HaloErrorType.genericError,
         callRequest: callRequest,
-        isMakingSensToRetry: (error) => error.isMakingSensToRetry,
       );
 
   /// This method calls the [_callAndRetry] and specify the case where the request returns a
@@ -201,10 +216,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
         requestId: requestId,
         errorDefaultResult: HaloRequestResult.error(
           requestId: requestId,
-          error: HaloErrorType.genericError,
+          status: HaloErrorType.genericError,
         ),
         callRequest: callRequest,
-        isMakingSensToRetry: (result) => result.error.isMakingSensToRetry,
       );
 
   /// Call a request and retry if an error occurred and if it makes sens to do it
@@ -212,15 +226,15 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
   /// The [errorDefaultResult] is the default error value to return if an error occurred in the
   /// process
   /// The real request is done through the [callRequest] param given, and to test if we need to
-  /// retry, we use [isMakingSensToRetry]
+  /// retry, we check that the result is an error and that [MixinResultStatus.canBeRetried] is true
   ///
-  /// To note that [HaloErrorType.noError] is considered has a non need of retry because we succeed
-  Future<T> _callAndRetry<T>({
+  /// To note that a successful result is never retried, even if [MixinResultStatus.canBeRetried] is
+  /// true for it (it's the case for [HaloErrorType.noError])
+  Future<T> _callAndRetry<T extends MixinResultStatus>({
     required HardwareType hardwareType,
     required MixinHaloRequestId requestId,
     required T errorDefaultResult,
     required Future<T> Function(AbstractHaloHardware) callRequest,
-    required bool Function(T) isMakingSensToRetry,
   }) async {
     await haloManagerConfig.actionMutex.acquire();
 
@@ -235,7 +249,9 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     var result = errorDefaultResult;
     var nbTry = 0;
 
-    while (isMakingSensToRetry(result) && nbTry < haloManagerConfig.retryNbBeforeReturningError) {
+    while (result.isError &&
+        result.canBeRetried &&
+        nbTry < haloManagerConfig.retryNbBeforeReturningError) {
       result = await callRequest(service);
       nbTry++;
     }

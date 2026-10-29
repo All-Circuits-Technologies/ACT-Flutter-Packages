@@ -2,41 +2,38 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/src/mixins/mixin_halo_request_id.dart';
 import 'package:act_halo_abstract/src/models/halo_payload_packet.dart';
 import 'package:act_halo_abstract/src/types/halo_error_type.dart';
-import 'package:equatable/equatable.dart';
 
 /// This class represents the result of a request
-class HaloRequestResult extends Equatable {
+///
+/// The inherited [status] is the error linked to the request result, and the inherited [value] is
+/// the result of the request (or null if a problem occurred or if the method doesn't return a
+/// result)
+class HaloRequestResult extends ResultWithStatus<HaloErrorType, HaloPayloadPacket> {
   /// This is the id of a request
   final MixinHaloRequestId requestId;
 
   /// The number of values expected in the result
   final int nbValues;
 
-  /// The result of the request (or null if a problem occurred or if the method doesn't return a
-  /// result)
-  final HaloPayloadPacket? result;
-
-  /// The [error] linked to the request result
-  final HaloErrorType error;
-
   /// The class constructor
   const HaloRequestResult({
     required this.requestId,
-    required this.result,
-    required this.error,
+    required super.status,
+    super.value,
+    super.extraInfo,
     this.nbValues = 0,
   });
 
   /// An easy constructor when you want to create an error result
   const HaloRequestResult.error({
     required this.requestId,
-    required this.error,
-  })  : result = null,
-        nbValues = 0;
+    required super.status,
+  }) : nbValues = 0;
 
   @override
-  List<Object?> get props => [requestId, result, error, nbValues];
+  List<Object?> get props => [...super.props, requestId, nbValues];
 }

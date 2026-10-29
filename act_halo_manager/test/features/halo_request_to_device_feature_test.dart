@@ -59,8 +59,8 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.noError);
-      expect(result.result, packet);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, packet);
       expect(device.calls, [FakeRequestId.readTemperature]);
     });
 
@@ -73,7 +73,7 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
       expect(device.calls, hasLength(2));
     });
 
@@ -85,7 +85,7 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.commError);
+      expect(result.status, HaloErrorType.commError);
       expect(device.calls, hasLength(3));
     });
 
@@ -94,7 +94,19 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.formatError);
+      expect(result.status, HaloErrorType.formatError);
+      expect(device.calls, hasLength(1));
+    });
+
+    test("does not ask again after a success", () async {
+      final (:feature, :device) = aFeature(
+        result: _aPayload((packet) => packet.addString("20 degrees")),
+        retryNbBeforeReturningError: 3,
+      );
+
+      final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
+
+      expect(result.status, HaloErrorType.noError);
       expect(device.calls, hasLength(1));
     });
 
@@ -103,7 +115,7 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.genericError);
+      expect(result.status, HaloErrorType.genericError);
       expect(device.calls, isEmpty);
     });
 
@@ -115,7 +127,7 @@ void main() {
       await feature.callFunction(hardwareType: FakeHwType.serial, request: aRequest());
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
       expect(device.calls, hasLength(1));
     });
 
@@ -124,7 +136,7 @@ void main() {
 
       final result = await feature.callFunction(hardwareType: FakeHwType.ble, request: aRequest());
 
-      expect(result.error, HaloErrorType.genericError);
+      expect(result.status, HaloErrorType.genericError);
     });
   });
 
@@ -139,7 +151,8 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, isTrue);
+      expect(value.isSuccess, isTrue);
+      expect(value.value, isTrue);
     });
 
     test("reads the text the device answered", () async {
@@ -152,7 +165,8 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, "20 degrees");
+      expect(value.isSuccess, isTrue);
+      expect(value.value, "20 degrees");
     });
 
     test("reads the signed number the device answered", () async {
@@ -163,7 +177,8 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, -20);
+      expect(value.isSuccess, isTrue);
+      expect(value.value, -20);
     });
 
     test("reads the unsigned number the device answered", () async {
@@ -174,10 +189,11 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, 20);
+      expect(value.isSuccess, isTrue);
+      expect(value.value, 20);
     });
 
-    test("reads nothing when the device answered more than one value", () async {
+    test("answers a format error when the device answered more than one value", () async {
       final (:feature, device: _) = aFeature(
         result: _aPayload((packet) {
           packet
@@ -191,10 +207,12 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, isNull);
+      expect(value.isError, isTrue);
+      expect(value.value, isNull);
+      expect(value.status, HaloErrorType.formatError);
     });
 
-    test("reads nothing when the device answered an error", () async {
+    test("answers the error of the device when it answered an error", () async {
       final (:feature, device: _) = aFeature(errors: [HaloErrorType.formatError]);
 
       final value = await feature.callBooleanFunction(
@@ -202,7 +220,66 @@ void main() {
         request: aRequest(),
       );
 
-      expect(value, isNull);
+      expect(value.isError, isTrue);
+      expect(value.value, isNull);
+      expect(value.status, HaloErrorType.formatError);
+    });
+
+    test("answers a format error when the device answered no value", () async {
+      final (:feature, device: _) = aFeature(result: _aPayload((packet) {}));
+
+      final value = await feature.callBooleanFunction(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(),
+      );
+
+      expect(value.status, HaloErrorType.formatError);
+      expect(value.value, isNull);
+    });
+
+    test("answers a format error when the value isn't of the expected type", () async {
+      final (:feature, :device) = aFeature(
+        result: _aPayload((packet) => packet.addString("20 degrees")),
+      );
+
+      final value = await feature.callIntFunction(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(),
+      );
+
+      expect(value.status, HaloErrorType.formatError);
+      expect(value.value, isNull);
+      expect(device.calls, hasLength(1));
+    });
+
+    test("asks again while the error is one which may pass, then reads the value", () async {
+      final (:feature, :device) = aFeature(
+        errors: [HaloErrorType.commError, HaloErrorType.noError],
+        result: _aPayload((packet) => packet.addBoolean(true)),
+      );
+
+      final value = await feature.callBooleanFunction(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(),
+      );
+
+      expect(value.value, isTrue);
+      expect(device.calls, hasLength(2));
+    });
+
+    test("answers the last error of the device once the retries ran out", () async {
+      final (:feature, :device) = aFeature(
+        errors: [HaloErrorType.commError],
+        retryNbBeforeReturningError: 3,
+      );
+
+      final value = await feature.callBooleanFunction(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(),
+      );
+
+      expect(value.status, HaloErrorType.commError);
+      expect(device.calls, hasLength(3));
     });
   });
 
@@ -231,6 +308,30 @@ void main() {
 
       expect(error, HaloErrorType.noError);
       expect(device.calls, hasLength(2));
+    });
+
+    test("does not ask again after a success", () async {
+      final (:feature, :device) = aFeature(retryNbBeforeReturningError: 3);
+
+      final error = await feature.callProcedure(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(FakeRequestId.startHeating),
+      );
+
+      expect(error, HaloErrorType.noError);
+      expect(device.calls, hasLength(1));
+    });
+
+    test("does not ask again after an error which will not pass", () async {
+      final (:feature, :device) = aFeature(errors: [HaloErrorType.formatError]);
+
+      final error = await feature.callProcedure(
+        hardwareType: FakeHwType.ble,
+        request: aRequest(FakeRequestId.startHeating),
+      );
+
+      expect(error, HaloErrorType.formatError);
+      expect(device.calls, hasLength(1));
     });
 
     test("answers an error when the application cannot reach the device that way", () async {
