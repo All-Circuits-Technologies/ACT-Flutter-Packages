@@ -4,9 +4,11 @@
 
 import 'dart:typed_data';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/src/halo_packet_utility.dart';
+import 'package:act_halo_abstract/src/models/halo_timestamped_value.dart';
 
 /// Represents the payload packet element (the elements between the
 /// [HaloPacketUtility._elementSeparator]), the bytes contains in it are escaped
@@ -78,13 +80,13 @@ class HaloPayloadPacket {
 
   /// Helpful method to get a string from the packet elements list thanks to the [elemIdx] idx given
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (String, DateTime?)? getString(int elemIdx) {
+  BoolResultWithRequiredValue<HaloTimestampedValue<String>> getString(int elemIdx) {
     if (elemIdx >= elementsNb) {
       appLogger().w("We can't get a string where the idx: $elemIdx, overflows the payload packet "
           "element list size: $elementsNb");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
     return HaloPacketUtility.getString(_elements[elemIdx]);
@@ -99,21 +101,24 @@ class HaloPayloadPacket {
   ///
   ///
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (List<String>, DateTime?)? getListString(int fromStartIdx, [int length = -1]) {
+  BoolResultWithRequiredValue<HaloTimestampedValue<List<String>>> getListString(
+    int fromStartIdx, [
+    int length = -1,
+  ]) {
     if (fromStartIdx > elementsNb) {
       // If the [fromStartIdx] is equal to the elementsNb this can mean that the list you want to
       // get is empty
       appLogger().w("We can't get a string list where the idx: $fromStartIdx, overflows the "
           "payload packet element list size: $elementsNb");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
     if (length != -1 && (fromStartIdx + length - 1) >= elementsNb) {
       appLogger().w("We can't get a string list where the last idx: ${fromStartIdx + length - 1}, "
           "overflows the payload packet element list size: $elementsNb");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
     final realLength = (length != -1) ? length : elementsNb - fromStartIdx;
@@ -123,18 +128,20 @@ class HaloPayloadPacket {
     for (var idx = 0; idx < realLength; ++idx) {
       final tmp = HaloPacketUtility.getString(_elements[fromStartIdx + idx]);
 
-      if (tmp == null) {
-        return null;
+      if (tmp.isError) {
+        return const BoolResultWithRequiredValue.error();
       }
 
-      final (data, ts) = tmp;
+      final extracted = tmp.value!;
 
-      firstTimestamp ??= ts;
+      firstTimestamp ??= extracted.timestamp;
 
-      elements.add(data);
+      elements.add(extracted.value);
     }
 
-    return (elements, firstTimestamp);
+    return BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(value: elements, timestamp: firstTimestamp),
+    );
   }
 
   /// Helpful method to add a boolean in the list of packet element, you may also prepend the value
@@ -164,13 +171,13 @@ class HaloPayloadPacket {
   /// Helpful method to get a boolean from the packet elements list thanks to the [elemIdx] idx
   /// given.
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (bool, DateTime?)? getBoolean(int elemIdx) {
+  BoolResultWithRequiredValue<HaloTimestampedValue<bool>> getBoolean(int elemIdx) {
     if (elemIdx >= elementsNb) {
       appLogger().w("We can't a boolean where the idx: $elemIdx, overflows the payload packet "
           "element list size: $elementsNb");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
     return HaloPacketUtility.getBoolean(_elements[elemIdx]);
@@ -443,31 +450,33 @@ class HaloPayloadPacket {
   /// Helpful method to get an unsigned integer from the packet elements list thanks to the
   /// [elemIdx] idx given.
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getUInt(int elemIdx) => getNumber(elemIdx, isSigned: false);
+  BoolResultWithRequiredValue<HaloTimestampedValue<int>> getUInt(int elemIdx) =>
+      getNumber(elemIdx, isSigned: false);
 
   /// Helpful method to get a signed integer from the packet elements list thanks to the
   /// [elemIdx] idx given.
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getInt(int elemIdx) => getNumber(elemIdx, isSigned: true);
+  BoolResultWithRequiredValue<HaloTimestampedValue<int>> getInt(int elemIdx) =>
+      getNumber(elemIdx, isSigned: true);
 
   /// Helpful method to get an integer from the packet elements list thanks to the
   /// [elemIdx] idx given.
   /// Uses the [isSigned] parameter to say if the expected number is signed or not
   /// If a problem occurred (because the element has not the type you expect or the index overflows
-  /// the list length) the method returns null
+  /// the list length) the method returns an error
   /// If a timestamp is attached to the element, it will be returned
-  (int, DateTime?)? getNumber(
+  BoolResultWithRequiredValue<HaloTimestampedValue<int>> getNumber(
     int elemIdx, {
     required bool isSigned,
   }) {
     if (elemIdx >= elementsNb) {
       appLogger().w("We can't a number where the idx: $elemIdx, overflows the payload packet "
           "element list size: $elementsNb");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
     return HaloPacketUtility.getNumber(_elements[elemIdx], isSigned: isSigned);

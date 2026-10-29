@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/src/hardware_layer/abstract_halo_component_hardware.dart';
 import 'package:act_halo_abstract/src/models/halo_data_id.dart';
 import 'package:act_halo_abstract/src/models/halo_packet.dart';
@@ -31,7 +32,7 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
 
   /// This method allows to read a specific attribute value from the device and thanks to the
   /// [HaloDataId] given
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId});
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({required HaloDataId dataId});
 
   /// This method allows to subscribe to the modification of a specific attribute thanks to the
   /// [HaloDataId] given

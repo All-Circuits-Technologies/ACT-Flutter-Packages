@@ -4,8 +4,10 @@
 
 import 'dart:typed_data';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_halo_abstract/src/models/halo_timestamped_value.dart';
 
 /// Represents the payload packet element (the elements between the
 /// [HaloPacketUtility._elementSeparator]), the bytes contains in it are escaped
@@ -150,18 +152,27 @@ abstract class HaloPacketUtility {
       _formatAndEscapePacketElem(Uint8List.fromList(toSend.codeUnits), ts);
 
   /// Parse the [element] given to extract a string, and the optional DateTime if it's present
-  static (String, DateTime?)? getString(PayloadPacketElem element) {
+  ///
+  /// Returns an error if a problem occurred in the process
+  static BoolResultWithRequiredValue<HaloTimestampedValue<String>> getString(
+    PayloadPacketElem element,
+  ) {
     final tmp = _extractDataFromPacketElem(element);
 
-    if (tmp == null) {
+    if (tmp.isError) {
       appLogger().w("A problem occurred when tried to get the string representation from a payload "
           "packet element");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    final (data, ts) = tmp;
+    final extracted = tmp.value!;
 
-    return (String.fromCharCodes(data), ts);
+    return BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(
+        value: String.fromCharCodes(extracted.value),
+        timestamp: extracted.timestamp,
+      ),
+    );
   }
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -179,23 +190,33 @@ abstract class HaloPacketUtility {
   }
 
   /// Parse the [element] given to extract a boolean, and the optional DateTime if it's present
-  static (bool, DateTime?)? getBoolean(PayloadPacketElem element) {
+  ///
+  /// Returns an error if a problem occurred in the process
+  static BoolResultWithRequiredValue<HaloTimestampedValue<bool>> getBoolean(
+    PayloadPacketElem element,
+  ) {
     final tmp = _extractDataFromPacketElem(element);
 
-    if (tmp == null) {
+    if (tmp.isError) {
       appLogger().w("A problem occurred when tried to get the boolean representation from a "
           "payload packet element");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    final (data, ts) = tmp;
+    final extracted = tmp.value!;
+    final data = extracted.value;
 
     if (data.isEmpty) {
       appLogger().w("We can't get a boolean from an empty payload packet element");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    return (data[0] == HaloPacketUtility._trueValue, ts);
+    return BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(
+        value: data[0] == HaloPacketUtility._trueValue,
+        timestamp: extracted.timestamp,
+      ),
+    );
   }
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -305,28 +326,32 @@ abstract class HaloPacketUtility {
 
   /// Parse the [element] given to extract an integer, and the optional DateTime if it's present
   /// [isSigned] is useful to know if the number you want to get is signed or not
-  static (int, DateTime?)? getNumber(
+  ///
+  /// Returns an error if a problem occurred in the process
+  static BoolResultWithRequiredValue<HaloTimestampedValue<int>> getNumber(
     PayloadPacketElem element, {
     required bool isSigned,
   }) {
     final tmp = _extractDataFromPacketElem(element);
 
-    if (tmp == null) {
+    if (tmp.isError) {
       appLogger().w("A problem occurred when tried to get the number representation from a "
           "payload packet element");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    final (data, ts) = tmp;
+    final extracted = tmp.value!;
 
-    final value = ByteUtility.convertFromLsb(lsbNumber: data, isSigned: isSigned);
+    final value = ByteUtility.convertFromLsb(lsbNumber: extracted.value, isSigned: isSigned);
 
     if (value == null) {
       appLogger().w("A problem occurred when tried to convert the byte list to a number");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    return (value, ts);
+    return BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(value: value, timestamp: extracted.timestamp),
+    );
   }
 
   /// Format and escape bytes list to create a [PayloadPacketElem], the method also prepend the
@@ -396,7 +421,11 @@ abstract class HaloPacketUtility {
 
   /// The method extract the data from packet element: it extracts the datetime and the value, and
   /// also unescape both before returning the values.
-  static (Uint8List, DateTime?)? _extractDataFromPacketElem(PayloadPacketElem element) {
+  ///
+  /// Returns an error if a problem occurred in the process
+  static BoolResultWithRequiredValue<HaloTimestampedValue<Uint8List>> _extractDataFromPacketElem(
+    PayloadPacketElem element,
+  ) {
     var tmpElement = PayloadPacketElem.fromList(element);
     DateTime? ts;
 
@@ -407,7 +436,7 @@ abstract class HaloPacketUtility {
       if (tmpTs == null) {
         appLogger().w("A problem occurred when tried to unescape a timestamp from a payload packet "
             "element");
-        return null;
+        return const BoolResultWithRequiredValue.error();
       }
 
       // The protocol carries the timestamp as a number of seconds, not of milliseconds
@@ -426,10 +455,12 @@ abstract class HaloPacketUtility {
     if (unTmpElem == null) {
       appLogger().w("A problem occurred when tried to unescape a value from a payload packet "
           "element");
-      return null;
+      return const BoolResultWithRequiredValue.error();
     }
 
-    return (unTmpElem, ts);
+    return BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(value: unTmpElem, timestamp: ts),
+    );
   }
 
   /// This method tests if the packet given has the endByte as last byte

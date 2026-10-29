@@ -4,8 +4,10 @@
 
 import 'dart:typed_data';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_halo_abstract/src/halo_packet_utility.dart';
+import 'package:act_halo_abstract/src/models/halo_timestamped_value.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,6 +28,13 @@ const _escapeElement = 0x7D;
 
 /// The mask applied to a byte which is escaped.
 const _escapeMask = 0x20;
+
+/// Builds the success result the getters are expected to return for the [value] and the optional
+/// [timestamp]
+BoolResultWithRequiredValue<HaloTimestampedValue<T>> _ok<T>(T value, [DateTime? timestamp]) =>
+    BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(value: value, timestamp: timestamp),
+    );
 
 void main() {
   late FakeLogger logger;
@@ -174,28 +183,31 @@ void main() {
     test("returns the string the element carries", () {
       final element = HaloPacketUtility.formatString("hello");
 
-      expect(HaloPacketUtility.getString(element), ("hello", null));
+      expect(HaloPacketUtility.getString(element), _ok("hello"));
     });
 
     test("returns the string of an element which carries escaped characters", () {
       final element = HaloPacketUtility.formatString("a|b");
 
-      expect(HaloPacketUtility.getString(element), ("a|b", null));
+      expect(HaloPacketUtility.getString(element), _ok("a|b"));
     });
 
     test("returns the timestamp the element carries", () {
       final ts = DateTime.utc(2024, 5, 17, 10, 30);
       final element = HaloPacketUtility.formatString("hello", ts: ts);
 
-      expect(HaloPacketUtility.getString(element), ("hello", ts));
+      expect(HaloPacketUtility.getString(element), _ok("hello", ts));
     });
 
     test("returns an empty string for an element which carries nothing", () {
-      expect(HaloPacketUtility.getString(Uint8List(0)), ("", null));
+      expect(HaloPacketUtility.getString(Uint8List(0)), _ok(""));
     });
 
-    test("returns null when the element ends on an escape byte", () {
-      expect(HaloPacketUtility.getString(Uint8List.fromList([0x41, _escapeElement])), isNull);
+    test("returns an error when the element ends on an escape byte", () {
+      expect(
+        HaloPacketUtility.getString(Uint8List.fromList([0x41, _escapeElement])).isError,
+        isTrue,
+      );
     });
   });
 
@@ -214,28 +226,28 @@ void main() {
 
   group("HaloPacketUtility.getBoolean", () {
     test("returns true for an element which carries a true", () {
-      expect(HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(true)), (true, null));
+      expect(HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(true)), _ok(true));
     });
 
     test("returns false for an element which carries a false", () {
-      expect(HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(false)), (false, null));
+      expect(HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(false)), _ok(false));
     });
 
     test("returns the timestamp the element carries", () {
       final ts = DateTime.utc(2024, 5, 17, 10, 30);
 
-      expect(HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(true, ts: ts)), (
-        true,
-        ts,
-      ));
+      expect(
+        HaloPacketUtility.getBoolean(HaloPacketUtility.formatBoolean(true, ts: ts)),
+        _ok(true, ts),
+      );
     });
 
     test("returns false for a byte which is neither the true nor the false value", () {
-      expect(HaloPacketUtility.getBoolean(Uint8List.fromList([0x42])), (false, null));
+      expect(HaloPacketUtility.getBoolean(Uint8List.fromList([0x42])), _ok(false));
     });
 
-    test("returns null for an element which carries nothing", () {
-      expect(HaloPacketUtility.getBoolean(Uint8List(0)), isNull);
+    test("returns an error for an element which carries nothing", () {
+      expect(HaloPacketUtility.getBoolean(Uint8List(0)).isError, isTrue);
     });
 
     test("warns about the element it refuses", () {
@@ -320,32 +332,32 @@ void main() {
     test("returns the unsigned number the element carries", () {
       final element = HaloPacketUtility.formatUInt16(0x0102)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: false), (0x0102, null));
+      expect(HaloPacketUtility.getNumber(element, isSigned: false), _ok(0x0102));
     });
 
     test("returns the signed number the element carries", () {
       final element = HaloPacketUtility.formatInt16(-2)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: true), (-2, null));
+      expect(HaloPacketUtility.getNumber(element, isSigned: true), _ok(-2));
     });
 
     test("reads a signed number as a large unsigned one when asked to", () {
       final element = HaloPacketUtility.formatInt8(-1)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: false), (0xFF, null));
+      expect(HaloPacketUtility.getNumber(element, isSigned: false), _ok(0xFF));
     });
 
     test("returns the number of an element whose bytes had to be escaped", () {
       final element = HaloPacketUtility.formatUInt8(_startByte)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: false), (_startByte, null));
+      expect(HaloPacketUtility.getNumber(element, isSigned: false), _ok(_startByte));
     });
 
     test("returns the timestamp the element carries", () {
       final ts = DateTime.utc(2024, 5, 17, 10, 30);
       final element = HaloPacketUtility.formatUInt8(0x05, ts: ts)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: false), (0x05, ts));
+      expect(HaloPacketUtility.getNumber(element, isSigned: false), _ok(0x05, ts));
     });
 
     test("returns the timestamp of an element whose timestamp had to be escaped", () {
@@ -353,7 +365,7 @@ void main() {
       final ts = DateTime.fromMillisecondsSinceEpoch(_endByte * 1000, isUtc: true);
       final element = HaloPacketUtility.formatUInt8(0x05, ts: ts)!;
 
-      expect(HaloPacketUtility.getNumber(element, isSigned: false), (0x05, ts));
+      expect(HaloPacketUtility.getNumber(element, isSigned: false), _ok(0x05, ts));
     });
 
     test("drops the milliseconds of the timestamp, which the protocol does not carry", () {
@@ -364,24 +376,27 @@ void main() {
 
       expect(
         HaloPacketUtility.getNumber(element, isSigned: false),
-        (0x05, DateTime.utc(2024, 5, 17, 10, 30, 20)),
+        _ok(0x05, DateTime.utc(2024, 5, 17, 10, 30, 20)),
       );
     });
 
-    test("returns null when the element ends on an escape byte", () {
+    test("returns an error when the element ends on an escape byte", () {
       expect(
         HaloPacketUtility.getNumber(
           Uint8List.fromList([0x41, _escapeElement]),
           isSigned: false,
-        ),
-        isNull,
+        ).isError,
+        isTrue,
       );
     });
 
-    test("returns null for an element which carries more bytes than a number holds", () {
+    test("returns an error for an element which carries more bytes than a number holds", () {
       expect(
-        HaloPacketUtility.getNumber(Uint8List.fromList([0x01, 0x02, 0x03]), isSigned: false),
-        isNull,
+        HaloPacketUtility.getNumber(
+          Uint8List.fromList([0x01, 0x02, 0x03]),
+          isSigned: false,
+        ).isError,
+        isTrue,
       );
     });
   });
@@ -487,7 +502,7 @@ void main() {
       );
       final elements = HaloPacketUtility.extractFromPayloadPacket(packets.single);
 
-      expect(HaloPacketUtility.getString(elements!.single), (sent, null));
+      expect(HaloPacketUtility.getString(elements!.single), _ok(sent));
     });
   });
 }

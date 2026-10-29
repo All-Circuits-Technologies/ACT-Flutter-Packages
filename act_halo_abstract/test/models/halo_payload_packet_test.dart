@@ -4,10 +4,18 @@
 
 import 'dart:typed_data';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
+
+/// Builds the success result the getters are expected to return for the [value] and the optional
+/// [timestamp]
+BoolResultWithRequiredValue<HaloTimestampedValue<T>> _ok<T>(T value, [DateTime? timestamp]) =>
+    BoolResultWithRequiredValue.fromValue(
+      value: HaloTimestampedValue(value: value, timestamp: timestamp),
+    );
 
 /// The byte which closes a packet.
 const _endByte = 0xC1;
@@ -50,7 +58,7 @@ void main() {
 
       final received = HaloPayloadPacket.fromDevice(sent.getDataToSend(maxPacketSize: 4));
 
-      expect(received?.getString(0), ("a longer value", null));
+      expect(received?.getString(0), _ok("a longer value"));
     });
 
     test("returns null when the parts do not make a whole packet", () {
@@ -92,7 +100,7 @@ void main() {
     test("keeps the string it was given", () {
       final packet = HaloPayloadPacket()..addString("hello");
 
-      expect(packet.getString(0), ("hello", null));
+      expect(packet.getString(0), _ok("hello"));
     });
 
     test("keeps the timestamp it was given", () {
@@ -100,7 +108,7 @@ void main() {
 
       final packet = HaloPayloadPacket()..addString("hello", ts: ts);
 
-      expect(packet.getString(0), ("hello", ts));
+      expect(packet.getString(0), _ok("hello", ts));
     });
   });
 
@@ -116,8 +124,8 @@ void main() {
 
       final packet = HaloPayloadPacket()..addStringList(["a", "b"], ts: ts);
 
-      expect(packet.getString(0), ("a", ts));
-      expect(packet.getString(1), ("b", null));
+      expect(packet.getString(0), _ok("a", ts));
+      expect(packet.getString(1), _ok("b"));
     });
 
     test("adds nothing for an empty list", () {
@@ -131,13 +139,13 @@ void main() {
     test("returns the string at the index given", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b"]);
 
-      expect(packet.getString(1), ("b", null));
+      expect(packet.getString(1), _ok("b"));
     });
 
-    test("returns null when the index overflows the elements of the packet", () {
+    test("returns an error when the index overflows the elements of the packet", () {
       final packet = HaloPayloadPacket()..addString("a");
 
-      expect(packet.getString(1), isNull);
+      expect(packet.getString(1).isError, isTrue);
     });
 
     test("warns about the index which overflows", () {
@@ -151,38 +159,38 @@ void main() {
     test("returns every value from the index given", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b", "c"]);
 
-      expect(packet.getListString(1)?.$1, ["b", "c"]);
+      expect(packet.getListString(1)?.value?.value, ["b", "c"]);
     });
 
     test("returns the number of values asked for", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b", "c"]);
 
-      expect(packet.getListString(0, 2)?.$1, ["a", "b"]);
+      expect(packet.getListString(0, 2)?.value?.value, ["a", "b"]);
     });
 
     test("returns the timestamp of the first value it reads", () {
       final ts = DateTime.utc(2024, 5, 17, 10, 30);
       final packet = HaloPayloadPacket()..addStringList(["a", "b"], ts: ts);
 
-      expect(packet.getListString(0)?.$2, ts);
+      expect(packet.getListString(0).value?.timestamp, ts);
     });
 
     test("returns an empty list when the index is the one after the last element", () {
       final packet = HaloPayloadPacket()..addString("a");
 
-      expect(packet.getListString(1)?.$1, isEmpty);
+      expect(packet.getListString(1)?.value?.value, isEmpty);
     });
 
-    test("returns null when the index overflows the elements of the packet", () {
+    test("returns an error when the index overflows the elements of the packet", () {
       final packet = HaloPayloadPacket()..addString("a");
 
-      expect(packet.getListString(2), isNull);
+      expect(packet.getListString(2).isError, isTrue);
     });
 
-    test("returns null when the number of values asked for overflows the packet", () {
+    test("returns an error when the number of values asked for overflows the packet", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b"]);
 
-      expect(packet.getListString(1, 2), isNull);
+      expect(packet.getListString(1, 2).isError, isTrue);
     });
   });
 
@@ -190,7 +198,7 @@ void main() {
     test("keeps the value it was given", () {
       final packet = HaloPayloadPacket()..addBoolean(true);
 
-      expect(packet.getBoolean(0), (true, null));
+      expect(packet.getBoolean(0), _ok(true));
     });
 
     test("keeps the timestamp it was given", () {
@@ -198,7 +206,7 @@ void main() {
 
       final packet = HaloPayloadPacket()..addBoolean(false, ts: ts);
 
-      expect(packet.getBoolean(0), (false, ts));
+      expect(packet.getBoolean(0), _ok(false, ts));
     });
   });
 
@@ -214,14 +222,14 @@ void main() {
 
       final packet = HaloPayloadPacket()..addBooleanList([true, false], ts: ts);
 
-      expect(packet.getBoolean(0), (true, ts));
-      expect(packet.getBoolean(1), (false, null));
+      expect(packet.getBoolean(0), _ok(true, ts));
+      expect(packet.getBoolean(1), _ok(false));
     });
   });
 
   group("HaloPayloadPacket.getBoolean", () {
-    test("returns null when the index overflows the elements of the packet", () {
-      expect(HaloPayloadPacket().getBoolean(0), isNull);
+    test("returns an error when the index overflows the elements of the packet", () {
+      expect(HaloPayloadPacket().getBoolean(0).isError, isTrue);
     });
   });
 
@@ -230,7 +238,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addUInt8(0xFF), isTrue);
-      expect(packet.getUInt(0), (0xFF, null));
+      expect(packet.getUInt(0), _ok(0xFF));
     });
 
     test("refuses a number which overflows a byte", () {
@@ -251,7 +259,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addUInt16(0xFFFF), isTrue);
-      expect(packet.getUInt(0), (0xFFFF, null));
+      expect(packet.getUInt(0), _ok(0xFFFF));
     });
 
     test("refuses a number which overflows two bytes", () {
@@ -264,7 +272,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addUInt32(0xFFFFFFFF), isTrue);
-      expect(packet.getUInt(0), (0xFFFFFFFF, null));
+      expect(packet.getUInt(0), _ok(0xFFFFFFFF));
     });
 
     test("refuses a number which overflows four bytes", () {
@@ -277,7 +285,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addInt8(-128), isTrue);
-      expect(packet.getInt(0), (-128, null));
+      expect(packet.getInt(0), _ok(-128));
     });
 
     test("refuses a number which overflows a signed byte", () {
@@ -290,7 +298,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addInt16(-32768), isTrue);
-      expect(packet.getInt(0), (-32768, null));
+      expect(packet.getInt(0), _ok(-32768));
     });
 
     test("refuses a number which overflows a signed short", () {
@@ -303,7 +311,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addInt32(-2147483648), isTrue);
-      expect(packet.getInt(0), (-2147483648, null));
+      expect(packet.getInt(0), _ok(-2147483648));
     });
 
     test("refuses a number which overflows a signed integer of 32 bits", () {
@@ -316,7 +324,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaInt8(2.5, 1), isTrue);
-      expect(packet.getInt(0), (25, null));
+      expect(packet.getInt(0), _ok(25));
     });
 
     test("refuses a number which overflows a signed byte once multiplied", () {
@@ -329,7 +337,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaInt16(-2.5, 2), isTrue);
-      expect(packet.getInt(0), (-250, null));
+      expect(packet.getInt(0), _ok(-250));
     });
   });
 
@@ -338,7 +346,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaInt32(2.5, 4), isTrue);
-      expect(packet.getInt(0), (25000, null));
+      expect(packet.getInt(0), _ok(25000));
     });
   });
 
@@ -347,7 +355,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaUInt8(2.5, 1), isTrue);
-      expect(packet.getUInt(0), (25, null));
+      expect(packet.getUInt(0), _ok(25));
     });
 
     test("refuses a negative number", () {
@@ -360,7 +368,7 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaUInt16(2.5, 2), isTrue);
-      expect(packet.getUInt(0), (250, null));
+      expect(packet.getUInt(0), _ok(250));
     });
   });
 
@@ -369,19 +377,19 @@ void main() {
       final packet = HaloPayloadPacket();
 
       expect(packet.addDoubleViaUInt32(2.5, 4), isTrue);
-      expect(packet.getUInt(0), (25000, null));
+      expect(packet.getUInt(0), _ok(25000));
     });
   });
 
   group("HaloPayloadPacket.getNumber", () {
-    test("returns null when the index overflows the elements of the packet", () {
-      expect(HaloPayloadPacket().getNumber(0, isSigned: false), isNull);
+    test("returns an error when the index overflows the elements of the packet", () {
+      expect(HaloPayloadPacket().getNumber(0, isSigned: false).isError, isTrue);
     });
 
     test("reads a negative number as a large unsigned one when asked to", () {
       final packet = HaloPayloadPacket()..addInt8(-1);
 
-      expect(packet.getUInt(0), (0xFF, null));
+      expect(packet.getUInt(0), _ok(0xFF));
     });
   });
 
@@ -429,10 +437,10 @@ void main() {
 
       final received = HaloPayloadPacket.fromDevice(sent.getDataToSend(maxPacketSize: 3))!;
 
-      expect(received.getString(0), ("hello", ts));
-      expect(received.getBoolean(1), (true, null));
-      expect(received.getUInt(2), (0xC0C1, null));
-      expect(received.getInt(3), (-42, null));
+      expect(received.getString(0), _ok("hello", ts));
+      expect(received.getBoolean(1), _ok(true));
+      expect(received.getUInt(2), _ok(0xC0C1));
+      expect(received.getInt(3), _ok(-42));
     });
   });
 }
