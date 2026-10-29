@@ -2,7 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/src/hardware_layer/abstract_halo_component_hardware.dart';
 import 'package:act_halo_abstract/src/models/halo_request_params_packet.dart';

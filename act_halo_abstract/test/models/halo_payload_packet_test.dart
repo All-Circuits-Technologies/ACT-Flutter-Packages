@@ -159,13 +159,13 @@ void main() {
     test("returns every value from the index given", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b", "c"]);
 
-      expect(packet.getListString(1)?.value?.value, ["b", "c"]);
+      expect(packet.getListString(1).value?.value, ["b", "c"]);
     });
 
     test("returns the number of values asked for", () {
       final packet = HaloPayloadPacket()..addStringList(["a", "b", "c"]);
 
-      expect(packet.getListString(0, 2)?.value?.value, ["a", "b"]);
+      expect(packet.getListString(0, 2).value?.value, ["a", "b"]);
     });
 
     test("returns the timestamp of the first value it reads", () {
@@ -178,7 +178,7 @@ void main() {
     test("returns an empty list when the index is the one after the last element", () {
       final packet = HaloPayloadPacket()..addString("a");
 
-      expect(packet.getListString(1)?.value?.value, isEmpty);
+      expect(packet.getListString(1).value?.value, isEmpty);
     });
 
     test("returns an error when the index overflows the elements of the packet", () {
