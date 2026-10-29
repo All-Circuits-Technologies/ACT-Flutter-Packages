@@ -177,12 +177,12 @@ void main() {
     });
   });
 
-  group("KeycloakTbAuthService.changePassword", () {
+  group("KeycloakTbAuthService.redirectToExternalPasswordUpdate", () {
     // Only kc_action: AppAuth on Android throws on a login_hint among the additional parameters
     test("asks Keycloak for the password update", () async {
       final service = await aServiceOfUserA();
 
-      final status = await service.changePassword();
+      final status = await service.redirectToExternalPasswordUpdate();
 
       expect(status, AuthSignInStatus.done);
       expect(provider.signInParameters, [
@@ -196,14 +196,14 @@ void main() {
       final service = await aServiceOfUserA();
       provider.redirectResults.add(_closed);
 
-      expect(await service.changePassword(), isNull);
+      expect(await service.redirectToExternalPasswordUpdate(), isNull);
     });
 
     test("reports a sign in which failed", () async {
       final service = await aServiceOfUserA();
       provider.redirectResults.add(_offline);
 
-      expect(await service.changePassword(), AuthSignInStatus.networkError);
+      expect(await service.redirectToExternalPasswordUpdate(), AuthSignInStatus.networkError);
     });
 
     // As for the deletion: B must not go on under the session of A
@@ -211,7 +211,7 @@ void main() {
       final service = await aServiceOfUserA();
       broker.onLogin = (_) => _loginOf(_userB);
 
-      final status = await service.changePassword();
+      final status = await service.redirectToExternalPasswordUpdate();
 
       expect(provider.signOutCalled, isTrue);
       expect(status, AuthSignInStatus.genericError);

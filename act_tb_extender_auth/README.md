@@ -120,9 +120,9 @@ unless the application says otherwise.
 
 ### Changing the password
 
-`changePassword` runs the sign in again with `kc_action=UPDATE_PASSWORD`; Keycloak asks for the new
-password on its own pages. It answers null when the user closed the page, the status of the sign in
-otherwise, and signs the user out when another account came back.
+`redirectToExternalPasswordUpdate` runs the sign in again with `kc_action=UPDATE_PASSWORD`;
+Keycloak asks for the new password on its own pages. It answers null when the user closed the page,
+the status of the sign in otherwise, and signs the user out when another account came back.
 
 ## How to use
 

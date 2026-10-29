@@ -56,6 +56,10 @@ typedef OnSignOut = Future<void> Function();
 /// Every collaborator is given to the constructor, so this class reaches no service locator;
 /// `KeycloakTbAuthServiceBuilder` is what assembles the ones an application runs with.
 class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
+  /// The age of the Keycloak sign in the broker deletes an account on, when the application
+  /// names none: it mirrors the default of the broker.
+  static const defaultDeletionMaxSignInAge = Duration(minutes: 5);
+
   /// This is the logs category linked to the auth service
   static const _logsCategory = "keycloakTbAuth";
 
@@ -301,10 +305,6 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
     );
   }
 
-  /// The age of the Keycloak sign in the broker deletes an account on, when the application
-  /// names none: it mirrors the default of the broker.
-  static const defaultDeletionMaxSignInAge = Duration(minutes: 5);
-
   /// Delete the account behind the session, once the user signed in recently enough for the
   /// broker.
   ///
@@ -358,7 +358,8 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
       result = await deleteAccount();
 
       if (result.extra != BrokerAuthError.reauthRequired) {
-        return result;
+        // Only a sign in the broker still found too old is worth a second attempt
+        break;
       }
     }
 
@@ -379,7 +380,7 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// [deleteAccountAfterRecentSignIn], and a generic error is answered.
   ///
   /// Not under the mutex: the methods it chains take it, and the mutex is not reentrant.
-  Future<AuthSignInStatus?> changePassword() async {
+  Future<AuthSignInStatus?> redirectToExternalPasswordUpdate() async {
     final user = await getCurrentUserId();
 
     final signIn = await redirectToExternalUserSignIn(
