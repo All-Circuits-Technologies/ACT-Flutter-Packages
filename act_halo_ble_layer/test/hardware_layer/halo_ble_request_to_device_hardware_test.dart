@@ -133,7 +133,10 @@ void main() {
 
     test("answers the error the device raised", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aProcedure)),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aProcedure),
+        ),
         ResultWithRequiredValue(
           status: HaloErrorType.noError,
           value: anAck(requestId: FakeHaloRequestId.aProcedure, error: HaloErrorType.formatError),
@@ -149,8 +152,14 @@ void main() {
 
     test("says that the answer of the device could not be read", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aProcedure)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(const [0x06, 0x00])),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aProcedure),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: Uint8List.fromList(const [0x06, 0x00]),
+        ),
       ]);
 
       final result = await hardware.callProcedure(
@@ -194,8 +203,14 @@ void main() {
 
     test("says that the parameters could not be handed over", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aProcedure)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aProcedure)),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aProcedure),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aProcedure),
+        ),
         const ResultWithRequiredValue(status: HaloErrorType.commError),
       ]);
 
@@ -223,8 +238,14 @@ void main() {
     /// Has the device answer the acknowledgments of a function and then [values] as its result.
     void theDeviceAnswers(List<String> values, {int maxPacketSize = -1}) {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
         ...aPayloadFromDevice(values, maxPacketSize: maxPacketSize).map(
           (packet) => ResultWithRequiredValue(status: HaloErrorType.noError, value: packet),
         ),
@@ -268,9 +289,18 @@ void main() {
 
     test("says that the result of the device could not be read", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(const [0x2A, 0xC1])),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: Uint8List.fromList(const [0x2A, 0xC1]),
+        ),
       ]);
 
       final result = await hardware.callFunction(request: aRequest());
@@ -280,8 +310,14 @@ void main() {
 
     test("says that the result could not be asked for", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
         const ResultWithRequiredValue(status: HaloErrorType.commError),
       ]);
 
@@ -292,9 +328,18 @@ void main() {
 
     test("reads a result of a device which answered no value at all", () async {
       companion.answers.addAll([
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: anAck(requestId: FakeHaloRequestId.aFunction)),
-        ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(const [0xC0, 0xC1])),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: anAck(requestId: FakeHaloRequestId.aFunction),
+        ),
+        ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: Uint8List.fromList(const [0xC0, 0xC1]),
+        ),
       ]);
 
       final result = await hardware.callFunction(request: aRequest());

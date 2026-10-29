@@ -32,7 +32,9 @@ abstract class AbstractHaloInstantDataHardware extends AbstractHaloComponentHard
 
   /// This method allows to read a specific instant data value from the device and thanks to the
   /// [HaloDataId] given
-  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({required HaloDataId dataId});
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({
+    required HaloDataId dataId,
+  });
 
   /// This method allows to subscribe to the modification of a specific instant data thanks to the
   /// [HaloDataId] given

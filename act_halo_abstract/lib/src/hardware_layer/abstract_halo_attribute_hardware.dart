@@ -32,7 +32,9 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
 
   /// This method allows to read a specific attribute value from the device and thanks to the
   /// [HaloDataId] given
-  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({required HaloDataId dataId});
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  });
 
   /// This method allows to subscribe to the modification of a specific attribute thanks to the
   /// [HaloDataId] given
