@@ -17,6 +17,19 @@ HaloPayloadPacket _aPayload(void Function(HaloPayloadPacket packet) fill) {
   return packet;
 }
 
+/// A feature whose function calls succeed without carrying any payload.
+class _PayloadlessFeature extends OcsigenRequestToDeviceFeature<FakeHwType> {
+  /// Class constructor
+  _PayloadlessFeature({required super.haloManagerConfig});
+
+  @override
+  Future<HaloRequestResult> callFunction({
+    required FakeHwType hardwareType,
+    required HaloRequestParamsPacket request,
+    Duration? executionTimeout,
+  }) async => HaloRequestResult(requestId: request.requestId, status: HaloErrorType.noError);
+}
+
 void main() {
   late FakeOcsigenDevice device;
 
@@ -400,6 +413,41 @@ void main() {
       );
 
       expect(result, HaloErrorType.commError);
+    });
+  });
+
+  group("OcsigenRequestToDeviceFeature on a call which succeeds without a payload", () {
+    /// The feature of an application whose function calls succeed without a payload.
+    OcsigenRequestToDeviceFeature<FakeHwType> aPayloadlessFeature() => _PayloadlessFeature(
+      haloManagerConfig: HaloManagerConfig<FakeHwType>(
+        hardwareLayer: FakeHwTypeHelper.only(device: FakeOcsigenDevice()),
+        requestIdHelper: OcsigenRequestIdHelper(),
+      ),
+    );
+
+    test("answers a format error to a complete scan", () async {
+      final result = await aPayloadlessFeature().wiFiCompleteScan(hardwareType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
+    });
+
+    test("answers a format error to a connection", () async {
+      final result = await aPayloadlessFeature().wiFiConnect(
+        hardwareType: FakeHwType.ble,
+        ssid: "a network",
+        password: "a password",
+      );
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
+    });
+
+    test("answers a format error to a status request", () async {
+      final result = await aPayloadlessFeature().wiFiGetStatus(materialType: FakeHwType.ble);
+
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
     });
   });
 }

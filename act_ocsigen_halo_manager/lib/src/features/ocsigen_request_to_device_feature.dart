@@ -105,7 +105,14 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       return ResultWithRequiredValue(status: result.status);
     }
 
-    final parsed = OcsigenWiFiCompleteScanResult.parseFromDevice(result.value!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi complete scan function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiCompleteScanResult.parseFromDevice(resultPacket);
 
     if (parsed == null) {
       appLogger().w("The wifi complete scan returned value isn't well formatted");
@@ -165,7 +172,14 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       return ResultWithRequiredValue(status: result.status);
     }
 
-    final parsed = OcsigenWiFiConnectResult.parseFromDevice(result.value!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi connect function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiConnectResult.parseFromDevice(resultPacket);
 
     if (parsed == null) {
       appLogger().w("The wifi connect returned value isn't well formatted");
@@ -213,7 +227,14 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
       return ResultWithRequiredValue(status: result.status);
     }
 
-    final parsed = OcsigenWiFiStatusResult.parseFromDevice(result.value!);
+    final resultPacket = result.value;
+
+    if (resultPacket == null) {
+      appLogger().w("The wifi get status function hasn't returned a payload");
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
+    }
+
+    final parsed = OcsigenWiFiStatusResult.parseFromDevice(resultPacket);
 
     if (parsed == null) {
       appLogger().w("The wifi get status returned value isn't well formatted");
