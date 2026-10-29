@@ -12,6 +12,10 @@ enum HaloErrorType with MixinHaloType, MixinResultStatus {
   noError(rawValue: 0x00, canBeRetried: true),
 
   /// Means that the previous message did not respect the expected format
+  ///
+  /// The package also returns it, without the device, for a request it refuses to send (a
+  /// parameter which can't be encoded, an option the device doesn't support) and for an answer it
+  /// can't decode
   formatError(rawValue: 0x01),
 
   /// Means that the previous message is inconsistent with the protocol and the current state of the
