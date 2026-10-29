@@ -1,0 +1,69 @@
+# SPDX-FileCopyrightText: 2026 Dorian Benech <dorian.benech@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_tb_extender_client
+description: Speaks to the tb-extender broker, which exchanges the access token of
+  an identity provider for ThingsBoard tokens and manages the devices of an account.
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.11.1
+  flutter: ">=3.29.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Value equality of the models the broker answers with
+  equatable: ^2.0.7
+
+  # The result the calls of the broker answer
+  act_dart_result:
+    path: ../act_dart_result
+
+  # JSON parsing helpers
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  # The exception thrown when the base URL of the broker isn't configured
+  act_foundation:
+    path: ../act_foundation
+
+  # The application logger the models report a malformed payload to
+  act_global_manager:
+    path: ../act_global_manager
+
+  # The manager the broker is requested through
+  act_http_client_manager:
+    path: ../act_http_client_manager
+
+  # The claims of the tokens: the user of a ThingsBoard token, the terms accepted on the account
+  act_jwt_utilities:
+    path: ../act_jwt_utilities
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+
+  # The stubbed transport the broker of the tests answers over
+  http: ^1.6.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
