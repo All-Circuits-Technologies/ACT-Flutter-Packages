@@ -14,14 +14,19 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [What the layer is made of](#what-the-layer-is-made-of)
   - [The thirteen characteristics](#the-thirteen-characteristics)
   - [The device which is reached](#the-device-which-is-reached)
+  - [The size of the packets](#the-size-of-the-packets)
+  - [The trace of the exchanges](#the-trace-of-the-exchanges)
   - [Waiting for a device](#waiting-for-a-device)
   - [Calling a request](#calling-a-request)
   - [Reading the result of a request](#reading-the-result-of-a-request)
+  - [Reading and writing the attributes and the instant data](#reading-and-writing-the-attributes-and-the-instant-data)
+  - [Reading the records](#reading-the-records)
 - [How to use](#how-to-use)
   - [Installation](#installation)
   - [Name the characteristics of the device](#name-the-characteristics-of-the-device)
   - [Hand a device over](#hand-a-device-over)
   - [Ask the device for a request](#ask-the-device-for-a-request)
+  - [Read an attribute](#read-an-attribute)
 - [What is not carried yet](#what-is-not-carried-yet)
 - [Testing](#testing)
 
@@ -43,15 +48,23 @@ permissions it needs and the connection to a device are none of its business.
 flowchart TD
     hardware["HaloBleHardware"]
     request["HaloBleRequestToDeviceHardware"]
-    others["the layers of the attributes and of the data"]
+    attribute["HaloBleAttributeHardware"]
+    instant["HaloBleInstantDataHardware"]
+    record["HaloBleRecordDataHardware"]
+    exchange["HaloBleDataExchange"]
     companion["HaloBleCompanion"]
     config["HaloBleConfig (the characteristics)"]
     manager["BleManager"]
 
     hardware --> request
-    hardware --> others
+    hardware --> attribute
+    hardware --> instant
+    hardware --> record
+    attribute --> exchange
+    instant --> exchange
+    record --> exchange
     request --> companion
-    others --> companion
+    exchange --> companion
     companion --> config
     companion --> manager
 ```
@@ -59,7 +72,8 @@ flowchart TD
 `HaloBleHardware` is what an application hands to the abstract HALO package: one layer per part of
 the protocol. Every layer goes through the same companion, which is the only place where a
 characteristic is written to or read from, and the companion reads the configuration to know which
-characteristic is which.
+characteristic is which. The attributes, the instant data and the records are exchanged the same
+way, so their three layers share `HaloBleDataExchange`, which holds that exchange.
 
 ### The thirteen characteristics
 
@@ -96,6 +110,30 @@ disconnects by itself is the same thing as a device which is taken away.
 
 Nothing is written while there is no device: the writing is answered as a communication error rather
 than raised.
+
+`onNewHaloBleDevice` answers false when one of the subscriptions fails: the device is then given up
+at once, as if it had been taken away, so that the companion never holds a device it only half
+hears.
+
+### The size of the packets
+
+What is written to the device is cut in packets of `HaloBleCompanion.packetSize`: the size
+negotiated with the device the companion holds (`BleDevice.packetSize`, see the
+[ACT BLE manager package](../act_ble_manager/README.md)), capped by `maxCharacteristicByteSize` of
+the configuration. The cap is what lets a firmware which cannot take bigger packets keep its size
+whatever the MTU says. With no device, the size is the one of the smallest MTU, 20 bytes.
+
+### The trace of the exchanges
+
+Every writing and every notification is traced at the debug level, in the logs category
+`HaloBleCompanion.traceLogsCategory` (`haloTrace`), so that a logger can keep the trace apart from
+the other logs. A line names the direction (`>` for a writing, `<` for a notification), the letter
+of the characteristic and the bytes in hexadecimal:
+
+```text
+[HALO] > B 00 00 04
+[HALO] < B 00 01 04
+```
 
 ### Waiting for a device
 
@@ -147,6 +185,39 @@ device answers a packet, and it goes on until a packet ends with the byte which 
 packet whose end byte is followed by zeroes is cleaned rather than dropped, because that is a device
 which padded its answer; a packet which holds anything else after that byte is a failure.
 
+### Reading and writing the attributes and the instant data
+
+A command is written on the command characteristic (B or E) as `[CMD_ID, VALUE_NB, ID]` and the
+device answers on the same characteristic as `[ERROR, VALUE_NB, ID]`; an answer which is not of
+that size, or which is about another identifier, is read as a format error. The values go through
+the exchange zone (C or F):
+
+- a read is the command `HaloCmdId.read`, then `HaloCmdId.readReady` packet by packet until the
+  end of the payload, as for the result of a request;
+- a write is the command `HaloCmdId.write` with the number of values, then the payload cut in
+  packets, each of them acknowledged by the device on the command characteristic;
+- a subscription and an unsubscription are a command alone.
+
+The device notifies on A or D the flags of the data which changed: little endian, bit `n` for the
+identifier `n`. Every data whose flag is raised is read, which clears its flag in the device, and
+its new value is given on `attrNewValueStream` or `instDataNewValueStream`. A read which fails is
+logged and the next flag is handled, so one data which cannot be read does not hide the others.
+
+Two exchanges of the same service never mix their steps: the second one waits for the first to be
+over. The instant data are only read over BLE: `writeInstantData` answers
+`HaloErrorType.notImplementedYet` and writes nothing.
+
+### Reading the records
+
+The records are exchanged as the attributes, over H and I, except that a record is named by its
+key: two bytes, the unique index of the record then the identifier of its data. The list of the
+keys of a data is read as a record of its own, and holds the keys the device exposes, in its order.
+Acknowledging a record tells the device it is saved, so that the device frees it.
+
+The device notifies on G the keys of the records which are waiting, oldest first; they are given on
+`recordKeysNewValueStream`. Over BLE the device only notifies the keys, so the `onlyNotifyKey` of a
+subscription changes nothing.
+
 ## How to use
 
 ### Installation
@@ -166,7 +237,8 @@ final haloConfig = HaloBleConfig(
   charAAttrNotifyUuid: UuidValue.fromString("0000ff01-0000-1000-8000-00805f9b34fb"),
   charBAttrCmdUuid: UuidValue.fromString("0000ff02-0000-1000-8000-00805f9b34fb"),
   // ... one per characteristic of the protocol
-  maxCharacteristicByteSize: 20,
+  // The most the firmware takes in one packet, whatever the MTU negotiated
+  maxCharacteristicByteSize: 244,
 );
 ```
 
@@ -212,12 +284,23 @@ final error = await hardware.requestToDeviceHardware.callOrder(
 );
 ```
 
+### Read an attribute
+
+```dart
+final batteryLevel = HaloDataId(id: 0x04, value: AppAttribute.batteryLevel);
+final result = await hardware.attributeHardware.readAttribute(dataId: batteryLevel);
+
+if (result.isSuccess) {
+  final level = result.value!.payload.getUInt(0).data;
+}
+
+hardware.attributeHardware.attrNewValueStream.listen(_onAttributeChanged);
+```
+
 ## What is not carried yet
 
-Only the requests which are asked of the device are carried. The attributes, the instant data, the
-records and the requests a device asks for have their layers in place but every one of their methods
-raises: the characteristics are named and subscribed to, and the writing and the reading are there,
-so what is left is the packets of each of those parts.
+The requests a device asks for (L and M) have their layer in place, with no method yet: the
+characteristics are named and subscribed to, so what is left is the packets of that part.
 
 ## Testing
 
@@ -247,6 +330,18 @@ parameters which are handed over after the request and cut in several packets, o
 is read in several packets, on the result which carries several values, on the answer which cannot
 be read, on the answer about another request, on the request the device turns down, on the writing
 which fails at each step, and on the request whose kind is not the one which was called.
+
+The companion is covered on the size of the packets with no device, capped by the configuration
+and left as the device negotiated it, on the subscription which fails and has the device given up,
+and on the trace of a writing and of a notification in its own category.
+
+The attributes, the instant data and the records are covered on the byte sequences of the
+specification: the read in one packet and in several, the write cut in packets, the subscription,
+the flags which are read and the keys which are notified, the list of the keys and the
+acknowledgment. They are covered too on the error the device answers, on the answer which is
+malformed or about another identifier, on the communication which fails, on two exchanges asked
+at once, on the read which throws while the flags are handled, and on a key notified in the middle
+of a read.
 
 What is out of reach is the scanning and the connecting of a device, which belong to the manager of
 the Bluetooth, and the equality of a configuration, whose characteristics are told apart by instance

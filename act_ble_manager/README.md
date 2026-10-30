@@ -15,6 +15,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Switching the Bluetooth on](#switching-the-bluetooth-on)
   - [Scanning](#scanning)
   - [Reaching a device](#reaching-a-device)
+  - [The size of the packets](#the-size-of-the-packets)
   - [The Bluetooth which is taken again](#the-bluetooth-which-is-taken-again)
 - [How to use](#how-to-use)
   - [Installation](#installation)
@@ -108,6 +109,20 @@ a stronger pairing, which has the pairing of the device marked as failed, and th
 that the permission of the characteristic is missing, which is answered as such so that a page can
 tell the user. An Android device which raises anything at all has the Bluetooth taken again, because
 the plugin cannot be used afterwards otherwise.
+
+### The size of the packets
+
+Once a device is connected, the GATT service asks it for an MTU of 247 bytes, the most a BLE 4.2
+link carries, and keeps the size of the packets which can be written to it in
+`BleDevice.packetSize`. The plugin does not answer the same thing on each platform: Android answers
+the MTU negotiated, from which the 3 bytes of the ATT header are taken off, and iOS answers the size
+of a write straight away.
+
+A device which does not answer, or answers an error, is still connected: its packets keep the size
+of the smallest MTU, `defaultPacketSize` (20 bytes). The request is bounded by the time of a simple
+communication, 5 seconds, which is what a device which never answers adds to its connection. The
+size is reset at every connection, so a link which is opened again never keeps the size of the
+previous one.
 
 ### The Bluetooth which is taken again
 
@@ -277,8 +292,11 @@ characteristic which is missing.
 
 The connecting is covered on the attempt which failed and is tried again a short pause later, on
 the device which answers on the second attempt, and on the whole time of a connection which is
-spent. The time a connection takes is read on the clock of the package, which those tests move in
-place of the one of the device.
+spent. The size of the packets is covered on the answer of Android and the one of iOS, on the size
+which never goes under the default one, on the MTU which cannot be negotiated, on the device which
+never answers the request, and on the connection opened again whose MTU fails. The time a
+connection takes is read on the clock of the package, which those tests move in place of the one of
+the device.
 
 What is out of reach is the scanning itself: the plugin of the Bluetooth keeps one instance for the
 whole application, and the scanning is driven by the clock of the device rather than by a timer a
