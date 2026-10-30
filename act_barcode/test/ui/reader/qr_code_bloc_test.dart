@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_barcode/act_barcode.dart';
 import 'package:act_foundation/act_foundation.dart';
-import 'package:act_qr_code/act_qr_code.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:permission_handler/permission_handler.dart';

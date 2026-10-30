@@ -4,7 +4,7 @@ SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
 
-# ACT QR Code <!-- omit from toc -->
+# ACT Barcode <!-- omit from toc -->
 
 ## Table of contents
 
@@ -87,8 +87,8 @@ Add the package to the `dependencies` of your package:
 
 ```yaml
 dependencies:
-  act_qr_code:
-    path: ../act_qr_code
+  act_barcode:
+    path: ../act_barcode
 ```
 
 ### Display a code

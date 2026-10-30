@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_qr_code/src/ui/reader/qr_code_bloc.dart';
-import 'package:act_qr_code/src/ui/reader/qr_code_event.dart';
-import 'package:act_qr_code/src/ui/reader/qr_code_state.dart';
+import 'package:act_barcode/src/ui/reader/qr_code_bloc.dart';
+import 'package:act_barcode/src/ui/reader/qr_code_event.dart';
+import 'package:act_barcode/src/ui/reader/qr_code_state.dart';
 import 'package:app_settings/app_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

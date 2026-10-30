@@ -2,8 +2,8 @@
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-name: act_qr_code
-description: This package contains widgets linked to QR code
+name: act_barcode
+description: This package contains widgets linked to barcodes, QR codes included
 
 publish_to: none
 

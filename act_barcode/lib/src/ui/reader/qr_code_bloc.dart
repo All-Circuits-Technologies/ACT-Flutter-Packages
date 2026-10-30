@@ -4,10 +4,10 @@
 
 import 'dart:async';
 
+import 'package:act_barcode/src/ui/reader/qr_code_event.dart';
+import 'package:act_barcode/src/ui/reader/qr_code_state.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_qr_code/src/ui/reader/qr_code_event.dart';
-import 'package:act_qr_code/src/ui/reader/qr_code_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
