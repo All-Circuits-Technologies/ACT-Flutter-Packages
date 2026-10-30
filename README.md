@@ -51,6 +51,7 @@ To install it globally, you have to call:
 | [act_amplify_storage_s3](act_amplify_storage_s3/)                         | This package is a wrapper around the Amplify Storage S3 plugin.                                                          |         |
 | [act_app_life_cycle_manager](act_app_life_cycle_manager/)                 | This package contains the manager for the app life cycle.                                                                |         |
 | [act_aws_iot_core](act_aws_iot_core/)                                     | Package to interact with aws iot core using amplify credentials                                                          |         |
+| [act_barcode](act_barcode/)                                               | This package contains widgets linked to barcodes, QR codes included                                                      |         |
 | [act_ble_manager](act_ble_manager/)                                       | This package contains the base for Bluetooth Low Energy                                                                  |         |
 | [act_ble_manager_ui](act_ble_manager_ui/)                                 | This contains ui elements to complete the ACT BLE manager                                                                |         |
 | [act_config_manager](act_config_manager/)                                 | This package contains methods to manage config variables.                                                                |         |
@@ -94,7 +95,6 @@ To install it globally, you have to call:
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
-| [act_qr_code](act_qr_code/)                                               | This package contains widgets linked to QR code                                                                          |         |
 | [act_remote_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act remote localized and versioned file manager.                                                                         |         |
 | [act_remote_storage_manager](act_remote_storage_manager/)                 | This package contains the remote storage manager, which can be used to get files from a remote server.                   |         |
 | [act_remote_storage_ui](act_remote_storage_ui/)                           | Contains helpful widgets to work with act_remote_storage_manager                                                         |         |
