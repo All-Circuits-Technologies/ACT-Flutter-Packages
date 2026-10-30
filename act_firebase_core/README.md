@@ -114,8 +114,10 @@ class AppFirebaseBuilder extends AbsFirebaseBuilder<AppFirebaseManager, AppConfi
 }
 ```
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(AppFirebaseBuilder());
+registerManagerAsync(AppFirebaseBuilder());
 ```
 
 `DefaultFirebaseOptions` comes from the file the tools of Firebase generate, which the next section

@@ -147,8 +147,10 @@ class AppConfigBuilder extends AbstractConfigBuilder<AppConfigManager> {
 }
 ```
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(AppConfigBuilder());
+registerManagerAsync(AppConfigBuilder());
 ```
 
 ### Read a variable

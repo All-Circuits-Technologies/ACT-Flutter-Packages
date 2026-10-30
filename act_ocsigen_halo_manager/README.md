@@ -154,8 +154,10 @@ class DeviceBuilder extends AbstractOcsigenHaloBuilder<DeviceManager> {
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(DeviceBuilder(DeviceManager.new));
+registerManagerAsync(DeviceBuilder(DeviceManager.new));
 ```
 
 ### Connect a device to a network

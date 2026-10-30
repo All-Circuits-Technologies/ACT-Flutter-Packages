@@ -109,6 +109,8 @@ dependencies:
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
 class MyHaloManager extends AbstractHaloManager<MyHwType> {
   @override
@@ -126,7 +128,11 @@ class MyHaloManager extends AbstractHaloManager<MyHwType> {
   }
 }
 
-globalManager.registerManagerAsync<MyHaloManager>(MyHaloBuilder(MyHaloManager.new));
+class MyHaloBuilder extends AbstractHaloBuilder<MyHaloManager> {
+  MyHaloBuilder(super.factory);
+}
+
+registerManagerAsync(MyHaloBuilder(MyHaloManager.new));
 ```
 
 ### Ask the device
