@@ -81,8 +81,10 @@ dependencies:
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(TicBuilder());
+registerManagerAsync(TicBuilder());
 ```
 
 ### Blink at the same pace everywhere

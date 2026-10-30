@@ -108,10 +108,11 @@ dependencies:
 ### Register the manager
 
 The configuration of the application takes `MixinLocaleConfig` and its properties take
-`MixinLocaleProperties`, then the manager is registered with both:
+`MixinLocaleProperties`, then the manager is registered with both in `registerManagers` of
+the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
-globalManager.registerManagerAsync<LocalesManager>(
+registerManagerAsync(
   LocalesManagerBuilder<AppConfigManager, AppPropertiesManager>(
     getSupportedLocales: () => AppLocalizations.supportedLocales,
   ),
