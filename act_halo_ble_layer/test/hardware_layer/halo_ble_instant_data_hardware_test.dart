@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/act_halo_ble_layer.dart';
@@ -74,14 +75,14 @@ void main() {
   HaloDataId<int> aData(int id) => HaloDataId<int>(id: id, value: id);
 
   /// An answer of the device, made of the [bytes].
-  (HaloErrorType, Uint8List?) answer(List<int> bytes) =>
-      (HaloErrorType.noError, Uint8List.fromList(bytes));
+  ResultWithRequiredValue<HaloErrorType, Uint8List> answer(List<int> bytes) =>
+      ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(bytes));
 
   /// The timestamp of the spec Annex A.3.
   final aDate = DateTime.fromMillisecondsSinceEpoch(1761048000 * 1000, isUtc: true);
 
   /// What the device answers when the data [id] is read and holds the U2 [value] stamped [aDate].
-  List<(HaloErrorType, Uint8List?)> readAnswers(int id, int value) {
+  List<ResultWithRequiredValue<HaloErrorType, Uint8List>> readAnswers(int id, int value) {
     final payload = HaloPayloadPacket()..addUInt16(value, ts: aDate);
 
     return [
@@ -100,13 +101,13 @@ void main() {
         answer([0xC0, 0x7D, 0xE0, 0x75, 0xF7, 0x68, 0x3A, 0x52, 0x1C, 0xC1]),
       ]);
 
-      final (error, packet) = await hardware.readInstantData(dataId: aData(0x00));
+      final result = await hardware.readInstantData(dataId: aData(0x00));
 
-      expect(error, HaloErrorType.noError);
-      expect(packet!.dataId.id, 0x00);
-      final (value, ts) = packet.payload.getUInt(0)!;
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.dataId.id, 0x00);
+      final HaloTimestampedValue(data: value, :timestamp) = result.value!.payload.getUInt(0).value!;
       expect(value, 7250);
-      expect(ts, aDate);
+      expect(timestamp, aDate);
       expect(commands(), [
         [0x00, 0x00, 0x00],
         [0x01, 0x00, 0x00],
@@ -116,10 +117,10 @@ void main() {
     test("gives the error of the device and stops there", () async {
       companion.answers.add(answer([0x02, 0x00, 0x0E]));
 
-      final (error, packet) = await hardware.readInstantData(dataId: aData(0x0E));
+      final result = await hardware.readInstantData(dataId: aData(0x0E));
 
-      expect(error, HaloErrorType.protocolError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.protocolError);
+      expect(result.value, isNull);
     });
   });
 
@@ -166,7 +167,10 @@ void main() {
       final packets = await notified([0x01, 0x00], 1);
 
       expect(packets.single.dataId.id, 0x00);
-      expect(packets.single.payload.getUInt(0), (7250, aDate));
+      expect(
+        packets.single.payload.getUInt(0).value,
+        HaloTimestampedValue(data: 7250, timestamp: aDate),
+      );
       expect(commands(), [
         [0x00, 0x00, 0x00],
         [0x01, 0x00, 0x00],

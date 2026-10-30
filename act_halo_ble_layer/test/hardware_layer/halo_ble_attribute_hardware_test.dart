@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/act_halo_ble_layer.dart';
@@ -74,11 +75,11 @@ void main() {
   HaloDataId<int> anAttribute(int id) => HaloDataId<int>(id: id, value: id);
 
   /// An answer of the device, made of the [bytes].
-  (HaloErrorType, Uint8List?) answer(List<int> bytes) =>
-      (HaloErrorType.noError, Uint8List.fromList(bytes));
+  ResultWithRequiredValue<HaloErrorType, Uint8List> answer(List<int> bytes) =>
+      ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(bytes));
 
   /// What the device answers when the attribute [id] is read and holds the U2 [value].
-  List<(HaloErrorType, Uint8List?)> readAnswers(int id, int value) {
+  List<ResultWithRequiredValue<HaloErrorType, Uint8List>> readAnswers(int id, int value) {
     final payload = HaloPayloadPacket()..addUInt16(value);
 
     return [
@@ -97,11 +98,11 @@ void main() {
     test("replays the read of the attribute 0x04 of the spec", () async {
       companion.answers.addAll(readAnswers(0x04, 5000));
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x04));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x04));
 
-      expect(error, HaloErrorType.noError);
-      expect(packet!.dataId.id, 0x04);
-      expect(packet.payload.getUInt(0)?.$1, 5000);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.dataId.id, 0x04);
+      expect(result.value!.payload.getUInt(0).data, 5000);
       expect(commands(), [
         [0x00, 0x00, 0x04],
         [0x01, 0x00, 0x04],
@@ -112,10 +113,10 @@ void main() {
     test("gives the error of the device and stops there", () async {
       companion.answers.add(answer([0x02, 0x00, 0x0E]));
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x0E));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x0E));
 
-      expect(error, HaloErrorType.protocolError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.protocolError);
+      expect(result.value, isNull);
       expect(commands(), [
         [0x00, 0x00, 0x0E],
       ]);
@@ -125,13 +126,13 @@ void main() {
       // The device answers a READ_READY with nothing to send on B, so the wait on C times out
       companion.answers.addAll([
         answer([0x00, 0x01, 0x04]),
-        (HaloErrorType.genericError, null),
+        const ResultWithRequiredValue<HaloErrorType, Uint8List>(status: HaloErrorType.genericError),
       ]);
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x04));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x04));
 
-      expect(error, HaloErrorType.genericError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.genericError);
+      expect(result.value, isNull);
     });
 
     test("rebuilds a value which the device cut in several packets", () async {
@@ -143,38 +144,40 @@ void main() {
         for (final packet in packets) answer(packet),
       ]);
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x07));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x07));
 
-      expect(error, HaloErrorType.noError);
-      expect(packet!.payload.getString(0)?.$1, "a string longer than twenty bytes");
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.payload.getString(0).data, "a string longer than twenty bytes");
       expect(commands().where((command) => command[0] == 0x01).length, packets.length);
     });
 
     test("gives a format error when the result is not made of three bytes", () async {
       companion.answers.add(answer([0x00, 0x01]));
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x04));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x04));
 
-      expect(error, HaloErrorType.formatError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
     });
 
     test("gives a format error when the result is for another attribute", () async {
       companion.answers.add(answer([0x00, 0x01, 0x05]));
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x04));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x04));
 
-      expect(error, HaloErrorType.formatError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
     });
 
     test("gives the error of the communication", () async {
-      companion.answers.add((HaloErrorType.commError, null));
+      companion.answers.add(
+        const ResultWithRequiredValue<HaloErrorType, Uint8List>(status: HaloErrorType.commError),
+      );
 
-      final (error, packet) = await hardware.readAttribute(dataId: anAttribute(0x04));
+      final result = await hardware.readAttribute(dataId: anAttribute(0x04));
 
-      expect(error, HaloErrorType.commError);
-      expect(packet, isNull);
+      expect(result.status, HaloErrorType.commError);
+      expect(result.value, isNull);
     });
 
     test("does not mix two reads asked at once", () async {
@@ -185,8 +188,8 @@ void main() {
         hardware.readAttribute(dataId: anAttribute(0x05)),
       ]);
 
-      expect(results[0].$2!.payload.getUInt(0)?.$1, 1);
-      expect(results[1].$2!.payload.getUInt(0)?.$1, 2);
+      expect(results[0].value!.payload.getUInt(0).data, 1);
+      expect(results[1].value!.payload.getUInt(0).data, 2);
       expect(commands(), [
         [0x00, 0x00, 0x04],
         [0x01, 0x00, 0x04],
@@ -342,7 +345,7 @@ void main() {
       final packets = await notified([0x30, 0x00], 2);
 
       expect(packets.map((packet) => packet.dataId.id), [0x04, 0x05]);
-      expect(packets.map((packet) => packet.payload.getUInt(0)?.$1), [5000, 7]);
+      expect(packets.map((packet) => packet.payload.getUInt(0).data), [5000, 7]);
       expect(commands(), [
         [0x00, 0x00, 0x04],
         [0x01, 0x00, 0x04],

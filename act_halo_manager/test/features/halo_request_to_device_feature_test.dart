@@ -133,7 +133,7 @@ void main() {
           .callFunction(hardwareType: FakeHwType.ble, request: aRequest())
           .timeout(const Duration(seconds: 2));
 
-      expect(result.error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
     });
 
     test("goes on answering after it could not reach the device", () async {

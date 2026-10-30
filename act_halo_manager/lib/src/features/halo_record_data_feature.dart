@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/features/abstract_halo_feature.dart';
 
@@ -16,26 +17,24 @@ class HaloRecordDataFeature<HardwareType> extends AbstractHaloFeature<HardwareTy
   /// With [hardwareType] you specify through what hardware you want to read the device
   ///
   /// The device may expose only a window of its archives, see [drainRecords]
-  Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({
+  Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
     required HardwareType hardwareType,
     required HaloDataId dataId,
   }) => callAndRetry(
     hardwareType: hardwareType,
-    errorDefaultResult: (HaloErrorType.genericError, null as List<HaloRecordKey>?),
+    errorDefaultResult: const ResultWithRequiredValue(status: HaloErrorType.genericError),
     callRequest: (service) => service.recordDataHardware.getAllRecordDataKeys(dataId: dataId),
-    isMakingSensToRetry: (result) => result.$1.isMakingSensToRetry,
   );
 
   /// Read the archive [recordKey] in the device
   /// With [hardwareType] you specify through what hardware you want to read the device
-  Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({
+  Future<ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>> readRecordData({
     required HardwareType hardwareType,
     required HaloRecordKey recordKey,
   }) => callAndRetry(
     hardwareType: hardwareType,
-    errorDefaultResult: (HaloErrorType.genericError, null as HaloRecordPacket?),
+    errorDefaultResult: const ResultWithRequiredValue(status: HaloErrorType.genericError),
     callRequest: (service) => service.recordDataHardware.readRecordData(recordKey: recordKey),
-    isMakingSensToRetry: (result) => result.$1.isMakingSensToRetry,
   );
 
   /// Tell the device that the archive [recordKey] is saved, so that it frees it
@@ -100,29 +99,26 @@ class HaloRecordDataFeature<HardwareType> extends AbstractHaloFeature<HardwareTy
     final refused = <HaloRecordKey>{};
 
     while (true) {
-      final (error, keys) = await getAllRecordDataKeys(hardwareType: hardwareType, dataId: dataId);
+      final keysResult = await getAllRecordDataKeys(hardwareType: hardwareType, dataId: dataId);
 
-      if (error != HaloErrorType.noError) {
-        return error;
+      if (keysResult.isError) {
+        return keysResult.status;
       }
 
-      final toRead = keys!.where((key) => !refused.contains(key)).toList();
+      final toRead = keysResult.value!.where((key) => !refused.contains(key)).toList();
 
       if (toRead.isEmpty) {
         return HaloErrorType.noError;
       }
 
       for (final key in toRead) {
-        final (readError, record) = await readRecordData(
-          hardwareType: hardwareType,
-          recordKey: key,
-        );
+        final readResult = await readRecordData(hardwareType: hardwareType, recordKey: key);
 
-        if (readError != HaloErrorType.noError) {
-          return readError;
+        if (readResult.isError) {
+          return readResult.status;
         }
 
-        if (!await onRecord(record!)) {
+        if (!await onRecord(readResult.value!)) {
           refused.add(key);
           continue;
         }
@@ -145,6 +141,5 @@ class HaloRecordDataFeature<HardwareType> extends AbstractHaloFeature<HardwareTy
     hardwareType: hardwareType,
     errorDefaultResult: HaloErrorType.genericError,
     callRequest: callRequest,
-    isMakingSensToRetry: (error) => error.isMakingSensToRetry,
   );
 }

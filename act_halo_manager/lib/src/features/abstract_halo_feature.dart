@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/models/halo_manager_config.dart';
@@ -20,15 +21,15 @@ abstract class AbstractHaloFeature<HardwareType> {
   /// The [errorDefaultResult] is the default error value to return if an error occurred in the
   /// process
   /// The real request is done through the [callRequest] param given, and to test if we need to
-  /// retry, we use [isMakingSensToRetry]
+  /// retry, we check that the result is an error and that [MixinResultStatus.canBeRetried] is true
   ///
-  /// To note that [HaloErrorType.noError] is considered has a non need of retry because we succeed
+  /// To note that a successful result is never retried, even if [MixinResultStatus.canBeRetried] is
+  /// true for it (it's the case for [HaloErrorType.noError])
   @protected
-  Future<T> callAndRetry<T>({
+  Future<T> callAndRetry<T extends MixinResultStatus>({
     required HardwareType hardwareType,
     required T errorDefaultResult,
     required Future<T> Function(AbstractHaloHardware) callRequest,
-    required bool Function(T) isMakingSensToRetry,
   }) async {
     await haloManagerConfig.actionMutex.acquire();
 
@@ -43,7 +44,9 @@ abstract class AbstractHaloFeature<HardwareType> {
       var result = errorDefaultResult;
       var nbTry = 0;
 
-      while (isMakingSensToRetry(result) && nbTry < haloManagerConfig.retryNbBeforeReturningError) {
+      while (result.isError &&
+          result.canBeRetried &&
+          nbTry < haloManagerConfig.retryNbBeforeReturningError) {
         result = await callRequest(service);
         nbTry++;
       }

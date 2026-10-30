@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
@@ -77,78 +78,83 @@ class HaloBleDataExchange {
       return HaloErrorType.formatError;
     }
 
-    final (error, _) = await _sendCmd(cmdId: HaloCmdId.write, valueNb: valueNb, id: id);
+    final cmdResult = await _sendCmd(cmdId: HaloCmdId.write, valueNb: valueNb, id: id);
 
-    if (error != HaloErrorType.noError) {
+    if (cmdResult.isError) {
       appLogger().w("The device refused to write the $_label: $id");
-      return error;
+      return cmdResult.status;
     }
 
-    var lastError = HaloErrorType.noError;
     for (final data in packet.payload.getDataToSend(maxPacketSize: _bleCompanion.packetSize)) {
       // The device acknowledges every packet, the last one with the result of the write
-      (lastError, _) = await _writeAndWaitResult(char: _tmpChar, data: data, id: id);
+      final result = await _writeAndWaitResult(char: _tmpChar, data: data, id: id);
 
-      if (lastError != HaloErrorType.noError) {
+      if (result.isError) {
         appLogger().w("A problem occurred when writing the $_label: $id");
-        return lastError;
+        return result.status;
       }
     }
 
-    return lastError;
+    return HaloErrorType.noError;
   });
 
   /// Reads the value of [dataId] from the device
-  Future<(HaloErrorType, HaloPacket?)> read({required HaloDataId dataId}) =>
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> read({required HaloDataId dataId}) =>
       _exchangeMutex.protect(() => _unsafeRead(dataId));
 
   /// Reads [dataId], the caller holds the [_exchangeMutex]
-  Future<(HaloErrorType, HaloPacket?)> _unsafeRead(HaloDataId dataId) async {
-    final (error, packets) = await _unsafeReadPackets([dataId.id]);
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> _unsafeRead(HaloDataId dataId) async {
+    final packetsResult = await _unsafeReadPackets([dataId.id]);
 
-    if (error != HaloErrorType.noError) {
-      return (error, null);
+    if (packetsResult.isError) {
+      return ResultWithRequiredValue(status: packetsResult.status);
     }
 
-    final payload = HaloPayloadPacket.fromDevice(packets!);
+    final payload = HaloPayloadPacket.fromDevice(packetsResult.value!);
 
     if (payload == null) {
       appLogger().w("The values received for the $_label: ${dataId.id} can't be parsed");
-      return (HaloErrorType.formatError, null);
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return (HaloErrorType.noError, HaloPacket(dataId: dataId, payload: payload));
+    return ResultWithRequiredValue(
+      status: HaloErrorType.noError,
+      value: HaloPacket(dataId: dataId, payload: payload),
+    );
   }
 
   /// Reads the packets which hold the frame of [id], as the device sends them
-  Future<(HaloErrorType, List<Uint8List>?)> readPackets({required List<int> id}) =>
-      _exchangeMutex.protect(() => _unsafeReadPackets(id));
+  Future<ResultWithRequiredValue<HaloErrorType, List<Uint8List>>> readPackets({
+    required List<int> id,
+  }) => _exchangeMutex.protect(() => _unsafeReadPackets(id));
 
   /// Reads the packets of [id], the caller holds the [_exchangeMutex]
-  Future<(HaloErrorType, List<Uint8List>?)> _unsafeReadPackets(List<int> id) async {
-    final (error, _) = await _sendCmd(cmdId: HaloCmdId.read, valueNb: 0, id: id);
+  Future<ResultWithRequiredValue<HaloErrorType, List<Uint8List>>> _unsafeReadPackets(
+    List<int> id,
+  ) async {
+    final cmdResult = await _sendCmd(cmdId: HaloCmdId.read, valueNb: 0, id: id);
 
-    if (error != HaloErrorType.noError) {
+    if (cmdResult.isError) {
       appLogger().w("A problem occurred when asking to read the $_label: $id");
-      return (error, null);
+      return ResultWithRequiredValue(status: cmdResult.status);
     }
 
     final packets = <Uint8List>[];
     var isLast = false;
 
     while (!isLast) {
-      final (readError, data) = await _bleCompanion.writeAndWaitNotifResult(
+      final readResult = await _bleCompanion.writeAndWaitNotifResult(
         toWriteInto: _cmdChar,
         dataToWrite: _cmd(cmdId: HaloCmdId.readReady, valueNb: 0, id: id),
         toWaitNotifyFrom: _tmpChar,
       );
 
-      if (readError != HaloErrorType.noError) {
+      if (readResult.isError) {
         appLogger().w("A problem occurred when reading the values of the $_label: $id");
-        return (readError, null);
+        return ResultWithRequiredValue(status: readResult.status);
       }
 
-      var cleaned = data!;
+      var cleaned = readResult.value!;
       final last = HaloPayloadPacket.isLastElementPacket(cleaned);
 
       if (last == null) {
@@ -157,7 +163,7 @@ class HaloBleDataExchange {
 
         if (tmp == null) {
           appLogger().w("The packet received for the $_label: $id is malformed");
-          return (HaloErrorType.formatError, null);
+          return const ResultWithRequiredValue(status: HaloErrorType.formatError);
         }
 
         cleaned = tmp;
@@ -167,15 +173,15 @@ class HaloBleDataExchange {
       packets.add(cleaned);
     }
 
-    return (HaloErrorType.noError, packets);
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: packets);
   }
 
   /// Sends the command [cmdId] which has no values, for [id], and returns its result
   Future<HaloErrorType> sendCmdNoValue({required HaloCmdId cmdId, required List<int> id}) =>
       _exchangeMutex.protect(() async {
-        final (error, _) = await _sendCmd(cmdId: cmdId, valueNb: 0, id: id);
+        final result = await _sendCmd(cmdId: cmdId, valueNb: 0, id: id);
 
-        return error;
+        return result.status;
       });
 
   /// Called when the device notifies the [flags] of the changed data on the flags characteristic
@@ -196,14 +202,14 @@ class HaloBleDataExchange {
 
       try {
         // The device knows the data by its ID alone, the upper layer maps it to its own value
-        final (error, packet) = await _exchangeMutex.protect(
+        final result = await _exchangeMutex.protect(
           () => _unsafeRead(HaloDataId<int>(id: id, value: id)),
         );
 
-        if (error != HaloErrorType.noError) {
-          appLogger().w("The $_label: $id has changed but we couldn't read it: $error");
+        if (result.isError) {
+          appLogger().w("The $_label: $id has changed but we couldn't read it: ${result.status}");
         } else {
-          onNewValue(packet!);
+          onNewValue(result.value!);
         }
       } catch (e) {
         // A failing read must neither stop the other ones nor the listening of the flags
@@ -216,8 +222,9 @@ class HaloBleDataExchange {
   Uint8List _cmd({required HaloCmdId cmdId, required int valueNb, required List<int> id}) =>
       Uint8List.fromList([cmdId.rawValue, valueNb, ...id]);
 
-  /// Writes the command to the device and returns its result: the error and the `VALUE_NB`
-  Future<(HaloErrorType, int)> _sendCmd({
+  /// Writes the command to the device and returns its result: the error of the device as status and
+  /// the `VALUE_NB` as value
+  Future<ResultWithRequiredValue<HaloErrorType, int>> _sendCmd({
     required HaloCmdId cmdId,
     required int valueNb,
     required List<int> id,
@@ -229,28 +236,32 @@ class HaloBleDataExchange {
 
   /// Writes the [data] in the characteristic [char] and waits for the result on the characteristic
   /// B, which has to be for [id]
-  Future<(HaloErrorType, int)> _writeAndWaitResult({
+  ///
+  /// The status is the error answered by the device and the value its `VALUE_NB`
+  Future<ResultWithRequiredValue<HaloErrorType, int>> _writeAndWaitResult({
     required MixCharNotification char,
     required Uint8List data,
     required List<int> id,
   }) async {
-    final (error, result) = await _bleCompanion.writeAndWaitNotifResult(
+    final writeResult = await _bleCompanion.writeAndWaitNotifResult(
       toWriteInto: char,
       dataToWrite: data,
       toWaitNotifyFrom: _cmdChar,
     );
 
-    if (error != HaloErrorType.noError) {
-      return (error, 0);
+    if (writeResult.isError) {
+      return ResultWithRequiredValue(status: writeResult.status);
     }
 
-    if (result!.length != _cmdHeaderSize + id.length ||
+    final result = writeResult.value!;
+
+    if (result.length != _cmdHeaderSize + id.length ||
         !listEquals(result.sublist(_cmdHeaderSize), id)) {
       appLogger().w("The result received for the $_label: $id is malformed: $result");
-      return (HaloErrorType.formatError, 0);
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return (HaloErrorType.parseValue(result[0]), result[1]);
+    return ResultWithRequiredValue(status: HaloErrorType.parseValue(result[0]), value: result[1]);
   }
 
   /// Stops listening to the flags, to call by the owner of the class when it closes

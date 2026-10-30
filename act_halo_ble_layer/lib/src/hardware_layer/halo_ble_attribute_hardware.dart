@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
 import 'package:act_halo_ble_layer/src/hardware_layer/halo_ble_data_exchange.dart';
@@ -43,8 +44,9 @@ class HaloBleAttributeHardware extends AbstractHaloAttributeHardware {
   /// This method allows to read a specific attribute value from the device and thanks to the
   /// [HaloDataId] given
   @override
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId}) =>
-      _exchange.read(dataId: dataId);
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  }) => _exchange.read(dataId: dataId);
 
   /// This method allows to subscribe to the modification of a specific attribute thanks to the
   /// [HaloDataId] given

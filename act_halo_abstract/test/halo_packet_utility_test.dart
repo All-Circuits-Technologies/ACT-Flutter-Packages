@@ -191,7 +191,7 @@ void main() {
     test("decodes the UTF-8 bytes back to the string", () {
       final element = HaloPacketUtility.formatString("Élan");
 
-      expect(HaloPacketUtility.getString(element), ("Élan", null));
+      expect(HaloPacketUtility.getString(element), _ok("Élan"));
     });
   });
 

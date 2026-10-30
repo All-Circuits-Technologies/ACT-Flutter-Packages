@@ -7,6 +7,7 @@ import 'dart:typed_data';
 
 import 'package:act_app_life_cycle_manager/act_app_life_cycle_manager.dart';
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/act_halo_ble_layer.dart';
@@ -78,8 +79,8 @@ void main() {
       HaloRecordKey<dynamic>(dataId: aData(id), uniqueIndex: index);
 
   /// An answer of the device, made of the [bytes].
-  (HaloErrorType, Uint8List?) answer(List<int> bytes) =>
-      (HaloErrorType.noError, Uint8List.fromList(bytes));
+  ResultWithRequiredValue<HaloErrorType, Uint8List> answer(List<int> bytes) =>
+      ResultWithRequiredValue(status: HaloErrorType.noError, value: Uint8List.fromList(bytes));
 
   /// The timestamp of the spec Annex A.4.
   final aDate = DateTime.fromMillisecondsSinceEpoch(1761048000 * 1000, isUtc: true);
@@ -94,10 +95,10 @@ void main() {
         answer([0xC0, 0x01, 0x01, 0xC1]),
       ]);
 
-      final (error, keys) = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
+      final result = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
 
-      expect(error, HaloErrorType.noError);
-      expect(keys, [aKey(0x01, 0x01)]);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, [aKey(0x01, 0x01)]);
       expect(commands(), [
         [0x00, 0x00, 0x00, 0x01],
         [0x01, 0x00, 0x00, 0x01],
@@ -111,9 +112,9 @@ void main() {
         answer([0xC0, 0x7D, 0xE0, 0x01, 0x02, 0x01, 0xC1]),
       ]);
 
-      final (_, keys) = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
+      final result = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
 
-      expect(keys, [aKey(0x01, 0xC0), aKey(0x01, 0x02)]);
+      expect(result.value, [aKey(0x01, 0xC0), aKey(0x01, 0x02)]);
     });
 
     test("gives no key when the device holds none", () async {
@@ -122,10 +123,10 @@ void main() {
         answer([0xC0, 0xC1]),
       ]);
 
-      final (error, keys) = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
+      final result = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
 
-      expect(error, HaloErrorType.noError);
-      expect(keys, isEmpty);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, isEmpty);
     });
 
     test("refuses a list which cuts a key in two", () async {
@@ -134,19 +135,19 @@ void main() {
         answer([0xC0, 0x01, 0x01, 0x01, 0xC1]),
       ]);
 
-      final (error, keys) = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
+      final result = await hardware.getAllRecordDataKeys(dataId: aData(0x01));
 
-      expect(error, HaloErrorType.formatError);
-      expect(keys, isNull);
+      expect(result.status, HaloErrorType.formatError);
+      expect(result.value, isNull);
     });
 
     test("gives the error of the device and stops there", () async {
       companion.answers.add(answer([0x02, 0x00, 0x00, 0x09]));
 
-      final (error, keys) = await hardware.getAllRecordDataKeys(dataId: aData(0x09));
+      final result = await hardware.getAllRecordDataKeys(dataId: aData(0x09));
 
-      expect(error, HaloErrorType.protocolError);
-      expect(keys, isNull);
+      expect(result.status, HaloErrorType.protocolError);
+      expect(result.value, isNull);
     });
   });
 
@@ -161,14 +162,17 @@ void main() {
         answer([0xFF, 0xC1]),
       ]);
 
-      final (error, record) = await hardware.readRecordData(recordKey: aKey(0x01, 0x01));
+      final result = await hardware.readRecordData(recordKey: aKey(0x01, 0x01));
 
-      expect(error, HaloErrorType.noError);
-      expect(record!.recordKey, aKey(0x01, 0x01));
-      expect(record.payload.getUInt(0), (1761048000, aDate));
-      expect(record.payload.getUInt(1), (7250, null));
-      expect(record.payload.getUInt(2), (7310, null));
-      expect(record.payload.getUInt(3), (0xFFFF, null));
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.recordKey, aKey(0x01, 0x01));
+      expect(
+        result.value!.payload.getUInt(0).value,
+        HaloTimestampedValue(data: 1761048000, timestamp: aDate),
+      );
+      expect(result.value!.payload.getUInt(1).value, const HaloTimestampedValue(data: 7250));
+      expect(result.value!.payload.getUInt(2).value, const HaloTimestampedValue(data: 7310));
+      expect(result.value!.payload.getUInt(3).value, const HaloTimestampedValue(data: 0xFFFF));
       expect(commands(), [
         [0x00, 0x00, 0x01, 0x01],
         [0x01, 0x00, 0x01, 0x01],
@@ -186,25 +190,28 @@ void main() {
         answer([0x00, 0xC1]),
       ]);
 
-      final (error, record) = await hardware.readRecordData(recordKey: aKey(0x00, 0x01));
+      final result = await hardware.readRecordData(recordKey: aKey(0x00, 0x01));
 
-      expect(error, HaloErrorType.noError);
-      expect(record!.payload.elementsNb, 5);
-      expect(record.payload.getUInt(0), (1761048000, aDate));
-      expect(record.payload.getUInt(1), (87, null));
-      expect(record.payload.getUInt(2), (85, null));
-      expect(record.payload.getUInt(3), (1, null));
-      expect(record.payload.getUInt(4), (1, null));
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.payload.elementsNb, 5);
+      expect(
+        result.value!.payload.getUInt(0).value,
+        HaloTimestampedValue(data: 1761048000, timestamp: aDate),
+      );
+      expect(result.value!.payload.getUInt(1).value, const HaloTimestampedValue(data: 87));
+      expect(result.value!.payload.getUInt(2).value, const HaloTimestampedValue(data: 85));
+      expect(result.value!.payload.getUInt(3).value, const HaloTimestampedValue(data: 1));
+      expect(result.value!.payload.getUInt(4).value, const HaloTimestampedValue(data: 1));
       expect(commands().first, [0x00, 0x00, 0x01, 0x00]);
     });
 
     test("gives the error of the device and stops there", () async {
       companion.answers.add(answer([0x02, 0x00, 0x05, 0x01]));
 
-      final (error, record) = await hardware.readRecordData(recordKey: aKey(0x01, 0x05));
+      final result = await hardware.readRecordData(recordKey: aKey(0x01, 0x05));
 
-      expect(error, HaloErrorType.protocolError);
-      expect(record, isNull);
+      expect(result.status, HaloErrorType.protocolError);
+      expect(result.value, isNull);
       expect(commands(), hasLength(1));
     });
 
@@ -316,10 +323,10 @@ void main() {
 
       final read = hardware.readRecordData(recordKey: aKey(0x01, 0x01));
       final keys = await notified([0x03, 0x01], 1);
-      final (error, _) = await read;
+      final result = await read;
 
       expect(keys, [aKey(0x01, 0x03)]);
-      expect(error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
       expect(commands(), [
         [0x00, 0x00, 0x01, 0x01],
         [0x01, 0x00, 0x01, 0x01],

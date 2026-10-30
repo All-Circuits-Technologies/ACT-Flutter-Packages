@@ -160,14 +160,19 @@ class FakeAttributeHardware extends AbstractHaloAttributeHardware {
       _answer("write", packet.dataId);
 
   @override
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId}) async {
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  }) async {
     final error = _answer("read", dataId);
 
     if (error != HaloErrorType.noError || result == null) {
-      return (error, null);
+      return ResultWithRequiredValue(status: error);
     }
 
-    return (error, HaloPacket(dataId: dataId, payload: result!));
+    return ResultWithRequiredValue(
+      status: error,
+      value: HaloPacket(dataId: dataId, payload: result!),
+    );
   }
 
   @override
@@ -220,14 +225,19 @@ class FakeInstantDataHardware extends AbstractHaloInstantDataHardware {
       _answer("write", packet.dataId);
 
   @override
-  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId}) async {
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({
+    required HaloDataId dataId,
+  }) async {
     final error = _answer("read", dataId);
 
     if (error != HaloErrorType.noError || result == null) {
-      return (error, null);
+      return ResultWithRequiredValue(status: error);
     }
 
-    return (error, HaloPacket(dataId: dataId, payload: result!));
+    return ResultWithRequiredValue(
+      status: error,
+      value: HaloPacket(dataId: dataId, payload: result!),
+    );
   }
 
   @override
@@ -302,13 +312,16 @@ class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
     final error = _answer("read ${recordKey.dataId.id}/${recordKey.uniqueIndex}");
 
     if (error != HaloErrorType.noError) {
-      return (error, null);
+      return ResultWithRequiredValue(status: error);
     }
 
     // The archive holds its own index, so that a test knows what it was given
     final payload = HaloPayloadPacket()..addUInt16(recordKey.uniqueIndex);
 
-    return (error, HaloRecordPacket(recordKey: recordKey, payload: payload));
+    return ResultWithRequiredValue(
+      status: error,
+      value: HaloRecordPacket(recordKey: recordKey, payload: payload),
+    );
   }
 
   @override
@@ -318,12 +331,12 @@ class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
     final error = _answer("getall ${dataId.id}");
 
     if (error != HaloErrorType.noError) {
-      return (error, null);
+      return ResultWithRequiredValue(status: error);
     }
 
-    return (
-      error,
-      [
+    return ResultWithRequiredValue(
+      status: error,
+      value: [
         for (final index in stored.take(windowSize))
           HaloRecordKey(dataId: dataId, uniqueIndex: index),
       ],

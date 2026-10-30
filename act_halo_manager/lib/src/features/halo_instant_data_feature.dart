@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/features/abstract_halo_feature.dart';
 
@@ -14,18 +15,19 @@ class HaloInstantDataFeature<HardwareType> extends AbstractHaloFeature<HardwareT
 
   /// Read the instant data [dataId] in the device and returns the values it holds
   /// With [hardwareType] you specify through what hardware you want to read the device
-  Future<(HaloErrorType, HaloPayloadPacket?)> readInstantData({
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPayloadPacket>> readInstantData({
     required HardwareType hardwareType,
     required HaloDataId dataId,
   }) async {
-    final (error, packet) = await callAndRetry(
+    final result = await callAndRetry(
       hardwareType: hardwareType,
-      errorDefaultResult: (HaloErrorType.genericError, null as HaloPacket?),
+      errorDefaultResult: const ResultWithRequiredValue<HaloErrorType, HaloPacket>(
+        status: HaloErrorType.genericError,
+      ),
       callRequest: (service) => service.instantDataHardware.readInstantData(dataId: dataId),
-      isMakingSensToRetry: (result) => result.$1.isMakingSensToRetry,
     );
 
-    return (error, packet?.payload);
+    return ResultWithRequiredValue(status: result.status, value: result.value?.payload);
   }
 
   /// Ask the device to tell us when the instant data [dataId] changes
@@ -69,6 +71,5 @@ class HaloInstantDataFeature<HardwareType> extends AbstractHaloFeature<HardwareT
     hardwareType: hardwareType,
     errorDefaultResult: HaloErrorType.genericError,
     callRequest: callRequest,
-    isMakingSensToRetry: (error) => error.isMakingSensToRetry,
   );
 }

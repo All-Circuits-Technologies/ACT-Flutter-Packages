@@ -44,13 +44,13 @@ void main() {
       final value = aValue();
       final (:feature, :device) = aFeature(result: value);
 
-      final (error, payload) = await feature.readInstantData(
+      final result = await feature.readInstantData(
         hardwareType: FakeHwType.ble,
         dataId: anInstantData,
       );
 
-      expect(error, HaloErrorType.noError);
-      expect(payload, value);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, value);
       expect(device.calls, ["read 4"]);
     });
 
@@ -60,13 +60,13 @@ void main() {
         result: aValue(),
       );
 
-      final (error, payload) = await feature.readInstantData(
+      final result = await feature.readInstantData(
         hardwareType: FakeHwType.ble,
         dataId: anInstantData,
       );
 
-      expect(error, HaloErrorType.noError);
-      expect(payload, isNotNull);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, isNotNull);
       expect(device.calls, hasLength(2));
     });
 
@@ -76,38 +76,38 @@ void main() {
         retryNbBeforeReturningError: 3,
       );
 
-      final (error, payload) = await feature.readInstantData(
+      final result = await feature.readInstantData(
         hardwareType: FakeHwType.ble,
         dataId: anInstantData,
       );
 
-      expect(error, HaloErrorType.serviceBusyError);
-      expect(payload, isNull);
+      expect(result.status, HaloErrorType.serviceBusyError);
+      expect(result.value, isNull);
       expect(device.calls, hasLength(3));
     });
 
     test("asks only once when the error is one which will not pass", () async {
       final (:feature, :device) = aFeature(errors: [HaloErrorType.protocolError]);
 
-      final (error, _) = await feature.readInstantData(
+      final result = await feature.readInstantData(
         hardwareType: FakeHwType.ble,
         dataId: anInstantData,
       );
 
-      expect(error, HaloErrorType.protocolError);
+      expect(result.status, HaloErrorType.protocolError);
       expect(device.calls, hasLength(1));
     });
 
     test("answers an error when the application cannot reach the device that way", () async {
       final (:feature, :device) = aFeature(hardwareType: FakeHwType.serial);
 
-      final (error, payload) = await feature.readInstantData(
+      final result = await feature.readInstantData(
         hardwareType: FakeHwType.ble,
         dataId: anInstantData,
       );
 
-      expect(error, HaloErrorType.genericError);
-      expect(payload, isNull);
+      expect(result.status, HaloErrorType.genericError);
+      expect(result.value, isNull);
       expect(device.calls, isEmpty);
     });
 
@@ -119,11 +119,11 @@ void main() {
         feature.readInstantData(hardwareType: FakeHwType.ble, dataId: anInstantData),
         throwsStateError,
       );
-      final (error, _) = await feature
+      final result = await feature
           .readInstantData(hardwareType: FakeHwType.ble, dataId: anInstantData)
           .timeout(const Duration(seconds: 2));
 
-      expect(error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
     });
   });
 

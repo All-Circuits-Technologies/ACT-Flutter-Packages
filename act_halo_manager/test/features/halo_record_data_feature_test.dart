@@ -45,13 +45,13 @@ void main() {
     test("answers the keys the device exposes", () async {
       final (:feature, :device) = aFeature(stored: [1, 2, 3], windowSize: 2);
 
-      final (error, keys) = await feature.getAllRecordDataKeys(
+      final result = await feature.getAllRecordDataKeys(
         hardwareType: FakeHwType.ble,
         dataId: aRecordData,
       );
 
-      expect(error, HaloErrorType.noError);
-      expect(keys, [aKey(1), aKey(2)]);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, [aKey(1), aKey(2)]);
       expect(device.calls, ["getall 1"]);
     });
 
@@ -61,13 +61,13 @@ void main() {
         stored: [1],
       );
 
-      final (error, keys) = await feature.getAllRecordDataKeys(
+      final result = await feature.getAllRecordDataKeys(
         hardwareType: FakeHwType.ble,
         dataId: aRecordData,
       );
 
-      expect(error, HaloErrorType.noError);
-      expect(keys, [aKey(1)]);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, [aKey(1)]);
       expect(device.calls, hasLength(2));
     });
 
@@ -77,38 +77,38 @@ void main() {
         retryNbBeforeReturningError: 3,
       );
 
-      final (error, keys) = await feature.getAllRecordDataKeys(
+      final result = await feature.getAllRecordDataKeys(
         hardwareType: FakeHwType.ble,
         dataId: aRecordData,
       );
 
-      expect(error, HaloErrorType.serviceBusyError);
-      expect(keys, isNull);
+      expect(result.status, HaloErrorType.serviceBusyError);
+      expect(result.value, isNull);
       expect(device.calls, hasLength(3));
     });
 
     test("asks only once when the error is one which will not pass", () async {
       final (:feature, :device) = aFeature(errors: [HaloErrorType.protocolError]);
 
-      final (error, _) = await feature.getAllRecordDataKeys(
+      final result = await feature.getAllRecordDataKeys(
         hardwareType: FakeHwType.ble,
         dataId: aRecordData,
       );
 
-      expect(error, HaloErrorType.protocolError);
+      expect(result.status, HaloErrorType.protocolError);
       expect(device.calls, hasLength(1));
     });
 
     test("answers an error when the application cannot reach the device that way", () async {
       final (:feature, :device) = aFeature(hardwareType: FakeHwType.serial);
 
-      final (error, keys) = await feature.getAllRecordDataKeys(
+      final result = await feature.getAllRecordDataKeys(
         hardwareType: FakeHwType.ble,
         dataId: aRecordData,
       );
 
-      expect(error, HaloErrorType.genericError);
-      expect(keys, isNull);
+      expect(result.status, HaloErrorType.genericError);
+      expect(result.value, isNull);
       expect(device.calls, isEmpty);
     });
 
@@ -120,11 +120,11 @@ void main() {
         feature.getAllRecordDataKeys(hardwareType: FakeHwType.ble, dataId: aRecordData),
         throwsStateError,
       );
-      final (error, _) = await feature
+      final result = await feature
           .getAllRecordDataKeys(hardwareType: FakeHwType.ble, dataId: aRecordData)
           .timeout(const Duration(seconds: 2));
 
-      expect(error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
     });
   });
 
@@ -132,27 +132,21 @@ void main() {
     test("answers the archive the device holds", () async {
       final (:feature, :device) = aFeature(stored: [7]);
 
-      final (error, record) = await feature.readRecordData(
-        hardwareType: FakeHwType.ble,
-        recordKey: aKey(7),
-      );
+      final result = await feature.readRecordData(hardwareType: FakeHwType.ble, recordKey: aKey(7));
 
-      expect(error, HaloErrorType.noError);
-      expect(record!.recordKey, aKey(7));
-      expect(record.payload.getUInt(0), (7, null));
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value!.recordKey, aKey(7));
+      expect(result.value!.payload.getUInt(0).value, const HaloTimestampedValue(data: 7));
       expect(device.calls, ["read 1/7"]);
     });
 
     test("gives the error of the device", () async {
       final (:feature, device: _) = aFeature(errors: [HaloErrorType.protocolError]);
 
-      final (error, record) = await feature.readRecordData(
-        hardwareType: FakeHwType.ble,
-        recordKey: aKey(7),
-      );
+      final result = await feature.readRecordData(hardwareType: FakeHwType.ble, recordKey: aKey(7));
 
-      expect(error, HaloErrorType.protocolError);
-      expect(record, isNull);
+      expect(result.status, HaloErrorType.protocolError);
+      expect(result.value, isNull);
     });
   });
 

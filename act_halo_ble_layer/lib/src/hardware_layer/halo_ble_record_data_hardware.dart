@@ -5,6 +5,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
@@ -54,50 +55,57 @@ class HaloBleRecordDataHardware extends AbstractHaloRecordDataHardware {
 
   /// This method allows to get all the record data linked to the [HaloDataId] given
   @override
-  Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({
+  Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
     required HaloDataId dataId,
   }) async {
-    final (error, packets) = await _exchange.readPackets(
+    final packetsResult = await _exchange.readPackets(
       id: _wire(HaloRecordKey.getAll(dataId: dataId)),
     );
 
-    if (error != HaloErrorType.noError) {
-      return (error, null);
+    if (packetsResult.isError) {
+      return ResultWithRequiredValue(status: packetsResult.status);
     }
 
-    final keys = _parseKeys(Uint8List.fromList(packets!.expand((packet) => packet).toList()));
+    final keys = _parseKeys(
+      Uint8List.fromList(packetsResult.value!.expand((packet) => packet).toList()),
+    );
 
     if (keys == null || keys.any((key) => key.$2 != dataId.id)) {
       appLogger().w("The list of the keys of the record data ${dataId.id} is malformed");
-      return (HaloErrorType.formatError, null);
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return (
-      HaloErrorType.noError,
-      [for (final (index, _) in keys) HaloRecordKey<dynamic>(dataId: dataId, uniqueIndex: index)],
+    return ResultWithRequiredValue(
+      status: HaloErrorType.noError,
+      value: [
+        for (final (index, _) in keys) HaloRecordKey<dynamic>(dataId: dataId, uniqueIndex: index),
+      ],
     );
   }
 
   /// This method allows to read a specific record data from the device and thanks to the
   /// [HaloRecordKey] given
   @override
-  Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({
+  Future<ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>> readRecordData({
     required HaloRecordKey recordKey,
   }) async {
-    final (error, packets) = await _exchange.readPackets(id: _wire(recordKey));
+    final packetsResult = await _exchange.readPackets(id: _wire(recordKey));
 
-    if (error != HaloErrorType.noError) {
-      return (error, null);
+    if (packetsResult.isError) {
+      return ResultWithRequiredValue(status: packetsResult.status);
     }
 
-    final payload = HaloPayloadPacket.fromDevice(packets!);
+    final payload = HaloPayloadPacket.fromDevice(packetsResult.value!);
 
     if (payload == null) {
       appLogger().w("The values received for the record ${recordKey.uniqueIndex} can't be parsed");
-      return (HaloErrorType.formatError, null);
+      return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return (HaloErrorType.noError, HaloRecordPacket(recordKey: recordKey, payload: payload));
+    return ResultWithRequiredValue(
+      status: HaloErrorType.noError,
+      value: HaloRecordPacket(recordKey: recordKey, payload: payload),
+    );
   }
 
   /// This method allows to subscribe to the modification of a specific kind of record data thanks
