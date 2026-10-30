@@ -8,6 +8,7 @@ import 'dart:async';
 import 'package:act_ble_manager/src/ble_manager.dart';
 import 'package:act_ble_manager/src/data/constants.dart' as ble_constants;
 import 'package:act_ble_manager/src/data/error_messages.dart' as error_messages;
+import 'package:act_ble_manager/src/gatt/ble_packet_size.dart';
 import 'package:act_ble_manager/src/models/ble_device.dart';
 import 'package:act_ble_manager/src/types/bond_state.dart';
 import 'package:act_global_manager/act_global_manager.dart';
@@ -82,11 +83,14 @@ class BleGattConnectService extends AbsWithLifeCycle {
         await _tryToCleanGattCache(device: device);
 
         device.bondState = BondState.unknown;
+        device.packetSize = defaultPacketSize;
         final isConnected = await _bleManager.bleGapService
             .pauseScanWhile(() => _manageLowLevelConnection(device));
         if (!isConnected) {
           return false;
         }
+
+        await _negotiatePacketSize(device);
 
         if (onLowLevelConnect != null) {
           onLowLevelConnect();
@@ -136,6 +140,24 @@ class BleGattConnectService extends AbsWithLifeCycle {
 
         return true;
       });
+
+  /// Asks the connected [device] for the MTU and keeps the packet size it gives
+  ///
+  /// A failure is not one of the connection: the device keeps its default packet size.
+  Future<void> _negotiatePacketSize(BleDevice device) async {
+    try {
+      final result = await _flutterBle
+          .requestMtu(deviceId: device.id, mtu: ble_constants.requestedMtu)
+          .timeout(ble_constants.simpleCommunicationDuration);
+      device.packetSize = packetSizeFromMtuResult(
+        result,
+        isIos: globalGetIt().get<PlatformManager>().isIos,
+      );
+    } catch (error) {
+      _bleManager.logsHelper.w('The MTU of the device: ${device.id}, was not negotiated, '
+          'the packet size stays ${device.packetSize}: $error');
+    }
+  }
 
   /// This method manages the connection of a [BleDevice] to the BLE lib
   /// Because the connection may fail, this try multiple times the connection

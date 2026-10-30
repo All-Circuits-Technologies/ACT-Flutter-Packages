@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:act_dart_result/act_dart_result.dart';
@@ -144,12 +145,12 @@ abstract class HaloPacketUtility {
   }
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
-  /// the [toSend] String given and the optional [ts] DateTime
+  /// the [toSend] String given (encoded in UTF-8) and the optional [ts] DateTime
   static PayloadPacketElem formatString(
     String toSend, {
     DateTime? ts,
   }) =>
-      _formatAndEscapePacketElem(Uint8List.fromList(toSend.codeUnits), ts);
+      _formatAndEscapePacketElem(Uint8List.fromList(utf8.encode(toSend)), ts);
 
   /// Parse the [element] given to extract a string, and the optional DateTime if it's present
   ///
@@ -169,7 +170,7 @@ abstract class HaloPacketUtility {
 
     return BoolResultWithRequiredValue.fromValue(
       value: HaloTimestampedValue(
-        data: String.fromCharCodes(extracted.data),
+        data: utf8.decode(extracted.data, allowMalformed: true),
         timestamp: extracted.timestamp,
       ),
     );

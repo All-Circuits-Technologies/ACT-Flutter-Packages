@@ -56,6 +56,63 @@ void main() {
       expect(manager.requestToDeviceFeature?.haloManagerConfig, config);
     });
 
+    test("builds the feature which exchanges the attributes", () async {
+      final (:config, device: _) = aConfig();
+      final manager = FakeHaloManager(config: config);
+
+      await manager.initLifeCycle();
+
+      expect(manager.attributeFeature?.haloManagerConfig, config);
+    });
+
+    test("builds the feature which exchanges the instant data", () async {
+      final (:config, device: _) = aConfig();
+      final manager = FakeHaloManager(config: config);
+
+      await manager.initLifeCycle();
+
+      expect(manager.instantDataFeature?.haloManagerConfig, config);
+    });
+
+    test("uses the instant data feature the application built when it built one", () async {
+      final (:config, device: _) = aConfig();
+      final feature = HaloInstantDataFeature<FakeHwType>(haloManagerConfig: config);
+      final manager = FakeHaloManager(config: config, ownInstantDataFeature: feature);
+
+      await manager.initLifeCycle();
+
+      expect(manager.instantDataFeature, feature);
+    });
+
+    test("builds the feature which exchanges the historical data", () async {
+      final (:config, device: _) = aConfig();
+      final manager = FakeHaloManager(config: config);
+
+      await manager.initLifeCycle();
+
+      expect(manager.recordDataFeature?.haloManagerConfig, config);
+    });
+
+    test("uses the record data feature the application built when it built one", () async {
+      final (:config, device: _) = aConfig();
+      final feature = HaloRecordDataFeature<FakeHwType>(haloManagerConfig: config);
+      final manager = FakeHaloManager(config: config, ownRecordDataFeature: feature);
+
+      await manager.initLifeCycle();
+
+      expect(manager.recordDataFeature, feature);
+    });
+
+    test("uses the attribute feature the application built when it built one", () async {
+      final (:config, device: _) = aConfig();
+      final feature = HaloAttributeFeature<FakeHwType>(haloManagerConfig: config);
+      final manager = FakeHaloManager(config: config, ownAttributeFeature: feature);
+
+      await manager.initLifeCycle();
+
+      expect(manager.attributeFeature, feature);
+    });
+
     test("uses the feature the application built when it built one", () async {
       final (:config, device: _) = aConfig();
       final feature = HaloRequestToDeviceFeature<FakeHwType>(haloManagerConfig: config);

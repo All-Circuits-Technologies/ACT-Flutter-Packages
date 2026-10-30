@@ -190,76 +190,34 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
         callRequest: (service) => service.requestToDeviceHardware.callOrder(request: request),
       );
 
-  /// This method calls the [_callAndRetry] and specify the case where the request returns a
+  /// This method calls the [callAndRetry] and specify the case where the request returns a
   /// [HaloErrorType]
   Future<HaloErrorType> _callAndRetryError({
     required HardwareType hardwareType,
     required MixinHaloRequestId requestId,
     required Future<HaloErrorType> Function(AbstractHaloHardware) callRequest,
   }) =>
-      _callAndRetry(
+      callAndRetry(
         hardwareType: hardwareType,
-        requestId: requestId,
         errorDefaultResult: HaloErrorType.genericError,
         callRequest: callRequest,
       );
 
-  /// This method calls the [_callAndRetry] and specify the case where the request returns a
+  /// This method calls the [callAndRetry] and specify the case where the request returns a
   /// [HaloRequestResult]
   Future<HaloRequestResult> _callAndRetryResult({
     required HardwareType hardwareType,
     required MixinHaloRequestId requestId,
     required Future<HaloRequestResult> Function(AbstractHaloHardware) callRequest,
   }) =>
-      _callAndRetry(
+      callAndRetry(
         hardwareType: hardwareType,
-        requestId: requestId,
         errorDefaultResult: HaloRequestResult.error(
           requestId: requestId,
           status: HaloErrorType.genericError,
         ),
         callRequest: callRequest,
       );
-
-  /// Call a request and retry if an error occurred and if it makes sens to do it
-  /// With [hardwareType] you specify through what material you want to request the device
-  /// The [errorDefaultResult] is the default error value to return if an error occurred in the
-  /// process
-  /// The real request is done through the [callRequest] param given, and to test if we need to
-  /// retry, we check that the result is an error and that [MixinResultStatus.canBeRetried] is true
-  ///
-  /// To note that a successful result is never retried, even if [MixinResultStatus.canBeRetried] is
-  /// true for it (it's the case for [HaloErrorType.noError])
-  Future<T> _callAndRetry<T extends MixinResultStatus>({
-    required HardwareType hardwareType,
-    required MixinHaloRequestId requestId,
-    required T errorDefaultResult,
-    required Future<T> Function(AbstractHaloHardware) callRequest,
-  }) async {
-    await haloManagerConfig.actionMutex.acquire();
-
-    final service = haloManagerConfig.hardwareLayer.hardwareServices[hardwareType]?.haloHardware;
-
-    if (service == null) {
-      appLogger().w("The hardware layer is unknown, we can't call request to the device");
-      haloManagerConfig.actionMutex.release();
-      return errorDefaultResult;
-    }
-
-    var result = errorDefaultResult;
-    var nbTry = 0;
-
-    while (result.isError &&
-        result.canBeRetried &&
-        nbTry < haloManagerConfig.retryNbBeforeReturningError) {
-      result = await callRequest(service);
-      nbTry++;
-    }
-
-    haloManagerConfig.actionMutex.release();
-
-    return result;
-  }
 
   /// Get the request execution timeout, the [forcedExecutionTimeout] value prevails on the
   /// [haloManagerConfig] `requestIdHelper.overriddenExecutionTimeout` which prevails on the

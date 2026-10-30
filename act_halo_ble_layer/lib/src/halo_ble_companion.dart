@@ -3,10 +3,12 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
 import 'package:act_dart_result/act_dart_result.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteristic.dart';
@@ -18,6 +20,9 @@ import 'package:mutex/mutex.dart';
 /// Companion of the HALO BLE hardware layer,
 /// This contains useful method to write and read in BLE characteristics
 class HaloBleCompanion {
+  /// The logs category of the HALO trace: the packets exchanged with the device
+  static const traceLogsCategory = "haloTrace";
+
   /// This contains the BLE config
   final HaloBleConfig haloBleConfig;
 
@@ -33,25 +38,55 @@ class HaloBleCompanion {
   /// Mutex used to manage concurrency inside halo BLE companion
   final Mutex _bleMutex;
 
+  /// Logs the HALO trace, in the category [traceLogsCategory]
+  final MixinActLogger _traceLogger;
+
   /// Class constructor
-  HaloBleCompanion({required this.haloBleConfig, required this.bleManager}) : _bleMutex = Mutex();
+  HaloBleCompanion({required this.haloBleConfig, required this.bleManager})
+      : _bleMutex = Mutex(),
+        _traceLogger = appLogger().createAbsSubLogger(subCategory: traceLogsCategory);
 
   /// Called when a new HALO BLE device is connected. This manages the subscription to all the
   /// characteristics.
   ///
   /// If [bleDevice] is null, this calls the method [_onUnsafeDisconnection]
-  Future<void> onNewHaloBleDevice(BleDevice? bleDevice) => _bleMutex.protect(() async {
+  ///
+  /// Returns false if a subscription failed (the device is then given up), true otherwise
+  Future<bool> onNewHaloBleDevice(BleDevice? bleDevice) => _bleMutex.protect(() async {
         if (bleDevice == null) {
-          return _onUnsafeDisconnection();
+          await _onUnsafeDisconnection();
+          return true;
         }
 
         _bleDevice = bleDevice;
         _bleDeviceState = _bleDevice!.connectionStateStream.listen(_onDeviceBleStateUpdate);
 
         if (!(await _subscribeToNotifs(bleDevice: bleDevice))) {
-          return;
+          await _onUnsafeDisconnection();
+          return false;
         }
+
+        return true;
       });
+
+  /// The size of the packets written to the device: the one negotiated with the current device,
+  /// capped by the [haloBleConfig] max characteristic byte size.
+  /// Without device, this is [defaultPacketSize]
+  int get packetSize => (_bleDevice == null)
+      ? defaultPacketSize
+      : min(_bleDevice!.packetSize, haloBleConfig.maxCharacteristicByteSize);
+
+  /// Returns the trace line of the [data] exchanged with the characteristic [char]:
+  /// `[HALO] <direction> <letter A..M> <upper-case hex bytes separated by spaces>`
+  /// where [direction] is `>` for a write and `<` for a notification
+  String _trace(String direction, AbstractHaloCharacteristic char, List<int> data) {
+    final letter = String.fromCharCode(
+      0x41 + haloBleConfig.allHaloCharacteristics.indexOf(char),
+    );
+    final hex = data.map((byte) => byte.toRadixString(16).toUpperCase().padLeft(2, "0"));
+
+    return "[HALO] $direction $letter ${hex.join(" ")}";
+  }
 
   /// Called when the current BLE device [_bleDevice] is disconnected from us
   Future<void> onDisconnection() => _bleMutex.protect(_onUnsafeDisconnection);
@@ -97,6 +132,8 @@ class HaloBleCompanion {
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
   }) async {
+    _traceLogger.d(_trace(">", toWriteInto, dataToWrite));
+
     if (!(await bleManager.bleGattService
             .writeBleCharacteristic(_bleDevice!, toWriteInto.uuid, dataToWrite))
         .isSuccess) {
@@ -167,7 +204,13 @@ class HaloBleCompanion {
         return false;
       }
 
-      await charToSub.onStreamUpdate(stream, bleDevice.connectionStateStream);
+      await charToSub.onStreamUpdate(
+        stream.map((value) {
+          _traceLogger.d(_trace("<", charToSub, value));
+          return value;
+        }),
+        bleDevice.connectionStateStream,
+      );
     }
 
     return true;

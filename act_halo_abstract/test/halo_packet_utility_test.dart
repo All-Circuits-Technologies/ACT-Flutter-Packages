@@ -179,6 +179,22 @@ void main() {
     });
   });
 
+  group("HaloPacketUtility UTF-8 strings", () {
+    test("encodes a character out of ASCII on its UTF-8 bytes", () {
+      final packets = HaloPacketUtility.formatPackets(
+        escapedDataToSend: [HaloPacketUtility.formatString("Élan")],
+      );
+
+      expect(packets.single, Uint8List.fromList([0xC0, 0xC3, 0x89, 0x6C, 0x61, 0x6E, 0xC1]));
+    });
+
+    test("decodes the UTF-8 bytes back to the string", () {
+      final element = HaloPacketUtility.formatString("Élan");
+
+      expect(HaloPacketUtility.getString(element), _ok("Élan"));
+    });
+  });
+
   group("HaloPacketUtility.getString", () {
     test("returns the string the element carries", () {
       final element = HaloPacketUtility.formatString("hello");

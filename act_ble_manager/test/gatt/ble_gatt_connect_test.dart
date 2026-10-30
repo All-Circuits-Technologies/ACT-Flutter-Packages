@@ -257,6 +257,64 @@ void main() {
       expect(device.connectionState, DeviceConnectionState.connected);
     });
 
+    test("cuts the packets at the size negotiated with the device", () async {
+      final fake = FakeAsync();
+      ble.mtuAnswer = 247;
+      final (device, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(answers, [true]);
+      expect(ble.mtuRequests, [ble_constants.requestedMtu]);
+      expect(device.packetSize, 244);
+    });
+
+    test("keeps the default packet size when the MTU can't be negotiated", () async {
+      final fake = FakeAsync();
+      ble.mtuError = Exception("mtu");
+      final (device, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(answers, [true]);
+      expect(device.packetSize, 20);
+    });
+
+    test("connects anyway when the device never answers the MTU request", () async {
+      final fake = FakeAsync();
+      ble.mtuNeverAnswers = true;
+      final (device, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, ble_constants.simpleCommunicationDuration + _aMargin);
+
+      expect(answers, [true]);
+      expect(device.packetSize, 20);
+    });
+
+    test("forgets the packet size of the previous link when the MTU fails on reconnection",
+        () async {
+      final fake = FakeAsync();
+      ble.mtuAnswer = 247;
+      final (device, answers) = await startConnecting(fake);
+
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(device.packetSize, 244);
+
+      ble.mtuError = Exception("mtu");
+      fake.run((_) => unawaited(manager.bleGattService.connect(device).then(answers.add)));
+      await letTimePass(fake, ble_scan_constants.waitAfterStoppingScan + _aMargin);
+      fake.run((_) => unawaited(ble.tellConnection(DeviceConnectionState.connected)));
+      await letTimePass(fake, _aMargin);
+
+      expect(answers, [true, true]);
+      expect(device.packetSize, 20);
+    });
+
     test("gives up once the whole time of a connection was spent", () async {
       final fake = FakeAsync();
       final (_, answers) = await startConnecting(fake);

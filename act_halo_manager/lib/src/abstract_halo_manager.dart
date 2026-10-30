@@ -3,6 +3,9 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_halo_manager/src/features/halo_attribute_feature.dart';
+import 'package:act_halo_manager/src/features/halo_instant_data_feature.dart';
+import 'package:act_halo_manager/src/features/halo_record_data_feature.dart';
 import 'package:act_halo_manager/src/features/halo_request_to_device_feature.dart';
 import 'package:act_halo_manager/src/models/halo_manager_config.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
@@ -26,14 +29,24 @@ abstract class AbstractHaloManager<HardwareType> extends AbsWithLifeCycle {
   /// The config needed by the HALO manager
   late final HaloManagerConfig<HardwareType>? haloManagerConfig;
 
+  /// The attribute feature
+  late final HaloAttributeFeature<HardwareType>? attributeFeature;
+
+  /// The instant data feature
+  late final HaloInstantDataFeature<HardwareType>? instantDataFeature;
+
+  /// The record data feature
+  late final HaloRecordDataFeature<HardwareType>? recordDataFeature;
+
   /// The request to device feature
   late final HaloRequestToDeviceFeature<HardwareType>? requestToDeviceFeature;
 
   /// Class constructor
   AbstractHaloManager() : super();
 
-  /// The init manager, the [initHaloManagerConfig] and [createRequestToDeviceFeature] are called
-  /// in it
+  /// The init manager, the [initHaloManagerConfig], [createAttributeFeature],
+  /// [createInstantDataFeature], [createRecordDataFeature] and [createRequestToDeviceFeature] are
+  /// called in it
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
@@ -45,6 +58,9 @@ abstract class AbstractHaloManager<HardwareType> extends AbsWithLifeCycle {
       return;
     }
 
+    attributeFeature = await createAttributeFeature(haloManagerConfig: haloManagerConfig!);
+    instantDataFeature = await createInstantDataFeature(haloManagerConfig: haloManagerConfig!);
+    recordDataFeature = await createRecordDataFeature(haloManagerConfig: haloManagerConfig!);
     requestToDeviceFeature = await createRequestToDeviceFeature(
       haloManagerConfig: haloManagerConfig!,
     );
@@ -54,6 +70,27 @@ abstract class AbstractHaloManager<HardwareType> extends AbsWithLifeCycle {
   /// has to return null
   @protected
   Future<HaloManagerConfig<HardwareType>?> initHaloManagerConfig();
+
+  /// This method may be overridden to define a derived Attribute feature
+  @protected
+  Future<HaloAttributeFeature<HardwareType>> createAttributeFeature({
+    required HaloManagerConfig<HardwareType> haloManagerConfig,
+  }) async =>
+      HaloAttributeFeature<HardwareType>(
+        haloManagerConfig: haloManagerConfig,
+      );
+
+  /// This method may be overridden to define a derived Instant data feature
+  @protected
+  Future<HaloInstantDataFeature<HardwareType>> createInstantDataFeature({
+    required HaloManagerConfig<HardwareType> haloManagerConfig,
+  }) async => HaloInstantDataFeature<HardwareType>(haloManagerConfig: haloManagerConfig);
+
+  /// This method may be overridden to define a derived Record data feature
+  @protected
+  Future<HaloRecordDataFeature<HardwareType>> createRecordDataFeature({
+    required HaloManagerConfig<HardwareType> haloManagerConfig,
+  }) async => HaloRecordDataFeature<HardwareType>(haloManagerConfig: haloManagerConfig);
 
   /// This method may be overridden to define a derived Request to Device feature (in the case, you
   /// define default request method)

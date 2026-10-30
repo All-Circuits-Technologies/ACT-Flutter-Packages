@@ -90,7 +90,7 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     }
 
     final parametersPackets = cmdPacket.packetToSend.parameters.getDataToSend(
-      maxPacketSize: _bleCompanion.haloBleConfig.maxCharacteristicByteSize,
+      maxPacketSize: _bleCompanion.packetSize,
     );
 
     final requestType = requestId.type;
