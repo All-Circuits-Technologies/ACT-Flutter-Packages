@@ -58,8 +58,10 @@ requests apart, and so does the feature:
   layer made of sending it.
 
 A function which answers a single value is read straight into it: `callBooleanFunction`,
-`callStringFunction`, `callIntFunction` and `callUIntFunction` give back the value, or nothing
-when the request failed or when the device did not answer exactly one value.
+`callStringFunction`, `callIntFunction` and `callUIntFunction` give back a
+`ResultWithRequiredValue<HaloErrorType, T>` (from `act_dart_result`): its status is the error of the
+call when the request failed, `HaloErrorType.formatError` when the device did not answer exactly one
+value of the expected type, and its `value` holds the decoded value on success.
 
 The way to the device is named on every call, which is what lets an application which reaches its
 device over two of them choose. A call which names a way the configuration does not know answers
@@ -80,7 +82,9 @@ message may well answer the next time, whereas a request the device does not und
 answer the same forever.
 
 The feature asks again while the error is one which may pass, up to the number of times the
-configuration allows, and gives back the last error it got.
+configuration allows, and gives back the last error it got. A call which succeeded is never asked
+again: the loop stops on `isError && canBeRetried`, and `HaloErrorType.noError` can be retried
+by itself.
 
 ### How long a request may take
 
@@ -134,6 +138,12 @@ final temperature = await feature.callIntFunction(
   hardwareType: MyHwType.ble,
   request: HaloRequestParamsPacket.voidParams(requestId: MyRequestId.readTemperature),
 );
+
+if (temperature.isSuccess) {
+  print("The temperature is ${temperature.value!}");
+} else {
+  print("The request failed: ${temperature.status}");
+}
 
 final error = await feature.callProcedure(
   hardwareType: MyHwType.ble,

@@ -31,22 +31,22 @@ class HaloBleRequestResult extends HaloRequestResult {
   const HaloBleRequestResult({
     required this.cmdId,
     required super.requestId,
-    required super.result,
-    required super.error,
+    required super.status,
+    super.value,
     super.nbValues,
   });
 
   /// Helpful constructor to manage success request result
   const HaloBleRequestResult.success({
     required super.requestId,
-    required super.result,
+    required super.value,
   })  : cmdId = HaloCmdId.ack,
-        super(error: HaloErrorType.noError, nbValues: 0);
+        super(status: HaloErrorType.noError, nbValues: 0);
 
   /// Helpful constructor to manager error in the request result
   const HaloBleRequestResult.error({
-    required super.error,
     required super.requestId,
+    required super.status,
   })  : cmdId = HaloCmdId.unknown,
         super.error();
 
@@ -78,10 +78,9 @@ class HaloBleRequestResult extends HaloRequestResult {
     }
 
     return HaloBleRequestResult(
-      error: error,
+      status: error,
       requestId: requestId,
       cmdId: cmdId,
-      result: null,
       nbValues: deviceResult[valueNbIdx],
     );
   }

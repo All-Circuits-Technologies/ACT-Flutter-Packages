@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
 
@@ -24,7 +25,9 @@ class HaloBleAttributeHardware extends AbstractHaloAttributeHardware {
   /// This method allows to read a specific attribute value from the device and thanks to the
   /// [HaloDataId] given
   @override
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId}) {
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  }) {
     // TODO(brolandeau): implement readAttribute
     throw UnimplementedError();
   }

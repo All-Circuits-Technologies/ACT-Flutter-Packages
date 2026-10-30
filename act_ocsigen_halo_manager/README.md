@@ -76,8 +76,14 @@ carries the value of an OCSIGEN one replaces it.
 | `wiFiConnect`, `wiFiDisconnect`      | Joins or leaves a network                           |
 | `wiFiGetStatus`, `wiFiGetMacAddress` | Reads where the device stands and which chip it has |
 | `getSavedWiFi`, `forgetSavedWiFi`    | Reads and forgets the networks it comes back to     |
-| `apWifiEnable`                       | Opens or closes the access point of the device      |
+| `apWiFiEnable`                       | Opens or closes the access point of the device      |
 | `quitCommunication`                  | Says how the communication ended                    |
+
+Every request returns a `ResultWithRequiredValue<HaloErrorType, T>` of `act_dart_result`, except
+`quitCommunication` which returns the `HaloErrorType` of the call. When the call fails, the status
+is the HALO error of the call. A request which is refused before it is sent (a value which does not
+fit, an authentication way the device does not read), and an answer which can't be read, give the
+status `HaloErrorType.formatError`.
 
 Two of them need something said about what travels on the wire:
 
@@ -110,7 +116,8 @@ the raw value the device answered, so that an application can still show what ha
 `quitCommunication` tells a device how the communication ended before it is dropped. The status is
 of the type a project chooses, because most projects have their own reasons for hanging up, and
 `RestrictedEndComStatus` holds the two which are reserved: everything went well, and something went
-wrong. A project which writes its own statuses keeps those two values for what they mean.
+wrong. A project which writes its own statuses keeps those two values for what they mean. The
+method returns the status of the call: `HaloErrorType.noError` when the device was told.
 
 ## How to use
 
@@ -161,13 +168,15 @@ final networks = await requests.wiFiCompleteScan(hardwareType: AppHwType.ble);
 
 final result = await requests.wiFiConnect(
   hardwareType: AppHwType.ble,
-  ssid: networks!.first.ssid,
+  ssid: networks.value!.first.ssid,
   password: password,
-  authMode: networks.first.authMode,
+  authMode: networks.value!.first.authMode,
 );
 
-if (result?.status.isError ?? true) {
-  _showTheError(result?.status);
+if (result.isError) {
+  _showTheError(result.status);
+} else if (result.value!.status.isError) {
+  _showTheError(result.value!.status);
 }
 ```
 
@@ -175,7 +184,7 @@ Reading where the device stands afterwards says whether it is still connecting o
 
 ```dart
 final status = await requests.wiFiGetStatus(materialType: AppHwType.ble);
-final isConnected = status?.first.urc == OcsigenWiFiUrc.ok;
+final isConnected = status.isSuccess && status.value!.first.urc == OcsigenWiFiUrc.ok;
 ```
 
 ## Testing

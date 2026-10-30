@@ -34,8 +34,8 @@ void main() {
     test("returns what the device answers", () async {
       final result = HaloRequestResult(
         requestId: FakeRequestId.readTemperature,
-        result: HaloPayloadPacket(),
-        error: HaloErrorType.noError,
+        status: HaloErrorType.noError,
+        value: HaloPayloadPacket(),
         nbValues: 1,
       );
       hardware.functionResult = result;
@@ -73,7 +73,7 @@ void main() {
         request: HaloRequestParamsPacket.voidParams(requestId: FakeRequestId.startHeating),
       );
 
-      expect(answer.error, HaloErrorType.formatError);
+      expect(answer.status, HaloErrorType.formatError);
     });
 
     test("sends nothing to the device when it refuses the request", () async {
@@ -95,28 +95,27 @@ void main() {
     test("returns an error when the device answers a success without any value", () async {
       hardware.functionResult = const HaloRequestResult(
         requestId: FakeRequestId.readTemperature,
-        result: null,
-        error: HaloErrorType.noError,
+        status: HaloErrorType.noError,
       );
 
       final answer = await hardware.callFunction(
         request: HaloRequestParamsPacket.voidParams(requestId: FakeRequestId.readTemperature),
       );
 
-      expect(answer.error, HaloErrorType.genericError);
+      expect(answer.status, HaloErrorType.genericError);
     });
 
     test("returns the error of the device when it fails without any value", () async {
       hardware.functionResult = const HaloRequestResult.error(
         requestId: FakeRequestId.readTemperature,
-        error: HaloErrorType.commError,
+        status: HaloErrorType.commError,
       );
 
       final answer = await hardware.callFunction(
         request: HaloRequestParamsPacket.voidParams(requestId: FakeRequestId.readTemperature),
       );
 
-      expect(answer.error, HaloErrorType.commError);
+      expect(answer.status, HaloErrorType.commError);
     });
   });
 

@@ -14,6 +14,10 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# Line length of `dart format`, and so of the IDE formatters, aligned on the ACT convention
+formatter:
+  page_width: 100
+
 analyzer:
   exclude:
     - build/**
@@ -81,9 +85,6 @@ linter:
     # Don't declare multiple variables on a single line.
     avoid_multiple_declarations_per_line: true
 
-    # Don't check for null in custom == operators.
-    avoid_null_checks_in_equality_operators: true
-
     # Avoid positional boolean parameters.
     avoid_positional_boolean_parameters: true
 
@@ -134,9 +135,6 @@ linter:
 
     # Missing conditional import.
     conditional_uri_does_not_exist: true
-
-    # Control flow statements in finally blocks.
-    control_flow_in_finally: true
 
     # Missing deprecated annotation.
     deprecated_consistency: true

@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:act_ble_manager/act_ble_manager.dart';
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteristic.dart';
@@ -109,7 +110,7 @@ class HaloBleCompanion {
 
   /// Call to write the [dataToWrite] data in the characteristic [toWriteInto], and wait a result
   /// in the [toWaitNotifyFrom] characteristic
-  Future<(HaloErrorType, Uint8List?)> writeAndWaitNotifResult({
+  Future<ResultWithRequiredValue<HaloErrorType, Uint8List>> writeAndWaitNotifResult({
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
     required MixCharNotification toWaitNotifyFrom,
@@ -118,14 +119,14 @@ class HaloBleCompanion {
       _bleMutex.protect(() async {
         if (_bleDevice == null) {
           appLogger().w("The BLE device isn't connected we can't write data to it");
-          return const (HaloErrorType.commError, null);
+          return const ResultWithRequiredValue(status: HaloErrorType.commError);
         }
 
         final waiter = await toWaitNotifyFrom.prepareWaitResponse();
 
         if (waiter == null) {
           // A problem occurred when tried to prepare the waiting
-          return const (HaloErrorType.genericError, null);
+          return const ResultWithRequiredValue(status: HaloErrorType.genericError);
         }
 
         final writeResult =
@@ -133,7 +134,7 @@ class HaloBleCompanion {
 
         if (writeResult != HaloErrorType.noError) {
           await waiter.cancel();
-          return (writeResult, null);
+          return ResultWithRequiredValue(status: writeResult);
         }
 
         final result = await waiter.waitResponse(
@@ -142,10 +143,13 @@ class HaloBleCompanion {
 
         if (result == null) {
           // The waiter has been cancelled or an error occurred
-          return const (HaloErrorType.genericError, null);
+          return const ResultWithRequiredValue(status: HaloErrorType.genericError);
         }
 
-        return (HaloErrorType.noError, Uint8List.fromList(result));
+        return ResultWithRequiredValue(
+          status: HaloErrorType.noError,
+          value: Uint8List.fromList(result),
+        );
       });
 
   /// Subscribe to the HALO [bleDevice] characteristics notifications

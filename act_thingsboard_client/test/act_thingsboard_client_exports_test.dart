@@ -20,5 +20,12 @@ void main() {
     test('re-exports the attribute scope of the attributes it reads', () {
       expect(AttributeScope.values, isNotEmpty);
     });
+
+    test('re-exports the models of the server the devices are read with', () {
+      expect(DeviceId("a-device").id, "a-device");
+      expect(PageLink(10).pageSize, 10);
+      expect(<TsKvEntry>[], isEmpty);
+      expect(<AttributeKvEntry>[], isEmpty);
+    });
   });
 }
