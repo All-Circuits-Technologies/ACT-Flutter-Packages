@@ -11,6 +11,7 @@ export 'package:flutter_reactive_ble/flutter_reactive_ble.dart'
 export 'src/ble_manager.dart';
 export 'src/gap/ble_gap_service.dart';
 export 'src/gatt/ble_gatt_service.dart';
+export 'src/gatt/ble_packet_size.dart' show defaultPacketSize;
 export 'src/mixins/mixin_ble_conf.dart';
 export 'src/models/abstract_characteristic_info.dart';
 export 'src/models/ble_device.dart';

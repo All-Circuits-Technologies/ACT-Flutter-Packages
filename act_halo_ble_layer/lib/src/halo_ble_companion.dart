@@ -23,9 +23,6 @@ class HaloBleCompanion {
   /// The logs category of the HALO trace: the packets exchanged with the device
   static const traceLogsCategory = "haloTrace";
 
-  /// The BLE packet size when no MTU has been negotiated (the one of [BleDevice.packetSize])
-  static const int _defaultPacketSize = 20;
-
   /// This contains the BLE config
   final HaloBleConfig haloBleConfig;
 
@@ -74,9 +71,9 @@ class HaloBleCompanion {
 
   /// The size of the packets written to the device: the one negotiated with the current device,
   /// capped by the [haloBleConfig] max characteristic byte size.
-  /// Without device, this is the default BLE packet size
+  /// Without device, this is [defaultPacketSize]
   int get packetSize => (_bleDevice == null)
-      ? _defaultPacketSize
+      ? defaultPacketSize
       : min(_bleDevice!.packetSize, haloBleConfig.maxCharacteristicByteSize);
 
   /// Returns the trace line of the [data] exchanged with the characteristic [char]:
