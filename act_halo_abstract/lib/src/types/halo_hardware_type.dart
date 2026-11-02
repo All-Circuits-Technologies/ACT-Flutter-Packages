@@ -15,10 +15,7 @@ class HaloHardwareType<T> extends Equatable {
   final AbstractHaloHardware haloHardware;
 
   /// Class constructor
-  const HaloHardwareType({
-    required this.type,
-    required this.haloHardware,
-  });
+  const HaloHardwareType({required this.type, required this.haloHardware});
 
   @override
   List<Object?> get props => [type, haloHardware];
@@ -30,9 +27,7 @@ abstract class AbstractHaloHwTypeHelper<T> {
   final Map<T, HaloHardwareType<T>> hardwareServices;
 
   /// Class constructor
-  AbstractHaloHwTypeHelper({
-    required this.hardwareServices,
-  });
+  AbstractHaloHwTypeHelper({required this.hardwareServices});
 
   /// Manage the close of all the resources at the end of the class
   /// Need to be called by the owner of the class

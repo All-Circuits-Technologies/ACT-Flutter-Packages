@@ -16,9 +16,7 @@ class TbStdAuthServerReqBuilder<A extends AbsAuthManager>
     extends AbsTbServerReqBuilder<TbStdAuthServerReqManager> {
   /// Class constructor
   TbStdAuthServerReqBuilder()
-      : super(() => TbStdAuthServerReqManager(
-              authGetter: globalGetIt().get<A>,
-            ));
+    : super(() => TbStdAuthServerReqManager(authGetter: globalGetIt().get<A>));
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -47,9 +45,8 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
   late final StreamSubscription<bool> _signedInSub;
 
   /// Class constructor
-  TbStdAuthServerReqManager({
-    required this._authGetter,
-  })  : super(logCategory: _stdAuthTbLogsCategory);
+  TbStdAuthServerReqManager({required this._authGetter})
+    : super(logCategory: _stdAuthTbLogsCategory);
 
   /// {@macro act_life_cycle.AbsWithLifeCycle.initLifeCycle}
   @override
@@ -84,8 +81,11 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
       }
 
       // After having get the tokens from the auth service we set it in the Thingsboard client
-      await noAuthManager.tbClient
-          .setUserFromJwtToken(tokens.accessToken?.raw, tokens.refreshToken?.raw, null);
+      await noAuthManager.tbClient.setUserFromJwtToken(
+        tokens.accessToken?.raw,
+        tokens.refreshToken?.raw,
+        null,
+      );
 
       result = await noAuthManager.request(requestToCall);
       triedNb++;

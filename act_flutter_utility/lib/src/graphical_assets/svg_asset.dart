@@ -21,9 +21,9 @@ class SvgAsset implements GraphicalAsset {
   /// of SVG asset is used, with given color instead of original asset color(s).
   @override
   Widget getWidget({double? width, double? height, Color? color}) => SvgPicture.asset(
-        path,
-        width: width,
-        height: height,
-        colorFilter: color != null ? ui.ColorFilter.mode(color, ui.BlendMode.srcIn) : null,
-      );
+    path,
+    width: width,
+    height: height,
+    colorFilter: color != null ? ui.ColorFilter.mode(color, ui.BlendMode.srcIn) : null,
+  );
 }

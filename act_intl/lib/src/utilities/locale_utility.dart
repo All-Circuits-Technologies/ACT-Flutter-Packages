@@ -62,10 +62,7 @@ sealed class LocaleUtility {
 
     final languageCode = subTags.first;
     final countryCode = subTags.length >= 2 ? subTags.last : null;
-    return Locale.fromSubtags(
-      languageCode: languageCode,
-      countryCode: countryCode,
-    );
+    return Locale.fromSubtags(languageCode: languageCode, countryCode: countryCode);
   }
 
   /// Expands a single [locale] to an ordered list of supersets, starting with locales itself.
@@ -84,12 +81,14 @@ sealed class LocaleUtility {
   /// Note: script sub-tag, if any, is ignored in expansions.
   static List<Locale> expandLocales(List<Locale> locales) => locales
       // Expand each input locales to:
-      .expand((locale) => [
-            // Locale itself (ex: fr_FR)
-            locale,
-            // Locale without country sub-tag, if input locale had one (ex: fr)
-            if (locale.countryCode != null) Locale(locale.languageCode),
-          ])
+      .expand(
+        (locale) => [
+          // Locale itself (ex: fr_FR)
+          locale,
+          // Locale without country sub-tag, if input locale had one (ex: fr)
+          if (locale.countryCode != null) Locale(locale.languageCode),
+        ],
+      )
       // Then remove duplicates, keeping order
       .toList()
       .distinct();

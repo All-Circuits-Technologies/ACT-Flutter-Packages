@@ -39,17 +39,13 @@ class FirebaseCrashService extends AbsFirebaseService {
   bool _enableAutoDataCollection;
 
   /// Class constructor
-  FirebaseCrashService({
-    required this._confManager,
-    this._crashDebugConfig,
-  })  : _enableDataCollection = firebase_constants.defaultEnableCrashLogs,
-        _enableAutoDataCollection = firebase_constants.defaultEnableAutoCrashLogs;
+  FirebaseCrashService({required this._confManager, this._crashDebugConfig})
+    : _enableDataCollection = firebase_constants.defaultEnableCrashLogs,
+      _enableAutoDataCollection = firebase_constants.defaultEnableAutoCrashLogs;
 
   /// Called at the service initialization
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  }) async {
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
     await super.initLifeCycle();
     _logsHelper = AbsFirebaseService.createLogsHelper(
       logCategory: _logsCategory,
@@ -212,8 +208,10 @@ class FirebaseCrashService extends AbsFirebaseService {
   Future<bool> sendCrashDebugReport({bool forceCrash = false}) async {
     if (_crashDebugConfig == null) {
       // There is no crash debug config set; therefore nothing has to be sent
-      _logsHelper.w("We can't send a crash debug report, if you haven't set the crash debug "
-          "config");
+      _logsHelper.w(
+        "We can't send a crash debug report, if you haven't set the crash debug "
+        "config",
+      );
       return false;
     }
 
@@ -242,18 +240,16 @@ class FirebaseCrashService extends AbsFirebaseService {
 
       // The logger keeps the config it was built with, and the level of that config is the level it
       // logs from; therefore it is replaced as soon as the config changes.
-      await loggerManager.addExternalLogger(CrashlyticsLoggerType.crash,
-          CrashlyticsExternalLogger(crashDebugConfig: _crashDebugConfig!));
+      await loggerManager.addExternalLogger(
+        CrashlyticsLoggerType.crash,
+        CrashlyticsExternalLogger(crashDebugConfig: _crashDebugConfig!),
+      );
     }
   }
 
   /// Called when an error crash is recorded
   Future<void> _recordErrorCrash(Object exception, StackTrace stackTrace) async =>
-      FirebaseCrashlytics.instance.recordError(
-        exception,
-        stackTrace,
-        fatal: true,
-      );
+      FirebaseCrashlytics.instance.recordError(exception, stackTrace, fatal: true);
 
   /// Get the env value depending of the default value and the prod default value
   T _getConfValue<T>({

@@ -39,11 +39,11 @@ class PermissionConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        element,
-        whenAskingCheckRationale,
-        whenAskingForceGoToSettings,
-        whenAskingDependsOn,
-      ];
+    element,
+    whenAskingCheckRationale,
+    whenAskingForceGoToSettings,
+    whenAskingDependsOn,
+  ];
 }
 
 /// This exception is raised when a permission element say it depends of an unknown dependency
@@ -234,9 +234,7 @@ mixin MPermissionsService on AbsWithLifeCycle {
 
   @override
   Future<void> disposeLifeCycle() async {
-    final futures = <Future>[
-      _permissionsCtrl.close(),
-    ];
+    final futures = <Future>[_permissionsCtrl.close()];
 
     for (final container in _permissionContainer.values) {
       futures.add(container.close());
@@ -340,10 +338,7 @@ class _PermissionContainer {
   }
 
   Future<void> close() async {
-    await Future.wait([
-      _permissionSub.cancel(),
-      _permissionMonitorService.close(),
-    ]);
+    await Future.wait([_permissionSub.cancel(), _permissionMonitorService.close()]);
 
     // The handler has to be closed too, otherwise the permission keeps being watched for a service
     // which no longer needs it

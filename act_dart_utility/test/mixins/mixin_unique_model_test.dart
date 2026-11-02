@@ -39,10 +39,7 @@ void main() {
     test("lets a model be found among others", () {
       const users = [_User(id: "1", name: "a"), _User(id: "2", name: "b")];
 
-      expect(
-        users.firstWhere((user) => user.uniqueId == "2").name,
-        "b",
-      );
+      expect(users.firstWhere((user) => user.uniqueId == "2").name, "b");
     });
   });
 }

@@ -44,8 +44,10 @@ sealed class BodyFormatUtility {
     // body we are about to send has been encoded.
     if (convertedBody.contentType != HttpMimeTypes.empty &&
         _findContentType(requestParam.headers) == null) {
-      logsHelper.d("We had guessed the content type: ${convertedBody.contentType.stringValue}, and "
-          "we set it in the request header");
+      logsHelper.d(
+        "We had guessed the content type: ${convertedBody.contentType.stringValue}, and "
+        "we set it in the request header",
+      );
 
       final writtenType = request.headers[HeaderConstants.contentTypeHeaderKey];
       final charset = (writtenType == null)
@@ -146,8 +148,10 @@ sealed class BodyFormatUtility {
     if (requestMimeType == null) {
       final bodyType = tryToGuessBodyType(requestBody);
       if (bodyType == null) {
-        logsHelper.w("We can't guess the body type for the given body, the type is: "
-            "${requestBody.runtimeType} and it's unknown");
+        logsHelper.w(
+          "We can't guess the body type for the given body, the type is: "
+          "${requestBody.runtimeType} and it's unknown",
+        );
         return null;
       }
 
@@ -192,16 +196,20 @@ sealed class BodyFormatUtility {
           break;
         }
 
-        logsHelper.w("We expect to have a MultipartFile or List<MultipartFile> body for the "
-            "request $requestMimeType MIME type");
+        logsHelper.w(
+          "We expect to have a MultipartFile or List<MultipartFile> body for the "
+          "request $requestMimeType MIME type",
+        );
         return null;
       case HttpMimeTypes.applicationOctetStream:
       case HttpMimeTypes.gzip:
       case HttpMimeTypes.zip:
       case HttpMimeTypes.csvText:
         if (requestBody is! Uint8List && requestBody is! List<int>) {
-          logsHelper.w("We expect to have an Uint8List or List<int> body for the request "
-              "$requestMimeType MIME type");
+          logsHelper.w(
+            "We expect to have an Uint8List or List<int> body for the request "
+            "$requestMimeType MIME type",
+          );
           return null;
         }
 
@@ -213,16 +221,18 @@ sealed class BodyFormatUtility {
       case HttpMimeTypes.formUrlEncoded:
         if (requestBody is! Map<String, String>) {
           logsHelper.w(
-              "We expect to have a Map<String, String> body for the request $requestMimeType MIME "
-              "type");
+            "We expect to have a Map<String, String> body for the request $requestMimeType MIME "
+            "type",
+          );
           return null;
         }
         break;
 
       case HttpMimeTypes.plainText:
         if (requestBody is! String) {
-          logsHelper
-              .w("We expect to have a String body for the request $requestMimeType MIME type");
+          logsHelper.w(
+            "We expect to have a String body for the request $requestMimeType MIME type",
+          );
           return null;
         }
         break;
@@ -231,9 +241,10 @@ sealed class BodyFormatUtility {
         if (requestBody is! Map<String, dynamic> &&
             requestBody is! List<dynamic> &&
             requestBody is! String) {
-          logsHelper
-              .w("We expect to have a String, Map<String, dynamic> or List<dynamic> body for the "
-                  "request $requestMimeType MIME type");
+          logsHelper.w(
+            "We expect to have a String, Map<String, dynamic> or List<dynamic> body for the "
+            "request $requestMimeType MIME type",
+          );
           return null;
         }
 
@@ -244,17 +255,19 @@ sealed class BodyFormatUtility {
             jsonDecode(requestBody);
           } catch (error) {
             logsHelper.w(
-                "We expect to have a valid JSON String body for the request $requestMimeType MIME "
-                "type, error when decoding: $error");
+              "We expect to have a valid JSON String body for the request $requestMimeType MIME "
+              "type, error when decoding: $error",
+            );
             anErrorOccurred = true;
           }
         } else {
           try {
             requestBody = jsonEncode(requestBody);
           } catch (error) {
-            logsHelper
-                .w("We expect to have a valid JSON body for the request $requestMimeType MIME "
-                    "type, error when encoding: $error");
+            logsHelper.w(
+              "We expect to have a valid JSON body for the request $requestMimeType MIME "
+              "type, error when encoding: $error",
+            );
             return null;
           }
         }
@@ -279,8 +292,10 @@ sealed class BodyFormatUtility {
   }) {
     if (responseReceived.statusCode < ServerResponseStatus.ok.httpStatus! ||
         responseReceived.statusCode >= ServerResponseStatus.multipleChoices.httpStatus!) {
-      logsHelper.t("The response received isn't ok, http status: ${responseReceived.statusCode}, "
-          "reason phrase: ${responseReceived.reasonPhrase}");
+      logsHelper.t(
+        "The response received isn't ok, http status: ${responseReceived.statusCode}, "
+        "reason phrase: ${responseReceived.reasonPhrase}",
+      );
 
       if (requestParam.httpMethod != HttpMethods.head) {
         try {
@@ -308,8 +323,10 @@ sealed class BodyFormatUtility {
     var finalResult = RequestStatus.success;
 
     if (!result.isOk) {
-      logsHelper.w("An error occurred when trying to parse body from response of request: "
-          "$urlToRequest");
+      logsHelper.w(
+        "An error occurred when trying to parse body from response of request: "
+        "$urlToRequest",
+      );
       finalResult = RequestStatus.globalError;
     }
 
@@ -320,8 +337,10 @@ sealed class BodyFormatUtility {
       } else if (result.body is ParsedBody) {
         parsedBody = result.body as ParsedBody;
       } else {
-        logsHelper.w("The received body type: $RespBody, hasn't the same type as the parsed body: "
-            "$ParsedBody, but you haven't set a parse method (and the body isn't null)");
+        logsHelper.w(
+          "The received body type: $RespBody, hasn't the same type as the parsed body: "
+          "$ParsedBody, but you haven't set a parse method (and the body isn't null)",
+        );
         finalResult = RequestStatus.globalError;
       }
     }
@@ -381,8 +400,10 @@ sealed class BodyFormatUtility {
           break;
       }
     } catch (error) {
-      logsHelper.w("An error occurred when tried to parse the body of a response received, from "
-          "type: $responseType, error: $error");
+      logsHelper.w(
+        "An error occurred when tried to parse the body of a response received, from "
+        "type: $responseType, error: $error",
+      );
     }
 
     return (isOk: (body != null), body: body);

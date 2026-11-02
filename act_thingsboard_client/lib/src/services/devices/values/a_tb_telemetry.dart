@@ -58,11 +58,11 @@ abstract class ATbTelemetry<T> {
     required LogsHelper logsHelper,
     required String telemetryName,
     required this.deviceId,
-  })  : _values = {},
-        _currentlySubscribed = [],
-        _updateMutex = Mutex(),
-        _logsHelper = logsHelper.createSubLogger(subCategory: telemetryName),
-        _updatedTelemetry = StreamController.broadcast();
+  }) : _values = {},
+       _currentlySubscribed = [],
+       _updateMutex = Mutex(),
+       _logsHelper = logsHelper.createSubLogger(subCategory: telemetryName),
+       _updatedTelemetry = StreamController.broadcast();
 
   /// Get the telemetry value linked to the given key. If one of the elements is already listened,
   /// this element won't be subscribed twice.
@@ -74,42 +74,42 @@ abstract class ATbTelemetry<T> {
   ///
   /// Returns true if no problem occurred
   Future<bool> subscribeElements({required List<String> keys}) => _manageElementsSub(() async {
-        for (final key in keys) {
-          if (!_values.containsKey(key)) {
-            _values[key] = _TelemetryInfo<T>();
-          }
+    for (final key in keys) {
+      if (!_values.containsKey(key)) {
+        _values[key] = _TelemetryInfo<T>();
+      }
 
-          final element = _values[key]!;
+      final element = _values[key]!;
 
-          element.nbHandler++;
-          element.noMoreNeededTs = null;
-        }
+      element.nbHandler++;
+      element.noMoreNeededTs = null;
+    }
 
-        return true;
-      });
+    return true;
+  });
 
   /// Unsubscribe from elements thanks to their [keys], if on of the elements isn't subscribed,
   /// nothing is done with it
   Future<bool> unSubscribeElements({required List<String> keys}) => _manageElementsSub(() async {
-        for (final key in keys) {
-          final element = _values[key];
+    for (final key in keys) {
+      final element = _values[key];
 
-          if (element == null) {
-            // Nothing to do
-            continue;
-          }
+      if (element == null) {
+        // Nothing to do
+        continue;
+      }
 
-          if (element.nbHandler > 0) {
-            element.nbHandler--;
-          }
+      if (element.nbHandler > 0) {
+        element.nbHandler--;
+      }
 
-          if (element.nbHandler == 0) {
-            element.noMoreNeededTs = DateTime.now().toUtc().add(_thresholdTimeout);
-          }
-        }
+      if (element.nbHandler == 0) {
+        element.noMoreNeededTs = DateTime.now().toUtc().add(_thresholdTimeout);
+      }
+    }
 
-        return true;
-      });
+    return true;
+  });
 
   /// Manage the elements subscription and unSubscription by protecting them with the [_updateMutex]
   /// It also manages the [_testTimer]
@@ -178,10 +178,9 @@ abstract class ATbTelemetry<T> {
 
     final telemetryService = _requestManager.tbClient.getTelemetryService();
 
-    final subscriber = TelemetrySubscriber(
-      telemetryService,
-      [createSubCmd(elementsToSub.join(_keysSeparator))],
-    );
+    final subscriber = TelemetrySubscriber(telemetryService, [
+      createSubCmd(elementsToSub.join(_keysSeparator)),
+    ]);
 
     final subscription = subscriber.dataStream.listen(_onUpdateValues);
 
@@ -216,8 +215,10 @@ abstract class ATbTelemetry<T> {
   /// Called when new values linked to the subscribed telemetry elements are received
   Future<void> _onUpdateValues(SubscriptionUpdate subUpdate) async {
     if (subUpdate.errorCode != 0) {
-      _logsHelper.d("A problem occurred when receiving telemetries from thingsboard, error "
-          "message: ${subUpdate.errorMsg}");
+      _logsHelper.d(
+        "A problem occurred when receiving telemetries from thingsboard, error "
+        "message: ${subUpdate.errorMsg}",
+      );
       return;
     }
 
@@ -273,9 +274,7 @@ abstract class ATbTelemetry<T> {
 
     await _manageNeededSubOrUnSub();
 
-    final futures = <Future>[
-      _updatedTelemetry.close(),
-    ];
+    final futures = <Future>[_updatedTelemetry.close()];
 
     await Future.wait(futures);
   }
@@ -297,8 +296,5 @@ class _TelemetryInfo<T> {
   int nbHandler;
 
   /// Class constructor
-  _TelemetryInfo()
-      : noMoreNeededTs = null,
-        value = null,
-        nbHandler = 0;
+  _TelemetryInfo() : noMoreNeededTs = null, value = null, nbHandler = 0;
 }

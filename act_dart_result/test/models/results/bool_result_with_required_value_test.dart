@@ -8,10 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("BoolResultWithRequiredValue", () {
     test("is a result whose value is required and whose status is a boolean one", () {
-      const result = BoolResultWithRequiredValue<int>(
-        status: BoolResultStatus.success,
-        value: 42,
-      );
+      const result = BoolResultWithRequiredValue<int>(status: BoolResultStatus.success, value: 42);
 
       expect(result, isA<ResultWithRequiredValue<BoolResultStatus, int>>());
     });

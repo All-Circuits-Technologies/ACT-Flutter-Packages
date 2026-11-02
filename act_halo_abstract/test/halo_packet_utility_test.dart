@@ -47,7 +47,9 @@ void main() {
   group("HaloPacketUtility.formatPackets", () {
     test("wraps the elements between the start and the end bytes", () {
       final packets = HaloPacketUtility.formatPackets(
-        escapedDataToSend: [Uint8List.fromList([0x01])],
+        escapedDataToSend: [
+          Uint8List.fromList([0x01]),
+        ],
       );
 
       expect(packets, [
@@ -82,7 +84,9 @@ void main() {
 
     test("cuts the packet in parts of the maximum size", () {
       final packets = HaloPacketUtility.formatPackets(
-        escapedDataToSend: [Uint8List.fromList([0x01, 0x02, 0x03, 0x04])],
+        escapedDataToSend: [
+          Uint8List.fromList([0x01, 0x02, 0x03, 0x04]),
+        ],
         maxPacketSize: 3,
       );
 
@@ -94,7 +98,9 @@ void main() {
 
     test("leaves the last part shorter than the maximum size", () {
       final packets = HaloPacketUtility.formatPackets(
-        escapedDataToSend: [Uint8List.fromList([0x01, 0x02, 0x03])],
+        escapedDataToSend: [
+          Uint8List.fromList([0x01, 0x02, 0x03]),
+        ],
         maxPacketSize: 2,
       );
 
@@ -217,10 +223,7 @@ void main() {
     });
 
     test("tells the two values apart", () {
-      expect(
-        HaloPacketUtility.formatBoolean(true),
-        isNot(HaloPacketUtility.formatBoolean(false)),
-      );
+      expect(HaloPacketUtility.formatBoolean(true), isNot(HaloPacketUtility.formatBoolean(false)));
     });
   });
 
@@ -403,10 +406,7 @@ void main() {
 
   group("HaloPacketUtility.isLastElementPacket", () {
     test("returns true for a packet which ends on the end byte", () {
-      expect(
-        HaloPacketUtility.isLastElementPacket(Uint8List.fromList([0x01, _endByte])),
-        isTrue,
-      );
+      expect(HaloPacketUtility.isLastElementPacket(Uint8List.fromList([0x01, _endByte])), isTrue);
     });
 
     test("returns false for a packet which does not carry the end byte", () {
@@ -418,10 +418,7 @@ void main() {
     });
 
     test("returns null for a packet which carries the end byte in its middle", () {
-      expect(
-        HaloPacketUtility.isLastElementPacket(Uint8List.fromList([_endByte, 0x01])),
-        isNull,
-      );
+      expect(HaloPacketUtility.isLastElementPacket(Uint8List.fromList([_endByte, 0x01])), isNull);
     });
 
     test("warns about the packet whose end byte is in its middle", () {
@@ -455,17 +452,13 @@ void main() {
 
     test("returns null when the bytes which follow the end byte are not padding", () {
       expect(
-        HaloPacketUtility.tryToCleanLastElementPacket(
-          Uint8List.fromList([0x01, _endByte, 0x02]),
-        ),
+        HaloPacketUtility.tryToCleanLastElementPacket(Uint8List.fromList([0x01, _endByte, 0x02])),
         isNull,
       );
     });
 
     test("warns about the padding it removes", () {
-      HaloPacketUtility.tryToCleanLastElementPacket(
-        Uint8List.fromList([0x01, _endByte, 0x00]),
-      );
+      HaloPacketUtility.tryToCleanLastElementPacket(Uint8List.fromList([0x01, _endByte, 0x00]));
 
       expect(logger.recordsAtLevel(LogsLevel.warn).length, 1);
     });

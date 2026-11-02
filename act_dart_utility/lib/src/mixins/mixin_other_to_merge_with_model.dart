@@ -5,8 +5,11 @@
 import 'package:equatable/equatable.dart';
 
 /// Adds a method to merge an object with this model and create a new model
-mixin MixinOtherToMergeWithModel<M extends MixinOtherToMergeWithModel<M, OtherToMergeWith>,
-    OtherToMergeWith> on Equatable {
+mixin MixinOtherToMergeWithModel<
+  M extends MixinOtherToMergeWithModel<M, OtherToMergeWith>,
+  OtherToMergeWith
+>
+    on Equatable {
   /// Merges the current model with another one of type [OtherToMergeWith]
   M mergeWith(OtherToMergeWith mergeWith);
 }

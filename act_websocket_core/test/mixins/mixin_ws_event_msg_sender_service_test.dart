@@ -33,10 +33,7 @@ void main() {
     test("writes the name the event carries on the wire", () async {
       await service.sendMessage(event: FakeEvent.deviceState, data: 1);
 
-      expect(
-        (jsonDecode(service.sentMessages.single! as String) as Map)["event"],
-        "device-state",
-      );
+      expect((jsonDecode(service.sentMessages.single! as String) as Map)["event"], "device-state");
     });
 
     test("writes under the keys the service asks for", () async {

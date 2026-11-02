@@ -34,10 +34,7 @@ void main() {
     });
 
     test("refuses an id which overflows a byte", () {
-      expect(
-        () => HaloDataId(id: 0x100, value: _Data.temperature),
-        throwsA(isA<AssertionError>()),
-      );
+      expect(() => HaloDataId(id: 0x100, value: _Data.temperature), throwsA(isA<AssertionError>()));
     });
 
     test("refuses a negative id", () {

@@ -26,10 +26,7 @@ sealed class LoopUtility {
     var weRequestAll = false;
     final retrievedElements = <T>[];
     while (!weRequestAll) {
-      final elements = await request(
-        elementsNbGot,
-        elementsLimit,
-      );
+      final elements = await request(elementsNbGot, elementsLimit);
       if (elements == null) {
         return null;
       }

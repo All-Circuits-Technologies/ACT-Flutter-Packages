@@ -33,7 +33,9 @@ void main() {
 
   group("AbsRefreshJwtLogin.manageLogInWithRequest", () {
     test("refreshes the token which expired rather than signing the user in", () async {
-      final login = aLogin(refreshed: AuthTokens(accessToken: aToken(name: "a new token")));
+      final login = aLogin(
+        refreshed: AuthTokens(accessToken: aToken(name: "a new token")),
+      );
       await login.keep(_expiredWithRefresh());
 
       final status = await login.manageLogInWithRequest(aRequest());
@@ -43,7 +45,9 @@ void main() {
     });
 
     test("adds the token it got from the refresh to the request", () async {
-      final login = aLogin(refreshed: AuthTokens(accessToken: aToken(name: "a new token")));
+      final login = aLogin(
+        refreshed: AuthTokens(accessToken: aToken(name: "a new token")),
+      );
       await login.keep(_expiredWithRefresh());
       final request = aRequest();
 

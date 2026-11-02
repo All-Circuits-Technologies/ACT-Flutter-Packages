@@ -139,9 +139,7 @@ void main() {
 
   group("AbsRemoteLocalVersFileManager.getVersionedFile", () {
     test("reads the file of the version the folder is on", () async {
-      final manager = await aManager(
-        files: {"terms/current.txt": "v2", "terms/v2": "the terms"},
-      );
+      final manager = await aManager(files: {"terms/current.txt": "v2", "terms/v2": "the terms"});
 
       final result = await manager.getVersionedFile(dirType: FakeDirType.terms);
 
@@ -176,9 +174,7 @@ void main() {
     });
 
     test("asks the storage not to keep the version and to keep the file", () async {
-      final manager = await aManager(
-        files: {"terms/current.txt": "v2", "terms/v2": "the terms"},
-      );
+      final manager = await aManager(files: {"terms/current.txt": "v2", "terms/v2": "the terms"});
 
       await manager.getVersionedFile(dirType: FakeDirType.terms);
 

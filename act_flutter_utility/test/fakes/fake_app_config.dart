@@ -23,6 +23,5 @@ class FakeAppConfig extends AbstractConfigManager {
   }
 
   /// Class constructor
-  FakeAppConfig({this._env = Environment.development})
-    : super(logger: const SilentLogger());
+  FakeAppConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }

@@ -19,9 +19,7 @@ void main() {
     });
 
     test("reads no timestamp from a success which carries none", () {
-      const result = BoolResultWithRequiredValue.fromValue(
-        value: HaloTimestampedValue(data: "a"),
-      );
+      const result = BoolResultWithRequiredValue.fromValue(value: HaloTimestampedValue(data: "a"));
 
       expect(result.data, "a");
       expect(result.timestamp, isNull);

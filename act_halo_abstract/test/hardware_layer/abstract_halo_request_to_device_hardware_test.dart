@@ -22,9 +22,7 @@ void main() {
 
   group("AbstractHaloRequestToDeviceHardware.callFunction", () {
     test("sends the request to the device", () async {
-      final request = HaloRequestParamsPacket.voidParams(
-        requestId: FakeRequestId.readTemperature,
-      );
+      final request = HaloRequestParamsPacket.voidParams(requestId: FakeRequestId.readTemperature);
 
       await hardware.callFunction(request: request);
 

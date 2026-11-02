@@ -25,10 +25,7 @@ class IntlFileUtility {
   /// language is 'fr_FR'.
   /// The method tries to find the file: 'assets/texts/readme_fr_FR.me'
   /// If it doesn't find it, it will try: 'assets/texts/readme_en_US.me'
-  static Future<String?> loadTransAssetFileText(
-    BuildContext context,
-    String path,
-  ) async {
+  static Future<String?> loadTransAssetFileText(BuildContext context, String path) async {
     final myLocale = Localizations.localeOf(context);
     final localName = Intl.canonicalizedLocale(myLocale.toLanguageTag());
 
@@ -40,11 +37,12 @@ class IntlFileUtility {
     String? translated;
 
     try {
-      translated = await DefaultAssetBundle.of(context)
-          .loadString(startPath + localName + endPath);
+      translated = await DefaultAssetBundle.of(context).loadString(startPath + localName + endPath);
     } catch (_) {
-      appLogger().w("Cannot found the file: $startPath$localName$endPath, try "
-          "to load the file: $startPath${Intl.systemLocale}$endPath");
+      appLogger().w(
+        "Cannot found the file: $startPath$localName$endPath, try "
+        "to load the file: $startPath${Intl.systemLocale}$endPath",
+      );
     }
 
     if (translated == null) {
@@ -54,8 +52,10 @@ class IntlFileUtility {
         translated = await DefaultAssetBundle.of(context)
             .loadString(startPath + Intl.systemLocale + endPath);
       } catch (_) {
-        appLogger().w("Cannot found the file: "
-            "$startPath${Intl.systemLocale}$endPath");
+        appLogger().w(
+          "Cannot found the file: "
+          "$startPath${Intl.systemLocale}$endPath",
+        );
       }
     }
 

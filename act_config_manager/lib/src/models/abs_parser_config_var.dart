@@ -24,10 +24,7 @@ abstract class AbsParserConfigVar<ParsedType, StoredType> extends AbsConfigVar<S
   final ParserFunc<ParsedType, StoredType> parser;
 
   /// Class constructor
-  const AbsParserConfigVar(
-    super.key, {
-    required this.parser,
-  });
+  const AbsParserConfigVar(super.key, {required this.parser});
 
   /// This method is used to load the config variable and parse it.
   ///

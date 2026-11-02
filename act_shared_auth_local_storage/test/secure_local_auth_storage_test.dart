@@ -184,9 +184,7 @@ void main() {
 
     test("reads nothing when the application does not allow keeping credentials", () async {
       final storage = await aStorage(saveUserIds: false);
-      await secrets.authIds.store(
-        const AuthUserIds(username: "a user", password: "a password"),
-      );
+      await secrets.authIds.store(const AuthUserIds(username: "a user", password: "a password"));
 
       expect(await storage.loadUserIds(), isNull);
     });
@@ -204,9 +202,7 @@ void main() {
 
     test("leaves the credentials alone when the application does not allow keeping them", () async {
       final storage = await aStorage(saveUserIds: false);
-      await secrets.authIds.store(
-        const AuthUserIds(username: "a user", password: "a password"),
-      );
+      await secrets.authIds.store(const AuthUserIds(username: "a user", password: "a password"));
 
       await storage.clearUserIds();
 

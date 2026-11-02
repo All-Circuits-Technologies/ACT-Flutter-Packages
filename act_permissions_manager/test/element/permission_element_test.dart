@@ -76,9 +76,7 @@ void main() {
     test("asks iOS for the Bluetooth itself", () {
       runningOn(FakePlatformManager.ios());
 
-      expect(PermissionElementHelper.getPermissions(PermissionElement.ble), [
-        Permission.bluetooth,
-      ]);
+      expect(PermissionElementHelper.getPermissions(PermissionElement.ble), [Permission.bluetooth]);
     });
 
     test("asks nothing of a device which is neither Android nor iOS for the Bluetooth", () {

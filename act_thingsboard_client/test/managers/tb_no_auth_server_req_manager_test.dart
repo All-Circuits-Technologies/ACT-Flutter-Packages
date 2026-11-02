@@ -78,9 +78,7 @@ void main() {
     });
 
     test("reaches a server which is named without TLS", () async {
-      final manager = await aManager(
-        conf: "thingsboard:\n  host: a.server\n  enableTls: false",
-      );
+      final manager = await aManager(conf: "thingsboard:\n  host: a.server\n  enableTls: false");
 
       expect(manager.tbClient, isNotNull);
     });
@@ -138,8 +136,7 @@ void main() {
       final manager = await aManager();
 
       final response = await manager.request<String>(
-        (tbClient) async =>
-            throw ThingsboardError(errorCode: ThingsBoardErrorCode.jwtTokenExpired),
+        (tbClient) async => throw ThingsboardError(errorCode: ThingsBoardErrorCode.jwtTokenExpired),
       );
 
       expect(response.status, RequestStatus.loginError);
@@ -149,8 +146,7 @@ void main() {
       final manager = await aManager();
 
       final response = await manager.request<String>(
-        (tbClient) async =>
-            throw ThingsboardError(errorCode: ThingsBoardErrorCode.authentication),
+        (tbClient) async => throw ThingsboardError(errorCode: ThingsBoardErrorCode.authentication),
       );
 
       expect(response.status, RequestStatus.loginError);
@@ -160,10 +156,8 @@ void main() {
       final manager = await aManager();
 
       final response = await manager.request<String>(
-        (tbClient) async => throw ThingsboardError(
-          errorCode: ThingsBoardErrorCode.general,
-          message: "an error",
-        ),
+        (tbClient) async =>
+            throw ThingsboardError(errorCode: ThingsBoardErrorCode.general, message: "an error"),
       );
 
       expect(response.status, RequestStatus.globalError);
@@ -196,12 +190,11 @@ void main() {
       final manager = FakeNoAuthReqManager();
       final token = aJwtToken();
       final refreshToken = aJwtToken(validFor: const Duration(days: 7));
-      when(
-        () => manager.client.refreshJwtToken(refreshToken: "a refresh token"),
-      ).thenAnswer((_) async {
-        when(manager.client.getJwtToken).thenReturn(token);
-        when(manager.client.getRefreshToken).thenReturn(refreshToken);
-      });
+      when(() => manager.client.refreshJwtToken(refreshToken: "a refresh token"))
+          .thenAnswer((_) async {
+            when(manager.client.getJwtToken).thenReturn(token);
+            when(manager.client.getRefreshToken).thenReturn(refreshToken);
+          });
 
       final tokens = await manager.refreshTokens("a refresh token");
 
@@ -217,9 +210,8 @@ void main() {
 
     test("answers nothing when the client holds a token which isn't a JWT", () async {
       final manager = FakeNoAuthReqManager();
-      when(
-        () => manager.client.refreshJwtToken(refreshToken: any(named: "refreshToken")),
-      ).thenAnswer((_) async {});
+      when(() => manager.client.refreshJwtToken(refreshToken: any(named: "refreshToken")))
+          .thenAnswer((_) async {});
       when(manager.client.getJwtToken).thenReturn("not a jwt");
       when(manager.client.getRefreshToken).thenReturn(null);
 

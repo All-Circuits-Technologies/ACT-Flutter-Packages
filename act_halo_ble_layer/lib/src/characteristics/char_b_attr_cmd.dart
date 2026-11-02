@@ -14,12 +14,11 @@ class CharBAttrCmd extends AbstractHaloCharacteristic with MixCharNotification {
   static const characteristicName = "attribute_command_and_result";
 
   /// Class constructor
-  CharBAttrCmd({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readWrite,
-          receiveType: Uint8List,
-          sendType: Uint8List,
-        );
+  CharBAttrCmd({required super.uuid})
+    : super(
+        name: characteristicName,
+        scope: CharacteristicScope.readWrite,
+        receiveType: Uint8List,
+        sendType: Uint8List,
+      );
 }

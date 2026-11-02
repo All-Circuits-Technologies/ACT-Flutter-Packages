@@ -72,18 +72,14 @@ void main() {
 
   group("PermissionViewContext.informPermanentlyDenied", () {
     test("stands for the permission which was refused for good", () {
-      final context = PermissionViewContext.informPermanentlyDenied(
-        element: PermissionElement.ble,
-      );
+      final context = PermissionViewContext.informPermanentlyDenied(element: PermissionElement.ble);
 
       expect(context.element, PermissionElement.ble);
       expect(context.action, PermissionViewAction.informPermanentlyDenied);
     });
 
     test("lets the user leave the page, since there is nothing left to grant", () {
-      final context = PermissionViewContext.informPermanentlyDenied(
-        element: PermissionElement.ble,
-      );
+      final context = PermissionViewContext.informPermanentlyDenied(element: PermissionElement.ble);
 
       expect(context.isAcceptanceCompulsory, isFalse);
     });

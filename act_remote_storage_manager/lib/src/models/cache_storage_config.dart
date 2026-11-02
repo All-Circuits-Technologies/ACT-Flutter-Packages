@@ -24,9 +24,5 @@ class CacheStorageConfig extends Equatable {
 
   /// Get the properties of the object.
   @override
-  List<Object> get props => [
-        key,
-        stalePeriod,
-        maxNbOfCachedObjects,
-      ];
+  List<Object> get props => [key, stalePeriod, maxNbOfCachedObjects];
 }

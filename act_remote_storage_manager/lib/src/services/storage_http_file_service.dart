@@ -16,8 +16,7 @@ class StorageHttpFileService extends HttpFileService {
   final MixinStorageService _storageService;
 
   /// Constructor for [StorageHttpFileService].
-  StorageHttpFileService({required this._storageService})
-    : super();
+  StorageHttpFileService({required this._storageService}) : super();
 
   /// Download a file from the given [url] and return a [FileServiceResponse].
   @override

@@ -39,10 +39,7 @@ void main() {
       Object? received;
       service.listenTo(FakeEvent.measure, (data) => received = data);
 
-      await service.onRawMessageReceived(<String, dynamic>{
-        "event": "measure",
-        "data": "a value",
-      });
+      await service.onRawMessageReceived(<String, dynamic>{"event": "measure", "data": "a value"});
 
       expect(received, "a value");
     });

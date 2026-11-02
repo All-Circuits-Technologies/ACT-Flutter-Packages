@@ -34,9 +34,7 @@ mixin MixinStorageService on AbsWithLifeCycle {
   Map<String, String>? get headers => null;
 
   /// Get the download url of a file based on a [fileId].
-  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
-    String fileId,
-  );
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(String fileId);
 
   /// Download a file based on a [fileId] in a [directory].
   Future<({StorageRequestResult result, File? file})> getFile(

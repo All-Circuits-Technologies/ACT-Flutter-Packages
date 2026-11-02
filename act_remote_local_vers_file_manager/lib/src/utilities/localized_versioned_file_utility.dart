@@ -34,11 +34,8 @@ sealed class LocalizedVersionedFileUtility {
   ///
   /// That is, read "version" file within [storage] [dirId] $locale folder, optionally caching
   /// result using [cacheVersion].
-  static Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String version})? data,
-      })> getFileLocalizedCurrentVersion({
+  static Future<({StorageRequestResult result, ({Locale locale, String version})? data})>
+  getFileLocalizedCurrentVersion({
     required AbsRemoteStorageManager storage,
     required String dirId,
     required List<Locale> locales,
@@ -79,10 +76,7 @@ sealed class LocalizedVersionedFileUtility {
 
     return (
       result: StorageRequestResult.success,
-      data: (
-        locale: localizedVersionResult.data!.locale,
-        version: currentVersionResult.version!,
-      ),
+      data: (locale: localizedVersionResult.data!.locale, version: currentVersionResult.version!),
     );
   }
 
@@ -96,10 +90,12 @@ sealed class LocalizedVersionedFileUtility {
   ///
   /// Sibling file name is computed from version to fetch using [versionToFileName].
   static Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String version, String filePath, File file})? data,
-      })> getLocalizedVersionedFile({
+    ({
+      StorageRequestResult result,
+      ({Locale locale, String version, String filePath, File file})? data,
+    })
+  >
+  getLocalizedVersionedFile({
     required AbsRemoteStorageManager storage,
     required String dirId,
     required String Function(String) versionToFileName,

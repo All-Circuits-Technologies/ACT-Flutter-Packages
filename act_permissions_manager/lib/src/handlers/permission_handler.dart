@@ -7,8 +7,7 @@
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_permissions_manager/src/element/permission_element.dart';
 import 'package:act_permissions_manager/src/handlers/permission_watcher.dart';
-import 'package:permission_handler/permission_handler.dart'
-    as permission_handler;
+import 'package:permission_handler/permission_handler.dart' as permission_handler;
 
 /// Handler linked to a permission element
 ///
@@ -24,8 +23,7 @@ class PermissionHandler extends SharedHandler {
   PermissionElement get permissionElement => _castWatcher.element;
 
   /// Get the current permission status
-  Future<permission_handler.PermissionStatus> get currentStatus async =>
-      _castWatcher.status;
+  Future<permission_handler.PermissionStatus> get currentStatus async => _castWatcher.status;
 
   /// Request the permission (if needed)
   Stream<bool> get isInsideAppStream => _castWatcher.isInsideAppStream;
@@ -33,12 +31,10 @@ class PermissionHandler extends SharedHandler {
   /// Request the permission (if needed)
   Future<permission_handler.PermissionStatus> requestPermission({
     bool checkRationale = false,
-  }) async =>
-      _castWatcher.requestPermission(checkRationale: checkRationale);
+  }) async => _castWatcher.requestPermission(checkRationale: checkRationale);
 
   /// Check if user has already denied request or not
-  Future<bool> shouldShowRationale() async =>
-      _castWatcher.shouldShowRationale();
+  Future<bool> shouldShowRationale() async => _castWatcher.shouldShowRationale();
 
   /// Stream which emits elements when the status of the permission has been
   /// detected has changed

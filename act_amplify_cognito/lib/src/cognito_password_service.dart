@@ -14,29 +14,25 @@ class CognitoPasswordService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor
-  CognitoPasswordService({
-    required this.logsHelper,
-  }) : super();
+  CognitoPasswordService({required this.logsHelper}) : super();
 
   /// This method fires the password resets. A confirmation code should be sent.
   ///
   /// If an exception has to be managed particularly, do it in [_parseException]
-  Future<AuthResetPwdResult> resetPassword({
-    required String username,
-  }) async {
+  Future<AuthResetPwdResult> resetPassword({required String username}) async {
     ResetPasswordResult result;
     try {
-      result = await Amplify.Auth.resetPassword(
-        username: username,
-      );
+      result = await Amplify.Auth.resetPassword(username: username);
     } on AuthException catch (e) {
       logsHelper.e('Error resetting password: ${e.message}');
       return AuthResetPwdResult(status: _parseException(e), extra: e);
     }
 
     if (result.isPasswordReset) {
-      logsHelper.w("We ask for password reset but we aren't in the right step (it said that "
-          "everything is done)");
+      logsHelper.w(
+        "We ask for password reset but we aren't in the right step (it said that "
+        "everything is done)",
+      );
       return const AuthResetPwdResult(status: AuthResetPwdStatus.genericError);
     }
 
@@ -64,8 +60,10 @@ class CognitoPasswordService extends AbsWithLifeCycle {
     }
 
     if (!result.isPasswordReset) {
-      logsHelper.w("We try to confirm the password resetting but it hasn't been acknowledged: "
-          "$result");
+      logsHelper.w(
+        "We try to confirm the password resetting but it hasn't been acknowledged: "
+        "$result",
+      );
       return const AuthResetPwdResult(status: AuthResetPwdStatus.genericError);
     }
 
@@ -82,10 +80,7 @@ class CognitoPasswordService extends AbsWithLifeCycle {
     required String newPassword,
   }) async {
     try {
-      await Amplify.Auth.updatePassword(
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      );
+      await Amplify.Auth.updatePassword(oldPassword: oldPassword, newPassword: newPassword);
     } on AuthException catch (e) {
       logsHelper.e('Error updating password: ${e.message}');
       return AuthResetPwdResult(status: _parseException(e), extra: e);
@@ -96,10 +91,10 @@ class CognitoPasswordService extends AbsWithLifeCycle {
 
   /// This parses the received error to a [AuthResetPwdStatus]
   static AuthResetPwdStatus _parseException(AuthException exception) => switch (exception) {
-        CodeMismatchException _ => AuthResetPwdStatus.wrongConfirmationCode,
-        InvalidPasswordException _ => AuthResetPwdStatus.newPasswordNotConform,
-        NetworkException _ => AuthResetPwdStatus.networkError,
-        NotAuthorizedServiceException _ => AuthResetPwdStatus.wrongUsernameOrPwd,
-        _ => AuthResetPwdStatus.genericError,
-      };
+    CodeMismatchException _ => AuthResetPwdStatus.wrongConfirmationCode,
+    InvalidPasswordException _ => AuthResetPwdStatus.newPasswordNotConform,
+    NetworkException _ => AuthResetPwdStatus.networkError,
+    NotAuthorizedServiceException _ => AuthResetPwdStatus.wrongUsernameOrPwd,
+    _ => AuthResetPwdStatus.genericError,
+  };
 }

@@ -11,10 +11,7 @@ class ActTypeNotMatchingTargetError<T> extends Error {
   final dynamic value;
 
   /// Class constructor
-  ActTypeNotMatchingTargetError({
-    required this.key,
-    required this.value,
-  });
+  ActTypeNotMatchingTargetError({required this.key, required this.value});
 
   /// Display a representation of the error
   @override

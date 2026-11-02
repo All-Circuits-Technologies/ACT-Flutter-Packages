@@ -161,10 +161,8 @@ class FakeOtherService with MixinAuthService {
 
   /// {@macro act_shared_auth.MixinAuthService.signInUser}
   @override
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  }) async => const AuthSignInResult(status: AuthSignInStatus.done);
+  Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
+      const AuthSignInResult(status: AuthSignInStatus.done);
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override

@@ -131,13 +131,11 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
   ///
   /// Return [BrokerAuthError.success] when the broker recorded it, on a HTTP 204, or the mapped
   /// [BrokerAuthError] otherwise, a transport error being read as [BrokerAuthError.network].
-  Future<BrokerAuthError> acceptTerms(
-    String idpAccessToken, {
-    required String version,
-  }) => _requestWithoutAnswer(
-    _requestParam(_termsAcceptPath, idpAccessToken, body: {_versionKey: version}),
-    "terms acceptance",
-  );
+  Future<BrokerAuthError> acceptTerms(String idpAccessToken, {required String version}) =>
+      _requestWithoutAnswer(
+        _requestParam(_termsAcceptPath, idpAccessToken, body: {_versionKey: version}),
+        "terms acceptance",
+      );
 
   /// Assign the device named [serial] to the customer of the caller.
   ///
@@ -275,8 +273,10 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
     final json = _tryDecodeBody(response);
     final code = _readString(json, _errorKey);
     final error = BrokerAuthError.fromCode(code);
-    _logsHelper.w("The $callName failed with the status ${response.statusCode} (code: $code, "
-        "error: $error)");
+    _logsHelper.w(
+      "The $callName failed with the status ${response.statusCode} (code: $code, "
+      "error: $error)",
+    );
 
     return (error: error, message: _readString(json, _messageKey));
   }

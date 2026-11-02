@@ -71,9 +71,7 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
   final SharedPreferencesAsync _prefs;
 
   /// Private constructor
-  PropertiesSingleton._({
-    required this._prefs,
-  });
+  PropertiesSingleton._({required this._prefs});
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.load}
   @override
@@ -89,15 +87,15 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
         return (await _getElement<String, String>(key: key, prefsGetter: _prefs.getString)) as T?;
       case const (List<String>):
         return (await _getElement<List<String>, List<String>>(
-            key: key, prefsGetter: _prefs.getStringList)) as T?;
+          key: key,
+          prefsGetter: _prefs.getStringList,
+        )) as T?;
 
       default:
         // An unsupported T item was added to PropertiesManager.
         // Dear developer, please add the support for your specific T.
         appLogger().e("Unsupported type $T for key $key");
-        throw ActUnsupportedTypeError<T>(
-          context: "key: $key",
-        );
+        throw ActUnsupportedTypeError<T>(context: "key: $key");
     }
   }
 
@@ -113,18 +111,10 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
 
     switch (T) {
       case const (bool):
-        success = await _setElement(
-          key: key,
-          prefsSetter: _prefs.setBool,
-          value: value as bool,
-        );
+        success = await _setElement(key: key, prefsSetter: _prefs.setBool, value: value as bool);
         break;
       case const (int):
-        success = await _setElement(
-          key: key,
-          prefsSetter: _prefs.setInt,
-          value: value as int,
-        );
+        success = await _setElement(key: key, prefsSetter: _prefs.setInt, value: value as int);
         break;
       case const (double):
         success = await _setElement(
@@ -151,9 +141,7 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
         // An unsupported T item was added to PropertiesManager.
         // Dear developer, please add the support for your specific T.
         appLogger().e("Unsupported type $T");
-        throw ActUnsupportedTypeError<T>(
-          context: "key: $key",
-        );
+        throw ActUnsupportedTypeError<T>(context: "key: $key");
     }
 
     return success;
@@ -180,8 +168,10 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
     try {
       result = await prefsGetter(key);
     } catch (error) {
-      appLogger().e("An error occurred when tried to get the shared preferences from key: $key"
-          "the error: $error");
+      appLogger().e(
+        "An error occurred when tried to get the shared preferences from key: $key"
+        "the error: $error",
+      );
     }
 
     // We need to test if value is equals to null, because the test:
@@ -213,8 +203,10 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
       await prefsSetter(key, value);
       result = true;
     } catch (error) {
-      appLogger().e("An error occurred when tried to store the value: $value, of key: $key, into "
-          "the properties");
+      appLogger().e(
+        "An error occurred when tried to store the value: $value, of key: $key, into "
+        "the properties",
+      );
     }
     return result;
   }

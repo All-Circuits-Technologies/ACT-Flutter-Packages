@@ -53,24 +53,17 @@ enum ShadowTopicsEnum {
   const ShadowTopicsEnum(this.relativePath);
 
   /// This method builds the full topic named based on a given [thingName] and [shadowName]
-  String buildTopicName(
-    String thingName,
-    String shadowName,
-  ) =>
-      UriUtility.formatPathFromSegments(
-        segments: _segments,
-        parameters: {
-          _thingNameKey: thingName,
-          _shadowNameKey: shadowName,
-          _relativePathKey: relativePath,
-        },
-      );
+  String buildTopicName(String thingName, String shadowName) => UriUtility.formatPathFromSegments(
+    segments: _segments,
+    parameters: {
+      _thingNameKey: thingName,
+      _shadowNameKey: shadowName,
+      _relativePathKey: relativePath,
+    },
+  );
 
   /// This methods builds all the topics names based on a given [thingName] and [shadowName]
-  static Map<ShadowTopicsEnum, String> buildAllTopicsName(
-    String thingName,
-    String shadowName,
-  ) {
+  static Map<ShadowTopicsEnum, String> buildAllTopicsName(String thingName, String shadowName) {
     final map = <ShadowTopicsEnum, String>{};
 
     for (final topic in ShadowTopicsEnum.values) {

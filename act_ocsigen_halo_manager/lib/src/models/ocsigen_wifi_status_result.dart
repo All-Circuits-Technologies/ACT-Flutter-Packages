@@ -58,8 +58,10 @@ class OcsigenWiFiStatusResult extends Equatable {
     final length = packet.elementsNb;
 
     if ((length % elementsNb) != 0) {
-      appLogger().w("The list of WiFi status isn't well formatted, the number of elements "
-          "is not a modulo of $elementsNb");
+      appLogger().w(
+        "The list of WiFi status isn't well formatted, the number of elements "
+        "is not a modulo of $elementsNb",
+      );
       return null;
     }
 
@@ -68,40 +70,50 @@ class OcsigenWiFiStatusResult extends Equatable {
       final ssid = packet.getString(idx + ssidIdx).data;
 
       if (ssid == null) {
-        appLogger().w("The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
-            "parse the Ocsigen WiFi status result");
+        appLogger().w(
+          "The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
+          "parse the Ocsigen WiFi status result",
+        );
         return null;
       }
 
       final ip = packet.getString(idx + ipIdx).data;
 
       if (ip == null) {
-        appLogger().w("The element at the idx: ${idx + ipIdx} isn't a string ip, we can't "
-            "parse the Ocsigen WiFi status result");
+        appLogger().w(
+          "The element at the idx: ${idx + ipIdx} isn't a string ip, we can't "
+          "parse the Ocsigen WiFi status result",
+        );
         return null;
       }
 
       final netmask = packet.getString(idx + netmaskIdx).data;
 
       if (netmask == null) {
-        appLogger().w("The element at the idx: ${idx + netmaskIdx} isn't a string netmask, we "
-            "can't parse the Ocsigen WiFi status result");
+        appLogger().w(
+          "The element at the idx: ${idx + netmaskIdx} isn't a string netmask, we "
+          "can't parse the Ocsigen WiFi status result",
+        );
         return null;
       }
 
       final gateway = packet.getString(idx + gatewayIdx).data;
 
       if (gateway == null) {
-        appLogger().w("The element at the idx: ${idx + gatewayIdx} isn't a string gateway, we "
-            "can't parse the Ocsigen WiFi status result");
+        appLogger().w(
+          "The element at the idx: ${idx + gatewayIdx} isn't a string gateway, we "
+          "can't parse the Ocsigen WiFi status result",
+        );
         return null;
       }
 
       final urcValue = packet.getUInt(idx + urcIdx).data;
 
       if (urcValue == null) {
-        appLogger().w("The element at the idx: ${idx + gatewayIdx} isn't a uint8 urc, we "
-            "can't parse the Ocsigen WiFi status result");
+        appLogger().w(
+          "The element at the idx: ${idx + gatewayIdx} isn't a uint8 urc, we "
+          "can't parse the Ocsigen WiFi status result",
+        );
         return null;
       }
 
@@ -111,12 +123,9 @@ class OcsigenWiFiStatusResult extends Equatable {
         appLogger().w("The ocsigen WiFi urc isn't known, we continue");
       }
 
-      elements.add(OcsigenWiFiStatusResult._(
-          ssid: ssid,
-          ip: ip,
-          netmask: netmask,
-          gateway: gateway,
-          urc: urc));
+      elements.add(
+        OcsigenWiFiStatusResult._(ssid: ssid, ip: ip, netmask: netmask, gateway: gateway, urc: urc),
+      );
     }
 
     return elements;

@@ -51,8 +51,8 @@ class BleGattConnectService extends AbsWithLifeCycle {
     required FlutterReactiveBle flutterReactiveBle,
     required this._bleManager,
     required this._bleMutex,
-  })  : _flutterBle = flutterReactiveBle,
-        _lastConnectedStreamCtrl = StreamController.broadcast();
+  }) : _flutterBle = flutterReactiveBle,
+       _lastConnectedStreamCtrl = StreamController.broadcast();
 
   /// {@template act_ble_manager.BleGattConnectService.connect}
   /// Connect to [device] and discovers its services and characteristics.
@@ -62,16 +62,15 @@ class BleGattConnectService extends AbsWithLifeCycle {
   ///
   /// The call is protected by a mutex [_bleMutex].
   /// {@endtemplate}
-  Future<bool> connect(
-    BleDevice device, {
-    VoidCallback? onLowLevelConnect,
-  }) =>
+  Future<bool> connect(BleDevice device, {VoidCallback? onLowLevelConnect}) =>
       _bleMutex.protect(() async {
         if (!(await _bleManager.checkAndAskForPermissionsAndServices())) {
           // This test manage the case where the user haven't accepted the BLE permissions or BLE is
           // not activated on phone
-          _bleManager.logsHelper.w("The user don't have accepted the BLE permission or Ble isn't "
-              "activated on the phone; therefore we can't connect");
+          _bleManager.logsHelper.w(
+            "The user don't have accepted the BLE permission or Ble isn't "
+            "activated on the phone; therefore we can't connect",
+          );
           return false;
         }
 
@@ -80,8 +79,9 @@ class BleGattConnectService extends AbsWithLifeCycle {
         await _tryToCleanGattCache(device: device);
 
         device.bondState = BondState.unknown;
-        final isConnected = await _bleManager.bleGapService
-            .pauseScanWhile(() => _manageLowLevelConnection(device));
+        final isConnected = await _bleManager.bleGapService.pauseScanWhile(
+          () => _manageLowLevelConnection(device),
+        );
         if (!isConnected) {
           return false;
         }
@@ -91,8 +91,9 @@ class BleGattConnectService extends AbsWithLifeCycle {
         }
 
         _setLastConnectedDevice(device);
-        _deviceConnectionSub =
-            _lastConnectedDevice!.connectionStateStream.listen(_onDeviceConnectionChanged);
+        _deviceConnectionSub = _lastConnectedDevice!.connectionStateStream.listen(
+          _onDeviceConnectionChanged,
+        );
 
         // Find services and characteristics
         List<Service>? services;
@@ -105,8 +106,10 @@ class BleGattConnectService extends AbsWithLifeCycle {
           } catch (error) {
             var bondedState = BondState.bonded;
 
-            _bleManager.logsHelper.w('An error occurred when tried to discover the services of '
-                'device: ${device.id}, error: $error');
+            _bleManager.logsHelper.w(
+              'An error occurred when tried to discover the services of '
+              'device: ${device.id}, error: $error',
+            );
             services = null;
 
             // Verify if error comes from bonding
@@ -168,8 +171,10 @@ class BleGattConnectService extends AbsWithLifeCycle {
           atLeastOneConnecting = true;
         } else if (connState == DeviceConnectionState.connected ||
             (connState == DeviceConnectionState.disconnected && atLeastOneConnecting)) {
-          _bleManager.logsHelper.d('Can complete: $connState, at least one connecting: '
-              '$atLeastOneConnecting');
+          _bleManager.logsHelper.d(
+            'Can complete: $connState, at least one connecting: '
+            '$atLeastOneConnecting',
+          );
           completer.complete();
         }
       });
@@ -205,10 +210,15 @@ class BleGattConnectService extends AbsWithLifeCycle {
       calculateLeftDuration();
 
       // Wait to receive a connected or disconnected event
-      await completer.future.timeout(ble_constants.lowLevelConnectTimeout, onTimeout: () {
-        _bleManager.logsHelper.w("The device ${device.id} isn't connected: "
-            "${device.connectionState}, and the timeout raised");
-      });
+      await completer.future.timeout(
+        ble_constants.lowLevelConnectTimeout,
+        onTimeout: () {
+          _bleManager.logsHelper.w(
+            "The device ${device.id} isn't connected: "
+            "${device.connectionState}, and the timeout raised",
+          );
+        },
+      );
 
       if (device.connectionState != DeviceConnectionState.connected) {
         // If the device isn't connected, we force the disconnection
@@ -246,8 +256,10 @@ class BleGattConnectService extends AbsWithLifeCycle {
         // This case is normal, because most of the time the device isn't connected here. What we
         // want to manage is case where the element is still connected and that causes problems
       } else {
-        _bleManager.logsHelper.e("A problem occurred when tried to clear the gatt cache linked to "
-            "the device id: ${device.id}, error: $error");
+        _bleManager.logsHelper.e(
+          "A problem occurred when tried to clear the gatt cache linked to "
+          "the device id: ${device.id}, error: $error",
+        );
       }
     }
   }
@@ -288,9 +300,7 @@ class BleGattConnectService extends AbsWithLifeCycle {
   /// Manage the disposing of the service
   @override
   Future<void> disposeLifeCycle() async {
-    final futuresList = <Future>[
-      _lastConnectedStreamCtrl.close(),
-    ];
+    final futuresList = <Future>[_lastConnectedStreamCtrl.close()];
 
     if (_deviceConnectionSub != null) {
       futuresList.add(_deviceConnectionSub!.cancel());

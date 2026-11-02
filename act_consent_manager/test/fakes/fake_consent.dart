@@ -106,9 +106,7 @@ class FakeConsentService extends AbstractConsentService<FakeOptions> {
 
   /// {@macro act_consent_manager.AbstractConsentService.loadConsentText}
   @override
-  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadConsentText(
-    String version,
-  ) async {
+  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadConsentText(String version) async {
     askedTexts.add(version);
 
     return textAnswer;

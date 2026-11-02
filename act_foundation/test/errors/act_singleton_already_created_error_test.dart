@@ -13,10 +13,7 @@ void main() {
     test("names the type of the singleton", () {
       final error = ActSingletonAlreadyCreatedError<_Manager>();
 
-      expect(
-        error.message,
-        "The singleton: _Manager, had already been created don't do it again",
-      );
+      expect(error.message, "The singleton: _Manager, had already been created don't do it again");
     });
 
     test("is an ACT error", () {

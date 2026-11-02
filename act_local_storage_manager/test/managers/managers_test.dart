@@ -132,8 +132,10 @@ void main() {
       final config = await aConfig(cleanWhenReInstall: true);
       await const SecretItem<String>("aKey").store("a value");
 
-      await _SecretsManager(propertiesGetter: () => properties, confGetter: () => config)
-          .initLifeCycle();
+      await _SecretsManager(
+        propertiesGetter: () => properties,
+        confGetter: () => config,
+      ).initLifeCycle();
 
       expect(await const SecretItem<String>("aKey").load(), isNull);
     });
@@ -145,8 +147,10 @@ void main() {
       final config = await aConfig(cleanWhenReInstall: true);
       await const SecretItem<String>("aKey").store("a value");
 
-      await _SecretsManager(propertiesGetter: () => properties, confGetter: () => config)
-          .initLifeCycle();
+      await _SecretsManager(
+        propertiesGetter: () => properties,
+        confGetter: () => config,
+      ).initLifeCycle();
 
       expect(await const SecretItem<String>("aKey").load(), "a value");
     });
@@ -157,8 +161,10 @@ void main() {
       final config = await aConfig(cleanWhenReInstall: false);
       await const SecretItem<String>("aKey").store("a value");
 
-      await _SecretsManager(propertiesGetter: () => properties, confGetter: () => config)
-          .initLifeCycle();
+      await _SecretsManager(
+        propertiesGetter: () => properties,
+        confGetter: () => config,
+      ).initLifeCycle();
 
       expect(await const SecretItem<String>("aKey").load(), "a value");
     });
@@ -167,10 +173,7 @@ void main() {
       final properties = _PropertiesManager();
       await properties.initLifeCycle();
       final config = await aConfig(cleanWhenReInstall: false);
-      final manager = _SecretsManager(
-        propertiesGetter: () => properties,
-        confGetter: () => config,
-      );
+      final manager = _SecretsManager(propertiesGetter: () => properties, confGetter: () => config);
       await manager.initLifeCycle();
       await const SecretItem<String>("aKey").store("a value");
 

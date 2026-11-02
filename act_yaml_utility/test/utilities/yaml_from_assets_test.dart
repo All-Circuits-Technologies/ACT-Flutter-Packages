@@ -66,10 +66,7 @@ void main() {
       final result = await YamlFromAssets.loadYaml(
         "assets/config",
         cache: false,
-        yamlFileTypes: const [
-          YamlFromAssets.jsonFileType,
-          YamlFromAssets.yamlFileType,
-        ],
+        yamlFileTypes: const [YamlFromAssets.jsonFileType, YamlFromAssets.yamlFileType],
       );
 
       expect(result.data, {"a": 2});

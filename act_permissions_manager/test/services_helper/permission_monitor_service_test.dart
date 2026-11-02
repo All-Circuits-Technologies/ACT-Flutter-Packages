@@ -44,9 +44,8 @@ void main() {
       ..registerSingleton<AppLifeCycleManager>(lifeCycle)
       ..registerSingleton<FakePermRouterManager>(FakePermRouterManager());
 
-    final contextualViews = ContextualViewsBuilder<FakePermRouterManager>(
-      viewBuilder: views,
-    ).factory();
+    final contextualViews = ContextualViewsBuilder<FakePermRouterManager>(viewBuilder: views)
+        .factory();
     await contextualViews.initLifeCycle();
     globalGetIt().registerSingleton<ContextualViewsManager>(contextualViews);
     addTearDown(contextualViews.disposeLifeCycle);
@@ -115,9 +114,7 @@ void main() {
     test("asks for the permission without explaining when it is told not to", () async {
       permissions.statuses[_aPermission] = PermissionStatus.denied;
 
-      final granted = await aMonitor().verifyAndAskBeforeAction(
-        displayContextualIfNeeded: false,
-      );
+      final granted = await aMonitor().verifyAndAskBeforeAction(displayContextualIfNeeded: false);
 
       expect(granted, isTrue);
       expect(views.displayed, isEmpty);
@@ -160,9 +157,7 @@ void main() {
       permissions.statuses[_aPermission] = PermissionStatus.permanentlyDenied;
       permissions.settingsAnswer = {_aPermission: PermissionStatus.granted};
 
-      final granted = await aMonitor().verifyAndAskBeforeAction(
-        displayContextualIfNeeded: false,
-      );
+      final granted = await aMonitor().verifyAndAskBeforeAction(displayContextualIfNeeded: false);
 
       expect(granted, isTrue);
       expect(views.displayed, isEmpty);
@@ -208,9 +203,7 @@ void main() {
       permissions.statuses[_aPermission] = PermissionStatus.denied;
       permissions.answersToRequest[_aPermission] = PermissionStatus.permanentlyDenied;
 
-      final granted = await aMonitor().verifyAndAskBeforeAction(
-        displayContextualIfNeeded: false,
-      );
+      final granted = await aMonitor().verifyAndAskBeforeAction(displayContextualIfNeeded: false);
 
       expect(granted, isFalse);
       expect(permissions.settingsCount, 0);

@@ -43,9 +43,8 @@ void main() {
       ..registerSingleton<PermissionsManager>(PermissionsManager())
       ..registerSingleton<FakeBleRouterManager>(FakeBleRouterManager());
 
-    final contextualViews = ContextualViewsBuilder<FakeBleRouterManager>(
-      viewBuilder: views,
-    ).factory();
+    final contextualViews = ContextualViewsBuilder<FakeBleRouterManager>(viewBuilder: views)
+        .factory();
     await contextualViews.initLifeCycle();
     globalGetIt().registerSingleton<ContextualViewsManager>(contextualViews);
     addTearDown(contextualViews.disposeLifeCycle);

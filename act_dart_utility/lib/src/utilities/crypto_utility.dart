@@ -21,17 +21,14 @@ sealed class CryptoUtility {
   /// If [addSpecialChars] is equals to true, the random string may contain some special characters
   ///
   /// The [Random.secure()] method is used to get random values
-  static String getRandomString(
-    int length, {
-    bool addSpecialChars = false,
-  }) {
+  static String getRandomString(int length, {bool addSpecialChars = false}) {
     final random = Random.secure();
-    return String.fromCharCodes(Iterable.generate(
+    return String.fromCharCodes(
+      Iterable.generate(
         length,
-        (_) => _getRandomChar(
-              random: random,
-              addSpecialChars: addSpecialChars,
-            )));
+        (_) => _getRandomChar(random: random, addSpecialChars: addSpecialChars),
+      ),
+    );
   }
 
   /// Get random char from the given string
@@ -39,11 +36,8 @@ sealed class CryptoUtility {
       charsList.codeUnitAt(random.nextInt(charsList.length));
 
   /// Get random char from the right list
-  static int _getRandomChar({
-    required Random random,
-    required bool addSpecialChars,
-  }) =>
+  static int _getRandomChar({required Random random, required bool addSpecialChars}) =>
       addSpecialChars
-          ? _getRandomCharFromList(random, _alphaNumericAndSpecialChars)
-          : _getRandomCharFromList(random, _alphaNumericChars);
+      ? _getRandomCharFromList(random, _alphaNumericAndSpecialChars)
+      : _getRandomCharFromList(random, _alphaNumericChars);
 }

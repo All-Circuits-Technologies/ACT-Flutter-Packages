@@ -14,8 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 /// This callback is used to create pages when needed.
-typedef CreatePageCallback<T extends MixinRoute> =
-    RoutePageDetails Function(BuildContext context, GoRouterState state);
+typedef CreatePageCallback<T extends MixinRoute> = RoutePageDetails Function(
+  BuildContext context,
+  GoRouterState state,
+);
 
 /// Utility methods to manage [MixinRoute] enum
 abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {

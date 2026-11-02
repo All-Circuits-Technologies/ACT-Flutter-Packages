@@ -69,30 +69,23 @@ class TbTelemetryHandler {
   late final StreamSubscription _timeSeriesSub;
 
   /// Class constructor
-  TbTelemetryHandler({
-    required this._deviceValues,
-  })  : clientAttrKeys = [],
-        sharedAttrKeys = [],
-        serverAttrKeys = [],
-        timeSeriesKeys = [],
-        _attrCtrl = StreamController.broadcast(),
-        _tsCtrl = StreamController.broadcast(),
-        _mutex = Mutex() {
-    _clientAttrSub =
-        _deviceValues.clientAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
-              values,
-              AttributeScope.CLIENT_SCOPE,
-            ));
-    _sharedAttrSub =
-        _deviceValues.sharedAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
-              values,
-              AttributeScope.SHARED_SCOPE,
-            ));
-    _serverAttrSub =
-        _deviceValues.serverAttributes.telemetryStream.listen((values) => _onReceivedAttribute(
-              values,
-              AttributeScope.SERVER_SCOPE,
-            ));
+  TbTelemetryHandler({required this._deviceValues})
+    : clientAttrKeys = [],
+      sharedAttrKeys = [],
+      serverAttrKeys = [],
+      timeSeriesKeys = [],
+      _attrCtrl = StreamController.broadcast(),
+      _tsCtrl = StreamController.broadcast(),
+      _mutex = Mutex() {
+    _clientAttrSub = _deviceValues.clientAttributes.telemetryStream.listen(
+      (values) => _onReceivedAttribute(values, AttributeScope.CLIENT_SCOPE),
+    );
+    _sharedAttrSub = _deviceValues.sharedAttributes.telemetryStream.listen(
+      (values) => _onReceivedAttribute(values, AttributeScope.SHARED_SCOPE),
+    );
+    _serverAttrSub = _deviceValues.serverAttributes.telemetryStream.listen(
+      (values) => _onReceivedAttribute(values, AttributeScope.SERVER_SCOPE),
+    );
     _timeSeriesSub = _deviceValues.timeSeries.telemetryStream.listen(_onReceivedTimeSeries);
   }
 
@@ -109,8 +102,10 @@ class TbTelemetryHandler {
           currentList: clientAttrKeys,
           telemetry: _deviceValues.clientAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the client "
-          "attribute keys: $clientKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to add subscription to the client "
+        "attribute keys: $clientKeys",
+      );
       return false;
     }
 
@@ -120,8 +115,10 @@ class TbTelemetryHandler {
           currentList: sharedAttrKeys,
           telemetry: _deviceValues.sharedAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the shared "
-          "attribute keys: $sharedKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to add subscription to the shared "
+        "attribute keys: $sharedKeys",
+      );
       return false;
     }
 
@@ -131,8 +128,10 @@ class TbTelemetryHandler {
           currentList: serverAttrKeys,
           telemetry: _deviceValues.serverAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the server "
-          "attribute keys: $serverKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to add subscription to the server "
+        "attribute keys: $serverKeys",
+      );
       return false;
     }
 
@@ -142,8 +141,10 @@ class TbTelemetryHandler {
           currentList: timeSeriesKeys,
           telemetry: _deviceValues.timeSeries,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to add subscription to the time "
-          "series keys: $tsKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to add subscription to the time "
+        "series keys: $tsKeys",
+      );
       return false;
     }
 
@@ -158,13 +159,12 @@ class TbTelemetryHandler {
     List<MixinTelemetriesKeys>? sharedKeys,
     List<MixinTelemetriesKeys>? serverKeys,
     List<MixinTelemetriesKeys>? tsKeys,
-  }) =>
-      add(
-        clientKeys: _convertFromTelemetriesKeys(clientKeys),
-        sharedKeys: _convertFromTelemetriesKeys(sharedKeys),
-        serverKeys: _convertFromTelemetriesKeys(serverKeys),
-        tsKeys: _convertFromTelemetriesKeys(tsKeys),
-      );
+  }) => add(
+    clientKeys: _convertFromTelemetriesKeys(clientKeys),
+    sharedKeys: _convertFromTelemetriesKeys(sharedKeys),
+    serverKeys: _convertFromTelemetriesKeys(serverKeys),
+    tsKeys: _convertFromTelemetriesKeys(tsKeys),
+  );
 
   /// Remove subscriptions on specific telemetry elements
   Future<bool> remove({
@@ -179,8 +179,10 @@ class TbTelemetryHandler {
           currentList: clientAttrKeys,
           telemetry: _deviceValues.clientAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
-          "client attribute keys: $clientKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove subscription from the "
+        "client attribute keys: $clientKeys",
+      );
       return false;
     }
 
@@ -190,8 +192,10 @@ class TbTelemetryHandler {
           currentList: sharedAttrKeys,
           telemetry: _deviceValues.sharedAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
-          "shared attribute keys: $sharedKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove subscription from the "
+        "shared attribute keys: $sharedKeys",
+      );
       return false;
     }
 
@@ -201,8 +205,10 @@ class TbTelemetryHandler {
           currentList: serverAttrKeys,
           telemetry: _deviceValues.serverAttributes,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
-          "server attribute keys: $serverKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove subscription from the "
+        "server attribute keys: $serverKeys",
+      );
       return false;
     }
 
@@ -212,8 +218,10 @@ class TbTelemetryHandler {
           currentList: timeSeriesKeys,
           telemetry: _deviceValues.timeSeries,
         ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove subscription from the "
-          "time series keys: $tsKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove subscription from the "
+        "time series keys: $tsKeys",
+      );
       return false;
     }
 
@@ -228,13 +236,12 @@ class TbTelemetryHandler {
     List<MixinTelemetriesKeys>? sharedKeys,
     List<MixinTelemetriesKeys>? serverKeys,
     List<MixinTelemetriesKeys>? tsKeys,
-  }) =>
-      remove(
-        clientKeys: _convertFromTelemetriesKeys(clientKeys),
-        sharedKeys: _convertFromTelemetriesKeys(sharedKeys),
-        serverKeys: _convertFromTelemetriesKeys(serverKeys),
-        tsKeys: _convertFromTelemetriesKeys(tsKeys),
-      );
+  }) => remove(
+    clientKeys: _convertFromTelemetriesKeys(clientKeys),
+    sharedKeys: _convertFromTelemetriesKeys(sharedKeys),
+    serverKeys: _convertFromTelemetriesKeys(serverKeys),
+    tsKeys: _convertFromTelemetriesKeys(tsKeys),
+  );
 
   /// Remove all the subscriptions on specific telemetry elements
   ///
@@ -244,8 +251,10 @@ class TbTelemetryHandler {
       currentList: clientAttrKeys,
       telemetry: _deviceValues.clientAttributes,
     ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
-          "client attribute keys: $clientAttrKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove all the subscription to "
+        "client attribute keys: $clientAttrKeys",
+      );
       return false;
     }
 
@@ -253,8 +262,10 @@ class TbTelemetryHandler {
       currentList: serverAttrKeys,
       telemetry: _deviceValues.serverAttributes,
     ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
-          "server attribute keys: $serverAttrKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove all the subscription to "
+        "server attribute keys: $serverAttrKeys",
+      );
       return false;
     }
 
@@ -262,17 +273,18 @@ class TbTelemetryHandler {
       currentList: sharedAttrKeys,
       telemetry: _deviceValues.sharedAttributes,
     ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
-          "shared attribute keys: $sharedAttrKeys");
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove all the subscription to "
+        "shared attribute keys: $sharedAttrKeys",
+      );
       return false;
     }
 
-    if (!(await _toRemoveAll(
-      currentList: timeSeriesKeys,
-      telemetry: _deviceValues.timeSeries,
-    ))) {
-      _deviceValues.logsHelper.w("A problem occurred when tried to remove all the subscription to "
-          "time series keys: $timeSeriesKeys");
+    if (!(await _toRemoveAll(currentList: timeSeriesKeys, telemetry: _deviceValues.timeSeries))) {
+      _deviceValues.logsHelper.w(
+        "A problem occurred when tried to remove all the subscription to "
+        "time series keys: $timeSeriesKeys",
+      );
       return false;
     }
 
@@ -309,9 +321,7 @@ class TbTelemetryHandler {
   }
 
   /// Get attribute values by scope
-  Map<String, TbExtAttributeData> getAttributeValuesByScope({
-    required AttributeScope scope,
-  }) {
+  Map<String, TbExtAttributeData> getAttributeValuesByScope({required AttributeScope scope}) {
     final attributeValues = <String, TbExtAttributeData>{};
     final attributeKeys = _getAttrKeysList(scope);
     final tbDeviceAttributes = _getTbDeviceAttributesByScope(scope);
@@ -334,52 +344,47 @@ class TbTelemetryHandler {
     required List<String> toAdd,
     required List<String> currentList,
     required ATbTelemetry telemetry,
-  }) =>
-      _mutex.protect(() async {
-        final tmpToAdd = ListUtility.copyWithoutValues(toAdd, currentList, growable: false);
+  }) => _mutex.protect(() async {
+    final tmpToAdd = ListUtility.copyWithoutValues(toAdd, currentList, growable: false);
 
-        if (tmpToAdd.isEmpty) {
-          // Nothing to do
-          return true;
-        }
+    if (tmpToAdd.isEmpty) {
+      // Nothing to do
+      return true;
+    }
 
-        if (!(await telemetry.subscribeElements(keys: tmpToAdd))) {
-          return false;
-        }
+    if (!(await telemetry.subscribeElements(keys: tmpToAdd))) {
+      return false;
+    }
 
-        currentList.addAll(tmpToAdd);
+    currentList.addAll(tmpToAdd);
 
-        return true;
-      });
+    return true;
+  });
 
   /// Called to manage the removing of telemetry subscription
   Future<bool> _toRemoveValues({
     required List<String> toRemove,
     required List<String> currentList,
     required ATbTelemetry telemetry,
-  }) =>
-      _mutex.protect(() async {
-        final tmpToRemove = ListUtility.getListsIntersection([toRemove, currentList]);
+  }) => _mutex.protect(() async {
+    final tmpToRemove = ListUtility.getListsIntersection([toRemove, currentList]);
 
-        if (tmpToRemove.isEmpty) {
-          // Nothing to do
-          return true;
-        }
+    if (tmpToRemove.isEmpty) {
+      // Nothing to do
+      return true;
+    }
 
-        if (!(await telemetry.unSubscribeElements(keys: tmpToRemove))) {
-          return false;
-        }
+    if (!(await telemetry.unSubscribeElements(keys: tmpToRemove))) {
+      return false;
+    }
 
-        currentList.removeWhere(tmpToRemove.contains);
+    currentList.removeWhere(tmpToRemove.contains);
 
-        return true;
-      });
+    return true;
+  });
 
   /// Called to manage the removing of all telemetry subscriptions
-  Future<bool> _toRemoveAll({
-    required List<String> currentList,
-    required ATbTelemetry telemetry,
-  }) =>
+  Future<bool> _toRemoveAll({required List<String> currentList, required ATbTelemetry telemetry}) =>
       _mutex.protect(() async {
         if (currentList.isEmpty) {
           // Nothing to do

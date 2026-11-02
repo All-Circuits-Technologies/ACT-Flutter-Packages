@@ -38,9 +38,7 @@ List<String> _consoleLines(void Function() body) {
 
   runZoned(
     body,
-    zoneSpecification: ZoneSpecification(
-      print: (self, parent, zone, line) => lines.add(line),
-    ),
+    zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) => lines.add(line)),
   );
 
   return lines;

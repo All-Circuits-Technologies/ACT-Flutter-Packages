@@ -48,12 +48,12 @@ class BannerInformationModel extends Equatable {
 
   @override
   List<Object?> get props => [
-        priorityWeightOffset,
-        type,
-        text,
-        action,
-        icon,
-        foregroundColor,
-        backgroundColor,
-      ];
+    priorityWeightOffset,
+    type,
+    text,
+    action,
+    icon,
+    foregroundColor,
+    backgroundColor,
+  ];
 }

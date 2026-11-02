@@ -27,9 +27,7 @@ import 'package:flutter/foundation.dart';
 abstract class AbstractInternetDerivedBuilder<T extends InternetConnectivityManager>
     extends AbsLifeCycleFactory<T> {
   /// Class constructor with the class construction
-  const AbstractInternetDerivedBuilder({
-    required ClassFactory<T> factory,
-  }) : super(factory);
+  const AbstractInternetDerivedBuilder({required ClassFactory<T> factory}) : super(factory);
 
   /// List of manager dependencies
   @override
@@ -42,10 +40,7 @@ class InternetConnectivityBuilder<C extends MixinInternetTestConfig>
     extends AbstractInternetDerivedBuilder<InternetConnectivityManager> {
   /// Class constructor
   InternetConnectivityBuilder()
-      : super(
-            factory: () => InternetConnectivityManager(
-                  configGetter: globalGetIt().get<C>,
-                ));
+    : super(factory: () => InternetConnectivityManager(configGetter: globalGetIt().get<C>));
 
   /// List of manager dependencies
   @override
@@ -84,14 +79,13 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
   final MixinInternetTestConfig Function() _configGetter;
 
   /// Class constructor
-  InternetConnectivityManager({
-    required this._configGetter,
-  })  : _connectionCtrl = StreamController<bool>.broadcast(),
-        _connectionValue = true,
-        _connectivity = Connectivity(),
-        _lockUtility = LockUtility(),
-        _restartableTimer = null,
-        super();
+  InternetConnectivityManager({required this._configGetter})
+    : _connectionCtrl = StreamController<bool>.broadcast(),
+      _connectionValue = true,
+      _connectivity = Connectivity(),
+      _lockUtility = LockUtility(),
+      _restartableTimer = null,
+      super();
 
   /// Init manager
   @override

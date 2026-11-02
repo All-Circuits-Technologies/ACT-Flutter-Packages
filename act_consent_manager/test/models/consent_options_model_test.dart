@@ -40,9 +40,8 @@ void main() {
     test("is a copy the changes of which do not reach the options it was built from", () {
       final options = _options();
 
-      ConsentOptionsModel<FakeOptions>.copy(
-        options,
-      ).setOptionState(FakeOptions.mandatory, ConsentStateEnum.notAccepted);
+      ConsentOptionsModel<FakeOptions>.copy(options)
+          .setOptionState(FakeOptions.mandatory, ConsentStateEnum.notAccepted);
 
       expect(options.getOptionState(FakeOptions.mandatory), ConsentStateEnum.accepted);
     });

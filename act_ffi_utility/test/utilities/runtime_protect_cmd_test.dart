@@ -59,10 +59,7 @@ void main() {
 
     test("returns the default value when the command throws", () {
       expect(
-        RuntimeProtectCmd.protectWithDefault<int>(
-          () => throw StateError("boom"),
-          defaultValue: 0,
-        ),
+        RuntimeProtectCmd.protectWithDefault<int>(() => throw StateError("boom"), defaultValue: 0),
         0,
       );
     });

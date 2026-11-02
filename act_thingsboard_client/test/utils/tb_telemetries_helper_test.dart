@@ -20,7 +20,10 @@ void main() {
       expect(TbTelemetriesHelper.getAttributeValue<int>(_attribute(value: "12")), 12);
       expect(TbTelemetriesHelper.getAttributeValue<double>(_attribute(value: "1.5")), 1.5);
       expect(TbTelemetriesHelper.getAttributeValue<bool>(_attribute(value: "true")), isTrue);
-      expect(TbTelemetriesHelper.getAttributeValue<String>(_attribute(value: "a value")), "a value");
+      expect(
+        TbTelemetriesHelper.getAttributeValue<String>(_attribute(value: "a value")),
+        "a value",
+      );
     });
 
     test("answers nothing when the value cannot be read as the type which is asked for", () {
@@ -47,11 +50,17 @@ void main() {
     test("reads the value of a time series as the type which is asked for", () {
       expect(TbTelemetriesHelper.getTsValue<int>(const TbTsValue(ts: 42, value: "12")), 12);
       expect(TbTelemetriesHelper.getTsValue<double>(const TbTsValue(ts: 42, value: "1.5")), 1.5);
-      expect(TbTelemetriesHelper.getTsValue<bool>(const TbTsValue(ts: 42, value: "false")), isFalse);
+      expect(
+        TbTelemetriesHelper.getTsValue<bool>(const TbTsValue(ts: 42, value: "false")),
+        isFalse,
+      );
     });
 
     test("answers nothing when the value cannot be read as the type which is asked for", () {
-      expect(TbTelemetriesHelper.getTsValue<int>(const TbTsValue(ts: 42, value: "a value")), isNull);
+      expect(
+        TbTelemetriesHelper.getTsValue<int>(const TbTsValue(ts: 42, value: "a value")),
+        isNull,
+      );
     });
 
     test("answers nothing when there is no value at all", () {

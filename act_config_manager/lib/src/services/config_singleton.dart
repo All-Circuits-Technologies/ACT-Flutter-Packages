@@ -43,8 +43,10 @@ class ConfigSingleton extends AbsWithLifeCycle {
   /// Create the singleton instance.
   ///
   /// This method has to be called only once or an exception will be raised.
-  static ConfigSingleton createInstance(
-      {required MixinActLogger logger, required Map<String, dynamic> configs}) {
+  static ConfigSingleton createInstance({
+    required MixinActLogger logger,
+    required Map<String, dynamic> configs,
+  }) {
     if (_instance != null) {
       throw ActSingletonAlreadyCreatedError<ConfigSingleton>();
     }

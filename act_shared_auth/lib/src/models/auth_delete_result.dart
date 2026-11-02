@@ -18,10 +18,7 @@ class AuthDeleteResult extends Equatable {
   final Object? extra;
 
   /// Class constructor
-  const AuthDeleteResult({
-    required this.status,
-    this.extra,
-  });
+  const AuthDeleteResult({required this.status, this.extra});
 
   /// Class properties
   @override

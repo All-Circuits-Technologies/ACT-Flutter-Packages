@@ -25,10 +25,8 @@ abstract class StreamObserver<T> {
   Stream<bool> get stream => _streamController.stream;
 
   /// Class constructor.
-  StreamObserver({
-    required Stream<T> stream,
-    required T Function() get,
-  }) : _streamController = StreamController<bool>.broadcast() {
+  StreamObserver({required Stream<T> stream, required T Function() get})
+    : _streamController = StreamController<bool>.broadcast() {
     _subscription = stream.listen(_onData);
     _isValid = isNewValueValid(get());
   }

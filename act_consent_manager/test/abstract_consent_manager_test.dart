@@ -37,9 +37,7 @@ void main() {
   });
 
   /// The manager of an application which asks its users for [services].
-  Future<FakeConsentManager> aManager(
-    Map<FakeConsentType, AbstractConsentService> services,
-  ) async {
+  Future<FakeConsentManager> aManager(Map<FakeConsentType, AbstractConsentService> services) async {
     final manager = FakeConsentManager(services: services);
     await manager.initLifeCycle();
     addTearDown(manager.disposeLifeCycle);

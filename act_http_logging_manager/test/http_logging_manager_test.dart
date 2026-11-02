@@ -88,10 +88,7 @@ void main() {
 
       manager.addLog(aLog());
 
-      expect(
-        logger.records.single.message,
-        "[req-1] - /devices - GET - the request went well",
-      );
+      expect(logger.records.single.message, "[req-1] - /devices - GET - the request went well");
     });
 
     test("writes the log at the level it carries", () async {

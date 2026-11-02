@@ -24,9 +24,7 @@ class BleGattFindDeviceService extends AbsWithLifeCycle {
   late final BleScanHandler _scanHandler;
 
   /// Class constructor
-  BleGattFindDeviceService({
-    required this._bleManager,
-  });
+  BleGattFindDeviceService({required this._bleManager});
 
   /// Called at the service initialization
   @override
@@ -94,11 +92,12 @@ class BleGattFindDeviceService extends AbsWithLifeCycle {
     }
 
     final updateStatus = await WaitUtility.nullableWaitForStatus(
-        isExpectedStatus: (scanUpdate) =>
-            (scanUpdate.type != BleScanUpdateType.removeDevice && scanUpdate.device.id == id),
-        statusEmitter: _scanHandler.scannedDevices,
-        timeout: ble_constants.scanOnConnectionDuration,
-        doAction: () async => _scanHandler.startScan(scanMode: ScanMode.lowLatency));
+      isExpectedStatus: (scanUpdate) =>
+          (scanUpdate.type != BleScanUpdateType.removeDevice && scanUpdate.device.id == id),
+      statusEmitter: _scanHandler.scannedDevices,
+      timeout: ble_constants.scanOnConnectionDuration,
+      doAction: () async => _scanHandler.startScan(scanMode: ScanMode.lowLatency),
+    );
 
     await _scanHandler.stopScan();
 

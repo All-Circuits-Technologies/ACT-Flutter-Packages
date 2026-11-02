@@ -19,18 +19,11 @@ class StringInterval {
   int endIdx;
 
   /// Default class constructor with a given length.
-  StringInterval({
-    required this.key,
-    required this.startIdx,
-    required int length,
-  }) : endIdx = (startIdx + (length - 1));
+  StringInterval({required this.key, required this.startIdx, required int length})
+    : endIdx = (startIdx + (length - 1));
 
   /// Class constructor with the end index.
-  StringInterval.withEndIdx({
-    required this.key,
-    required this.startIdx,
-    required this.endIdx,
-  });
+  StringInterval.withEndIdx({required this.key, required this.startIdx, required this.endIdx});
 
   /// Compare the [index] with the interval.
   ///

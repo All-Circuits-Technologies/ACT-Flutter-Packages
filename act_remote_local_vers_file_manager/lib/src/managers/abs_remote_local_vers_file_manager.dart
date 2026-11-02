@@ -23,19 +23,18 @@ import 'package:flutter/foundation.dart';
 /// It specifies the other managers [AbsRemoteLocalVersFileManager] depends on.
 /// It is made abstract to enforce projects to subclass their own accurately-named manager(s).
 abstract class AbsRemoteLocalVersFileBuilder<
-    D extends MixinRemoteLocalVersFileType,
-    C extends MixinRemoteLocalVersFileConfig<D>,
-    T extends AbsRemoteLocalVersFileManager<D>> extends AbsLifeCycleFactory<T> {
+  D extends MixinRemoteLocalVersFileType,
+  C extends MixinRemoteLocalVersFileConfig<D>,
+  T extends AbsRemoteLocalVersFileManager<D>
+>
+    extends AbsLifeCycleFactory<T> {
   /// Class constructor
   AbsRemoteLocalVersFileBuilder(super.factory);
 
   /// List of managers [AbsRemoteLocalVersFileManager] depends on.
   @override
   @mustCallSuper
-  Iterable<Type> dependsOn() => [
-        LoggerManager,
-        C,
-      ];
+  Iterable<Type> dependsOn() => [LoggerManager, C];
 }
 
 /// Abstract class for a localized and versioned file manager.
@@ -59,22 +58,16 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   LogsHelper get logsHelper => _logsHelper;
 
   /// Class constructor
-  AbsRemoteLocalVersFileManager({
-    required this._configManagerGetter,
-  })  : super();
+  AbsRemoteLocalVersFileManager({required this._configManagerGetter}) : super();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   @mustCallSuper
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _fileManagerLogCategory,
-    );
+    _logsHelper = LogsHelper(category: _fileManagerLogCategory);
 
-    _localDirConfig = await _parseServerConfig(
-      configManager: _configManagerGetter(),
-    );
+    _localDirConfig = await _parseServerConfig(configManager: _configManagerGetter());
   }
 
   /// Get a localized [fileName] within [dirType] folder.
@@ -86,27 +79,23 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   ///
   /// Result can be cached or not by storage using [useCache] or options.cacheFile,
   /// defaulting to true when choice is left null.
-  Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String filePath, File file})? data,
-      })> getLocalizedFile({
+  Future<({StorageRequestResult result, ({Locale locale, String filePath, File file})? data})>
+  getLocalizedFile({
     required D dirType,
     required String fileName,
     List<Locale>? locales,
     bool? useCache,
-  }) async =>
-      _getDefaultConfig(
-        dirType: dirType,
-        configGetter: (options) async => LocalizedFileUtility.getLocalizedFile(
-          storage: getStorageManager(dirType),
-          dirId: dirType.dirId,
-          fileName: fileName,
-          locales: locales ?? options?.locales ?? await _getLocalesToUse(),
-          useCache: useCache ?? options?.cacheFile ?? true,
-          logsHelper: _logsHelper,
-        ),
-      );
+  }) async => _getDefaultConfig(
+    dirType: dirType,
+    configGetter: (options) async => LocalizedFileUtility.getLocalizedFile(
+      storage: getStorageManager(dirType),
+      dirId: dirType.dirId,
+      fileName: fileName,
+      locales: locales ?? options?.locales ?? await _getLocalesToUse(),
+      useCache: useCache ?? options?.cacheFile ?? true,
+      logsHelper: _logsHelper,
+    ),
+  );
 
   /// Get a versioned file within [dirType] folder.
   ///
@@ -120,30 +109,25 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   /// Intermediate and result can be cached or not by storage using [cacheVersion] and [cacheFile],
   /// or options.cacheVersion and options.cacheFile, defaulting to false for [cacheVersion] and true
   /// for [cacheFile] when choice is left null.
-  Future<
-      ({
-        StorageRequestResult result,
-        ({String version, String filePath, File file})? data,
-      })> getVersionedFile({
+  Future<({StorageRequestResult result, ({String version, String filePath, File file})? data})>
+  getVersionedFile({
     required D dirType,
     String Function(String)? versionToFileName,
     String? versionOverride,
     bool? cacheVersion,
     bool? cacheFile,
-  }) async =>
-      _getDefaultConfig(
-        dirType: dirType,
-        configGetter: (options) => VersionedFileUtility.getVersionedFile(
-          storage: getStorageManager(dirType),
-          dirId: dirType.dirId,
-          versionToFileName:
-              versionToFileName ?? options?.versionToFileName ?? (version) => version,
-          cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
-          cacheFile: cacheFile ?? options?.cacheFile ?? true,
-          versionOverride: versionOverride,
-          logsHelper: _logsHelper,
-        ),
-      );
+  }) async => _getDefaultConfig(
+    dirType: dirType,
+    configGetter: (options) => VersionedFileUtility.getVersionedFile(
+      storage: getStorageManager(dirType),
+      dirId: dirType.dirId,
+      versionToFileName: versionToFileName ?? options?.versionToFileName ?? (version) => version,
+      cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
+      cacheFile: cacheFile ?? options?.cacheFile ?? true,
+      versionOverride: versionOverride,
+      logsHelper: _logsHelper,
+    ),
+  );
 
   /// Fetch current version of a versioned file within [dirType] folder.
   ///
@@ -152,23 +136,18 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   /// That is, read "version" file within [storage] [dirType] folder, optionally caching result
   /// using [cacheVersion] or options.cacheVersion, defaulting to false for [cacheVersion] when
   /// choice is left null.
-  Future<
-      ({
-        StorageRequestResult requestResult,
-        String? version,
-      })> getFileCurrentVersion({
+  Future<({StorageRequestResult requestResult, String? version})> getFileCurrentVersion({
     required D dirType,
     bool? cacheVersion,
-  }) async =>
-      _getDefaultConfig(
-        dirType: dirType,
-        configGetter: (options) => VersionedFileUtility.getFileCurrentVersion(
-          storage: getStorageManager(dirType),
-          dirId: dirType.dirId,
-          cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
-          logsHelper: logsHelper,
-        ),
-      );
+  }) async => _getDefaultConfig(
+    dirType: dirType,
+    configGetter: (options) => VersionedFileUtility.getFileCurrentVersion(
+      storage: getStorageManager(dirType),
+      dirId: dirType.dirId,
+      cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
+      logsHelper: logsHelper,
+    ),
+  );
 
   /// Get a localized and versioned file within [dirType] folder.
   ///
@@ -188,31 +167,31 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   /// or options.cacheVersion and options.cacheFile, defaulting to false for [cacheVersion] and true
   /// for [cacheFile] when choice is left null.
   Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String version, String filePath, File file})? data,
-      })> getLocalizedVersionedFile({
+    ({
+      StorageRequestResult result,
+      ({Locale locale, String version, String filePath, File file})? data,
+    })
+  >
+  getLocalizedVersionedFile({
     required D dirType,
     String Function(String)? versionToFileName,
     List<Locale>? locales,
     String? explicitVersion,
     bool? cacheVersion,
     bool? cacheFile,
-  }) async =>
-      _getDefaultConfig(
-        dirType: dirType,
-        configGetter: (options) async => LocalizedVersionedFileUtility.getLocalizedVersionedFile(
-          storage: getStorageManager(dirType),
-          dirId: dirType.dirId,
-          versionToFileName:
-              versionToFileName ?? options?.versionToFileName ?? (version) => version,
-          locales: locales ?? options?.locales ?? await _getLocalesToUse(),
-          explicitVersion: explicitVersion,
-          cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
-          cacheFile: cacheFile ?? options?.cacheFile ?? true,
-          logsHelper: _logsHelper,
-        ),
-      );
+  }) async => _getDefaultConfig(
+    dirType: dirType,
+    configGetter: (options) async => LocalizedVersionedFileUtility.getLocalizedVersionedFile(
+      storage: getStorageManager(dirType),
+      dirId: dirType.dirId,
+      versionToFileName: versionToFileName ?? options?.versionToFileName ?? (version) => version,
+      locales: locales ?? options?.locales ?? await _getLocalesToUse(),
+      explicitVersion: explicitVersion,
+      cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
+      cacheFile: cacheFile ?? options?.cacheFile ?? true,
+      logsHelper: _logsHelper,
+    ),
+  );
 
   /// Get the current localized version of a file within [dirType] folder.
   ///
@@ -225,25 +204,21 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   /// That is, read "version" file within [storage] [dirType] folder, optionally caching result
   /// using [cacheVersion] or options.cacheVersion, defaulting to false for [cacheVersion] when
   /// choice is left null.
-  Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String version})? data,
-      })> getFileLocalizedCurrentVersion({
+  Future<({StorageRequestResult result, ({Locale locale, String version})? data})>
+  getFileLocalizedCurrentVersion({
     required D dirType,
     List<Locale>? locales,
     bool? cacheVersion,
-  }) async =>
-      _getDefaultConfig(
-          dirType: dirType,
-          configGetter: (options) async =>
-              LocalizedVersionedFileUtility.getFileLocalizedCurrentVersion(
-                storage: getStorageManager(dirType),
-                dirId: dirType.dirId,
-                locales: locales ?? options?.locales ?? await _getLocalesToUse(),
-                cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
-                logsHelper: logsHelper,
-              ));
+  }) async => _getDefaultConfig(
+    dirType: dirType,
+    configGetter: (options) async => LocalizedVersionedFileUtility.getFileLocalizedCurrentVersion(
+      storage: getStorageManager(dirType),
+      dirId: dirType.dirId,
+      locales: locales ?? options?.locales ?? await _getLocalesToUse(),
+      cacheVersion: cacheVersion ?? options?.cacheVersion ?? false,
+      logsHelper: logsHelper,
+    ),
+  );
 
   /// {@template act_remote_local_vers_file_manager.AbsRemoteLocalVersFileManager.getOptionsOverrides}
   /// This method allows to override the options got from the config manager, but also to give a
@@ -276,8 +251,7 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
   Future<T> _getDefaultConfig<T>({
     required D dirType,
     required Future<T> Function(RemoteLocalDirOptions? options) configGetter,
-  }) async =>
-      configGetter(_localDirConfig.options[dirType]);
+  }) async => configGetter(_localDirConfig.options[dirType]);
 
   /// Parse the server configuration and return a [RemoteLocalDirConfig] instance.
   Future<RemoteLocalDirConfig<D>> _parseServerConfig({
@@ -305,14 +279,9 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
       tmpConfigsOptions[entry.key] = tmpOptions;
     }
 
-    return RemoteLocalDirConfig<D>(
-      options: tmpConfigsOptions,
-    );
+    return RemoteLocalDirConfig<D>(options: tmpConfigsOptions);
   }
 
   /// Get the list of locales to use for localized files.
-  Future<List<Locale>> _getLocalesToUse() => Future.wait([
-        getCurrentLocale(),
-        getDefaultLocale(),
-      ]);
+  Future<List<Locale>> _getLocalesToUse() => Future.wait([getCurrentLocale(), getDefaultLocale()]);
 }

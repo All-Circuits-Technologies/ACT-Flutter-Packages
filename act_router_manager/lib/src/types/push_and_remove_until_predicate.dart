@@ -18,9 +18,7 @@ enum PushAndRemoveUntilAction {
   final bool isFinished;
 
   /// Enum constructor
-  const PushAndRemoveUntilAction({
-    this.isFinished = true,
-  });
+  const PushAndRemoveUntilAction({this.isFinished = true});
 }
 
 /// This method is used with the `pushAndRemoveUntil` method, to guess if we need to pop the current

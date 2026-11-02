@@ -13,24 +13,15 @@ import 'package:flutter/cupertino.dart';
 ///
 /// The [hide] callback is useful for the current overlay widget in order to
 /// close the current opened overlay
-typedef BuildWidgetToOverlay = Widget Function(
-  BuildContext context,
-  VoidCallback hide,
-);
+typedef BuildWidgetToOverlay = Widget Function(BuildContext context, VoidCallback hide);
 
 /// This class is helpful to display an overlay above the current page view
 class OverlayUtility {
   /// This methods allows to display a widget above the current view
   ///
   /// [widgetFactory] allows to give a factory for creating an overlay widget
-  static void show(
-    BuildContext context,
-    BuildWidgetToOverlay widgetFactory,
-  ) {
-    final overlay = _OverlayController(
-      widgetFactory,
-      context,
-    );
+  static void show(BuildContext context, BuildWidgetToOverlay widgetFactory) {
+    final overlay = _OverlayController(widgetFactory, context);
     overlay.show(context);
   }
 }
@@ -42,10 +33,7 @@ class _OverlayController {
   /// Class constructor
   ///
   /// [widgetContext] is necessary to call function with context inside Overlay
-  _OverlayController(
-    BuildWidgetToOverlay widgetFactory,
-    BuildContext widgetContext,
-  ) {
+  _OverlayController(BuildWidgetToOverlay widgetFactory, BuildContext widgetContext) {
     entry = OverlayEntry(
       builder: (BuildContext context) => _OverlayContainer(
         hideCallback: _onHideAsked,
@@ -60,8 +48,10 @@ class _OverlayController {
     final overlayState = Overlay.maybeOf(context);
 
     if (overlayState == null) {
-      appLogger().w("Can't show overlay on the current build context owned "
-          "by ${context.owner}");
+      appLogger().w(
+        "Can't show overlay on the current build context owned "
+        "by ${context.owner}",
+      );
       return;
     }
 
@@ -106,15 +96,9 @@ class _OverlayContainerState extends State<_OverlayContainer> with TickerProvide
     first = true;
 
     // Manage the fading
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 250),
-    );
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 250));
 
-    _animation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(_controller);
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
 
     super.initState();
   }
@@ -133,13 +117,10 @@ class _OverlayContainerState extends State<_OverlayContainer> with TickerProvide
 
     return FadeTransition(
       opacity: _animation,
-      child: widget.toOverlay(
-        widget.widgetContext,
-        () {
-          // Only call the hide callback at the end of animation
-          _controller.reverse().whenCompleteOrCancel(widget.hideCallback);
-        },
-      ),
+      child: widget.toOverlay(widget.widgetContext, () {
+        // Only call the hide callback at the end of animation
+        _controller.reverse().whenCompleteOrCancel(widget.hideCallback);
+      }),
     );
   }
 }

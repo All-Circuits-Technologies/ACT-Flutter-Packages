@@ -9,17 +9,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("StringUtility.formatMacAddress", () {
     test("pads every byte which holds a single digit", () {
-      expect(
-        StringUtility.formatMacAddress(macAddress: "0:1:20:a:bb:CC"),
-        "00:01:20:0a:bb:CC",
-      );
+      expect(StringUtility.formatMacAddress(macAddress: "0:1:20:a:bb:CC"), "00:01:20:0a:bb:CC");
     });
 
     test("leaves an already formatted address untouched", () {
-      expect(
-        StringUtility.formatMacAddress(macAddress: "00:01:20:0A:BB:CC"),
-        "00:01:20:0A:BB:CC",
-      );
+      expect(StringUtility.formatMacAddress(macAddress: "00:01:20:0A:BB:CC"), "00:01:20:0A:BB:CC");
     });
 
     test("does not change the case of the address", () {
@@ -148,10 +142,10 @@ void main() {
     });
 
     test("fails on a type which is not supported", () {
-      expect(
-        StringUtility.castToString<Duration>(const Duration(seconds: 1)),
-        (isOk: false, value: null),
-      );
+      expect(StringUtility.castToString<Duration>(const Duration(seconds: 1)), (
+        isOk: false,
+        value: null,
+      ));
     });
   });
 

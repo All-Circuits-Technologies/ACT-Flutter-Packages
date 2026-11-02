@@ -62,11 +62,18 @@ void main() {
     });
 
     test("returns null when the parts do not make a whole packet", () {
-      expect(HaloPayloadPacket.fromDevice([Uint8List.fromList([0x01])]), isNull);
+      expect(
+        HaloPayloadPacket.fromDevice([
+          Uint8List.fromList([0x01]),
+        ]),
+        isNull,
+      );
     });
 
     test("warns about the packet it refuses", () {
-      HaloPayloadPacket.fromDevice([Uint8List.fromList([0x01])]);
+      HaloPayloadPacket.fromDevice([
+        Uint8List.fromList([0x01]),
+      ]);
 
       expect(logger.recordsAtLevel(LogsLevel.warn).length, 2);
     });
@@ -395,10 +402,7 @@ void main() {
 
   group("HaloPayloadPacket.isLastElementPacket", () {
     test("returns true for a part which ends on the end byte", () {
-      expect(
-        HaloPayloadPacket.isLastElementPacket(Uint8List.fromList([0x01, _endByte])),
-        isTrue,
-      );
+      expect(HaloPayloadPacket.isLastElementPacket(Uint8List.fromList([0x01, _endByte])), isTrue);
     });
 
     test("returns false for a part which does not carry the end byte", () {
@@ -409,18 +413,14 @@ void main() {
   group("HaloPayloadPacket.tryToCleanLastElementPacket", () {
     test("removes the padding which follows the end byte", () {
       expect(
-        HaloPayloadPacket.tryToCleanLastElementPacket(
-          Uint8List.fromList([0x01, _endByte, 0x00]),
-        ),
+        HaloPayloadPacket.tryToCleanLastElementPacket(Uint8List.fromList([0x01, _endByte, 0x00])),
         Uint8List.fromList([0x01, _endByte]),
       );
     });
 
     test("returns null when the bytes which follow the end byte are not padding", () {
       expect(
-        HaloPayloadPacket.tryToCleanLastElementPacket(
-          Uint8List.fromList([0x01, _endByte, 0x02]),
-        ),
+        HaloPayloadPacket.tryToCleanLastElementPacket(Uint8List.fromList([0x01, _endByte, 0x02])),
         isNull,
       );
     });

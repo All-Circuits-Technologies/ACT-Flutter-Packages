@@ -13,10 +13,7 @@ sealed class RuntimeStringUtility {
   ///
   /// [maxLength] is the maximum number of elements in the array (i.e. the
   /// compile-time size of the C `char[]` field).
-  static String charArrayToString({
-    required Array<Char> array,
-    required int maxLength,
-  }) {
+  static String charArrayToString({required Array<Char> array, required int maxLength}) {
     final codeUnits = <int>[];
     for (var idx = 0; idx < maxLength; idx++) {
       final charValue = array[idx];
@@ -44,9 +41,7 @@ sealed class RuntimeStringUtility {
     try {
       value = buffer.cast<Utf8>().toDartString();
     } catch (error) {
-      appLogger().w(
-        "Failed to convert Pointer<Char> to Utf8 String: $error. Returning null.",
-      );
+      appLogger().w("Failed to convert Pointer<Char> to Utf8 String: $error. Returning null.");
     }
 
     return value;

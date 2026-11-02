@@ -11,8 +11,10 @@ import 'package:act_ffi_utility/src/utilities/runtime_protect_cmd.dart';
 import 'package:ffi/ffi.dart';
 
 /// Callback signature for a native event that provides two unsigned int parameters.
-typedef Native2UintCallback =
-    ffi.Void Function(ffi.UnsignedInt firstParam, ffi.UnsignedInt secondParam);
+typedef Native2UintCallback = ffi.Void Function(
+  ffi.UnsignedInt firstParam,
+  ffi.UnsignedInt secondParam,
+);
 
 /// Service for listening to native events that provide two unsigned int parameters.
 ///

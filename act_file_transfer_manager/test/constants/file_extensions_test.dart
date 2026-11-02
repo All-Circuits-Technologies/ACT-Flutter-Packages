@@ -8,19 +8,16 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("FileExtensions", () {
     test("names the extensions without the dot which precedes them", () {
-      expect(
-        [
-          FileExtensions.zip,
-          FileExtensions.csv,
-          FileExtensions.json,
-          FileExtensions.xml,
-          FileExtensions.raucBinary,
-          FileExtensions.tar,
-          FileExtensions.gz,
-          FileExtensions.tgz,
-        ],
-        everyElement(isNot(startsWith("."))),
-      );
+      expect([
+        FileExtensions.zip,
+        FileExtensions.csv,
+        FileExtensions.json,
+        FileExtensions.xml,
+        FileExtensions.raucBinary,
+        FileExtensions.tar,
+        FileExtensions.gz,
+        FileExtensions.tgz,
+      ], everyElement(isNot(startsWith("."))));
     });
 
     test("builds the extension of a compressed archive from the two it is made of", () {

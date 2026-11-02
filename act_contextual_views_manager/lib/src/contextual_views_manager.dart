@@ -46,10 +46,7 @@ class ContextualViewsManager extends AbsWithLifeCycle {
   late final LogsHelper _logsHelper;
 
   /// Class constructor
-  ContextualViewsManager._({
-    required this._viewBuilder,
-    required this._routerManagerGetter,
-  });
+  ContextualViewsManager._({required this._viewBuilder, required this._routerManagerGetter});
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

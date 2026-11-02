@@ -94,7 +94,10 @@ void main() {
     test("listens to nothing of the characteristics which are only exchange zones", () async {
       await aDeviceOfTheCompanion();
 
-      expect(ble.subscribed.map((uuid) => uuid.toString()), isNot(contains(halo.charCAttrTmp.uuid)));
+      expect(
+        ble.subscribed.map((uuid) => uuid.toString()),
+        isNot(contains(halo.charCAttrTmp.uuid)),
+      );
     });
 
     test("listens to nothing when there is no device any more", () async {
@@ -108,10 +111,7 @@ void main() {
 
       await companion.onDisconnection();
 
-      expect(
-        ble.unsubscribed.length,
-        halo.notifiableHaloCharacteristics.length,
-      );
+      expect(ble.unsubscribed.length, halo.notifiableHaloCharacteristics.length);
     });
 
     test("stops listening to a device which disconnects by itself", () async {
@@ -128,10 +128,13 @@ void main() {
       );
       await pumpHalo();
 
-      expect(await companion.onlyWrite(
-        toWriteInto: halo.charJRequestToDeviceCmd,
-        dataToWrite: someData(),
-      ), HaloErrorType.commError);
+      expect(
+        await companion.onlyWrite(
+          toWriteInto: halo.charJRequestToDeviceCmd,
+          dataToWrite: someData(),
+        ),
+        HaloErrorType.commError,
+      );
     });
   });
 

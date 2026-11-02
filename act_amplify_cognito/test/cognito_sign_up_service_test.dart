@@ -48,10 +48,9 @@ void main() {
         email: "a.user@example.com",
       );
 
-      expect(
-        cloud.argumentsOf("signUp")["attributes"],
-        {AuthUserAttributeKey.email: "a.user@example.com"},
-      );
+      expect(cloud.argumentsOf("signUp")["attributes"], {
+        AuthUserAttributeKey.email: "a.user@example.com",
+      });
     });
 
     test("sends no attribute for a user who gave no email address", () async {

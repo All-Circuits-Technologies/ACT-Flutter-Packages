@@ -28,16 +28,18 @@ class BleScannedDevice {
   /// BLE device constructor
   /// Device state defaults to disconnected
   BleScannedDevice(DiscoveredDevice discoveredDevice)
-      : id = discoveredDevice.id,
-        name = discoveredDevice.name,
-        _lastSeenTs = DateTime.now().toUtc(),
-        _logsHelper = globalGetIt().get<BleManager>().logsHelper;
+    : id = discoveredDevice.id,
+      name = discoveredDevice.name,
+      _lastSeenTs = DateTime.now().toUtc(),
+      _logsHelper = globalGetIt().get<BleManager>().logsHelper;
 
   /// Update the current object with the given [DiscoveredDevice]
   bool updateFromDiscoveredDevice(DiscoveredDevice discoveredDevice) {
     if (discoveredDevice.id != id) {
-      _logsHelper.w("Can't update the BleScannedDevice: $id, with the "
-          'value of the discovered device: ${discoveredDevice.id}');
+      _logsHelper.w(
+        "Can't update the BleScannedDevice: $id, with the "
+        'value of the discovered device: ${discoveredDevice.id}',
+      );
       return false;
     }
 

@@ -13,11 +13,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../fakes/fake_tb_extender_app.dart';
 
 /// The user the broker names beside the tokens it answers.
-const _user = BrokerUser(
-  tbUserId: "user-id",
-  customerId: "customer-id",
-  email: "ada@example.test",
-);
+const _user = BrokerUser(tbUserId: "user-id", customerId: "customer-id", email: "ada@example.test");
 
 /// A success payload of the broker which names that user.
 const _successResponse = BrokerLoginResponse(
@@ -172,9 +168,7 @@ void main() {
         "customerId": "kept-customer",
       });
 
-      final service = await aSignedInService(
-        tokens: AuthTokens(accessToken: _validToken(kept)),
-      );
+      final service = await aSignedInService(tokens: AuthTokens(accessToken: _validToken(kept)));
 
       expect(await service.getCurrentUserId(), "kept-user");
       expect(await service.getEmailAddress(), "kept@example.test");
@@ -451,24 +445,26 @@ void main() {
       expect(storage.stored, isNull);
     });
 
-    test("ends the Keycloak session, drops the ThingsBoard tokens and signs the user out",
-        () async {
-      final service = await aSignedInService(
-        tokens: AuthTokens(
-          accessToken: _validToken("cached-access"),
-          refreshToken: _validToken("cached-refresh"),
-        ),
-      );
-      expect(await service.isUserSigned(), isTrue);
+    test(
+      "ends the Keycloak session, drops the ThingsBoard tokens and signs the user out",
+      () async {
+        final service = await aSignedInService(
+          tokens: AuthTokens(
+            accessToken: _validToken("cached-access"),
+            refreshToken: _validToken("cached-refresh"),
+          ),
+        );
+        expect(await service.isUserSigned(), isTrue);
 
-      final result = await service.signOut();
+        final result = await service.signOut();
 
-      expect(result, isTrue);
-      expect(provider.signOutCalled, isTrue);
-      expect(storage.stored, isNull);
-      expect(service.authStatus, AuthStatus.signedOut);
-      expect(await service.isUserSigned(), isFalse);
-    });
+        expect(result, isTrue);
+        expect(provider.signOutCalled, isTrue);
+        expect(storage.stored, isNull);
+        expect(service.authStatus, AuthStatus.signedOut);
+        expect(await service.isUserSigned(), isFalse);
+      },
+    );
 
     test("tells the application that the session of its user ended", () async {
       var told = 0;
@@ -479,8 +475,7 @@ void main() {
       expect(told, 1);
     });
 
-    test("signs the user out all the same when the application asked to be told nothing",
-        () async {
+    test("signs the user out all the same when the application asked to be told nothing", () async {
       final service = await aSignedInService();
 
       expect(await service.signOut(), isTrue);

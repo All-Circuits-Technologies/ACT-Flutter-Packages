@@ -101,15 +101,17 @@ class AwsIotNamedShadow {
     required this._mqttService,
     required this._logsHelper,
     required Map<ShadowTopicsEnum, AwsIotMqttSubWatcher> topicsStream,
-  })  : _topicWatchers = topicsStream,
-        _state = AwsIotShadowStateModel.empty(),
-        _reportedStateStreamController = StreamController.broadcast(),
-        _desiredStateStreamController = StreamController.broadcast();
+  }) : _topicWatchers = topicsStream,
+       _state = AwsIotShadowStateModel.empty(),
+       _reportedStateStreamController = StreamController.broadcast(),
+       _desiredStateStreamController = StreamController.broadcast();
 
   /// This method initializes the shadow by subscribing to the shadow topics
   Future<void> init() async {
-    _updateAcceptedHandler =
-        _getHandler(ShadowTopicsEnum.updateAccepted, onMsgCb: _onGetUpdateAccepted);
+    _updateAcceptedHandler = _getHandler(
+      ShadowTopicsEnum.updateAccepted,
+      onMsgCb: _onGetUpdateAccepted,
+    );
     _getAcceptedHandler = _getHandler(
       ShadowTopicsEnum.getAccepted,
       onMsgCb: _onGetUpdateAccepted,
@@ -155,10 +157,7 @@ class AwsIotNamedShadow {
       rejectedTopic: ShadowTopicsEnum.updateRejected,
       stringJsonPayload: jsonPayload,
       onAccepted: (message) {
-        final isClientTokenValid = AwsIotShadowStateModel.isClientTokenValid(
-          message,
-          clientToken,
-        );
+        final isClientTokenValid = AwsIotShadowStateModel.isClientTokenValid(message, clientToken);
 
         if (!isClientTokenValid) {
           _logsHelper.w('Update answer was ignored since the client token doesnt match');
@@ -212,15 +211,9 @@ class AwsIotNamedShadow {
     // We try to wait for the subscriptions to be done but we don't check the result because even
     // if one of them fails, we might still get an answer on the other one
     // Anyways, we will timeout on requestResultCompleter.future so it's not a big deal
-    await Future.wait([
-      _waitSubscribed(acceptedTopic),
-      _waitSubscribed(rejectedTopic),
-    ]);
+    await Future.wait([_waitSubscribed(acceptedTopic), _waitSubscribed(rejectedTopic)]);
 
-    final isRequestPublished = await _publish(
-      requestTopic,
-      stringJsonPayload,
-    );
+    final isRequestPublished = await _publish(requestTopic, stringJsonPayload);
     if (!isRequestPublished) {
       // If we failed to publish (likely because the mqtt client is not connected), we don't need
       // to wait for the shadow to respond
@@ -242,10 +235,7 @@ class AwsIotNamedShadow {
       },
     );
 
-    await Future.wait([
-      handlerAccepted.close(),
-      handlerRejected.close(),
-    ]);
+    await Future.wait([handlerAccepted.close(), handlerRejected.close()]);
 
     return result;
   }
@@ -291,21 +281,11 @@ class AwsIotNamedShadow {
     ShadowTopicsEnum topic, {
     required Function(String) onMsgCb,
     Function(AwsIotMqttSubEvent)? onSubscriptionEventCb,
-  }) =>
-      _topicWatchers[topic]!.getHandler(
-        onMsgCb: onMsgCb,
-        onEventCb: onSubscriptionEventCb,
-      );
+  }) => _topicWatchers[topic]!.getHandler(onMsgCb: onMsgCb, onEventCb: onSubscriptionEventCb);
 
   /// This is utility method to publish a message to a given [topic] with a given [payload]
-  Future<bool> _publish(
-    ShadowTopicsEnum topic,
-    String payload,
-  ) =>
-      _mqttService.publish(
-        topicNames[topic]!,
-        payload,
-      );
+  Future<bool> _publish(ShadowTopicsEnum topic, String payload) =>
+      _mqttService.publish(topicNames[topic]!, payload);
 
   /// This method waits for the shadow to be subscribed to a given [topic]
   Future<bool> _waitSubscribed(ShadowTopicsEnum topic) async {

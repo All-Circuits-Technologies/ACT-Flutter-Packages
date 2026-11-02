@@ -16,31 +16,24 @@ class ColorsUtility {
   /// The method will make the given [baseColor] lighter, to do so, give a
   /// [coeff] value.
   /// The method will try to keep color and have a tone shade
-  static Color lightingColor({
-    required Color baseColor,
-    required double coeff,
-  }) =>
-      _redistributeRgb(
-          redWithCoef: _toRgbRange(baseColor.r) * coeff,
-          greenWithCoef: _toRgbRange(baseColor.g) * coeff,
-          blueWithCoef: _toRgbRange(baseColor.b) * coeff,
-          alpha: _toRgbRange(baseColor.a));
+  static Color lightingColor({required Color baseColor, required double coeff}) => _redistributeRgb(
+    redWithCoef: _toRgbRange(baseColor.r) * coeff,
+    greenWithCoef: _toRgbRange(baseColor.g) * coeff,
+    blueWithCoef: _toRgbRange(baseColor.b) * coeff,
+    alpha: _toRgbRange(baseColor.a),
+  );
 
   /// This method allows to make colors darker.
   ///
   /// The method will make the given [baseColor] darker, to do so, give a
   /// [coeff] value.
   /// The method will try to keep color and have a tone shade
-  static Color darkingColor({
-    required Color baseColor,
-    required double coeff,
-  }) =>
-      _redistributeRgb(
-        redWithCoef: _toRgbRange(baseColor.r) / coeff,
-        greenWithCoef: _toRgbRange(baseColor.g) / coeff,
-        blueWithCoef: _toRgbRange(baseColor.b) / coeff,
-        alpha: _toRgbRange(baseColor.a),
-      );
+  static Color darkingColor({required Color baseColor, required double coeff}) => _redistributeRgb(
+    redWithCoef: _toRgbRange(baseColor.r) / coeff,
+    greenWithCoef: _toRgbRange(baseColor.g) / coeff,
+    blueWithCoef: _toRgbRange(baseColor.b) / coeff,
+    alpha: _toRgbRange(baseColor.a),
+  );
 
   /// A channel of a color is a ratio between 0 and 1, whereas the redistribution below works on
   /// the 0 to [_thresholdRgb] range a color is built from.
@@ -130,6 +123,5 @@ class ColorsUtility {
     required double color,
     required double toneCoeff,
     required double gray,
-  }) =>
-      (gray + (toneCoeff * color)).round();
+  }) => (gray + (toneCoeff * color)).round();
 }

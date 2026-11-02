@@ -25,8 +25,9 @@ mixin MixinAuthStatusCallback<AuthManager extends AbsAuthManager> {
   /// To call at the start of the class life to listen the stream update
   @protected
   Future<void> initUpdate() async {
-    _authStatusSub =
-        globalGetIt().get<AuthManager>().authService.authStatusStream.listen(onAuthStatusUpdated);
+    _authStatusSub = globalGetIt().get<AuthManager>().authService.authStatusStream.listen(
+      onAuthStatusUpdated,
+    );
   }
 
   /// {@template act_shared_auth.MixinAuthStatusCallback.onAuthStatusUpdated}

@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 
 /// This abstract model contains information to pass to the authentication views when going to
 /// those views with the router manager
-abstract class AbsAuthPageExtra<T extends MixinRoute,
-    AuthResultStatus extends Enum> extends Equatable {
+abstract class AbsAuthPageExtra<T extends MixinRoute, AuthResultStatus extends Enum>
+    extends Equatable {
   /// If not null, this is the page to go when the page has succeeded to do what it wanted
   final T? nextRouteWhenSuccess;
 
@@ -17,16 +17,10 @@ abstract class AbsAuthPageExtra<T extends MixinRoute,
   final AuthResultStatus? previousError;
 
   /// Class constructor
-  const AbsAuthPageExtra({
-    this.nextRouteWhenSuccess,
-    this.previousError,
-  });
+  const AbsAuthPageExtra({this.nextRouteWhenSuccess, this.previousError});
 
   /// Class properties
   @override
   @mustCallSuper
-  List<Object?> get props => [
-        nextRouteWhenSuccess,
-        previousError,
-      ];
+  List<Object?> get props => [nextRouteWhenSuccess, previousError];
 }

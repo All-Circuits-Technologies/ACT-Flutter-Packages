@@ -13,8 +13,7 @@ extension ActListExtension<T> on List<T> {
   /// Return a copy of current list
   ///
   /// Copy is growable by default, but can be set to not growable using [growable] argument.
-  List<T> copy({bool growable = true}) =>
-      ListUtility.copy(this, growable: growable);
+  List<T> copy({bool growable = true}) => ListUtility.copy(this, growable: growable);
 
   /// Return a copy of current list, with all occurrences of [value] removed
   ///
@@ -31,18 +30,22 @@ extension ActListExtension<T> on List<T> {
   /// {@macro act_dart_utility.ListUtility.interleave}
   ///
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
-  List<T> interleave(T interleave,
-          {bool addLeft = false, bool addRight = false}) =>
-      ListUtility.interleave(this, interleave,
-          addLeft: addLeft, addRight: addRight);
+  List<T> interleave(T interleave, {bool addLeft = false, bool addRight = false}) =>
+      ListUtility.interleave(this, interleave, addLeft: addLeft, addRight: addRight);
 
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder}
   ///
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
-  List<T> interleaveWithBuilder(T Function() interleaveBuilder,
-          {bool addLeft = false, bool addRight = false}) =>
-      ListUtility.interleaveWithBuilder(this, interleaveBuilder,
-          addLeft: addLeft, addRight: addRight);
+  List<T> interleaveWithBuilder(
+    T Function() interleaveBuilder, {
+    bool addLeft = false,
+    bool addRight = false,
+  }) => ListUtility.interleaveWithBuilder(
+    this,
+    interleaveBuilder,
+    addLeft: addLeft,
+    addRight: addRight,
+  );
 
   /// Returns a new list containing the elements between [start] and [end]. The [end] is not
   /// included.
@@ -53,8 +56,7 @@ extension ActListExtension<T> on List<T> {
   /// - If [start] overflows the list length, an empty list will be returned
   /// - If [end] is null or overflow the list length, the list length will be used.
   /// - If [end] is negative or before [start], an empty list will be returned.
-  List<T> safeSublist(int start, [int? end]) =>
-      ListUtility.safeSublist(this, start, end);
+  List<T> safeSublist(int start, [int? end]) => ListUtility.safeSublist(this, start, end);
 
   /// Returns a new list containing the elements which begins at [start] and with the given
   /// [length].
@@ -72,59 +74,33 @@ extension ActListExtension<T> on List<T> {
   ///
   /// If the list objects are complexes, you can use the [getUniqueElem] method to extra an unique
   /// testable element from them.
-  List<T> distinct<Y extends Object?>({
-    Y Function(T item)? getUniqueElem,
-  }) =>
-      ListUtility.distinct<T, Y>(
-        this,
-        getUniqueElem: getUniqueElem,
-      );
+  List<T> distinct<Y extends Object?>({Y Function(T item)? getUniqueElem}) =>
+      ListUtility.distinct<T, Y>(this, getUniqueElem: getUniqueElem);
 
   /// {@macro act_dart_utility.ListUtility.moveElement}
   void moveElement(int currentIdx, int targetedIdx) =>
-      ListUtility.moveElement<T>(
-        this,
-        currentIdx,
-        targetedIdx,
-      );
+      ListUtility.moveElement<T>(this, currentIdx, targetedIdx);
 
   /// {@macro act_dart_utility.ListUtility.addOrReplace}
   List<T> appendOrReplace(List<T> listToAdd, [int? start]) =>
-      ListUtility.appendOrReplace(
-        this,
-        listToAdd,
-        start,
-      );
+      ListUtility.appendOrReplace(this, listToAdd, start);
 
   /// {@macro act_dart_utility.ListUtility.indexWhereOrNull}
   int? indexWhereOrNull(bool Function(T element) test, {int start = 0}) =>
       ListUtility.indexWhereOrNull<T>(this, test, start: start);
 
   /// {@macro act_dart_utility.ListUtility.indexWhereOrDefault}
-  int indexWhereOrDefault(bool Function(T element) test,
-          {int start = 0,
-          int defaultValue = ListUtility.defaultIndexOfValueNotFound}) =>
-      ListUtility.indexWhereOrDefault<T>(this, test,
-          start: start, defaultValue: defaultValue);
-
-  /// {@macro act_dart_utility.ListUtility.indexesWhere}
-  List<int> indexesWhere(
+  int indexWhereOrDefault(
     bool Function(T element) test, {
     int start = 0,
-    int maxCount = -1,
-  }) =>
+    int defaultValue = ListUtility.defaultIndexOfValueNotFound,
+  }) => ListUtility.indexWhereOrDefault<T>(this, test, start: start, defaultValue: defaultValue);
+
+  /// {@macro act_dart_utility.ListUtility.indexesWhere}
+  List<int> indexesWhere(bool Function(T element) test, {int start = 0, int maxCount = -1}) =>
       ListUtility.indexesWhere(this, test, start: start, maxCount: maxCount);
 
   /// {@macro act_dart_utility.ListUtility.lastIndexesWhere}
-  List<int> lastIndexesWhere(
-    bool Function(T element) test, {
-    int? start,
-    int maxCount = -1,
-  }) =>
-      ListUtility.lastIndexesWhere(
-        this,
-        test,
-        start: start,
-        maxCount: maxCount,
-      );
+  List<int> lastIndexesWhere(bool Function(T element) test, {int? start, int maxCount = -1}) =>
+      ListUtility.lastIndexesWhere(this, test, start: start, maxCount: maxCount);
 }

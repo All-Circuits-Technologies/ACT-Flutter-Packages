@@ -13,12 +13,11 @@ class CharFInstTmp extends AbstractHaloCharacteristic {
   static const characteristicName = "instant_data_exchange_zone";
 
   /// Class constructor
-  CharFInstTmp({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readWrite,
-          receiveType: Uint8List,
-          sendType: Uint8List,
-        );
+  CharFInstTmp({required super.uuid})
+    : super(
+        name: characteristicName,
+        scope: CharacteristicScope.readWrite,
+        receiveType: Uint8List,
+        sendType: Uint8List,
+      );
 }

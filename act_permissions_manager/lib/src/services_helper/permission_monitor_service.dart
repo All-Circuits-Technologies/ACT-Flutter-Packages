@@ -48,11 +48,11 @@ class PermissionMonitorService {
   PermissionMonitorService._({
     required PermissionsManager permissionsManager,
     required PermissionElement permissionElement,
-  })  : _permissionElement = permissionElement,
-        _permissionHandler = permissionsManager.getAHandler(permissionElement),
-        _isGranted = false,
-        _verifyMutex = Mutex(),
-        _permissionCtrl = StreamController<bool>.broadcast() {
+  }) : _permissionElement = permissionElement,
+       _permissionHandler = permissionsManager.getAHandler(permissionElement),
+       _isGranted = false,
+       _verifyMutex = Mutex(),
+       _permissionCtrl = StreamController<bool>.broadcast() {
     _hasPermissionSub = _permissionHandler.statusStream.listen(_onPermission);
   }
 
@@ -60,11 +60,10 @@ class PermissionMonitorService {
   static PermissionMonitorService monitorService({
     required PermissionsManager permissionsManager,
     required PermissionElement permissionElement,
-  }) =>
-      PermissionMonitorService._(
-        permissionElement: permissionElement,
-        permissionsManager: permissionsManager,
-      );
+  }) => PermissionMonitorService._(
+    permissionElement: permissionElement,
+    permissionsManager: permissionsManager,
+  );
 
   /// Verify the permission without requesting it to the user
   /// This method has to be called before doing actions which request specific permissions
@@ -87,12 +86,12 @@ class PermissionMonitorService {
     bool isAcceptanceCompulsory = false,
   }) async =>
       ((await _verify(
-            displayContextualIfNeeded: displayContextualIfNeeded,
-            checkRationale: checkRationale,
-            forceGoToSettings: forceGoToSettings,
-            isAcceptanceCompulsory: isAcceptanceCompulsory,
-          )) ==
-          PermissionStatus.granted);
+        displayContextualIfNeeded: displayContextualIfNeeded,
+        checkRationale: checkRationale,
+        forceGoToSettings: forceGoToSettings,
+        isAcceptanceCompulsory: isAcceptanceCompulsory,
+      )) ==
+      PermissionStatus.granted);
 
   /// Setter for the current permission, if the value has been modified the
   /// new state is sent
@@ -127,13 +126,14 @@ class PermissionMonitorService {
     bool checkRationale = false,
     bool forceGoToSettings = false,
     bool isAcceptanceCompulsory = false,
-  }) =>
-      _verifyMutex.protect(() async => _noMutexSafeVerify(
-            displayContextualIfNeeded: displayContextualIfNeeded,
-            checkRationale: checkRationale,
-            forceGoToSettings: forceGoToSettings,
-            isAcceptanceCompulsory: isAcceptanceCompulsory,
-          ));
+  }) => _verifyMutex.protect(
+    () async => _noMutexSafeVerify(
+      displayContextualIfNeeded: displayContextualIfNeeded,
+      checkRationale: checkRationale,
+      forceGoToSettings: forceGoToSettings,
+      isAcceptanceCompulsory: isAcceptanceCompulsory,
+    ),
+  );
 
   /// Verify the permission and request if needed
   ///
@@ -209,28 +209,27 @@ class PermissionMonitorService {
     bool isAcceptanceCompulsory = false,
   }) async {
     if (!displayContextualIfNeeded) {
-      return _permissionHandler.requestPermission(
-        checkRationale: checkRationale,
-      );
+      return _permissionHandler.requestPermission(checkRationale: checkRationale);
     }
 
     // Explain why we need permission, the responsibility to ask the permission is delegated to the
     // view
     final viewResult = await globalGetIt().get<ContextualViewsManager>().display<PermissionStatus>(
-        context: PermissionViewContext.askPermission(
-          element: _permissionElement,
+      context: PermissionViewContext.askPermission(
+        element: _permissionElement,
+        isAcceptanceCompulsory: isAcceptanceCompulsory,
+      ),
+      doAction: () async {
+        final result = await _noMutexSafeVerify(
+          displayContextualIfNeeded: false,
           isAcceptanceCompulsory: isAcceptanceCompulsory,
-        ),
-        doAction: () async {
-          final result = await _noMutexSafeVerify(
-            displayContextualIfNeeded: false,
-            isAcceptanceCompulsory: isAcceptanceCompulsory,
-            checkRationale: checkRationale,
-            forceGoToSettings: forceGoToSettings,
-          );
+          checkRationale: checkRationale,
+          forceGoToSettings: forceGoToSettings,
+        );
 
-          return (result.isGranted, result);
-        });
+        return (result.isGranted, result);
+      },
+    );
 
     if (!viewResult.status.isPositiveResult || viewResult.customResult == null) {
       return PermissionStatus.denied;
@@ -256,18 +255,16 @@ class PermissionMonitorService {
     }
 
     final viewResult = await globalGetIt().get<ContextualViewsManager>().display(
-          context: PermissionViewContext.informPermanentlyDenied(
-            element: _permissionElement,
-          ),
-          doAction: openAppSetting
-              ? () async {
-                  // Go to app settings if we are permanently denied
-                  final status = await _openAppSetting();
+      context: PermissionViewContext.informPermanentlyDenied(element: _permissionElement),
+      doAction: openAppSetting
+          ? () async {
+              // Go to app settings if we are permanently denied
+              final status = await _openAppSetting();
 
-                  return (status.isGranted, status);
-                }
-              : null,
-        );
+              return (status.isGranted, status);
+            }
+          : null,
+    );
 
     if (!viewResult.status.isPositiveResult || viewResult.customResult == null) {
       return PermissionStatus.permanentlyDenied;
@@ -279,24 +276,21 @@ class PermissionMonitorService {
   /// Helpful method to open app settings and waits for the  permission state to be modified by the
   /// system
   Future<PermissionStatus> _openAppSetting() async => WaitUtility.waitForStatus(
-        isExpectedStatus: (status) => status.isGranted,
-        valueGetter: () async => _permissionHandler.currentStatus,
-        statusEmitter: _permissionHandler.statusStream,
-        doAction: () async {
-          await globalGetIt().get<AppLifeCycleManager>().waitForegroundApp(
-                leaveTheApp: openAppSettings,
-              );
-          return true;
-        },
-        timeout: openAppSettingGetStatusTimeout,
+    isExpectedStatus: (status) => status.isGranted,
+    valueGetter: () async => _permissionHandler.currentStatus,
+    statusEmitter: _permissionHandler.statusStream,
+    doAction: () async {
+      await globalGetIt().get<AppLifeCycleManager>().waitForegroundApp(
+        leaveTheApp: openAppSettings,
       );
+      return true;
+    },
+    timeout: openAppSettingGetStatusTimeout,
+  );
 
   /// Called to close the permission monitor service
   Future<void> close() async {
-    final futures = <Future>[
-      _permissionCtrl.close(),
-      _hasPermissionSub.cancel(),
-    ];
+    final futures = <Future>[_permissionCtrl.close(), _hasPermissionSub.cancel()];
 
     if (_verifyMutex.isLocked) {
       await _verifyMutex.acquire();

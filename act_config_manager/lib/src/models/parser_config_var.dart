@@ -12,10 +12,7 @@ import 'package:act_config_manager/src/models/abs_parser_config_var.dart';
 /// The value is parsed thanks to the [parser] method before it's returned.
 class ParserConfigVar<ParsedType, StoredType> extends AbsParserConfigVar<ParsedType, StoredType> {
   /// Class constructor
-  const ParserConfigVar(
-    super.key, {
-    required super.parser,
-  });
+  const ParserConfigVar(super.key, {required super.parser});
 
   /// Load value from config variable.
   ///

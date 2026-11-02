@@ -47,11 +47,11 @@ class RequesterConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        loggerEnabled,
-        loggerCategory,
-        parentLogsHelper,
-        defaultServerInfo,
-        serverInfoByUrl,
-        maxParallelRequestsNb,
-      ];
+    loggerEnabled,
+    loggerCategory,
+    parentLogsHelper,
+    defaultServerInfo,
+    serverInfoByUrl,
+    maxParallelRequestsNb,
+  ];
 }

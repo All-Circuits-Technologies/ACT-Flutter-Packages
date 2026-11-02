@@ -13,9 +13,7 @@ abstract class AbstractViewContext extends Equatable {
   final String uniqueKey;
 
   /// Class constructor
-  const AbstractViewContext({
-    required this.uniqueKey,
-  });
+  const AbstractViewContext({required this.uniqueKey});
 
   @override
   @mustCallSuper

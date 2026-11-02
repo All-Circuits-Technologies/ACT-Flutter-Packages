@@ -31,9 +31,7 @@ sealed class RuntimeProtectCmd {
     T Function() cmd, {
     required T defaultValue,
     String? description,
-  }) =>
-      RuntimeProtectCmd.protect<T>(cmd, description: description) ??
-      defaultValue;
+  }) => RuntimeProtectCmd.protect<T>(cmd, description: description) ?? defaultValue;
 
   /// {@macro act_ffi_utility.RuntimeProtectCmd.protect}
   ///
@@ -70,7 +68,5 @@ sealed class RuntimeProtectCmd {
     T Function(RuntimeCallocRegister register) cmd, {
     required T defaultValue,
     String? description,
-  }) =>
-      RuntimeProtectCmd.protectWithCalloc<T>(cmd, description: description) ??
-      defaultValue;
+  }) => RuntimeProtectCmd.protectWithCalloc<T>(cmd, description: description) ?? defaultValue;
 }

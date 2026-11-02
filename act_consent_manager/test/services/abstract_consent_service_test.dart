@@ -233,10 +233,7 @@ void main() {
     });
 
     test("builds nothing when the text cannot be loaded", () async {
-      final service = aService(
-        userData: _agreed(),
-        textStatus: ConsentLoadStatus.failed,
-      );
+      final service = aService(userData: _agreed(), textStatus: ConsentLoadStatus.failed);
       await service.loadAllConsentInfo();
 
       expect(await service.getConsentTextWidget(), isNull);

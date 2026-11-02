@@ -19,5 +19,5 @@ enum EnableServiceElement {
   location,
 
   /// This is the WiFi service
-  wifi;
+  wifi,
 }

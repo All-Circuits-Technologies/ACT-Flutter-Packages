@@ -18,10 +18,7 @@ class AuthResetPwdResult extends Equatable {
   final Object? extra;
 
   /// Class constructor
-  const AuthResetPwdResult({
-    required this.status,
-    this.extra,
-  });
+  const AuthResetPwdResult({required this.status, this.extra});
 
   /// Class properties
   @override

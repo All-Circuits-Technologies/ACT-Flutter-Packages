@@ -51,8 +51,10 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
     final length = packet.elementsNb;
 
     if ((length % elementsNb) != 0) {
-      appLogger().w("The list of WiFi complete info isn't well formatted, the number of elements "
-          "is not a modulo of $elementsNb");
+      appLogger().w(
+        "The list of WiFi complete info isn't well formatted, the number of elements "
+        "is not a modulo of $elementsNb",
+      );
       return null;
     }
 
@@ -61,32 +63,40 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
       final ssid = packet.getString(idx + ssidIdx).data;
 
       if (ssid == null) {
-        appLogger().w("The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
-            "parse the Ocsigen WiFi complete scan result");
+        appLogger().w(
+          "The element at the idx: ${idx + ssidIdx} isn't a string ssid, we can't "
+          "parse the Ocsigen WiFi complete scan result",
+        );
         return null;
       }
 
       final rssi = packet.getInt(idx + rssiIdx).data;
 
       if (rssi == null) {
-        appLogger().w("The element at the idx: ${idx + rssiIdx} isn't an int rssi, we can't "
-            "parse the Ocsigen WiFi complete scan result");
+        appLogger().w(
+          "The element at the idx: ${idx + rssiIdx} isn't an int rssi, we can't "
+          "parse the Ocsigen WiFi complete scan result",
+        );
         return null;
       }
 
       final channelNb = packet.getUInt(idx + channelNbIdx).data;
 
       if (channelNb == null) {
-        appLogger().w("The element at the idx: ${idx + channelNbIdx} isn't an uint channel nb, we "
-            "can't parse the Ocsigen WiFi complete scan result");
+        appLogger().w(
+          "The element at the idx: ${idx + channelNbIdx} isn't an uint channel nb, we "
+          "can't parse the Ocsigen WiFi complete scan result",
+        );
         return null;
       }
 
       final authModeValue = packet.getUInt(idx + authModeIdx).data;
 
       if (authModeValue == null) {
-        appLogger().w("The element at the idx: ${idx + authModeIdx} isn't an uint auth mode, we "
-            "can't parse the Ocsigen WiFi complete scan result");
+        appLogger().w(
+          "The element at the idx: ${idx + authModeIdx} isn't an uint auth mode, we "
+          "can't parse the Ocsigen WiFi complete scan result",
+        );
         return null;
       }
 
@@ -96,12 +106,14 @@ class OcsigenWiFiCompleteScanResult extends Equatable {
         appLogger().w("The ocsigen WiFi auth mode isn't known: $authModeValue, we continue");
       }
 
-      elements.add(OcsigenWiFiCompleteScanResult._(
-        ssid: ssid,
-        rssi: rssi,
-        channelNb: channelNb,
-        authMode: authMode,
-      ));
+      elements.add(
+        OcsigenWiFiCompleteScanResult._(
+          ssid: ssid,
+          rssi: rssi,
+          channelNb: channelNb,
+          authMode: authMode,
+        ),
+      );
     }
 
     return elements;

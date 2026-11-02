@@ -53,13 +53,14 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
   AbstractConfigManager({
     required MixinActLogger logger,
     this.configPath = config_constants.defaultConfigPath,
-  })  : _logger = logger.createAbsSubLogger(subCategory: _loggerCategory),
-        super() {
+  }) : _logger = logger.createAbsSubLogger(subCategory: _loggerCategory),
+       super() {
     env = Environment.fromString(
-        // We explicitly use Environment here because we need to get the env type to know the
-        // environment to use in the app
-        // ignore: do_not_use_environment
-        const String.fromEnvironment(Environment.envType));
+      // We explicitly use Environment here because we need to get the env type to know the
+      // environment to use in the app
+      // ignore: do_not_use_environment
+      const String.fromEnvironment(Environment.envType),
+    );
   }
 
   /// Init the manager
@@ -75,10 +76,7 @@ abstract class AbstractConfigManager extends AbsWithLifeCycle {
       jsonToOverrideWith: envConfigs,
     );
 
-    final configs = ConfigSingleton.createInstance(
-      logger: _logger,
-      configs: finalValue,
-    );
+    final configs = ConfigSingleton.createInstance(logger: _logger, configs: finalValue);
     await configs.initLifeCycle();
 
     _logger.i("Config manager initialized with environment: $env");

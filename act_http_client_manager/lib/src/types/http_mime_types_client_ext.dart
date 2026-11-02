@@ -8,9 +8,7 @@ import 'package:http/http.dart' show MediaType;
 /// This extends the MIME types features for the client library
 extension HttpMimeTypesClientExt on HttpMimeTypes {
   /// Create a media type from the Mime Type
-  MediaType toMediaType({
-    Map<String, String>? parameters,
-  }) {
+  MediaType toMediaType({Map<String, String>? parameters}) {
     final type = MediaType.parse(stringValue);
     // A media type is a value: changing it answers another one instead of touching this one
     return type.change(clearParameters: true, parameters: parameters);

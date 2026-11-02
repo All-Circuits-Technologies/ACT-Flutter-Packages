@@ -145,10 +145,7 @@ void main() {
       expect(result.value?.status, OcsigenWiFiConnectStatus.success);
       expect(device.call.parameters.getString(0).data, "a network");
       expect(device.call.parameters.getString(1).data, "a password");
-      expect(
-        device.call.parameters.getUInt(2).data,
-        OcsigenWiFiAuthMode.wiFiAuthWpa2Psk.rawValue,
-      );
+      expect(device.call.parameters.getUInt(2).data, OcsigenWiFiAuthMode.wiFiAuthWpa2Psk.rawValue);
     });
 
     test("says nothing of the way to authenticate to a device which knows none", () async {
@@ -345,9 +342,7 @@ void main() {
 
   group("OcsigenRequestToDeviceFeature.getSavedWiFi", () {
     test("answers the networks the device comes back to on its own", () async {
-      final feature = aFeature(
-        result: _aPayload((packet) => packet.addStringList(["a network"])),
-      );
+      final feature = aFeature(result: _aPayload((packet) => packet.addStringList(["a network"])));
 
       final result = await feature.getSavedWiFi(hardwareType: FakeHwType.ble);
 
@@ -398,10 +393,7 @@ void main() {
 
       expect(result, HaloErrorType.noError);
       expect(device.call.requestId, OcsigenRequestId.quitCommunication);
-      expect(
-        device.call.parameters.getUInt(0).data,
-        RestrictedEndComStatus.endComOk.rawValue,
-      );
+      expect(device.call.parameters.getUInt(0).data, RestrictedEndComStatus.endComOk.rawValue);
     });
 
     test("answers the error when the device could not be reached", () async {

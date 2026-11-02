@@ -36,18 +36,18 @@ class OptionalSingleChildScrollView extends StatelessWidget {
   /// Build widget
   @override
   Widget build(BuildContext context) => switch (scrollViewType) {
-        SingleChildScrollViewType.noScroll => child,
-        SingleChildScrollViewType.scroll => SingleChildScrollView(
-            controller: controller,
-            scrollDirection: scrollDirection,
-            physics: physics,
-            child: child,
-          ),
-        SingleChildScrollViewType.expandedScroll => SingleExpandableChildScrollView(
-            controller: controller,
-            scrollDirection: scrollDirection,
-            physics: physics,
-            child: child,
-          ),
-      };
+    SingleChildScrollViewType.noScroll => child,
+    SingleChildScrollViewType.scroll => SingleChildScrollView(
+      controller: controller,
+      scrollDirection: scrollDirection,
+      physics: physics,
+      child: child,
+    ),
+    SingleChildScrollViewType.expandedScroll => SingleExpandableChildScrollView(
+      controller: controller,
+      scrollDirection: scrollDirection,
+      physics: physics,
+      child: child,
+    ),
+  };
 }

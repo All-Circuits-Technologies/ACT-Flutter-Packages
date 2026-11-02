@@ -79,9 +79,9 @@ void main() {
 
       await service.getCurrentCustomerDevices();
 
-      final customerId = verify(
-        () => devices.getCustomerDevices(captureAny(), any()),
-      ).captured.single;
+      final customerId = verify(() => devices.getCustomerDevices(captureAny(), any()))
+          .captured
+          .single;
 
       expect(customerId, "a-customer");
     });
@@ -92,9 +92,9 @@ void main() {
 
       await service.getCurrentCustomerDevices();
 
-      final pageLink = verify(
-        () => devices.getCustomerDevices(any(), captureAny()),
-      ).captured.single;
+      final pageLink = verify(() => devices.getCustomerDevices(any(), captureAny()))
+          .captured
+          .single;
 
       expect((pageLink as PageLink).pageSize, 50);
     });
@@ -106,9 +106,9 @@ void main() {
 
       await service.getCurrentCustomerDevices(pageLink: asked);
 
-      final pageLink = verify(
-        () => devices.getCustomerDevices(any(), captureAny()),
-      ).captured.single;
+      final pageLink = verify(() => devices.getCustomerDevices(any(), captureAny()))
+          .captured
+          .single;
 
       expect(pageLink, same(asked));
     });
@@ -143,9 +143,9 @@ void main() {
 
       await service.getCurrentCustomerDeviceInfos();
 
-      final customerId = verify(
-        () => devices.getCustomerDeviceInfos(captureAny(), any()),
-      ).captured.single;
+      final customerId = verify(() => devices.getCustomerDeviceInfos(captureAny(), any()))
+          .captured
+          .single;
 
       expect(customerId, "a-customer");
     });
@@ -156,9 +156,9 @@ void main() {
 
       await service.getCurrentCustomerDeviceInfos();
 
-      final pageLink = verify(
-        () => devices.getCustomerDeviceInfos(any(), captureAny()),
-      ).captured.single;
+      final pageLink = verify(() => devices.getCustomerDeviceInfos(any(), captureAny()))
+          .captured
+          .single;
 
       expect((pageLink as PageLink).pageSize, 50);
     });
@@ -170,9 +170,9 @@ void main() {
 
       await service.getCurrentCustomerDeviceInfos(pageLink: asked);
 
-      final pageLink = verify(
-        () => devices.getCustomerDeviceInfos(any(), captureAny()),
-      ).captured.single;
+      final pageLink = verify(() => devices.getCustomerDeviceInfos(any(), captureAny()))
+          .captured
+          .single;
 
       expect(pageLink, same(asked));
     });
@@ -196,9 +196,8 @@ void main() {
     test("answers the device which carries the name", () async {
       signedInAs();
       final device = aDeviceInfo("a device");
-      when(
-        () => devices.getCustomerDeviceInfos(any(), any()),
-      ).thenAnswer((_) async => aPage([device]));
+      when(() => devices.getCustomerDeviceInfos(any(), any()))
+          .thenAnswer((_) async => aPage([device]));
 
       final result = await service.getCustomerDeviceByName(deviceName: "a device");
 
@@ -208,9 +207,8 @@ void main() {
 
     test("answers no device when the customer has none of that name", () async {
       signedInAs();
-      when(
-        () => devices.getCustomerDeviceInfos(any(), any()),
-      ).thenAnswer((_) async => aPage([aDeviceInfo("another device")]));
+      when(() => devices.getCustomerDeviceInfos(any(), any()))
+          .thenAnswer((_) async => aPage([aDeviceInfo("another device")]));
 
       final result = await service.getCustomerDeviceByName(deviceName: "a device");
 
@@ -223,7 +221,8 @@ void main() {
       final device = aDeviceInfo("a device");
       var page = 0;
       when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer(
-        (_) async => page++ == 0 ? aPage([aDeviceInfo("a device 2")], hasNext: true) : aPage([device]),
+        (_) async =>
+            page++ == 0 ? aPage([aDeviceInfo("a device 2")], hasNext: true) : aPage([device]),
       );
 
       final result = await service.getCustomerDeviceByName(deviceName: "a device");
@@ -235,15 +234,13 @@ void main() {
     test("asks for the page which follows the one it read", () async {
       signedInAs();
       var page = 0;
-      when(() => devices.getCustomerDeviceInfos(any(), any())).thenAnswer(
-        (_) async => page++ == 0 ? aPage([], hasNext: true) : aPage([]),
-      );
+      when(() => devices.getCustomerDeviceInfos(any(), any()))
+          .thenAnswer((_) async => page++ == 0 ? aPage([], hasNext: true) : aPage([]));
 
       await service.getCustomerDeviceByName(deviceName: "a device");
 
-      final pageLinks = verify(
-        () => devices.getCustomerDeviceInfos(any(), captureAny()),
-      ).captured.cast<PageLink>();
+      final pageLinks = verify(() => devices.getCustomerDeviceInfos(any(), captureAny())).captured
+          .cast<PageLink>();
 
       expect(pageLinks.map((link) => link.page), [0, 1]);
       expect(pageLinks.map((link) => link.textSearch), ["a device", "a device"]);

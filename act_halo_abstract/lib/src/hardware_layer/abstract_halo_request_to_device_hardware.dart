@@ -22,18 +22,12 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
     required HaloRequestParamsPacket request,
     Duration executionTimeout = defaultExecutionTimeout,
   }) async {
-    final error = _verifyRequest(
-      request: request,
-      expectedType: HaloRequestType.function,
-    );
+    final error = _verifyRequest(request: request, expectedType: HaloRequestType.function);
     if (error != null) {
       return error;
     }
 
-    final result = await implCallFunction(
-      request: request,
-      executionTimeout: executionTimeout,
-    );
+    final result = await implCallFunction(request: request, executionTimeout: executionTimeout);
 
     if (result.isSuccess && result.value == null) {
       appLogger().w("The function: ${request.requestId} succeeds but no result has been returned");
@@ -66,10 +60,7 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
       return error.status;
     }
 
-    return implCallProcedure(
-      request: request,
-      executionTimeout: executionTimeout,
-    );
+    return implCallProcedure(request: request, executionTimeout: executionTimeout);
   }
 
   /// This is the method to override in order to define the implementation of the calling procedure
@@ -106,12 +97,11 @@ abstract class AbstractHaloRequestToDeviceHardware extends AbstractHaloComponent
     required HaloRequestType expectedType,
   }) {
     if (request.requestId.type != expectedType) {
-      appLogger().w("A problem occurred in the HALO lib, you tried to call a request: "
-          "$expectedType, but the request id is: ${request.requestId}");
-      return HaloRequestResult(
-        requestId: request.requestId,
-        status: HaloErrorType.formatError,
+      appLogger().w(
+        "A problem occurred in the HALO lib, you tried to call a request: "
+        "$expectedType, but the request id is: ${request.requestId}",
       );
+      return HaloRequestResult(requestId: request.requestId, status: HaloErrorType.formatError);
     }
 
     return null;

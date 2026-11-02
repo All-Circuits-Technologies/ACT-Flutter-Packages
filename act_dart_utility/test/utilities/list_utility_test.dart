@@ -206,10 +206,11 @@ void main() {
     });
 
     test("keeps the first occurrence of a duplicated element", () {
-      final list = ListUtility.distinct(
-        [const _Item("a", 1), const _Item("b", 1), const _Item("a", 2)],
-        getUniqueElem: (item) => item.name,
-      );
+      final list = ListUtility.distinct([
+        const _Item("a", 1),
+        const _Item("b", 1),
+        const _Item("a", 2),
+      ], getUniqueElem: (item) => item.name);
 
       expect(list.map((item) => item.version).toList(), [1, 1]);
     });
@@ -360,10 +361,7 @@ void main() {
     });
 
     test("stops once the maximum count is reached", () {
-      expect(
-        ListUtility.indexesWhere([2, 4, 6], (element) => element.isEven, maxCount: 2),
-        [0, 1],
-      );
+      expect(ListUtility.indexesWhere([2, 4, 6], (element) => element.isEven, maxCount: 2), [0, 1]);
     });
 
     test("returns an empty list when the maximum count is zero", () {
@@ -397,10 +395,10 @@ void main() {
     });
 
     test("stops once the maximum count is reached", () {
-      expect(
-        ListUtility.lastIndexesWhere([2, 4, 6], (element) => element.isEven, maxCount: 2),
-        [2, 1],
-      );
+      expect(ListUtility.lastIndexesWhere([2, 4, 6], (element) => element.isEven, maxCount: 2), [
+        2,
+        1,
+      ]);
     });
 
     test("returns an empty list for an empty one", () {

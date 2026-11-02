@@ -296,11 +296,7 @@ class FakeMqttService extends AwsIotMqttService<FakeAuthManager, FakeAmplifyMana
   Future<void> disposeLifeCycle() async {
     await super.disposeLifeCycle();
 
-    await Future.wait([
-      _connection.close(),
-      _subEvents.close(),
-      _messages.close(),
-    ]);
+    await Future.wait([_connection.close(), _subEvents.close(), _messages.close()]);
   }
 }
 
@@ -311,10 +307,7 @@ Future<void> pumpAwsIot() => Future.delayed(Duration.zero);
 ///
 /// The service of Cognito is never reached: signing a URL and asking for a session both only happen
 /// on the way to a real server.
-AwsIotMqttConfigModel aMqttConfig({
-  Duration? signerValidityDuration,
-  int? mqttPort,
-}) =>
+AwsIotMqttConfigModel aMqttConfig({Duration? signerValidityDuration, int? mqttPort}) =>
     AwsIotMqttConfigModel.get<FakeAwsIotConfigManager>(
       cognitoService: AmplifyCognitoService(),
       signerValidityDuration: signerValidityDuration,
@@ -326,8 +319,7 @@ String aTopicName(
   ShadowTopicsEnum topic, {
   FakeShadow shadow = FakeShadow.main,
   String thingName = aThingName,
-}) =>
-    topic.buildTopicName(thingName, shadow.shadowName);
+}) => topic.buildTopicName(thingName, shadow.shadowName);
 
 /// A shadow document, as the server answers it to an accepted get or update.
 String aShadowDoc({
@@ -335,24 +327,16 @@ String aShadowDoc({
   Map<String, dynamic>? desired,
   Map<String, dynamic>? reported,
   String? clientToken,
-}) =>
-    jsonEncode({
-      "state": {
-        "desired": desired ?? <String, dynamic>{},
-        "reported": reported ?? <String, dynamic>{},
-      },
-      "version": version,
-      "timestamp": 1,
-      "clientToken": ?clientToken,
-    });
+}) => jsonEncode({
+  "state": {"desired": desired ?? <String, dynamic>{}, "reported": reported ?? <String, dynamic>{}},
+  "version": version,
+  "timestamp": 1,
+  "clientToken": ?clientToken,
+});
 
 /// The document the server answers to a request it turned down.
 String aRejectionDoc({int code = 404, String message = "the shadow does not exist"}) =>
-    jsonEncode({
-      "code": code,
-      "message": message,
-      "timestamp": 1,
-    });
+    jsonEncode({"code": code, "message": message, "timestamp": 1});
 
 /// The logs helper the services of the tests write to.
 LogsHelper aLogsHelper() => LogsHelper(category: "test");

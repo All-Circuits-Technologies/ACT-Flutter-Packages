@@ -11,8 +11,6 @@ sealed class InternetTest {
   /// This method tests if the device is connected to the internet.
   ///
   /// To do so, it requests a distant server and returns true if the distant server responds
-  static Future<bool> requestUriAndTestIfConnectionOk({
-    required Uri uri,
-  }) async =>
+  static Future<bool> requestUriAndTestIfConnectionOk({required Uri uri}) async =>
       internet_test.requestUriAndTestIfConnectionOk(uri: uri);
 }

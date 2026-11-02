@@ -43,11 +43,7 @@ sealed class YamlFromAssets {
   static Future<({AssetsBundleResult status, dynamic data})> loadYaml(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await _guessTypeAndLoadAssetsContent(
       key,
@@ -98,11 +94,7 @@ sealed class YamlFromAssets {
   static Future<({AssetsBundleResult status, Map<String, dynamic>? data})> loadYamlMap(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await loadYaml(key, cache: cache, yamlFileTypes: yamlFileTypes);
 
@@ -146,11 +138,7 @@ sealed class YamlFromAssets {
   static Future<({AssetsBundleResult status, List<dynamic>? data})> loadYamlList(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final result = await loadYaml(key, cache: cache, yamlFileTypes: yamlFileTypes);
 
@@ -182,21 +170,14 @@ sealed class YamlFromAssets {
   static Future<({AssetsBundleResult status, String? data})> _guessTypeAndLoadAssetsContent(
     String key, {
     bool cache = true,
-    List<String> yamlFileTypes = const [
-      yamlFileType,
-      ymlFileType,
-      jsonFileType,
-    ],
+    List<String> yamlFileTypes = const [yamlFileType, ymlFileType, jsonFileType],
   }) async {
     final sepIdx = key.indexOf(fileTypeSeparator);
 
     String? content;
     if (sepIdx >= 0) {
       // We don't need to test for all the file types, the developer has already chosen one
-      final result = await _loadAssetsContent(
-        key,
-        cache: cache,
-      );
+      final result = await _loadAssetsContent(key, cache: cache);
 
       if (result.status != AssetsBundleResult.ok) {
         return result;
@@ -205,10 +186,7 @@ sealed class YamlFromAssets {
       content = result.data;
     } else {
       for (final type in yamlFileTypes) {
-        final result = await _loadAssetsContent(
-          "$key$fileTypeSeparator$type",
-          cache: cache,
-        );
+        final result = await _loadAssetsContent("$key$fileTypeSeparator$type", cache: cache);
 
         if (result.status == AssetsBundleResult.genericError) {
           return result;
@@ -241,10 +219,7 @@ sealed class YamlFromAssets {
     bool cache = true,
   }) async {
     // We don't need to test for all the file types, the developer has already chosen one
-    final result = await AssetsBundleUtility.loadStringFromAssetBundle(
-      key,
-      cache: cache,
-    );
+    final result = await AssetsBundleUtility.loadStringFromAssetBundle(key, cache: cache);
 
     if (result.status != AssetsBundleResult.ok || result.data == null) {
       // No need to go further

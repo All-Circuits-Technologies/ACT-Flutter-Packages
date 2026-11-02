@@ -68,8 +68,7 @@ class FakeThemesConfig extends AbstractConfigManager with MixinThemesConfig {
   }
 
   /// Class constructor
-  FakeThemesConfig({this._env = Environment.development})
-    : super(logger: const SilentLogger());
+  FakeThemesConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }
 
 /// The properties of the application under test.

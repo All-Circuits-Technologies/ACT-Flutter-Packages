@@ -23,9 +23,7 @@ class _SoundHelper extends AbstractMusicSoundHelper<_Sound> {
   /// Class constructor
   _SoundHelper()
     : super(
-        musicSounds: const {
-          _Sound.click: MusicSound(value: _Sound.click, filePath: "click.mp3"),
-        },
+        musicSounds: const {_Sound.click: MusicSound(value: _Sound.click, filePath: "click.mp3")},
       );
 }
 

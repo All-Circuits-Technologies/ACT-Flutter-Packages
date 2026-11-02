@@ -75,10 +75,8 @@ class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
 
   /// Load the translated text file to display in the page
   Future<void> loadTxtFile(BuildContext context) async {
-    final translated = await IntlFileUtility.loadTransAssetFileText(
-          context,
-          widget.textPath,
-        ) ??
+    final translated =
+        await IntlFileUtility.loadTransAssetFileText(context, widget.textPath) ??
         "Cannot find a proper translation";
 
     if (mounted) {
@@ -103,9 +101,7 @@ class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
      */
 
     return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: widget.horizontalPadding,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: widget.horizontalPadding),
       alignment: widget.alignment,
       child: (_txtTranslated == null)
           ? const CircularProgressIndicator()
@@ -119,14 +115,13 @@ class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
                   style: {
                     "body": Style(
                       fontSize: widget.bodyFontSize,
-                      width:
-                          Width(MediaQuery.of(context).size.width - (widget.horizontalPadding * 2)),
+                      width: Width(
+                        MediaQuery.of(context).size.width - (widget.horizontalPadding * 2),
+                      ),
                       padding: HtmlPaddings.zero,
                       margin: Margins.zero,
                     ),
-                    "p": Style(
-                      fontSize: widget.pFontSize,
-                    ),
+                    "p": Style(fontSize: widget.pFontSize),
                   },
                 ),
               ),

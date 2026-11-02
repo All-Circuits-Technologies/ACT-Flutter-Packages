@@ -24,9 +24,8 @@ void main() {
     await authManager.initLifeCycle();
     globalGetIt().registerSingleton<TbNoAuthServerReqManager>(noAuthManager);
 
-    when(
-      () => noAuthManager.client.setUserFromJwtToken(any(), any(), any()),
-    ).thenAnswer((_) async {});
+    when(() => noAuthManager.client.setUserFromJwtToken(any(), any(), any()))
+        .thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -54,11 +53,7 @@ void main() {
     test("depends on the logger, on the manager without a user and on the authentication", () {
       final builder = TbStdAuthServerReqBuilder<FakeTbAuthManager>();
 
-      expect(builder.dependsOn(), [
-        LoggerManager,
-        TbNoAuthServerReqManager,
-        FakeTbAuthManager,
-      ]);
+      expect(builder.dependsOn(), [LoggerManager, TbNoAuthServerReqManager, FakeTbAuthManager]);
     });
   });
 
@@ -121,9 +116,8 @@ void main() {
 
       await manager.request((tbClient) async => "an answer");
 
-      verify(
-        () => noAuthManager.client.setUserFromJwtToken("a token", "a refresh token", null),
-      ).called(1);
+      verify(() => noAuthManager.client.setUserFromJwtToken("a token", "a refresh token", null))
+          .called(1);
     });
 
     test("answers a login error when the user has no token", () async {

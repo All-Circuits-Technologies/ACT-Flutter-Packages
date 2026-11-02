@@ -27,10 +27,7 @@ void main() {
   FakeTelemetryService websocket() => requestManager.client.telemetryService;
 
   /// Pushes the attributes [values] of [scope] the way the websocket of the server does.
-  Future<void> pushAttributes(
-    AttributeScope scope,
-    Map<String, (int, String?)> values,
-  ) async {
+  Future<void> pushAttributes(AttributeScope scope, Map<String, (int, String?)> values) async {
     websocket().attributesOf(scope)!.onData(anUpdate(values));
     await pumpEventQueue();
   }

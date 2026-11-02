@@ -40,6 +40,9 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
 
   /// {@macro act_local_storage_manager.AbsParserStorageItem.storeToStorage}
   @override
-  Future<bool> storeToStorage(StoredType value) => SecretsSingleton.instance
-      .store<StoredType>(key: key, value: value, doNotMigrate: doNotMigrate);
+  Future<bool> storeToStorage(StoredType value) => SecretsSingleton.instance.store<StoredType>(
+    key: key,
+    value: value,
+    doNotMigrate: doNotMigrate,
+  );
 }

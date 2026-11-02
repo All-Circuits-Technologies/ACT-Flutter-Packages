@@ -72,7 +72,9 @@ void main() {
 
     test("forwards the error of the future", () {
       expect(
-        BoolStatusWithExtraInfo.convertAsyncBoolReturn(boolPromise: Future.error(Exception("boom"))),
+        BoolStatusWithExtraInfo.convertAsyncBoolReturn(
+          boolPromise: Future.error(Exception("boom")),
+        ),
         throwsException,
       );
     });

@@ -20,12 +20,7 @@ class SecretItem<T> extends AbsStorageItem<T> {
   final bool doNotMigrate;
 
   /// Create a FlutterSecureStorage wrapper for key [key] of type T.
-  const SecretItem(
-    String key, {
-    this.doNotMigrate = false,
-  }) : super(
-          key: key,
-        );
+  const SecretItem(String key, {this.doNotMigrate = false}) : super(key: key);
 
   /// {@macro act_local_storage_manager.AbsStorageItem.load}
   @override

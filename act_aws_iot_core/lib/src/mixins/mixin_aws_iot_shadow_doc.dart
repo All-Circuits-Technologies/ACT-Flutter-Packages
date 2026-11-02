@@ -100,14 +100,11 @@ mixin MixinAwsIotShadowDoc on Equatable {
     Map<String, dynamic> desiredState,
     int version,
     String clientToken,
-  ) =>
-      {
-        stateTag: {
-          desiredTag: desiredState,
-        },
-        versionTag: version,
-        clientTokenTag: clientToken,
-      };
+  ) => {
+    stateTag: {desiredTag: desiredState},
+    versionTag: version,
+    clientTokenTag: clientToken,
+  };
 
   /// Get a json from a string
   @protected
@@ -124,38 +121,23 @@ mixin MixinAwsIotShadowDoc on Equatable {
 
   /// Get an integer from a json
   @protected
-  static int? _getInt(Map<String, dynamic> json, String key) => JsonUtility.getNotNullOneElement(
-        json: json,
-        key: key,
-        logger: appLogger(),
-      );
+  static int? _getInt(Map<String, dynamic> json, String key) =>
+      JsonUtility.getNotNullOneElement(json: json, key: key, logger: appLogger());
 
   /// Get a string from a json
   @protected
   static String? _getString(Map<String, dynamic> json, String key) =>
-      JsonUtility.getNotNullOneElement(
-        json: json,
-        key: key,
-        logger: appLogger(),
-      );
+      JsonUtility.getNotNullOneElement(json: json, key: key, logger: appLogger());
 
   /// Get a json object from a json
   @protected
   static Map<String, dynamic>? _getJsonObject(Map<String, dynamic> json, String key) =>
-      JsonUtility.getNotNullJsonObject(
-        json: json,
-        key: key,
-        logger: appLogger(),
-      );
+      JsonUtility.getNotNullJsonObject(json: json, key: key, logger: appLogger());
 
   /// Get a nullabel json object from a json
   @protected
   static ({bool isOk, Map<String, dynamic>? value}) _getNullableJsonObject(
-          Map<String, dynamic> json, String key) =>
-      JsonUtility.getJsonObject(
-        json: json,
-        key: key,
-        canBeUndefined: true,
-        logger: appLogger(),
-      );
+    Map<String, dynamic> json,
+    String key,
+  ) => JsonUtility.getJsonObject(json: json, key: key, canBeUndefined: true, logger: appLogger());
 }

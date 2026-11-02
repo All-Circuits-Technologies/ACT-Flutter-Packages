@@ -13,9 +13,7 @@ class ElementLoader<T> extends AbsElementLoader<T> {
   int elementsSizeReallyUsed;
 
   /// Class constructor
-  ElementLoader({
-    required this._callback,
-  })  : elementsSizeReallyUsed = 0;
+  ElementLoader({required this._callback}) : elementsSizeReallyUsed = 0;
 
   /// Load the elements from provider
   ///
@@ -26,14 +24,8 @@ class ElementLoader<T> extends AbsElementLoader<T> {
   /// If the method returns an empty list or a list with a length smaller than the [limit], it means
   /// that all the data have been loaded and no more are available.
   @override
-  Future<List<T>?> loadFromProvider({
-    required int offset,
-    required int limit,
-  }) async =>
-      _callback(
-        offset: offset,
-        limit: limit,
-      );
+  Future<List<T>?> loadFromProvider({required int offset, required int limit}) async =>
+      _callback(offset: offset, limit: limit);
 
   /// {@macro act_http_client_manager.abs_server_item_loader.clearLoadedElements}
   @override

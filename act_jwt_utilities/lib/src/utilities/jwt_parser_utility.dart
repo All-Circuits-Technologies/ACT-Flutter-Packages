@@ -38,8 +38,9 @@ sealed class JwtParserUtility {
     final expResult = getExpiration(jwt: jwt, isTsInSeconds: isTsInSeconds);
     if (!expResult.isOk) {
       appLogger().w(
-          "A problem occurred when tried to get the expiration date time from the token, we can't "
-          "know if it's valid or not");
+        "A problem occurred when tried to get the expiration date time from the token, we can't "
+        "know if it's valid or not",
+      );
       return false;
     }
 
@@ -82,7 +83,7 @@ sealed class JwtParserUtility {
       isOk: true,
       exp: isTsInSeconds
           ? DateTimeUtility.fromSecondsSinceEpochUtc(expirationTs)
-          : DateTimeUtility.fromMillisecondsSinceEpochUtc(expirationTs)
+          : DateTimeUtility.fromMillisecondsSinceEpochUtc(expirationTs),
     );
   }
 
@@ -123,8 +124,10 @@ sealed class JwtParserUtility {
   ///
   /// If [isTsInSeconds] is equals to true, it means that all the timestamps are in seconds.
   /// If [isTsInSeconds] is equals to false, it means that all the timestamps are in milliseconds.
-  static ({bool isOk, DateTime? exp}) getExpirationFromString(String token,
-      {bool isTsInSeconds = true}) {
+  static ({bool isOk, DateTime? exp}) getExpirationFromString(
+    String token, {
+    bool isTsInSeconds = true,
+  }) {
     final jwt = tryToParseToken(token);
     if (jwt == null) {
       // The token parsing has failed

@@ -104,8 +104,10 @@ void main() {
       final builder = await aBuilder(
         (builder) => builder.registerAbsViewDisplay(
           context: _aContext,
-          callback: (context, doAction) async =>
-              const ViewDisplayResult<String>(status: ViewDisplayStatus.yes, customResult: "a name"),
+          callback: (context, doAction) async => const ViewDisplayResult<String>(
+            status: ViewDisplayStatus.yes,
+            customResult: "a name",
+          ),
         ),
       );
 

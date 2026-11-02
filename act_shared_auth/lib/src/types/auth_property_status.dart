@@ -61,8 +61,5 @@ enum AuthPropertyStatus {
   final bool userNeedsToAct;
 
   /// Class constructor
-  const AuthPropertyStatus({
-    this.isSuccess = false,
-    this.userNeedsToAct = false,
-  });
+  const AuthPropertyStatus({this.isSuccess = false, this.userNeedsToAct = false});
 }

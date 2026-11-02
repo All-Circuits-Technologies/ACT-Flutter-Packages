@@ -8,8 +8,7 @@ import 'package:act_shared_auth_ui/src/models/abs_auth_page_extra.dart';
 
 /// This model can be used to pass information to the reset password views when going to those views
 /// with the router manager
-class ResetPwdPageExtra<T extends MixinRoute>
-    extends AbsAuthPageExtra<T, AuthResetPwdStatus> {
+class ResetPwdPageExtra<T extends MixinRoute> extends AbsAuthPageExtra<T, AuthResetPwdStatus> {
   /// The username to use to update the forgotten password
   final String username;
 
@@ -26,9 +25,5 @@ class ResetPwdPageExtra<T extends MixinRoute>
 
   /// Class properties
   @override
-  List<Object?> get props => [
-        username,
-        confirmationCode,
-        ...super.props,
-      ];
+  List<Object?> get props => [username, confirmationCode, ...super.props];
 }

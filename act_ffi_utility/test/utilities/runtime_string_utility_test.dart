@@ -67,10 +67,7 @@ void main() {
       final device = aDevice("abcdefgh".codeUnits);
       addTearDown(() => calloc.free(device));
 
-      expect(
-        RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: 3),
-        "abc",
-      );
+      expect(RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: 3), "abc");
     });
   });
 

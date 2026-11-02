@@ -59,10 +59,9 @@ class BleManager extends AbstractPeriphManager {
   StreamSubscription<BleStatus>? _bleStatusSub;
 
   /// [BleManager] constructor
-  BleManager({
-    required this._confGetter,
-  })  : _flutterBle = FlutterReactiveBle(),
-        _bleReInitCtrl = StreamController<void>.broadcast() {
+  BleManager({required this._confGetter})
+    : _flutterBle = FlutterReactiveBle(),
+      _bleReInitCtrl = StreamController<void>.broadcast() {
     bleGapService = BleGapService(bleManager: this, flutterReactiveBle: _flutterBle);
     bleGattService = BleGattService(bleManager: this, flutterReactiveBle: _flutterBle);
     _bleStatusSub = _flutterBle.statusStream.listen(_onBleStatusUpdated);
@@ -74,9 +73,7 @@ class BleManager extends AbstractPeriphManager {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
 
-    logsHelper = LogsHelper(
-      category: _bleLogCategory,
-    );
+    logsHelper = LogsHelper(category: _bleLogCategory);
 
     await bleGapService.initLifeCycle();
 
@@ -161,31 +158,32 @@ class BleManager extends AbstractPeriphManager {
 
     // We request the user to ask him to enable the BLE service
     final dialogResult = await requestUser<BleStatus>(
-        isAcceptanceCompulsory: isAcceptanceCompulsory,
-        displayContextualIfNeeded: displayContextualIfNeeded,
-        overrideContext: viewContext,
-        manageEnabling: () async {
-          // We wait to receive a BLE status ready
-          var tmpStatus = await _openAppSettingAndWaitForBleStatus(
-            settingsType: settingsType,
-            isExpectedStatus: (status) => status == BleStatus.ready,
-          );
+      isAcceptanceCompulsory: isAcceptanceCompulsory,
+      displayContextualIfNeeded: displayContextualIfNeeded,
+      overrideContext: viewContext,
+      manageEnabling: () async {
+        // We wait to receive a BLE status ready
+        var tmpStatus = await _openAppSettingAndWaitForBleStatus(
+          settingsType: settingsType,
+          isExpectedStatus: (status) => status == BleStatus.ready,
+        );
 
-          if (bleStatus != tmpStatus &&
-              (tmpStatus == BleStatus.locationServicesDisabled ||
-                  tmpStatus == BleStatus.poweredOff)) {
-            // We do this in case where both location and BLE services are disabled
-            /* TODO(brolandeau): I haven't tested this case, I'm not sure it's doing what we expect
+        if (bleStatus != tmpStatus &&
+            (tmpStatus == BleStatus.locationServicesDisabled ||
+                tmpStatus == BleStatus.poweredOff)) {
+          // We do this in case where both location and BLE services are disabled
+          /* TODO(brolandeau): I haven't tested this case, I'm not sure it's doing what we expect
                                  (open a new contextual view for the other service)
              */
-            tmpStatus = await _manageServiceEnabling(
-              isAcceptanceCompulsory: isAcceptanceCompulsory,
-              displayContextualIfNeeded: displayContextualIfNeeded,
-            );
-          }
+          tmpStatus = await _manageServiceEnabling(
+            isAcceptanceCompulsory: isAcceptanceCompulsory,
+            displayContextualIfNeeded: displayContextualIfNeeded,
+          );
+        }
 
-          return (tmpStatus == BleStatus.ready, tmpStatus);
-        });
+        return (tmpStatus == BleStatus.ready, tmpStatus);
+      },
+    );
 
     if (!dialogResult.status.isPositiveResult) {
       // In that case the user has refused, we get the current status
@@ -194,9 +192,10 @@ class BleManager extends AbstractPeriphManager {
 
     if (dialogResult.customResult == null) {
       assert(
-          false,
-          "The view used to request the user hasn't returned the service status as "
-          "expected, it's a problem of development");
+        false,
+        "The view used to request the user hasn't returned the service status as "
+        "expected, it's a problem of development",
+      );
       appLogger().w("The view used to request the user hasn't returned the permission status");
       return _flutterBle.status;
     }
@@ -230,9 +229,7 @@ class BleManager extends AbstractPeriphManager {
   /// Because the BLE service activation or permissions update may take some time to be acknowledged
   /// by the lib, they advise to listen the statusStream property in [_flutterBle] and waits for
   /// events to have the right status after an action.
-  Future<BleStatus> _waitForStatus({
-    required bool Function(BleStatus) isExpectedStatus,
-  }) =>
+  Future<BleStatus> _waitForStatus({required bool Function(BleStatus) isExpectedStatus}) =>
       WaitUtility.waitForStatus(
         isExpectedStatus: isExpectedStatus,
         statusEmitter: _flutterBle.statusStream,
@@ -245,14 +242,13 @@ class BleManager extends AbstractPeriphManager {
   Future<BleStatus> _openAppSettingAndWaitForBleStatus({
     required bool Function(BleStatus) isExpectedStatus,
     required AppSettingsType settingsType,
-  }) =>
-      MEnableService.openAppSettingAndWaitForUpdate<BleStatus>(
-        isExpectedStatus: isExpectedStatus,
-        settingsType: settingsType,
-        statusEmitter: _flutterBle.statusStream,
-        valueGetter: () => _flutterBle.status,
-        timeout: _enableTimeout,
-      );
+  }) => MEnableService.openAppSettingAndWaitForUpdate<BleStatus>(
+    isExpectedStatus: isExpectedStatus,
+    settingsType: settingsType,
+    statusEmitter: _flutterBle.statusStream,
+    valueGetter: () => _flutterBle.status,
+    timeout: _enableTimeout,
+  );
 
   /// Get the service element type
   @override
@@ -261,10 +257,8 @@ class BleManager extends AbstractPeriphManager {
   /// Get the config linked to the permissions
   @override
   List<PermissionConfig> getPermissionsConfig() => [
-        const PermissionConfig(
-          element: PermissionElement.ble,
-        )
-      ];
+    const PermissionConfig(element: PermissionElement.ble),
+  ];
 
   /// This method allows to reinitialize the Flutter BLE lib
   ///

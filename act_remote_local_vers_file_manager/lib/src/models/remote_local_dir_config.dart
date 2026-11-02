@@ -14,17 +14,12 @@ class RemoteLocalDirConfig<T extends MixinRemoteLocalVersFileType> extends Equat
   final Map<T, RemoteLocalDirOptions> options;
 
   /// Class constructor
-  const RemoteLocalDirConfig({
-    required this.options,
-  });
+  const RemoteLocalDirConfig({required this.options});
 
   /// Returns a copy of this [RemoteLocalDirConfig] with the given options.
   RemoteLocalDirConfig copyWith({
     Map<MixinRemoteLocalVersFileType, RemoteLocalDirOptions>? options,
-  }) =>
-      RemoteLocalDirConfig(
-        options: options ?? this.options,
-      );
+  }) => RemoteLocalDirConfig(options: options ?? this.options);
 
   /// Parses a [RemoteLocalDirConfig] from a JSON map.
   static RemoteLocalDirConfig<T>? parseFromJson<T extends MixinRemoteLocalVersFileType>(
@@ -52,8 +47,10 @@ class RemoteLocalDirConfig<T extends MixinRemoteLocalVersFileType> extends Equat
       }
 
       if (tmpValue is! Map<String, dynamic>) {
-        appLogger().w("The JSON value of the dir type: $tmpKey, isn't a JSON object; "
-            "therefore, we can't parse the value");
+        appLogger().w(
+          "The JSON value of the dir type: $tmpKey, isn't a JSON object; "
+          "therefore, we can't parse the value",
+        );
         continue;
       }
 

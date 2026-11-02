@@ -83,7 +83,10 @@ void main() {
     });
 
     test("answers a binary body for bytes", () {
-      expect(BodyFormatUtility.tryToGuessBodyType(Uint8List.fromList([1, 2])), HttpBodyTypes.binary);
+      expect(
+        BodyFormatUtility.tryToGuessBodyType(Uint8List.fromList([1, 2])),
+        HttpBodyTypes.binary,
+      );
     });
 
     test("answers a form body for a map of strings", () {
@@ -94,10 +97,7 @@ void main() {
     });
 
     test("answers a json body for a map of values", () {
-      expect(
-        BodyFormatUtility.tryToGuessBodyType(<String, dynamic>{"a": 1}),
-        HttpBodyTypes.json,
-      );
+      expect(BodyFormatUtility.tryToGuessBodyType(<String, dynamic>{"a": 1}), HttpBodyTypes.json);
     });
 
     test("answers a file body for a file", () {
@@ -195,19 +195,16 @@ void main() {
     });
 
     test("turns a list of bytes into the bytes of a binary body", () {
-      final request = formatRequest(
-        body: [1, 2, 3],
-        requestMimeType: HttpMimeTypes.gzip,
-      )! as Request;
+      final request =
+          formatRequest(body: [1, 2, 3], requestMimeType: HttpMimeTypes.gzip)! as Request;
 
       expect(request.bodyBytes, [1, 2, 3]);
     });
 
     test("sends the bytes of a zip body with the zip MIME type", () {
-      final request = formatRequest(
-        body: Uint8List.fromList([1, 2, 3]),
-        requestMimeType: HttpMimeTypes.zip,
-      )! as Request;
+      final request =
+          formatRequest(body: Uint8List.fromList([1, 2, 3]), requestMimeType: HttpMimeTypes.zip)!
+              as Request;
 
       expect(request.headers[HeaderConstants.contentTypeHeaderKey], "application/zip");
       expect(request.bodyBytes, [1, 2, 3]);
@@ -279,7 +276,10 @@ void main() {
 
     test("refuses a json body which cannot be encoded", () {
       expect(
-        formatRequest(body: <String, dynamic>{"date": DateTime(2026)}, requestMimeType: HttpMimeTypes.json),
+        formatRequest(
+          body: <String, dynamic>{"date": DateTime(2026)},
+          requestMimeType: HttpMimeTypes.json,
+        ),
         isNull,
       );
       expect(warnings().single, contains("error when encoding"));

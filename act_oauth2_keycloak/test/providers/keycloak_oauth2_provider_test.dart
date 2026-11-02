@@ -132,17 +132,13 @@ auth:
 
   group("KeycloakOAuth2Provider.buildRedirectUrl", () {
     test("answers the URL the application was built with", () async {
-      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(
-        redirectUrl: aRedirectUrl,
-      );
+      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(redirectUrl: aRedirectUrl);
 
       expect(await provider.buildRedirectUrl(), aRedirectUrl);
     });
 
     test("answers it whole, where the core would build a scheme with one slash", () async {
-      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(
-        redirectUrl: aRedirectUrl,
-      );
+      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(redirectUrl: aRedirectUrl);
 
       expect(await provider.buildRedirectUrl(), isNot(contains(":/oauthredirect")));
     });
@@ -150,9 +146,7 @@ auth:
 
   group("KeycloakOAuth2Provider.buildPostLogoutRedirectUrl", () {
     test("reuses the redirect URL when the application names no other one", () async {
-      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(
-        redirectUrl: aRedirectUrl,
-      );
+      final provider = KeycloakOAuth2Provider<FakeKeycloakConfigManager>(redirectUrl: aRedirectUrl);
 
       expect(await provider.buildPostLogoutRedirectUrl(), aRedirectUrl);
     });

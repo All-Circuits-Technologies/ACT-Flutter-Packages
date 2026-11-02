@@ -60,31 +60,25 @@ abstract class BleConnectToDeviceState extends Equatable {
     BondState? bondState,
     DeviceConnectionState? connectionState,
     bool? isConnectionFailed,
-  })  : loading = loading ?? previousState.loading,
-        device = device ?? (forceDeviceValue ? null : previousState.device),
-        bondState = bondState ?? previousState.bondState,
-        connectionState = connectionState ?? previousState.connectionState,
-        isConnectionFailed = isConnectionFailed ?? previousState.isConnectionFailed,
-        super();
+  }) : loading = loading ?? previousState.loading,
+       device = device ?? (forceDeviceValue ? null : previousState.device),
+       bondState = bondState ?? previousState.bondState,
+       connectionState = connectionState ?? previousState.connectionState,
+       isConnectionFailed = isConnectionFailed ?? previousState.isConnectionFailed,
+       super();
 
   /// Init class constructor
   const BleConnectToDeviceState.init()
-      : loading = false,
-        device = null,
-        bondState = BondState.unknown,
-        connectionState = DeviceConnectionState.disconnected,
-        isConnectionFailed = false;
+    : loading = false,
+      device = null,
+      bondState = BondState.unknown,
+      connectionState = DeviceConnectionState.disconnected,
+      isConnectionFailed = false;
 
   /// State class properties
   @mustCallSuper
   @override
-  List<Object?> get props => [
-        loading,
-        device?.id,
-        connectionState,
-        bondState,
-        isConnectionFailed,
-      ];
+  List<Object?> get props => [loading, device?.id, connectionState, bondState, isConnectionFailed];
 }
 
 /// Init state of the bloc
@@ -99,55 +93,41 @@ class InitBleConnectToDeviceState extends BleConnectToDeviceState {
 /// We also reinit the [isConnectionFailed] state.
 class BleNewDeviceState extends BleConnectToDeviceState {
   /// Class constructor
-  BleNewDeviceState({
-    required super.previousState,
-    required BleDevice super.device,
-  }) : super(
-          isConnectionFailed: false,
-          connectionState: device.connectionState,
-          bondState: device.bondState,
-        );
+  BleNewDeviceState({required super.previousState, required BleDevice super.device})
+    : super(
+        isConnectionFailed: false,
+        connectionState: device.connectionState,
+        bondState: device.bondState,
+      );
 }
 
 /// This state is called when we call the connection method
 class LoadingConnectState extends BleConnectToDeviceState {
   /// Class constructor
-  LoadingConnectState({
-    required super.previousState,
-    required bool super.loading,
-  }) : super();
+  LoadingConnectState({required super.previousState, required bool super.loading}) : super();
 }
 
 /// This state is called when the connection to the device, asked by the user, has failed
 class BleConnectionFailedState extends BleConnectToDeviceState {
   /// Class constructor
-  BleConnectionFailedState({
-    required super.previousState,
-  }) : super(
-          isConnectionFailed: true,
-          loading: false,
-        );
+  BleConnectionFailedState({required super.previousState})
+    : super(isConnectionFailed: true, loading: false);
 }
 
 /// This state is called when the user asked to disconnect from the currently connected device
 class BleDeviceDisconnectState extends BleConnectToDeviceState {
   /// Class constructor
-  BleDeviceDisconnectState({
-    required super.previousState,
-  }) : super(
-          forceDeviceValue: true,
-          device: null,
-          connectionState: DeviceConnectionState.disconnected,
-          bondState: BondState.unknown,
-        );
+  BleDeviceDisconnectState({required super.previousState})
+    : super(
+        forceDeviceValue: true,
+        device: null,
+        connectionState: DeviceConnectionState.disconnected,
+        bondState: BondState.unknown,
+      );
 }
 
 /// This state is called when the device we are connected with, update its states
 class BleDeviceUpdateState extends BleConnectToDeviceState {
   /// Class constructor
-  BleDeviceUpdateState({
-    required super.previousState,
-    super.bondState,
-    super.connectionState,
-  });
+  BleDeviceUpdateState({required super.previousState, super.bondState, super.connectionState});
 }

@@ -66,10 +66,7 @@ void main() {
   /// The characteristic of the device the application listens to.
   ///
   /// Nothing is listened to when [subscribed] says so.
-  Future<MixCharNotification> aCharacteristic({
-    bool subscribed = true,
-    BleDevice? device,
-  }) async {
+  Future<MixCharNotification> aCharacteristic({bool subscribed = true, BleDevice? device}) async {
     final characteristic = halo.charJRequestToDeviceCmd;
 
     if (subscribed) {

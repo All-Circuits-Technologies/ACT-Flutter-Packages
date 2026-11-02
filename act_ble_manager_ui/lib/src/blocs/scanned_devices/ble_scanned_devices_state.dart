@@ -35,16 +35,15 @@ abstract class BleScannedDevicesState extends Equatable {
     bool? isScanActive,
     bool? isBluetoothActive,
     List<BleScannedDevice>? devices,
-  })  : isScanActive = isScanActive ?? previousState.isScanActive,
-        isBluetoothActive = isBluetoothActive ?? previousState.isBluetoothActive,
-        devices = devices ?? previousState.devices,
-        super();
+  }) : isScanActive = isScanActive ?? previousState.isScanActive,
+       isBluetoothActive = isBluetoothActive ?? previousState.isBluetoothActive,
+       devices = devices ?? previousState.devices,
+       super();
 
   /// Init class constructor
-  const BleScannedDevicesState.init({
-    required this.isBluetoothActive,
-  })  : isScanActive = false,
-        devices = const [];
+  const BleScannedDevicesState.init({required this.isBluetoothActive})
+    : isScanActive = false,
+      devices = const [];
 
   /// State properties
   @mustCallSuper
@@ -55,18 +54,13 @@ abstract class BleScannedDevicesState extends Equatable {
 /// Init state
 class InitBleScannedDevicesState extends BleScannedDevicesState {
   /// Class constructor
-  const InitBleScannedDevicesState({
-    required super.isBluetoothActive,
-  }) : super.init();
+  const InitBleScannedDevicesState({required super.isBluetoothActive}) : super.init();
 }
 
 /// Emitted when the handler scan state is updated
 class BleScanState extends BleScannedDevicesState {
   /// Class constructor
-  BleScanState({
-    required super.previousState,
-    required super.isScanActive,
-  });
+  BleScanState({required super.previousState, required super.isScanActive});
 }
 
 /// Emitted when a new list of devices is received
@@ -75,19 +69,12 @@ class BleUpdateDevicesState extends BleScannedDevicesState {
   ///
   /// To fire a new display of the view, we copy the [devices] list given if it's equal to
   /// [previousState] devices. Because we fire this state to rebuild the view with an updated list
-  BleUpdateDevicesState({
-    required super.previousState,
-    required List<BleScannedDevice> devices,
-  }) : super(
-          devices: (previousState.devices == devices) ? List.from(devices) : devices,
-        );
+  BleUpdateDevicesState({required super.previousState, required List<BleScannedDevice> devices})
+    : super(devices: (previousState.devices == devices) ? List.from(devices) : devices);
 }
 
 /// Emitted when the bluetooth phone state is updated
 class BluetoothEnableNewState extends BleScannedDevicesState {
   /// Class constructor
-  BluetoothEnableNewState({
-    required super.previousState,
-    required bool super.isBluetoothActive,
-  });
+  BluetoothEnableNewState({required super.previousState, required bool super.isBluetoothActive});
 }

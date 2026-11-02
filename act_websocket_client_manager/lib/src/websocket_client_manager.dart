@@ -93,13 +93,11 @@ class WebsocketClientManager extends AbsWithLifeCycle {
   WebSocketChannel? _channel;
 
   /// Class constructor
-  WebsocketClientManager({
-    required this._configGetter,
-    this.loggerCategory = defaultLoggerCategory,
-  }) : _connectionStatus = WsConnectionStatus.disconnected,
-       _connectionMutex = Mutex(),
-       _connectionStatusCtrl = StreamController.broadcast(),
-       _receivedMsgCtrl = StreamController.broadcast();
+  WebsocketClientManager({required this._configGetter, this.loggerCategory = defaultLoggerCategory})
+    : _connectionStatus = WsConnectionStatus.disconnected,
+      _connectionMutex = Mutex(),
+      _connectionStatusCtrl = StreamController.broadcast(),
+      _receivedMsgCtrl = StreamController.broadcast();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

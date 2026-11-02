@@ -79,7 +79,10 @@ void main() {
     });
 
     test("reads an offset without any sign as a positive one", () {
-      expect(DurationUtility.parseFromTimeZoneOffset("02:30"), const Duration(hours: 2, minutes: 30));
+      expect(
+        DurationUtility.parseFromTimeZoneOffset("02:30"),
+        const Duration(hours: 2, minutes: 30),
+      );
     });
 
     test("reads the UTC marker as an empty offset", () {

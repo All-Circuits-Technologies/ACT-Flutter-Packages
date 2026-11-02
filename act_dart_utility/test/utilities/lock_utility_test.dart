@@ -130,10 +130,7 @@ void main() {
     test("frees the lock even when the critical section throws", () async {
       final lock = LockUtility();
 
-      await expectLater(
-        lock.protectLock(() async => throw Exception("boom")),
-        throwsException,
-      );
+      await expectLater(lock.protectLock(() async => throw Exception("boom")), throwsException);
 
       expect(lock.isLocked, isFalse);
     });

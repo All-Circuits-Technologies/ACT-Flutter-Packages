@@ -27,22 +27,18 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
   });
 
   /// Class contructor with empty values
-  AwsIotShadowStateModel.empty()
-      : version = 0,
-        desiredState = {},
-        reportedState = {};
+  AwsIotShadowStateModel.empty() : version = 0, desiredState = {}, reportedState = {};
 
   /// Copy with method
   AwsIotShadowStateModel copyWith({
     int? version,
     Map<String, dynamic>? desiredState,
     Map<String, dynamic>? reportedState,
-  }) =>
-      AwsIotShadowStateModel(
-        version: version ?? this.version,
-        desiredState: desiredState ?? this.desiredState,
-        reportedState: reportedState ?? this.reportedState,
-      );
+  }) => AwsIotShadowStateModel(
+    version: version ?? this.version,
+    desiredState: desiredState ?? this.desiredState,
+    reportedState: reportedState ?? this.reportedState,
+  );
 
   /// This method is used to update the state of the shadow after an accepted get request or an
   /// accepted update request
@@ -86,11 +82,7 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
       reported?.addAll(reportedState);
     }
 
-    return copyWith(
-      version: version,
-      desiredState: desired,
-      reportedState: reported,
-    );
+    return copyWith(version: version, desiredState: desired, reportedState: reported);
   }
 
   /// This method generates a jsonString to be sent to the AWS IoT Device Shadow service when
@@ -98,10 +90,7 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
   /// [clientToken] is a unique identifier for the request.
   ///
   /// Null will be returned if there is no change between the current desired state and the new one.
-  String? getJsonForUpdateRequest(
-    Map<String, dynamic> newDesiredState,
-    String clientToken,
-  ) {
+  String? getJsonForUpdateRequest(Map<String, dynamic> newDesiredState, String clientToken) {
     // Merge the desired state with the current one and check if there is at least one change
     var hasChange = false;
     final mergedDesiredState = Map<String, dynamic>.from(desiredState);
@@ -128,10 +117,7 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
 
   /// This method checks if the provided accepted response [jsonString] contains the client token
   /// specified in the [expectedClientToken] parameter
-  static bool isClientTokenValid(
-    String jsonString,
-    String expectedClientToken,
-  ) {
+  static bool isClientTokenValid(String jsonString, String expectedClientToken) {
     // Get the json object from the string
     final json = MixinAwsIotShadowDoc.getJsonFromString(jsonString);
     if (json == null) {
@@ -145,9 +131,5 @@ class AwsIotShadowStateModel extends Equatable with MixinAwsIotShadowDoc {
   }
 
   @override
-  List<Object?> get props => [
-        version,
-        desiredState,
-        reportedState,
-      ];
+  List<Object?> get props => [version, desiredState, reportedState];
 }

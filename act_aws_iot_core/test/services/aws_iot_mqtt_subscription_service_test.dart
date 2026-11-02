@@ -37,10 +37,7 @@ void main() {
       ..registerSingleton<FakeAwsIotConfigManager>(config);
 
     mqtt = FakeMqttService(iotManagerLogsHelper: aLogsHelper(), config: aMqttConfig());
-    service = AwsIotMqttSubcriptionService(
-      mqttService: mqtt,
-      iotManagerLogsHelper: aLogsHelper(),
-    );
+    service = AwsIotMqttSubcriptionService(mqttService: mqtt, iotManagerLogsHelper: aLogsHelper());
     await service.initLifeCycle();
   });
 
@@ -56,9 +53,9 @@ void main() {
 
   /// Has the topic [topic] read by the application, and tells the messages it hears to [messages].
   Future<AwsIotMqttSubHandler> aReaderOf(String topic, {List<String>? messages}) async {
-    final handler = service.getWatcher(topic).getHandler(
-      onMsgCb: (message) => messages?.add(message),
-    );
+    final handler = service
+        .getWatcher(topic)
+        .getHandler(onMsgCb: (message) => messages?.add(message));
     await pumpAwsIot();
 
     return handler;

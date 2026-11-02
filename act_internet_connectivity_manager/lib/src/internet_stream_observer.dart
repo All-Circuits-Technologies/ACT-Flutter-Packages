@@ -15,17 +15,11 @@ class InternetStreamObserver extends StreamObserver<bool> {
 
     bool get() => internetManager.hasConnection;
 
-    return InternetStreamObserver._(
-      stream: internetManager.hasInternetStream,
-      get: get,
-    );
+    return InternetStreamObserver._(stream: internetManager.hasInternetStream, get: get);
   }
 
   /// Private class constructor.
-  InternetStreamObserver._({
-    required super.stream,
-    required super.get,
-  });
+  InternetStreamObserver._({required super.stream, required super.get});
 
   /// Check if the value received on the stream is valid or not but since the value we listen to is
   /// a boolean, we can directly return it.

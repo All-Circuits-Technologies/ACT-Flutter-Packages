@@ -58,8 +58,10 @@ abstract class AbsRefreshJwtLogin extends AbsJwtLogin {
     final jwtResponse = await parseRefreshResponse(response);
 
     if (jwtResponse == null) {
-      logsHelper.w("A problem occurred when parsed the refresh response received to get the JWT "
-          "login token");
+      logsHelper.w(
+        "A problem occurred when parsed the refresh response received to get the JWT "
+        "login token",
+      );
       return false;
     }
 

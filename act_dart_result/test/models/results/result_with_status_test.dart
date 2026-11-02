@@ -45,9 +45,7 @@ void main() {
         extraInfo: "the server is unreachable",
       );
 
-      final result = ResultWithStatus<BoolResultStatus, int>.fromStatus(
-        statusWitExtraInfo: status,
-      );
+      final result = ResultWithStatus<BoolResultStatus, int>.fromStatus(statusWitExtraInfo: status);
 
       expect(result.status, BoolResultStatus.error);
       expect(result.extraInfo, "the server is unreachable");

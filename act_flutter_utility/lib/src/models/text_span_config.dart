@@ -16,10 +16,7 @@ class TextSpanConfig extends Equatable {
   final GestureRecognizer? recognizer;
 
   /// Class constructor
-  const TextSpanConfig({
-    this.style,
-    this.recognizer,
-  });
+  const TextSpanConfig({this.style, this.recognizer});
 
   /// Properties of the class
   @override

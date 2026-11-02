@@ -29,16 +29,21 @@ class LoggerSingleton {
   final MultiExternalLogger externalLogger;
 
   /// Create the singleton instance.
-  static LoggerSingleton createInstance(
-      {LogsLevel minLevel = LogsLevel.all, Map<Enum, MixinExternalLogger>? externalLoggers}) {
+  static LoggerSingleton createInstance({
+    LogsLevel minLevel = LogsLevel.all,
+    Map<Enum, MixinExternalLogger>? externalLoggers,
+  }) {
     if (_instance != null) {
       // The singleton instance already exists, we do nothing more and return the existing instance
       return _instance!;
     }
 
-    _instance = LoggerSingleton._(MultiExternalLogger(
+    _instance = LoggerSingleton._(
+      MultiExternalLogger(
         externalLoggers: Map<Enum, MixinExternalLogger>.from(externalLoggers ?? {}),
-        minLevel: minLevel));
+        minLevel: minLevel,
+      ),
+    );
     return _instance!;
   }
 

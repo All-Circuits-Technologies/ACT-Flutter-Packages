@@ -19,9 +19,7 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
   final HaloBleCompanion _bleCompanion;
 
   /// Class constructor
-  HaloBleRequestToDeviceHardware({
-    required this._bleCompanion,
-  });
+  HaloBleRequestToDeviceHardware({required this._bleCompanion});
 
   /// This is the method to override in order to define the implementation of the calling function
   /// feature.
@@ -30,11 +28,10 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
   Future<HaloRequestResult> implCallFunction({
     required HaloRequestParamsPacket request,
     required Duration executionTimeout,
-  }) =>
-      _callRequest(
-        cmdPacket: HaloBleRequestToDeviceCmdPacket(packetToSend: request),
-        executionTimeout: executionTimeout,
-      );
+  }) => _callRequest(
+    cmdPacket: HaloBleRequestToDeviceCmdPacket(packetToSend: request),
+    executionTimeout: executionTimeout,
+  );
 
   /// This is the method to override in order to define the implementation of the calling order
   /// feature.
@@ -42,9 +39,8 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
   @override
   Future<HaloErrorType> implCallOrder({required HaloRequestParamsPacket request}) async {
     final result = await _callRequest(
-        cmdPacket: HaloBleRequestToDeviceCmdPacket(
-      packetToSend: request,
-    ));
+      cmdPacket: HaloBleRequestToDeviceCmdPacket(packetToSend: request),
+    );
 
     return result.status;
   }
@@ -58,9 +54,7 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     required Duration executionTimeout,
   }) async {
     final result = await _callRequest(
-      cmdPacket: HaloBleRequestToDeviceCmdPacket(
-        packetToSend: request,
-      ),
+      cmdPacket: HaloBleRequestToDeviceCmdPacket(packetToSend: request),
       executionTimeout: executionTimeout,
     );
 
@@ -84,8 +78,10 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when trying to reset the request channel to device, before "
-          "executing the request: $requestId in the device");
+      appLogger().w(
+        "A problem occurred when trying to reset the request channel to device, before "
+        "executing the request: $requestId in the device",
+      );
       return result;
     }
 
@@ -100,13 +96,14 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
         requestType != HaloRequestType.order || cmdPacket.packetToSend.nbValues.isNotEmpty;
     var lastPacketBeforeExec = parametersPackets.isEmpty;
     result = await _writeRequestPacket(
-        requestId: requestId,
-        dataToSend: cmdPacket.getDataToSend(),
-        expectAResultAtTheEnd: tmpExpectAResponseAtTheEnd,
-        writeInCmdChar: true,
-        timeout: lastPacketBeforeExec
-            ? executionTimeout
-            : halo_ble_constants.maxWaitForResponseDuration);
+      requestId: requestId,
+      dataToSend: cmdPacket.getDataToSend(),
+      expectAResultAtTheEnd: tmpExpectAResponseAtTheEnd,
+      writeInCmdChar: true,
+      timeout: lastPacketBeforeExec
+          ? executionTimeout
+          : halo_ble_constants.maxWaitForResponseDuration,
+    );
 
     if (result.isError) {
       appLogger().w("A problem occurred when calling the request: $requestId in the device");
@@ -129,13 +126,16 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
         dataToSend: parametersPackets[idx],
         expectAResultAtTheEnd: tmpExpectAResponseAtTheEnd,
         writeInCmdChar: false,
-        timeout:
-            lastPacketBeforeExec ? executionTimeout : halo_ble_constants.maxWaitForResponseDuration,
+        timeout: lastPacketBeforeExec
+            ? executionTimeout
+            : halo_ble_constants.maxWaitForResponseDuration,
       );
 
       if (result.isError) {
-        appLogger().w("A problem occurred when sending the parameters to the request: "
-            "$requestId in the device");
+        appLogger().w(
+          "A problem occurred when sending the parameters to the request: "
+          "$requestId in the device",
+        );
         return result;
       }
     }
@@ -202,12 +202,11 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when tried to write a command without response, for "
-          "the request: $requestId to the device");
-      return HaloBleRequestResult.error(
-        requestId: requestId,
-        status: result,
+      appLogger().w(
+        "A problem occurred when tried to write a command without response, for "
+        "the request: $requestId to the device",
       );
+      return HaloBleRequestResult.error(requestId: requestId, status: result);
     }
 
     return HaloBleRequestResult(
@@ -238,12 +237,11 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when tried to write a command, for the request: $requestId "
-          "to the device");
-      return HaloBleRequestResult.error(
-        requestId: requestId,
-        status: result.status,
+      appLogger().w(
+        "A problem occurred when tried to write a command, for the request: $requestId "
+        "to the device",
       );
+      return HaloBleRequestResult.error(requestId: requestId, status: result.status);
     }
 
     final requestResult = HaloBleRequestResult.parseResultFromDevice(
@@ -252,17 +250,18 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     );
 
     if (requestResult == null) {
-      appLogger().w("A problem occurred when tried to parse the result of the request: "
-          "$requestId, received from the device");
-      return HaloBleRequestResult.error(
-        requestId: requestId,
-        status: HaloErrorType.genericError,
+      appLogger().w(
+        "A problem occurred when tried to parse the result of the request: "
+        "$requestId, received from the device",
       );
+      return HaloBleRequestResult.error(requestId: requestId, status: HaloErrorType.genericError);
     }
 
     if (requestResult.isError) {
-      appLogger().w("An error occurred on the device, when waiting for the result of the request: "
-          "$requestId");
+      appLogger().w(
+        "An error occurred on the device, when waiting for the result of the request: "
+        "$requestId",
+      );
       return requestResult;
     }
 
@@ -272,9 +271,7 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
   /// Read a client request from exchange zone, do the same thing as [_readPacketFromDevice] but
   /// prefill the characteristics
   Future<ResultWithRequiredValue<HaloErrorType, HaloPayloadPacket>>
-      _readClientRequestFromExchangeZone({
-    required MixinHaloRequestId requestId,
-  }) async =>
+  _readClientRequestFromExchangeZone({required MixinHaloRequestId requestId}) async =>
       _readPacketFromDevice(
         toWriteInto: _bleCompanion.haloBleConfig.charJRequestToDeviceCmd,
         requestId: requestId,
@@ -296,14 +293,16 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
     while (allHasBeenReceived == false) {
       final result = await _bleCompanion.writeAndWaitNotifResult(
         toWriteInto: toWriteInto,
-        dataToWrite:
-            HaloBleRequestToDeviceCmdPacket.readReady(requestId: requestId).getDataToSend(),
+        dataToWrite: HaloBleRequestToDeviceCmdPacket.readReady(requestId: requestId)
+            .getDataToSend(),
         toWaitNotifyFrom: toWaitNotifyFrom,
       );
 
       if (result.isError) {
-        appLogger().w("A problem occurred when tried to read a result from the exchange zone "
-            "from the device");
+        appLogger().w(
+          "A problem occurred when tried to read a result from the exchange zone "
+          "from the device",
+        );
         return ResultWithRequiredValue(status: result.status);
       }
 
@@ -317,8 +316,10 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
         final tmpData = HaloPayloadPacket.tryToCleanLastElementPacket(cleanedData);
 
         if (tmpData == null) {
-          appLogger().w("We tried to cleaned the last element packet to solve the problem, but it "
-              "failed");
+          appLogger().w(
+            "We tried to cleaned the last element packet to solve the problem, but it "
+            "failed",
+          );
           return const ResultWithRequiredValue(status: HaloErrorType.formatError);
         }
 

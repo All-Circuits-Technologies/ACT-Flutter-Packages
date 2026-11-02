@@ -17,9 +17,7 @@ class TbTsValue extends Equatable {
   const TbTsValue({required this.ts, this.value});
 
   /// Build the object from a [TsValue]
-  TbTsValue.fromTsValue(TsValue tsValue)
-      : ts = tsValue.ts,
-        value = tsValue.value;
+  TbTsValue.fromTsValue(TsValue tsValue) : ts = tsValue.ts, value = tsValue.value;
 
   /// Class properties
   @override

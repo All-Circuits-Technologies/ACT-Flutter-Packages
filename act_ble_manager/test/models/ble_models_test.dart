@@ -86,9 +86,7 @@ void main() {
     test("takes the name of the device when it is scanned again", () {
       final device = BleScannedDevice(aDiscoveredDevice());
 
-      final updated = device.updateFromDiscoveredDevice(
-        aDiscoveredDevice(name: "another name"),
-      );
+      final updated = device.updateFromDiscoveredDevice(aDiscoveredDevice(name: "another name"));
 
       expect(updated, isTrue);
       expect(device.name, "another name");
@@ -167,8 +165,7 @@ void main() {
     });
 
     test("says nothing when its pairing did not change", () async {
-      final device = BleDevice(BleScannedDevice(aDiscoveredDevice()))
-        ..bondState = BondState.bonded;
+      final device = BleDevice(BleScannedDevice(aDiscoveredDevice()))..bondState = BondState.bonded;
       addTearDown(device.dispose);
       final states = <BondState>[];
       device.bondStateStream.listen(states.add);
