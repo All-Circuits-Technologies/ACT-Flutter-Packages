@@ -153,9 +153,15 @@ dependencies:
 
 ```dart
 class AppGlobalManager extends AbsUiGlobalManager {
-  AppGlobalManager.create() : super.create();
+  static AppGlobalManager get instance {
+    if (AbsGlobalManager.instance == null) {
+      AbsGlobalManager.setInstance = AppGlobalManager._create();
+    }
 
-  static void createInstance() => AbsGlobalManager.setInstance = AppGlobalManager.create();
+    return AbsGlobalManager.instance! as AppGlobalManager;
+  }
+
+  AppGlobalManager._create() : super.create();
 
   @override
   Future<void> registerManagers() async {
@@ -169,14 +175,14 @@ class AppGlobalManager extends AbsUiGlobalManager {
 Each builder declares the managers it depends on, and the global manager initializes them in that
 order.
 
+The `instance` getter creates the global manager the first time it is read and sets it as the
+instance of `AbsGlobalManager`, which the shortcuts go through. The application reaches its global
+manager through this getter only: the global manager is not registered in `GetIt`.
+
 ### Start the application
 
 ```dart
-Future<void> main() async {
-  AppGlobalManager.createInstance();
-
-  await (AbsGlobalManager.instance! as AppGlobalManager).runActApp(const MyApp());
-}
+Future<void> main() async => AppGlobalManager.instance.runActApp(const MyApp());
 ```
 
 The first view calls `initInFirstView`, which is what gives the context to the managers which asked
@@ -185,7 +191,7 @@ for one:
 ```dart
 MaterialApp(
   builder: (context, child) {
-    globalGetIt().get<AppGlobalManager>().initInFirstView(context);
+    AppGlobalManager.instance.initInFirstView(context);
 
     return child!;
   },

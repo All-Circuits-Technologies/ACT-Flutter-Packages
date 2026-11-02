@@ -96,12 +96,11 @@ dependencies:
 
 ### Register the manager
 
-The configuration of the application takes `MixinWebsocketClientConfig`, then:
+The configuration of the application takes `MixinWebsocketClientConfig`, then the manager is
+registered in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
-globalManager.registerManagerAsync<WebsocketClientManager>(
-  WebsocketClientDerivedBuilder<AppConfigManager>(),
-);
+registerManagerAsync(WebsocketClientDerivedBuilder<AppConfigManager>());
 ```
 
 An application which wants its own parsers or its own protocols overrides the configuration of the

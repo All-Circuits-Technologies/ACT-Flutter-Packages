@@ -164,8 +164,10 @@ writing a handler has to depend on: this package only re-exports `JWT`.
 
 ### Register the manager and its handlers
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(JwtBuilder());
+registerManagerAsync(JwtBuilder());
 ```
 
 ```dart
