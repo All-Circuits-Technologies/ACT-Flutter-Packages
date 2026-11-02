@@ -135,8 +135,10 @@ application, otherwise their files are not shipped and no license is found in th
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(ActLicensesBuilder<AppConfigManager>());
+registerManagerAsync(ActLicensesBuilder<AppConfigManager>());
 ```
 
 Nothing else is needed: the licenses page of the application is the one of flutter, and the manager

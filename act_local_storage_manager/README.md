@@ -137,13 +137,27 @@ class AppConfigManager extends AbstractConfigManager with MixinStoresConf {
 
 ### Register the managers
 
+Register the managers in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance
-  ..register(AppPropertiesBuilder(AppPropertiesManager.new))
-  ..register(AppSecretsBuilder(() => AppSecretsManager(
-        propertiesGetter: globalGetIt().get<AppPropertiesManager>,
-        confGetter: globalGetIt().get<AppConfigManager>,
-      )));
+class AppPropertiesBuilder extends AbstractPropertiesBuilder<AppPropertiesManager> {
+  const AppPropertiesBuilder(super.factory);
+}
+
+class AppSecretsBuilder
+    extends AbstractSecretsBuilder<AppPropertiesManager, AppConfigManager, AppSecretsManager> {
+  const AppSecretsBuilder(super.factory);
+}
+
+registerManagerAsync(AppPropertiesBuilder(AppPropertiesManager.new));
+registerManagerAsync(
+  AppSecretsBuilder(
+    () => AppSecretsManager(
+      propertiesGetter: globalGetIt().get<AppPropertiesManager>,
+      confGetter: globalGetIt().get<AppConfigManager>,
+    ),
+  ),
+);
 ```
 
 ### Read and write a value

@@ -13,7 +13,7 @@ import 'package:act_music_player_manager/src/music_sound.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 /// Builder for creating the MusicPlayerManager
-class MusicPlayerBuilder<T> extends AbsLifeCycleFactory<MusicPlayerManager> {
+class MusicPlayerBuilder<T> extends AbsLifeCycleFactory<MusicPlayerManager<T>> {
   /// Class constructor with the class construction
   MusicPlayerBuilder({
     required String audioFilePrefix,
