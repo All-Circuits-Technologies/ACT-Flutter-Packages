@@ -64,6 +64,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 ///
 /// Every barcode of a capture which has neither a value nor bytes is ignored. The others are given
 /// to [validator], and those it accepts reach [onCodeFound]; without validator, all of them do.
+/// The [validator] and the [onCodeFound] used are the ones of the last build.
 class BarcodeScannerWidget extends StatelessWidget {
   /// Give the translated text of each message of the widget.
   final String Function(BuildContext context, BarcodeScannerText text) textGetter;
@@ -187,16 +188,25 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
       return SizedBox(
         width: width,
         height: height,
-        child: BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            final status = state.status;
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
+              listenWhen: (previous, current) => previous.status != current.status,
+              listener: (context, state) {
+                final status = state.status;
 
-            if (status != null) {
-              scanner.onStatusChanged?.call(status);
-            }
-          },
+                if (status != null) {
+                  scanner.onStatusChanged?.call(status);
+                }
+              },
+            ),
+            BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
+              listenWhen: (previous, current) => !identical(previous.capture, current.capture),
+              listener: (context, state) => _onCapture(state.capture),
+            ),
+          ],
           child: BlocBuilder<BarcodeScannerBloc, BarcodeScannerState>(
+            buildWhen: (previous, current) => previous.status != current.status,
             builder: (context, state) => switch (state.status) {
               null || BarcodeScannerStatus.waitingPermission => _ScannerText(
                 textGetter: scanner.textGetter,
@@ -213,7 +223,6 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
                 scanner: scanner,
                 controller: context.read<BarcodeScannerBloc>().controller,
                 status: status,
-                onDetect: _onDetect,
               ),
             },
           ),
@@ -222,13 +231,15 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
     },
   );
 
-  /// Give the barcodes read to the application, if they are accepted.
-  void _onDetect(BarcodeCapture capture) {
-    for (final barcode in capture.barcodes) {
-      if (barcode.rawValue == null && barcode.rawDecodedBytes == null) {
-        continue;
-      }
+  /// Give the barcodes of the [capture] to the application, if they are accepted.
+  ///
+  /// The callbacks are read from the current [scanner], so the ones of the last build are used.
+  void _onCapture(BarcodeCapture? capture) {
+    if (capture == null) {
+      return;
+    }
 
+    for (final barcode in capture.barcodes) {
       if (!(scanner.validator?.call(barcode) ?? true)) {
         continue;
       }
@@ -291,16 +302,8 @@ class _CameraView extends StatelessWidget {
   /// Hold the current status, given to the overlay.
   final BarcodeScannerStatus status;
 
-  /// Call when the camera reads barcodes.
-  final void Function(BarcodeCapture capture) onDetect;
-
   /// Create the camera view.
-  const _CameraView({
-    required this.scanner,
-    required this.controller,
-    required this.status,
-    required this.onDetect,
-  });
+  const _CameraView({required this.scanner, required this.controller, required this.status});
 
   /// Build the camera view, framed, with the overlay over it.
   @override
@@ -327,7 +330,6 @@ class _CameraView extends StatelessWidget {
             MobileScanner(
               controller: controller,
               fit: scanner.fit,
-              onDetect: onDetect,
               errorBuilder: (context, error) => _ScannerText(
                 textGetter: scanner.textGetter,
                 text: BarcodeScannerText.cameraError,

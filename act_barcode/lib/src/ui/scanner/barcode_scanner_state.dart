@@ -18,6 +18,12 @@ class BarcodeScannerState extends BlocStateForMixin<BarcodeScannerState> {
   /// It tells a camera which stopped from one which hasn't started yet.
   final bool hasCameraRun;
 
+  /// Hold the last capture of the camera, whose barcodes all have a value or bytes.
+  ///
+  /// Each capture is a new object, which the state compares by identity: two captures of the same
+  /// codes make two different states. It's null until the camera has read a barcode.
+  final BarcodeCapture? capture;
+
   /// Tell whether the [status] follows the camera, which is the case once the permission is
   /// granted.
   bool get isCameraStatus =>
@@ -27,10 +33,10 @@ class BarcodeScannerState extends BlocStateForMixin<BarcodeScannerState> {
       status == BarcodeScannerStatus.error;
 
   /// Create the state from all its values.
-  const BarcodeScannerState({required this.status, required this.hasCameraRun});
+  const BarcodeScannerState({required this.status, required this.hasCameraRun, this.capture});
 
   /// Create the state the bloc starts with, which has no status yet.
-  const BarcodeScannerState.init() : status = null, hasCameraRun = false;
+  const BarcodeScannerState.init() : status = null, hasCameraRun = false, capture = null;
 
   /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
@@ -38,9 +44,11 @@ class BarcodeScannerState extends BlocStateForMixin<BarcodeScannerState> {
     BarcodeScannerStatus? status,
     bool forceStatusValue = false,
     bool? hasCameraRun,
+    BarcodeCapture? capture,
   }) => BarcodeScannerState(
     status: forceStatusValue ? status : (status ?? this.status),
     hasCameraRun: hasCameraRun ?? this.hasCameraRun,
+    capture: capture ?? this.capture,
   );
 
   /// Copy the state to the one of a platform where the camera can't be read.
@@ -65,6 +73,10 @@ class BarcodeScannerState extends BlocStateForMixin<BarcodeScannerState> {
   /// Copy the state with the new state of the scanner controller.
   BarcodeScannerState copyWithControllerState({required MobileScannerState controllerState}) =>
       _copyFromController(controllerState: controllerState, hasCameraRun: hasCameraRun);
+
+  /// Copy the state with the last [capture] of the camera.
+  BarcodeScannerState copyWithCapture({required BarcodeCapture capture}) =>
+      copyWith(capture: capture);
 
   /// Copy the state, whose status comes from the [controllerState].
   ///
@@ -92,5 +104,5 @@ class BarcodeScannerState extends BlocStateForMixin<BarcodeScannerState> {
 
   /// {@macro act_flutter_utility.BlocStateForMixin.props}
   @override
-  List<Object?> get props => [...super.props, status, hasCameraRun];
+  List<Object?> get props => [...super.props, status, hasCameraRun, capture];
 }

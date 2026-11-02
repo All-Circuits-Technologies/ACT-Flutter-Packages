@@ -66,9 +66,10 @@ drawn by [flutter_svg](https://pub.dev/packages/flutter_svg).
 on [mobile_scanner](https://pub.dev/packages/mobile_scanner), which reads all the usual formats, and
 the reading is continuous: the application stops, pauses or starts the camera again through a
 `MobileScannerController`. The widget wraps a bloc, `BarcodeScannerBloc`, which is not exported: it
-holds the status of the scanner, follows the camera permission and the controller, and owns the
-controller lifecycle. The parameters, the size rules and the controller ownership are documented on
-the widget.
+holds the status of the scanner, follows the camera permission and the controller, receives the
+barcodes read, and owns the controller lifecycle. The widget gives the barcodes of the bloc to the
+`validator` and the `onCodeFound` of its last build. The parameters, the size rules and the
+controller ownership are documented on the widget.
 
 ### The status of the scanner
 
@@ -218,16 +219,18 @@ tests of that package.
 The bloc is tested on the platforms which are unsupported and ask nothing of the device, the
 permission which is already granted, the one which is asked for and then given, the one which is
 refused, the one which is asked for again after a refusal, the one which is granted or withdrawn in
-the settings, the values of the controller which give `scanning`, `stopped` and `error`, and the
-controller which is disposed only when the bloc created it. The state is tested on its copy methods
-(the status after the permission and after each value of the controller, and the `forceStatusValue`
-flag of `copyWith`), and the events on their equality.
+the settings, the values of the controller which give `scanning`, `stopped` and `error`, the
+barcodes read which are kept or dropped, the state each capture gets, and the controller which is
+disposed only when the bloc created it. The state is tested on its copy methods (the status after
+the permission and after each value of the controller, the capture, and the `forceStatusValue` flag
+of `copyWith`), and the events on their equality.
 
 The widget is tested on the permission asked of the device with the default settings, the text of
 each status, the button which asks the permission again, the codes which reach `onCodeFound`
-according to the validator, the status given to `onStatusChanged`, the overlay drawn over the
-camera, the sizes, the status which survives a new build, and the controller which is disposed only
-when the widget's bloc created it.
+according to the validator, the callbacks of the last build, the codes given after an error of the
+camera, the status given to `onStatusChanged`, the overlay drawn over the camera, the sizes, the
+status which survives a new build, and the controller which is disposed only when the widget's bloc
+created it.
 
 ```console
 > flutter analyze --fatal-infos .
