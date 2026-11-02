@@ -51,8 +51,8 @@ abstract class AbsTbServerReqManager extends AbsWithLifeCycle {
 
   /// Class constructor
   AbsTbServerReqManager({
-    required String logCategory,
-  }) : _logCategory = logCategory;
+    required this._logCategory,
+  });
 
   /// Init the service
   @override

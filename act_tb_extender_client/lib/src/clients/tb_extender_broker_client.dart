@@ -77,15 +77,13 @@ class TbExtenderBrokerClient extends AbsHttpClientManager<AbsHttpClientLogin?> {
 
   /// Class constructor
   ///
-  /// [baseUrlGetter] answers the base URL of the broker, and is called when the client is
+  /// [_baseUrlGetter] answers the base URL of the broker, and is called when the client is
   /// initialized so that the configuration of an application can be loaded after the client is
-  /// built. [requestTimeout] is the time the broker is given to answer each call.
+  /// built. [_requestTimeout] is the time the broker is given to answer each call.
   TbExtenderBrokerClient({
-    required String? Function() baseUrlGetter,
-    Duration requestTimeout = defaultRequestTimeout,
-  }) : _baseUrlGetter = baseUrlGetter,
-       _requestTimeout = requestTimeout,
-       _logsHelper = LogsHelper(category: _logsCategory);
+    required this._baseUrlGetter,
+    this._requestTimeout = defaultRequestTimeout,
+  }) : _logsHelper = LogsHelper(category: _logsCategory);
 
   /// Exchange the given [idpAccessToken] for a pair of ThingsBoard tokens.
   ///

@@ -98,12 +98,10 @@ class AwsIotNamedShadow {
   /// Class constructor
   AwsIotNamedShadow._({
     required this.topicNames,
-    required AwsIotMqttService mqttService,
-    required LogsHelper logsHelper,
+    required this._mqttService,
+    required this._logsHelper,
     required Map<ShadowTopicsEnum, AwsIotMqttSubWatcher> topicsStream,
-  })  : _mqttService = mqttService,
-        _logsHelper = logsHelper,
-        _topicWatchers = topicsStream,
+  })  : _topicWatchers = topicsStream,
         _state = AwsIotShadowStateModel.empty(),
         _reportedStateStreamController = StreamController.broadcast(),
         _desiredStateStreamController = StreamController.broadcast();

@@ -48,9 +48,8 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
 
   /// Class constructor
   TbStdAuthServerReqManager({
-    required AbsAuthManager Function() authGetter,
-  })  : _authGetter = authGetter,
-        super(logCategory: _stdAuthTbLogsCategory);
+    required this._authGetter,
+  })  : super(logCategory: _stdAuthTbLogsCategory);
 
   /// {@macro act_life_cycle.AbsWithLifeCycle.initLifeCycle}
   @override

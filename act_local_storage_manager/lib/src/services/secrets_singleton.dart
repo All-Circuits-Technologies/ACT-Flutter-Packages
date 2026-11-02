@@ -65,8 +65,8 @@ class SecretsSingleton extends AbsWithLifeCycle
 
   /// Private constructor
   SecretsSingleton._({
-    required FlutterSecureStorage secureStorage,
-  }) : _secureStorage = secureStorage;
+    required this._secureStorage,
+  });
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.store}
   @override

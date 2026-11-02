@@ -88,9 +88,6 @@ linter:
     # Avoid positional boolean parameters.
     avoid_positional_boolean_parameters: true
 
-    # Avoid private typedef functions.
-    avoid_private_typedef_functions: true
-
     # Avoid redundant argument values.
     avoid_redundant_argument_values: true
 

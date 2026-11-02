@@ -85,12 +85,11 @@ class InternetConnectivityManager extends AbsWithLifeCycle {
 
   /// Class constructor
   InternetConnectivityManager({
-    required MixinInternetTestConfig Function() configGetter,
+    required this._configGetter,
   })  : _connectionCtrl = StreamController<bool>.broadcast(),
         _connectionValue = true,
         _connectivity = Connectivity(),
         _lockUtility = LockUtility(),
-        _configGetter = configGetter,
         _restartableTimer = null,
         super();
 

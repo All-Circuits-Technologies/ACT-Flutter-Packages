@@ -49,11 +49,9 @@ class BleGattConnectService extends AbsWithLifeCycle {
   /// Class constructor
   BleGattConnectService({
     required FlutterReactiveBle flutterReactiveBle,
-    required BleManager bleManager,
-    required Mutex bleMutex,
+    required this._bleManager,
+    required this._bleMutex,
   })  : _flutterBle = flutterReactiveBle,
-        _bleManager = bleManager,
-        _bleMutex = bleMutex,
         _lastConnectedStreamCtrl = StreamController.broadcast();
 
   /// {@template act_ble_manager.BleGattConnectService.connect}

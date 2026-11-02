@@ -88,9 +88,8 @@ class BleGapService extends AbsWithLifeCycle {
   /// Ble manager constructor
   BleGapService({
     required FlutterReactiveBle flutterReactiveBle,
-    required BleManager bleManager,
+    required this._bleManager,
   })  : _flutterBle = flutterReactiveBle,
-        _bleManager = bleManager,
         _bleAccessMutex = Mutex(),
         _takeAndReleaseMutex = Mutex(),
         _scannedDevices = StreamController<BleScanUpdateStatus>.broadcast(),

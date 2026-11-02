@@ -60,11 +60,9 @@ class CacheService extends AbsWithLifeCycle {
 
   /// Constructor for [CacheService].
   CacheService._({
-    required CacheWithImagesManager cacheManager,
-    required LogsHelper logsHelper,
-  })  : _cacheManager = cacheManager,
-        _logsHelper = logsHelper,
-        super();
+    required this._cacheManager,
+    required this._logsHelper,
+  })  : super();
 
   /// Init the service
   @override

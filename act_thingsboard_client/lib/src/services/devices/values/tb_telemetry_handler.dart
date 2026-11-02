@@ -70,9 +70,8 @@ class TbTelemetryHandler {
 
   /// Class constructor
   TbTelemetryHandler({
-    required TbDeviceValues deviceValues,
-  })  : _deviceValues = deviceValues,
-        clientAttrKeys = [],
+    required this._deviceValues,
+  })  : clientAttrKeys = [],
         sharedAttrKeys = [],
         serverAttrKeys = [],
         timeSeriesKeys = [],

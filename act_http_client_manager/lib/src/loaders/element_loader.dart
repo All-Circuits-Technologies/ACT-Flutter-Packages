@@ -14,9 +14,8 @@ class ElementLoader<T> extends AbsElementLoader<T> {
 
   /// Class constructor
   ElementLoader({
-    required ElementLoaderCallback<T> callback,
-  })  : _callback = callback,
-        elementsSizeReallyUsed = 0;
+    required this._callback,
+  })  : elementsSizeReallyUsed = 0;
 
   /// Load the elements from provider
   ///

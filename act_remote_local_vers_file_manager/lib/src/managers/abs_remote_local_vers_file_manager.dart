@@ -60,9 +60,8 @@ abstract class AbsRemoteLocalVersFileManager<D extends MixinRemoteLocalVersFileT
 
   /// Class constructor
   AbsRemoteLocalVersFileManager({
-    required MixinRemoteLocalVersFileConfig<D> Function() configManagerGetter,
-  })  : _configManagerGetter = configManagerGetter,
-        super();
+    required this._configManagerGetter,
+  })  : super();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

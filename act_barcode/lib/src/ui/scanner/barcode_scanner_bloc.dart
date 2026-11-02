@@ -56,14 +56,12 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
   /// When the application gives no [controller], the bloc creates one and disposes it.
   BarcodeScannerBloc({
     MobileScannerController? controller,
-    bool displayContextualIfNeeded = true,
-    bool isAcceptanceCompulsory = false,
+    this._displayContextualIfNeeded = true,
+    this._isAcceptanceCompulsory = false,
   }) : _logsHelper = LogsHelper(category: _loggerCategory),
        _controller = controller ?? MobileScannerController(),
        _ownsController = controller == null,
        _monitor = _createMonitor(),
-       _displayContextualIfNeeded = displayContextualIfNeeded,
-       _isAcceptanceCompulsory = isAcceptanceCompulsory,
        super(const BarcodeScannerState.init());
 
   /// {@macro act_flutter_utility.BlocForMixin.registerMixinEvents}

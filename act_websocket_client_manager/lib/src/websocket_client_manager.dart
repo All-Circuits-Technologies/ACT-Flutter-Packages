@@ -94,10 +94,9 @@ class WebsocketClientManager extends AbsWithLifeCycle {
 
   /// Class constructor
   WebsocketClientManager({
-    required MixinWebsocketClientConfig Function() configGetter,
+    required this._configGetter,
     this.loggerCategory = defaultLoggerCategory,
-  }) : _configGetter = configGetter,
-       _connectionStatus = WsConnectionStatus.disconnected,
+  }) : _connectionStatus = WsConnectionStatus.disconnected,
        _connectionMutex = Mutex(),
        _connectionStatusCtrl = StreamController.broadcast(),
        _receivedMsgCtrl = StreamController.broadcast();

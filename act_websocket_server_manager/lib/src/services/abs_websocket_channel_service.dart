@@ -49,13 +49,10 @@ abstract class AbsWebsocketChannelService extends AbsWithLifeCycle
 
   /// Class constructor
   AbsWebsocketChannelService({
-    required WebSocketChannel webSocket,
-    required HttpLoggingManager httpLoggingManager,
-    required void Function(String clientUuid) onClose,
-  }) : _webSocket = webSocket,
-       _httpLoggingManager = httpLoggingManager,
-       clientUuid = const Uuid().v1(),
-       _onClose = onClose,
+    required this._webSocket,
+    required this._httpLoggingManager,
+    required this._onClose,
+  }) : clientUuid = const Uuid().v1(),
        isClosed = false;
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}

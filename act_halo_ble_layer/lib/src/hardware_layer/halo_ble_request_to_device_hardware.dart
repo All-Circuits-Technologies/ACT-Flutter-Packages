@@ -20,8 +20,8 @@ class HaloBleRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware
 
   /// Class constructor
   HaloBleRequestToDeviceHardware({
-    required HaloBleCompanion bleCompanion,
-  }) : _bleCompanion = bleCompanion;
+    required this._bleCompanion,
+  });
 
   /// This is the method to override in order to define the implementation of the calling function
   /// feature.

@@ -72,15 +72,13 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
 
   /// Class constructor
   AbstractConsentService({
-    required LogsHelper logsHelper,
+    required this._logsHelper,
     required List<T> optionsList,
-    required List<StreamObserver> observers,
-  })  : _logsHelper = logsHelper,
-        _optionKeys = optionsList,
+    required this._observers,
+  })  : _optionKeys = optionsList,
         _stateController = StreamController<ConsentStateEnum>.broadcast(),
         _loadTextWidgetMutex = Mutex(),
         _stateMutex = Mutex(),
-        _observers = observers,
         _observersSubs = [],
         super();
 

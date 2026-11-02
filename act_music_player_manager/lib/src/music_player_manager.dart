@@ -46,9 +46,8 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
   /// Class constructor
   MusicPlayerManager({
     required this.audioFilePrefix,
-    required AbstractMusicSoundHelper<T> musicSoundsHelper,
-  })  : _musicSoundsHelper = musicSoundsHelper,
-        _audioPlayers = {},
+    required this._musicSoundsHelper,
+  })  : _audioPlayers = {},
         super();
 
   /// The [initLifeCycle] method has to be called to initialize the class

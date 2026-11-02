@@ -60,9 +60,8 @@ class BleManager extends AbstractPeriphManager {
 
   /// [BleManager] constructor
   BleManager({
-    required MixinBleConf Function() confGetter,
+    required this._confGetter,
   })  : _flutterBle = FlutterReactiveBle(),
-        _confGetter = confGetter,
         _bleReInitCtrl = StreamController<void>.broadcast() {
     bleGapService = BleGapService(bleManager: this, flutterReactiveBle: _flutterBle);
     bleGattService = BleGattService(bleManager: this, flutterReactiveBle: _flutterBle);

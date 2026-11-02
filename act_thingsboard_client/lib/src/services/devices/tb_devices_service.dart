@@ -28,10 +28,9 @@ class TbDevicesService extends AbsWithLifeCycle {
 
   /// Class constructor
   TbDevicesService({
-    required AbsTbServerReqManager requestManager,
+    required this._requestManager,
     required LogsHelper logsHelper,
-  })  : _requestManager = requestManager,
-        _deviceValues = {},
+  })  : _deviceValues = {},
         _logsHelper = logsHelper.createSubLogger(subCategory: _tbLogsCategory);
 
   /// The method creates and returns a [TbTelemetryHandler] linked to the [deviceId] given

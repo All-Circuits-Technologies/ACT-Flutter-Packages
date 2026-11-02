@@ -60,10 +60,9 @@ class ConsoleExternalLogger
   /// Class constructor
   ConsoleExternalLogger._({
     required LogsLevel minLevel,
-    required MixinCslLoggerConfig Function()? configGetter,
+    required this._configGetter,
   }) : _logFilter = DefaultLogFilter(minLevel: minLevel),
-       _logPrinter = DefaultLogPrinter(),
-       _configGetter = configGetter {
+       _logPrinter = DefaultLogPrinter() {
     _logger = Logger(filter: _logFilter, printer: _logPrinter, output: ConsoleOutput());
   }
 

@@ -29,11 +29,9 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
   /// Class constructor
   BleGattCharacteristicService({
     required FlutterReactiveBle flutterReactiveBle,
-    required BleManager bleManager,
-    required Mutex bleMutex,
-  })  : _bleMutex = bleMutex,
-        _flutterBle = flutterReactiveBle,
-        _bleManager = bleManager;
+    required this._bleManager,
+    required this._bleMutex,
+  })  : _flutterBle = flutterReactiveBle;
 
   /// {@template act_ble_manager.BleGattCharacteristicService.writeBleCharacteristic}
   /// Write [values] to characteristic from [uuid]

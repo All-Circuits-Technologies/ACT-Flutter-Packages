@@ -25,8 +25,8 @@ class BleGattFindDeviceService extends AbsWithLifeCycle {
 
   /// Class constructor
   BleGattFindDeviceService({
-    required BleManager bleManager,
-  }) : _bleManager = bleManager;
+    required this._bleManager,
+  });
 
   /// Called at the service initialization
   @override

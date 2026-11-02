@@ -72,8 +72,8 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
 
   /// Private constructor
   PropertiesSingleton._({
-    required SharedPreferencesAsync prefs,
-  }) : _prefs = prefs;
+    required this._prefs,
+  });
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.load}
   @override

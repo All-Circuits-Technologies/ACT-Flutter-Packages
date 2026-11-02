@@ -40,12 +40,10 @@ class FirebaseCrashService extends AbsFirebaseService {
 
   /// Class constructor
   FirebaseCrashService({
-    required MixinFirebaseCrashConf confManager,
-    FirebaseCrashDebugConfig? crashDebugConfig,
-  })  : _confManager = confManager,
-        _enableDataCollection = firebase_constants.defaultEnableCrashLogs,
-        _enableAutoDataCollection = firebase_constants.defaultEnableAutoCrashLogs,
-        _crashDebugConfig = crashDebugConfig;
+    required this._confManager,
+    this._crashDebugConfig,
+  })  : _enableDataCollection = firebase_constants.defaultEnableCrashLogs,
+        _enableAutoDataCollection = firebase_constants.defaultEnableAutoCrashLogs;
 
   /// Called at the service initialization
   @override

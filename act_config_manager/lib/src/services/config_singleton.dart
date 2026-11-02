@@ -54,8 +54,7 @@ class ConfigSingleton extends AbsWithLifeCycle {
   }
 
   /// Private class constructor
-  ConfigSingleton._({required this.logger, required Map<String, dynamic> configs})
-      : _configs = configs;
+  ConfigSingleton._({required this.logger, required this._configs});
 
   /// Load value from config variable.
   ///

@@ -98,7 +98,7 @@ class FakeAuthService with MixinAuthService {
   AuthStatus _status;
 
   /// Class constructor
-  FakeAuthService({AuthStatus status = AuthStatus.signedOut}) : _status = status;
+  FakeAuthService({this._status = AuthStatus.signedOut});
 
   /// {@macro act_shared_auth.MixinAuthService.authStatus}
   @override

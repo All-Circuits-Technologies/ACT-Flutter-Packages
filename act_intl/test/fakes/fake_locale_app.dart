@@ -31,9 +31,8 @@ class FakeLocaleConfig extends AbstractConfigManager with MixinLocaleConfig {
   }
 
   /// Class constructor
-  FakeLocaleConfig({Environment env = Environment.development})
-    : _env = env,
-      super(logger: const SilentLogger());
+  FakeLocaleConfig({this._env = Environment.development})
+    : super(logger: const SilentLogger());
 }
 
 /// The properties of the application under test.

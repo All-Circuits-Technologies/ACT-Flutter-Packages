@@ -54,7 +54,7 @@ abstract class ATbTelemetry<T> {
 
   /// Class constructor
   ATbTelemetry({
-    required AbsTbServerReqManager requestManager,
+    required this._requestManager,
     required LogsHelper logsHelper,
     required String telemetryName,
     required this.deviceId,
@@ -62,8 +62,7 @@ abstract class ATbTelemetry<T> {
         _currentlySubscribed = [],
         _updateMutex = Mutex(),
         _logsHelper = logsHelper.createSubLogger(subCategory: telemetryName),
-        _updatedTelemetry = StreamController.broadcast(),
-        _requestManager = requestManager;
+        _updatedTelemetry = StreamController.broadcast();
 
   /// Get the telemetry value linked to the given key. If one of the elements is already listened,
   /// this element won't be subscribed twice.

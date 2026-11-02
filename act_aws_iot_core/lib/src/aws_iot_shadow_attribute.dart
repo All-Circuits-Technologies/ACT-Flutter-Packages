@@ -62,16 +62,14 @@ class AwsIotShadowAttribute<T> {
   /// [castValue] can be set to specify how to cast the value from the json value to the attribute
   /// type. If not set, the default cast function will be used (which can handle primitive types).
   AwsIotShadowAttribute({
-    required String attributeName,
+    required this._attributeName,
     required AwsIotNamedShadow shadow,
     // We use the dynamic type here because we store the data as dynamic and cast its value to what we
     // expect to have.
     // ignore: avoid_annotating_with_dynamic
     T? Function(dynamic jsonValue)? castValue,
-    bool writable = true,
+    this._writable = true,
   })  : _shadow = shadow,
-        _attributeName = attributeName,
-        _writable = writable,
         _castValue = castValue ?? _castPrimitiveType<T>,
         _desiredStreamController = StreamController<T>.broadcast(),
         _reportedStreamController = StreamController<T>.broadcast(),

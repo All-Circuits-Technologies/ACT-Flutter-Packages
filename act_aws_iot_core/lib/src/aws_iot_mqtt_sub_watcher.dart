@@ -43,12 +43,10 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
 
   /// Class contrusctor
   AwsIotMqttSubWatcher({
-    required String topic,
-    required AwsIotMqttService awsIotMqttService,
+    required this._topic,
+    required this._awsIotMqttService,
   })
-      : _topic = topic,
-        _awsIotMqttService = awsIotMqttService,
-        _onMsgController = StreamController.broadcast(),
+      : _onMsgController = StreamController.broadcast(),
         _onSubscriptionEventController = StreamController.broadcast(),
         _subCompleter = Completer(),
         _unsubCompleter = Completer();

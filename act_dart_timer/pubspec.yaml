@@ -8,8 +8,8 @@ description: This package provides a way to create timers that can be restarted
 publish_to: none
 
 environment:
-  sdk: ^3.11.1
-  flutter: ">=3.29.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
