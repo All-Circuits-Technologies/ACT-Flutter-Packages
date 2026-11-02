@@ -5,7 +5,7 @@
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_flutter_utility/src/models/text_span_config.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Helpful class to manage text
 class TextUtility {

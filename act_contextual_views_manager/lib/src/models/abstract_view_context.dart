@@ -4,7 +4,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// This represents the  context of the abstract view
 /// To have an [uniqueKey] is important to be able to differentiate the views

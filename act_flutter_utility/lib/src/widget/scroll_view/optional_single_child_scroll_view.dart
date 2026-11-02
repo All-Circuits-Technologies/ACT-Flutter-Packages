@@ -4,7 +4,7 @@
 
 import 'package:act_flutter_utility/src/types/single_child_scroll_view_type.dart';
 import 'package:act_flutter_utility/src/widget/scroll_view/single_expandable_child_scroll_view.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This widgets optionally embeds child within a simple or more complex single child scroll view
 class OptionalSingleChildScrollView extends StatelessWidget {

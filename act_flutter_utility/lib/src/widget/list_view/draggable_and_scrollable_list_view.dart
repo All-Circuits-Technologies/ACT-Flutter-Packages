@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/src/widget/list_view/scrollable_reorderable_list_view.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This displays a draggable list view.
 ///

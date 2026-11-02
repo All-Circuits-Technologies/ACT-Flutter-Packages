@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Contains the theme to use in the action error retry widget
 class ActionErrorRetryTheme extends Equatable {

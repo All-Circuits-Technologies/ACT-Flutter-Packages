@@ -14,7 +14,7 @@ import 'package:act_remote_storage_manager/src/models/storage_page.dart';
 import 'package:act_remote_storage_manager/src/services/cache_service.dart';
 import 'package:act_remote_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_remote_storage_manager/src/types/storage_request_result.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// Abstract class for a storage manager builder. It specifies the other managers that the storage
 /// manager depends on.

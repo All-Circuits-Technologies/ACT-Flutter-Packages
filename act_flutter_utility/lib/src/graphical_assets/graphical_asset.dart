@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This abstract class serves as a type and an interface for graphical assets
 abstract interface class GraphicalAsset {

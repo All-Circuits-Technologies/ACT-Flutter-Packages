@@ -11,7 +11,7 @@ import 'package:act_location_manager/src/models/location_init_config.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_permissions_manager/act_permissions_manager.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 
 /// Manager builder

@@ -8,7 +8,7 @@ import 'dart:async';
 import 'package:act_contextual_views_manager/act_contextual_views_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_router_manager/act_router_manager.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// This method represents an action the contextual view has to call
 ///

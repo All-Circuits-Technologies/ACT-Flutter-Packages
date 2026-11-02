@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This widget allows to have expanded child in a single child scroll view: the [child] widget
 /// expanded to the max and if the view is smaller than the child, the child will be scrollable.

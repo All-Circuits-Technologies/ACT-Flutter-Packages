@@ -11,7 +11,6 @@ import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_websocket_client_manager/src/mixins/mixin_websocket_client_config.dart';
 import 'package:act_websocket_client_manager/src/models/ws_client_manager_config.dart';
 import 'package:act_websocket_client_manager/src/types/ws_connection_status.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:mutex/mutex.dart';
 import 'package:web_socket_channel/status.dart' as status;
