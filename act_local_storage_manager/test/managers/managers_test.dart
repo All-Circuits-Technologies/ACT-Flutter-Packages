@@ -19,7 +19,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 const _configPath = "assets/config/";
 
 /// The properties of the application under test.
-class _PropertiesManager extends AbstractPropertiesManager {}
+class _PropertiesManager extends AbstractPropertiesManager;
 
 /// The builder of the properties of the application under test.
 class _PropertiesBuilder extends AbstractPropertiesBuilder<_PropertiesManager> {

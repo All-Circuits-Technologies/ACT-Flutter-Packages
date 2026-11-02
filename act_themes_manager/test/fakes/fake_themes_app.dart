@@ -72,7 +72,7 @@ class FakeThemesConfig extends AbstractConfigManager with MixinThemesConfig {
 }
 
 /// The properties of the application under test.
-class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties {}
+class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties;
 
 /// The state of the page of the application under test.
 class FakeThemesState extends BlocStateForMixin<FakeThemesState>

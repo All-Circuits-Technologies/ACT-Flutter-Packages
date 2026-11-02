@@ -50,7 +50,7 @@ class FakeTbExtenderConfig extends AbstractConfigManager
 }
 
 /// The properties of the application under test.
-class FakeTbExtenderProperties extends AbstractPropertiesManager {}
+class FakeTbExtenderProperties extends AbstractPropertiesManager;
 
 /// The secrets of that application, which hold its two sets of tokens.
 class FakeTbExtenderSecrets extends AbstractSecretsManager

@@ -15,7 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'fakes/fake_storage.dart';
 
 /// An error the bucket fails with which is none of the ones the service tells apart.
-class _AFailure implements Exception {}
+class _AFailure implements Exception;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

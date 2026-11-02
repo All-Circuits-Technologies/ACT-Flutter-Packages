@@ -6,7 +6,7 @@ import 'package:act_foundation/act_foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A class which only takes the default dispose of the mixin.
-class _PlainService with MixinWithLifeCycleDispose {}
+class _PlainService with MixinWithLifeCycleDispose;
 
 /// A class which adds its own clean up before the one of the mixin.
 class _ServiceWithCleanUp with MixinWithLifeCycleDispose {

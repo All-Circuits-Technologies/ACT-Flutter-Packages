@@ -158,7 +158,7 @@ class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
 }
 
 /// The requests a device makes of an application under test.
-class FakeRequestFromDeviceHardware extends AbstractHaloRequestFromDeviceHardware {}
+class FakeRequestFromDeviceHardware extends AbstractHaloRequestFromDeviceHardware;
 
 /// One way of reaching the device of an application under test.
 class FakeHaloHardware extends AbstractHaloHardware {

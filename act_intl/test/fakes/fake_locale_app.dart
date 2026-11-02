@@ -35,4 +35,4 @@ class FakeLocaleConfig extends AbstractConfigManager with MixinLocaleConfig {
 }
 
 /// The properties of the application under test.
-class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties {}
+class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties;

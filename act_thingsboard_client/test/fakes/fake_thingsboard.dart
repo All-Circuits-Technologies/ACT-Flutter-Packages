@@ -212,7 +212,7 @@ class FakeTbClient extends Mock implements ThingsboardClient {
 }
 
 /// The service of the devices of the server, which answers what the test decided.
-class FakeDeviceService extends Mock implements DeviceService {}
+class FakeDeviceService extends Mock implements DeviceService;
 
 /// A manager of the requests to the server which answers what the test decided.
 ///

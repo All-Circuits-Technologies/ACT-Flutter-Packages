@@ -18,7 +18,7 @@ class FakeAuthConfig extends AbstractConfigManager with MixinStoresConf, MixinAu
 }
 
 /// The properties of the application under test, which hold the tokens in clear text.
-class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecuredSecrets {}
+class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecuredSecrets;
 
 /// The secrets of the application under test, which hold the tokens where the platform keeps its
 /// secrets.

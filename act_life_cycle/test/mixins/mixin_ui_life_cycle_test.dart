@@ -7,7 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A manager which only takes the default UI life cycle of the mixin.
-class _PlainManager extends AbsWithLifeCycle with MixinUiLifeCycle {}
+class _PlainManager extends AbsWithLifeCycle with MixinUiLifeCycle;
 
 /// A manager which records the order of the steps of its whole life cycle.
 class _RecordingManager extends AbsWithLifeCycle with MixinUiLifeCycle {

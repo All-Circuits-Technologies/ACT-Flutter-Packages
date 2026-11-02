@@ -21,7 +21,7 @@ class FakeLocaleConfig extends AbstractConfigManager with MixinLocaleConfig {
 }
 
 /// The properties of the application under test, which keep the locale the user chose.
-class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties {}
+class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties;
 
 /// The locales of the application under test.
 ///
