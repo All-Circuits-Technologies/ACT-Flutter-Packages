@@ -4,8 +4,8 @@
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_flutter_utility/src/widget/banner_info/banner_info_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Builds a banner of the given [type], whose text says which one it is.
 BannerInformationModel _aBanner(BannerInformationType type) => BannerInformationModel(

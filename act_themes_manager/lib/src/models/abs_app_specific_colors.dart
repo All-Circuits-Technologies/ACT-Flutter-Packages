@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This class is used to define the specific colors of the application that are not defined in the
 /// color scheme of the theme.

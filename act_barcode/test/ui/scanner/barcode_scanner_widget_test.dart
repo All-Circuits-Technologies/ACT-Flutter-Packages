@@ -10,8 +10,8 @@ import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_permissions_manager/act_permissions_manager.dart';
 import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart' show MobileScanner;
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 

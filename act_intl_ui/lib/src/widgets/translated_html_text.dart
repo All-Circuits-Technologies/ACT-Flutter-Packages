@@ -7,8 +7,8 @@
 import 'dart:async';
 
 import 'package:act_intl/act_intl.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The widget loads and display an asset file which contains translated text
 ///

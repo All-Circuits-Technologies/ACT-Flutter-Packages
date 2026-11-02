@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The tab bar of a page, built the way an application builds one.
 class FakeTabBar extends AbsSimpleTabBar<FakeTabBar> {

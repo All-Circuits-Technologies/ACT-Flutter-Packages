@@ -4,7 +4,7 @@
 
 import 'package:act_themes_manager/src/models/abs_app_specific_colors.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This class is used to define the colors of the theme of the application. It contains the color
 /// scheme of the theme and the specific colors of the application that are not defined in the color

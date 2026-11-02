@@ -40,6 +40,9 @@ dependencies:
   # SVG image widget
   flutter_svg: ^2.2.0
 
+  # Material Design widgets, out of the Flutter SDK
+  material_ui: ^1.9.0
+
   # A Flutter plugin for launching a URL.
   # TODO(brolandeau): when updating the lib, verify if we still need to override `url_launcher_android`
   url_launcher: ^6.3.1

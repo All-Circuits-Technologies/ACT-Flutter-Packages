@@ -20,6 +20,9 @@ dependencies:
   # Implement the BLoC (Business Logic Component) design pattern
   flutter_bloc: ^9.1.1
 
+  # Material Design widgets, out of the Flutter SDK
+  material_ui: ^1.9.0
+
   act_config_manager:
     path: ../act_config_manager
 

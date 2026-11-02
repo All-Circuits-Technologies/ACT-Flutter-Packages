@@ -5,8 +5,8 @@
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The duration of the fading of the overlay, in and out.
 const _fadeDuration = Duration(milliseconds: 250);

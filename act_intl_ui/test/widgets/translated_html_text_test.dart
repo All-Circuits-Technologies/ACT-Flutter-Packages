@@ -4,10 +4,9 @@
 
 import 'package:act_intl_ui/act_intl_ui.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../fakes/fake_intl_ui.dart';
 

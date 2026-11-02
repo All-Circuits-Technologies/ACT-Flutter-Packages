@@ -7,8 +7,8 @@ import 'dart:math' as math;
 import 'package:act_flutter_utility/src/models/banner_information_model.dart';
 import 'package:act_flutter_utility/src/widget/banner_info/banner_info_bloc.dart';
 import 'package:act_flutter_utility/src/widget/banner_info/banner_info_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Useful widget to display information banners above the [child] widget given
 ///

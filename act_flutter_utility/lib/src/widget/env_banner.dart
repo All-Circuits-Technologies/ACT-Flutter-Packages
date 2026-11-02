@@ -5,7 +5,7 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This class is useful to add banner with the current environment used for the app.
 ///
