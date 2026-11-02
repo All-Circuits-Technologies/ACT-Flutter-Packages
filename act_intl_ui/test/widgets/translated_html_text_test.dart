@@ -4,7 +4,6 @@
 
 import 'package:act_intl_ui/act_intl_ui.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -91,7 +90,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(SingleChildScrollView), findsOneWidget);
-      expect(find.byType(CupertinoScrollbar), findsOneWidget);
+      expect(find.byType(Scrollbar), findsOneWidget);
     });
   });
 }
