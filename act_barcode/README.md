@@ -71,6 +71,11 @@ barcodes read, and owns the controller lifecycle. The widget gives the barcodes 
 `validator` and the `onCodeFound` of its last build. The parameters, the size rules and the
 controller ownership are documented on the widget.
 
+The controller the widget creates, when the application gives none, uses
+`DetectionSpeed.noDuplicates`: a code held in front of the camera is reported once, and the same
+code is reported again only after another code was read or the camera restarted. An application
+which wants every detection gives its own controller.
+
 ### The status of the scanner
 
 The bloc holds the status of the scanner and what the widget shows follows it. The status is empty
@@ -220,10 +225,11 @@ The bloc is tested on the platforms which are unsupported and ask nothing of the
 permission which is already granted, the one which is asked for and then given, the one which is
 refused, the one which is asked for again after a refusal, the one which is granted or withdrawn in
 the settings, the values of the controller which give `scanning`, `stopped` and `error`, the
-barcodes read which are kept or dropped, the state each capture gets, and the controller which is
-disposed only when the bloc created it. The state is tested on its copy methods (the status after
-the permission and after each value of the controller, the capture, and the `forceStatusValue` flag
-of `copyWith`), and the events on their equality.
+barcodes read which are kept or dropped, the state each capture gets, the controller it creates,
+which reports a code once, and the controller which is disposed only when the bloc created it. The
+state is tested on its copy methods (the status after the permission and after each value of the
+controller, the capture, and the `forceStatusValue` flag of `copyWith`), and the events on their
+equality.
 
 The widget is tested on the permission asked of the device with the default settings, the text of
 each status, the button which asks the permission again, the codes which reach `onCodeFound`

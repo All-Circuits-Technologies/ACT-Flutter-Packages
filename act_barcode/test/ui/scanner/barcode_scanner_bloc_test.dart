@@ -315,6 +315,13 @@ void main() {
       expect(statuses, [BarcodeScannerStatus.waitingPermission, BarcodeScannerStatus.starting]);
     });
 
+    test("creates a controller which reports a code held in front of the camera once", () async {
+      registerPlatform(FakePlatformManager.android(version: 34));
+      final bloc = aBloc([], withOwnController: true);
+
+      expect(bloc.controller.detectionSpeed, DetectionSpeed.noDuplicates);
+    });
+
     test("disposes the controller it created, and not the one it was given", () async {
       registerPlatform(FakePlatformManager.android(version: 34));
       permissions.statuses[Permission.camera] = PermissionStatus.granted;

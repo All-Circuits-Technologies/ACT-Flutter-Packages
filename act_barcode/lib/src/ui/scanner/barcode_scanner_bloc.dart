@@ -56,13 +56,15 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
 
   /// Create the bloc.
   ///
-  /// When the application gives no [controller], the bloc creates one and disposes it.
+  /// When the application gives no [controller], the bloc creates one, which reports a code held in
+  /// front of the camera once (`DetectionSpeed.noDuplicates`), and disposes it.
   BarcodeScannerBloc({
     MobileScannerController? controller,
     bool displayContextualIfNeeded = false,
     bool isAcceptanceCompulsory = false,
   }) : _logsHelper = LogsHelper(category: _loggerCategory),
-       _controller = controller ?? MobileScannerController(),
+       _controller =
+           controller ?? MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates),
        _ownsController = controller == null,
        _monitor = _createMonitor(),
        _displayContextualIfNeeded = displayContextualIfNeeded,

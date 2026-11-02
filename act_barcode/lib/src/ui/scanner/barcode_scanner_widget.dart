@@ -54,10 +54,13 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 ///
 /// ## Controller
 ///
-/// Without [controller], the widget creates a `MobileScannerController()` without any format
-/// filter, which reads all the formats, and disposes it with the widget. An application which
-/// restricts the formats (`MobileScannerController(formats: ...)`) or drives the camera gives its
-/// own controller: it keeps its ownership, and the widget never disposes it. The controller is read
+/// Without [controller], the widget creates a `MobileScannerController` without any format
+/// filter, which reads all the formats, and disposes it with the widget. This controller uses
+/// `DetectionSpeed.noDuplicates`: a code held in front of the camera is reported once, and the same
+/// code is reported again only after another code was read or the camera restarted. An application
+/// which restricts the formats (`MobileScannerController(formats: ...)`), wants every detection or
+/// drives the camera gives its own controller: it keeps its ownership, and the widget never
+/// disposes it. The controller is read
 /// when the widget is first displayed: giving another one later has no effect.
 ///
 /// ## Codes
@@ -79,8 +82,9 @@ class BarcodeScannerWidget extends StatelessWidget {
 
   /// Give the controller of the application, which drives the camera.
   ///
-  /// When null, the widget creates a controller which reads all the formats, and disposes it. A
-  /// controller given by the application is never disposed by the widget.
+  /// When null, the widget creates a controller which reads all the formats and reports a code held
+  /// in front of the camera once, and disposes it. A controller given by the application is never
+  /// disposed by the widget.
   final MobileScannerController? controller;
 
   /// Set the width of the widget.
