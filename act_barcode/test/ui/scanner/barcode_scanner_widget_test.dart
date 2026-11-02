@@ -60,7 +60,6 @@ void main() {
             height: height,
             overlayBuilder: overlayBuilder,
             onStatusChanged: onStatusChanged,
-            displayContextualIfNeeded: false,
           ),
         ),
       ),
@@ -150,6 +149,21 @@ void main() {
       expect(permissions.requested, [Permission.camera, Permission.camera]);
       expect(find.byType(MobileScanner), findsOneWidget);
       expect(find.text(BarcodeScannerText.permissionDenied.name), findsNothing);
+    });
+
+    testWidgets("asks the permission of the device with the default settings", (tester) async {
+      // No ContextualViewsManager is registered: the pages of the application aren't used
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BarcodeScannerWidget(textGetter: _text, onCodeFound: (_) {}),
+          ),
+        ),
+      );
+      await settle(tester);
+
+      expect(permissions.requested, [Permission.camera]);
+      expect(find.byType(MobileScanner), findsOneWidget);
     });
 
     testWidgets("shows the camera and scans once the permission is granted", (tester) async {

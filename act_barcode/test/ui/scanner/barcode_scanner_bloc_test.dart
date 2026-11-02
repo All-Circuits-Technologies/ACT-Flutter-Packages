@@ -42,10 +42,7 @@ void main() {
   /// The statuses it emits are added to [statuses]. The bloc uses the controller of the test,
   /// unless [withOwnController] is true.
   BarcodeScannerBloc aBloc(List<BarcodeScannerStatus> statuses, {bool withOwnController = false}) {
-    final bloc = BarcodeScannerBloc(
-      controller: withOwnController ? null : controller,
-      displayContextualIfNeeded: false,
-    );
+    final bloc = BarcodeScannerBloc(controller: withOwnController ? null : controller);
     bloc.stream.listen((state) {
       final status = state.status;
 

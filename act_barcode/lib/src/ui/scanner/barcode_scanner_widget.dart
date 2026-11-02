@@ -22,10 +22,12 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 /// ## Camera permission
 ///
 /// The camera permission is asked through `act_permissions_manager`, as soon as the widget is
-/// displayed. The pages the application registered to explain the permission are displayed first,
-/// unless [displayContextualIfNeeded] is `false`. The widget reads the `PlatformManager`, the
+/// displayed. By default, it's asked of the device directly, and a permanent refusal opens the
+/// settings. With [displayContextualIfNeeded] at `true`, the pages the application registered to
+/// explain the permission are displayed first. The widget reads the `PlatformManager`, the
 /// `AppLifeCycleManager` and the `PermissionsManager` from the global manager of the application,
-/// so these three have to be registered. The permission is followed afterwards: one granted in the
+/// so these three have to be registered, and the `ContextualViewsManager` too when
+/// [displayContextualIfNeeded] is `true`. The permission is followed afterwards: one granted in the
 /// settings starts a denied scanner, and one withdrawn denies a running scanner.
 ///
 /// ## Statuses
@@ -115,9 +117,10 @@ class BarcodeScannerWidget extends StatelessWidget {
 
   /// Tell whether the pages of the application explain the camera permission before it is asked.
   ///
-  /// It's transmitted to `PermissionMonitorService.verifyAndAskBeforeAction`. An application which
-  /// has registered no page for the camera passes `false`: the permission is then asked of the
-  /// device directly, and a permanent refusal opens the settings.
+  /// It's transmitted to `PermissionMonitorService.verifyAndAskBeforeAction`. When `false`, the
+  /// permission is asked of the device directly, and a permanent refusal opens the settings. An
+  /// application which registered the pages of `PermissionElement.camera` in the
+  /// `ContextualViewsManager` passes `true` to display them.
   final bool displayContextualIfNeeded;
 
   /// Tell whether the user has to accept the camera permission.
@@ -139,7 +142,7 @@ class BarcodeScannerWidget extends StatelessWidget {
     this.frameRadius = 0,
     this.overlayBuilder,
     this.onStatusChanged,
-    this.displayContextualIfNeeded = true,
+    this.displayContextualIfNeeded = false,
     this.isAcceptanceCompulsory = false,
     super.key,
   });

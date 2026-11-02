@@ -56,7 +56,7 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
   /// When the application gives no [controller], the bloc creates one and disposes it.
   BarcodeScannerBloc({
     MobileScannerController? controller,
-    bool displayContextualIfNeeded = true,
+    bool displayContextualIfNeeded = false,
     bool isAcceptanceCompulsory = false,
   }) : _logsHelper = LogsHelper(category: _loggerCategory),
        _controller = controller ?? MobileScannerController(),
