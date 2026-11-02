@@ -7,8 +7,8 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 # ACT-Flutter-Packages - Agent Guidelines
 
 > This is the entry point for AI coding agents working in this repository, following the
-> [agents.md](https://agents.md/) convention. Claude Code reads it through the `CLAUDE.md` symlink.
-> It links to the documentation instead of repeating it.
+> [agents.md](https://agents.md/) convention. It links to the documentation instead of repeating
+> it.
 
 This repository is a mono repository of Dart and Flutter packages. They are not published on
 pub.dev: applications use them through `path` dependencies.
@@ -34,6 +34,8 @@ live, how deep they go, how they are written, and which fakes are shared.
   when the package has a `test` folder.
 - After a change of a `mono_pkg.yaml` file, run `tool/mono_repo_generate.sh` from the repository
   root and commit the files it generates.
+- Change `.github/workflows/dart.yml` and `tool/ci.sh` only through `tool/mono_repo_generate.sh`:
+  it generates them.
 - The CI lints the Markdown files with `markdownlint-cli2` and the configuration of
   [`.markdownlint.yaml`](.markdownlint.yaml): lines are up to 100 characters long.
 
