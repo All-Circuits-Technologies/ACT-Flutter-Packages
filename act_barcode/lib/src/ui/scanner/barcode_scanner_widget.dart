@@ -22,10 +22,12 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 /// ## Camera permission
 ///
 /// The camera permission is asked through `act_permissions_manager`, as soon as the widget is
-/// displayed. The pages the application registered to explain the permission are displayed first,
-/// unless [displayContextualIfNeeded] is `false`. The widget reads the `PlatformManager`, the
+/// displayed. By default, it's asked of the device directly, and a permanent refusal opens the
+/// settings. With [displayContextualIfNeeded] at `true`, the pages the application registered to
+/// explain the permission are displayed first. The widget reads the `PlatformManager`, the
 /// `AppLifeCycleManager` and the `PermissionsManager` from the global manager of the application,
-/// so these three have to be registered. The permission is followed afterwards: one granted in the
+/// so these three have to be registered, and the `ContextualViewsManager` too when
+/// [displayContextualIfNeeded] is `true`. The permission is followed afterwards: one granted in the
 /// settings starts a denied scanner, and one withdrawn denies a running scanner.
 ///
 /// ## Statuses
@@ -52,16 +54,20 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 ///
 /// ## Controller
 ///
-/// Without [controller], the widget creates a `MobileScannerController()` without any format
-/// filter, which reads all the formats, and disposes it with the widget. An application which
-/// restricts the formats (`MobileScannerController(formats: ...)`) or drives the camera gives its
-/// own controller: it keeps its ownership, and the widget never disposes it. The controller is read
+/// Without [controller], the widget creates a `MobileScannerController` without any format
+/// filter, which reads all the formats, and disposes it with the widget. This controller uses
+/// `DetectionSpeed.noDuplicates`: a code held in front of the camera is reported once, and the same
+/// code is reported again only after another code was read or the camera restarted. An application
+/// which restricts the formats (`MobileScannerController(formats: ...)`), wants every detection or
+/// drives the camera gives its own controller: it keeps its ownership, and the widget never
+/// disposes it. The controller is read
 /// when the widget is first displayed: giving another one later has no effect.
 ///
 /// ## Codes
 ///
 /// Every barcode of a capture which has neither a value nor bytes is ignored. The others are given
 /// to [validator], and those it accepts reach [onCodeFound]; without validator, all of them do.
+/// The [validator] and the [onCodeFound] used are the ones of the last build.
 class BarcodeScannerWidget extends StatelessWidget {
   /// Give the translated text of each message of the widget.
   final String Function(BuildContext context, BarcodeScannerText text) textGetter;
@@ -76,8 +82,9 @@ class BarcodeScannerWidget extends StatelessWidget {
 
   /// Give the controller of the application, which drives the camera.
   ///
-  /// When null, the widget creates a controller which reads all the formats, and disposes it. A
-  /// controller given by the application is never disposed by the widget.
+  /// When null, the widget creates a controller which reads all the formats and reports a code held
+  /// in front of the camera once, and disposes it. A controller given by the application is never
+  /// disposed by the widget.
   final MobileScannerController? controller;
 
   /// Set the width of the widget.
@@ -115,9 +122,10 @@ class BarcodeScannerWidget extends StatelessWidget {
 
   /// Tell whether the pages of the application explain the camera permission before it is asked.
   ///
-  /// It's transmitted to `PermissionMonitorService.verifyAndAskBeforeAction`. An application which
-  /// has registered no page for the camera passes `false`: the permission is then asked of the
-  /// device directly, and a permanent refusal opens the settings.
+  /// It's transmitted to `PermissionMonitorService.verifyAndAskBeforeAction`. When `false`, the
+  /// permission is asked of the device directly, and a permanent refusal opens the settings. An
+  /// application which registered the pages of `PermissionElement.camera` in the
+  /// `ContextualViewsManager` passes `true` to display them.
   final bool displayContextualIfNeeded;
 
   /// Tell whether the user has to accept the camera permission.
@@ -139,7 +147,7 @@ class BarcodeScannerWidget extends StatelessWidget {
     this.frameRadius = 0,
     this.overlayBuilder,
     this.onStatusChanged,
-    this.displayContextualIfNeeded = true,
+    this.displayContextualIfNeeded = false,
     this.isAcceptanceCompulsory = false,
     super.key,
   });
@@ -184,16 +192,25 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
       return SizedBox(
         width: width,
         height: height,
-        child: BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
-          listenWhen: (previous, current) => previous.status != current.status,
-          listener: (context, state) {
-            final status = state.status;
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
+              listenWhen: (previous, current) => previous.status != current.status,
+              listener: (context, state) {
+                final status = state.status;
 
-            if (status != null) {
-              scanner.onStatusChanged?.call(status);
-            }
-          },
+                if (status != null) {
+                  scanner.onStatusChanged?.call(status);
+                }
+              },
+            ),
+            BlocListener<BarcodeScannerBloc, BarcodeScannerState>(
+              listenWhen: (previous, current) => !identical(previous.capture, current.capture),
+              listener: (context, state) => _onCapture(state.capture),
+            ),
+          ],
           child: BlocBuilder<BarcodeScannerBloc, BarcodeScannerState>(
+            buildWhen: (previous, current) => previous.status != current.status,
             builder: (context, state) => switch (state.status) {
               null || BarcodeScannerStatus.waitingPermission => _ScannerText(
                 textGetter: scanner.textGetter,
@@ -210,7 +227,6 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
                 scanner: scanner,
                 controller: context.read<BarcodeScannerBloc>().controller,
                 status: status,
-                onDetect: _onDetect,
               ),
             },
           ),
@@ -219,13 +235,15 @@ class _BarcodeScannerWidgetView extends StatelessWidget {
     },
   );
 
-  /// Give the barcodes read to the application, if they are accepted.
-  void _onDetect(BarcodeCapture capture) {
-    for (final barcode in capture.barcodes) {
-      if (barcode.rawValue == null && barcode.rawDecodedBytes == null) {
-        continue;
-      }
+  /// Give the barcodes of the [capture] to the application, if they are accepted.
+  ///
+  /// The callbacks are read from the current [scanner], so the ones of the last build are used.
+  void _onCapture(BarcodeCapture? capture) {
+    if (capture == null) {
+      return;
+    }
 
+    for (final barcode in capture.barcodes) {
       if (!(scanner.validator?.call(barcode) ?? true)) {
         continue;
       }
@@ -288,16 +306,8 @@ class _CameraView extends StatelessWidget {
   /// Hold the current status, given to the overlay.
   final BarcodeScannerStatus status;
 
-  /// Call when the camera reads barcodes.
-  final void Function(BarcodeCapture capture) onDetect;
-
   /// Create the camera view.
-  const _CameraView({
-    required this.scanner,
-    required this.controller,
-    required this.status,
-    required this.onDetect,
-  });
+  const _CameraView({required this.scanner, required this.controller, required this.status});
 
   /// Build the camera view, framed, with the overlay over it.
   @override
@@ -324,7 +334,6 @@ class _CameraView extends StatelessWidget {
             MobileScanner(
               controller: controller,
               fit: scanner.fit,
-              onDetect: onDetect,
               errorBuilder: (context, error) => _ScannerText(
                 textGetter: scanner.textGetter,
                 text: BarcodeScannerText.cameraError,

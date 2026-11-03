@@ -48,18 +48,23 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
   /// It's null when the platform is unsupported.
   late final StreamSubscription<bool>? _permissionSub;
 
+  /// Hold the subscription to the barcodes the camera reads.
+  late final StreamSubscription<BarcodeCapture> _barcodesSub;
+
   /// Give the controller of the scanner, which the camera view displays.
   MobileScannerController get controller => _controller;
 
   /// Create the bloc.
   ///
-  /// When the application gives no [controller], the bloc creates one and disposes it.
+  /// When the application gives no [controller], the bloc creates one, which reports a code held in
+  /// front of the camera once (`DetectionSpeed.noDuplicates`), and disposes it.
   BarcodeScannerBloc({
     MobileScannerController? controller,
-    this._displayContextualIfNeeded = true,
+    this._displayContextualIfNeeded = false,
     this._isAcceptanceCompulsory = false,
   }) : _logsHelper = LogsHelper(category: _loggerCategory),
-       _controller = controller ?? MobileScannerController(),
+       _controller =
+           controller ?? MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates),
        _ownsController = controller == null,
        _monitor = _createMonitor(),
        super(const BarcodeScannerState.init());
@@ -72,11 +77,16 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
     on<BarcodeScannerAskPermissionEvent>(_onAskPermissionEvent);
     on<BarcodeScannerPermissionEvent>(_onPermissionEvent);
     on<BarcodeScannerControllerEvent>(_onControllerEvent);
+    on<BarcodeScannerCaptureEvent>(_onCaptureEvent);
 
     _permissionSub = _monitor?.hasPermissionStream.listen(
       (isGranted) => add(BarcodeScannerPermissionEvent(isGranted: isGranted)),
     );
     _controller.addListener(_onControllerChanged);
+    _barcodesSub = _controller.barcodes.listen(
+      (capture) => add(BarcodeScannerCaptureEvent(capture: capture)),
+      onError: _onBarcodesError,
+    );
   }
 
   /// {@macro act_flutter_utility.MixinAsyncInitBloc.initAsyncBloc}
@@ -124,6 +134,25 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
     emit.call(state.copyWithControllerState(controllerState: event.controllerState));
   }
 
+  /// Called when the [event] gives the barcodes the camera read.
+  ///
+  /// The barcodes which have neither a value nor bytes are dropped, and a capture left without any
+  /// barcode isn't kept.
+  Future<void> _onCaptureEvent(
+    BarcodeScannerCaptureEvent event,
+    Emitter<BarcodeScannerState> emit,
+  ) async {
+    final barcodes = event.capture.barcodes
+        .where((barcode) => barcode.rawValue != null || barcode.rawDecodedBytes != null)
+        .toList(growable: false);
+
+    if (barcodes.isEmpty) {
+      return;
+    }
+
+    emit.call(state.copyWithCapture(capture: BarcodeCapture(barcodes: barcodes)));
+  }
+
   /// Check, and ask if needed, the camera permission, then update the status with the answer.
   Future<void> _askPermission(Emitter<BarcodeScannerState> emit) async {
     final monitor = _monitor;
@@ -157,6 +186,11 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
     emit.call(state.copyWithGrantedPermission(controllerState: _controller.value));
   }
 
+  /// Called when the camera fails to read barcodes: the error is logged and the reading goes on.
+  void _onBarcodesError(Object error) {
+    _logsHelper.w("The camera failed to read barcodes: $error");
+  }
+
   /// Called when the value of the controller changes.
   void _onControllerChanged() {
     add(BarcodeScannerControllerEvent(controllerState: _controller.value));
@@ -185,11 +219,12 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
 
   /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
   ///
-  /// It stops following the permission and the controller, closes the permission service and
-  /// disposes the controller if the bloc created it.
+  /// It stops following the permission, the controller and the barcodes, closes the permission
+  /// service and disposes the controller if the bloc created it.
   @override
   Future<void> disposeLifeCycle() async {
     await _permissionSub?.cancel();
+    await _barcodesSub.cancel();
     _controller.removeListener(_onControllerChanged);
     await _monitor?.close();
 

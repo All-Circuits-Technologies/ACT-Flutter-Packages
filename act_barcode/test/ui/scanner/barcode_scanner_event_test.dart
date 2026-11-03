@@ -23,6 +23,20 @@ void main() {
       expect(const BarcodeScannerAskPermissionEvent(), const BarcodeScannerAskPermissionEvent());
     });
 
+    test("considers two capture events equal only when they hold the same capture", () {
+      final barcodes = [const Barcode(rawValue: "ACT-1")];
+      final capture = BarcodeCapture(barcodes: barcodes);
+
+      expect(
+        BarcodeScannerCaptureEvent(capture: capture),
+        BarcodeScannerCaptureEvent(capture: capture),
+      );
+      expect(
+        BarcodeScannerCaptureEvent(capture: capture),
+        isNot(BarcodeScannerCaptureEvent(capture: BarcodeCapture(barcodes: barcodes))),
+      );
+    });
+
     test("considers two controller events equal when the camera is in the same condition", () {
       const state = MobileScannerState.uninitialized();
 

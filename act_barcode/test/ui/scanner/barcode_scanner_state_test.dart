@@ -21,6 +21,19 @@ void main() {
 
       expect(state.status, isNull);
       expect(state.hasCameraRun, isFalse);
+      expect(state.capture, isNull);
+    });
+
+    test("copies the capture, and keeps it when another value is copied", () {
+      const state = BarcodeScannerState(status: BarcodeScannerStatus.scanning, hasCameraRun: true);
+      const capture = BarcodeCapture(barcodes: [Barcode(rawValue: "ACT-1")]);
+
+      final withCapture = state.copyWithCapture(capture: capture);
+
+      expect(withCapture.capture, same(capture));
+      expect(withCapture.status, BarcodeScannerStatus.scanning);
+      expect(withCapture.copyToPermissionDeniedState().capture, same(capture));
+      expect(withCapture, isNot(state.copyWithCapture(capture: const BarcodeCapture())));
     });
 
     test("keeps its values when nothing is given to copy", () {
