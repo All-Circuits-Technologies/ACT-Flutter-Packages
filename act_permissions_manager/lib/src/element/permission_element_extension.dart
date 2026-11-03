@@ -38,6 +38,9 @@ sealed class PermissionElementHelper {
       case PermissionElement.ble:
         return _getBlePerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
+      case PermissionElement.camera:
+        return _getCameraPerms(isAndroid: isAndroid, isIos: isIos, version: version);
+
       case PermissionElement.locationAlways:
         return _getLocAlwaysPerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
@@ -113,6 +116,21 @@ sealed class PermissionElementHelper {
       [
         permission_handler.Permission.locationWhenInUse,
       ];
+
+  /// Get the list of permissions linked to the camera
+  static List<permission_handler.Permission> _getCameraPerms({
+    required bool isAndroid,
+    required bool isIos,
+    required int? version,
+  }) {
+    if (!isAndroid && !isIos) {
+      return const [];
+    }
+
+    return [
+      permission_handler.Permission.camera,
+    ];
+  }
 
   /// Get the list of permissions linked to user tracking
   static List<permission_handler.Permission> _getTrackingPerms({

@@ -14,6 +14,9 @@ enum PermissionElement {
   /// This groups all the permissions linked to the Bluetooth service
   ble,
 
+  /// This groups all the permissions linked to the camera
+  camera,
+
   /// This groups all the permissions linked to the location getting when we want to always get it
   locationAlways,
 

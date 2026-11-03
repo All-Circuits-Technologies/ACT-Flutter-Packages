@@ -87,6 +87,24 @@ void main() {
       expect(PermissionElementHelper.getPermissions(PermissionElement.ble), isEmpty);
     });
 
+    test("asks Android for the camera", () {
+      runningOn(FakePlatformManager.android(version: 34));
+
+      expect(PermissionElementHelper.getPermissions(PermissionElement.camera), [Permission.camera]);
+    });
+
+    test("asks iOS for the camera", () {
+      runningOn(FakePlatformManager.ios());
+
+      expect(PermissionElementHelper.getPermissions(PermissionElement.camera), [Permission.camera]);
+    });
+
+    test("asks nothing of a device which is neither Android nor iOS for the camera", () {
+      runningOn(FakePlatformManager());
+
+      expect(PermissionElementHelper.getPermissions(PermissionElement.camera), isEmpty);
+    });
+
     test("asks for the location however the device is", () {
       runningOn(FakePlatformManager());
 
