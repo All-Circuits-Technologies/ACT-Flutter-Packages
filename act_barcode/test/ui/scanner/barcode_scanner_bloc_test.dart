@@ -14,6 +14,7 @@ import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_scanner/mobile_scanner.dart' show DecodedBarcodeBytes;
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
 import '../../fakes/fake_app_life_cycle_manager.dart';
@@ -42,10 +43,7 @@ void main() {
   /// The statuses it emits are added to [statuses]. The bloc uses the controller of the test,
   /// unless [withOwnController] is true.
   BarcodeScannerBloc aBloc(List<BarcodeScannerStatus> statuses, {bool withOwnController = false}) {
-    final bloc = BarcodeScannerBloc(
-      controller: withOwnController ? null : controller,
-      displayContextualIfNeeded: false,
-    );
+    final bloc = BarcodeScannerBloc(controller: withOwnController ? null : controller);
     bloc.stream.listen((state) {
       final status = state.status;
 
@@ -254,6 +252,55 @@ void main() {
       expect(bloc.state.status, BarcodeScannerStatus.permissionDenied);
     });
 
+    test("keeps the barcodes read which have a value or bytes, and drops the others", () async {
+      registerPlatform(FakePlatformManager.android(version: 34));
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      const withValue = Barcode(rawValue: "ACT-1");
+      final withBytes = Barcode(
+        rawDecodedBytes: DecodedBarcodeBytes(bytes: Uint8List.fromList([1, 2])),
+      );
+      final bloc = aBloc([]);
+      await pumpEventQueue();
+
+      bloc.add(
+        BarcodeScannerCaptureEvent(
+          capture: BarcodeCapture(barcodes: [withValue, const Barcode(), withBytes]),
+        ),
+      );
+      await pumpEventQueue();
+
+      expect(bloc.state.capture?.barcodes, [withValue, withBytes]);
+    });
+
+    test("keeps no capture whose barcodes have neither a value nor bytes", () async {
+      registerPlatform(FakePlatformManager.android(version: 34));
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      final bloc = aBloc([]);
+      await pumpEventQueue();
+
+      bloc.add(const BarcodeScannerCaptureEvent(capture: BarcodeCapture(barcodes: [Barcode()])));
+      await pumpEventQueue();
+
+      expect(bloc.state.capture, isNull);
+    });
+
+    test("gives each capture its own state, the ones of the same codes included", () async {
+      registerPlatform(FakePlatformManager.android(version: 34));
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      const capture = BarcodeCapture(barcodes: [Barcode(rawValue: "ACT-1")]);
+      final bloc = aBloc([]);
+      await pumpEventQueue();
+
+      bloc.add(const BarcodeScannerCaptureEvent(capture: capture));
+      await pumpEventQueue();
+      final first = bloc.state.capture;
+      bloc.add(const BarcodeScannerCaptureEvent(capture: capture));
+      await pumpEventQueue();
+
+      expect(first, isNotNull);
+      expect(bloc.state.capture, isNot(same(first)));
+    });
+
     test("stops following the controller once it is closed", () async {
       registerPlatform(FakePlatformManager.android(version: 34));
       permissions.statuses[Permission.camera] = PermissionStatus.granted;
@@ -266,6 +313,13 @@ void main() {
       await pumpEventQueue();
 
       expect(statuses, [BarcodeScannerStatus.waitingPermission, BarcodeScannerStatus.starting]);
+    });
+
+    test("creates a controller which reports a code held in front of the camera once", () async {
+      registerPlatform(FakePlatformManager.android(version: 34));
+      final bloc = aBloc([], withOwnController: true);
+
+      expect(bloc.controller.detectionSpeed, DetectionSpeed.noDuplicates);
     });
 
     test("disposes the controller it created, and not the one it was given", () async {

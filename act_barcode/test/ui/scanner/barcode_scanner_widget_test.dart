@@ -12,7 +12,8 @@ import 'package:act_platform_manager/act_platform_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mobile_scanner/mobile_scanner.dart' show MobileScanner;
+import 'package:mobile_scanner/mobile_scanner.dart'
+    show MobileScanner, MobileScannerBarcodeException;
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 
 import '../../fakes/fake_app_life_cycle_manager.dart';
@@ -60,7 +61,6 @@ void main() {
             height: height,
             overlayBuilder: overlayBuilder,
             onStatusChanged: onStatusChanged,
-            displayContextualIfNeeded: false,
           ),
         ),
       ),
@@ -150,6 +150,21 @@ void main() {
       expect(permissions.requested, [Permission.camera, Permission.camera]);
       expect(find.byType(MobileScanner), findsOneWidget);
       expect(find.text(BarcodeScannerText.permissionDenied.name), findsNothing);
+    });
+
+    testWidgets("asks the permission of the device with the default settings", (tester) async {
+      // No ContextualViewsManager is registered: the pages of the application aren't used
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: BarcodeScannerWidget(textGetter: _text, onCodeFound: (_) {}),
+          ),
+        ),
+      );
+      await settle(tester);
+
+      expect(permissions.requested, [Permission.camera]);
+      expect(find.byType(MobileScanner), findsOneWidget);
     });
 
     testWidgets("shows the camera and scans once the permission is granted", (tester) async {
@@ -254,6 +269,53 @@ void main() {
       await settle(tester);
 
       expect(found, [accepted]);
+    });
+
+    testWidgets("uses the callbacks of the last build", (tester) async {
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      final firstFound = <Barcode>[];
+      final lastFound = <Barcode>[];
+      await tester.pumpWidget(aScanner(onCodeFound: firstFound.add, validator: (_) => false));
+      await settle(tester);
+
+      await tester.pumpWidget(
+        aScanner(onCodeFound: lastFound.add, validator: (barcode) => barcode == refused),
+      );
+      await settle(tester);
+      scanner.emit([refused, accepted]);
+      await settle(tester);
+
+      expect(firstFound, isEmpty);
+      expect(lastFound, [refused]);
+    });
+
+    testWidgets("goes on giving the codes after an error of the camera", (tester) async {
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      final found = <Barcode>[];
+      await tester.pumpWidget(aScanner(onCodeFound: found.add));
+      await settle(tester);
+
+      scanner.emitError(const MobileScannerBarcodeException("The frame can't be read"));
+      await settle(tester);
+      scanner.emit([accepted]);
+      await settle(tester);
+
+      expect(found, [accepted]);
+      expect(find.byType(MobileScanner), findsOneWidget);
+    });
+
+    testWidgets("gives a code each time the camera reads it", (tester) async {
+      permissions.statuses[Permission.camera] = PermissionStatus.granted;
+      final found = <Barcode>[];
+      await tester.pumpWidget(aScanner(onCodeFound: found.add));
+      await settle(tester);
+
+      scanner.emit([accepted]);
+      await settle(tester);
+      scanner.emit([accepted]);
+      await settle(tester);
+
+      expect(found, [accepted, accepted]);
     });
   });
 
