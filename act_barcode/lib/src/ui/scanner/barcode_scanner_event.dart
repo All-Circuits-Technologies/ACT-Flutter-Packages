@@ -34,6 +34,19 @@ class BarcodeScannerPermissionEvent extends BarcodeScannerEvent {
   List<Object?> get props => [...super.props, isGranted];
 }
 
+/// Tell the bloc that the camera read barcodes.
+class BarcodeScannerCaptureEvent extends BarcodeScannerEvent {
+  /// Hold the capture of the barcodes read, as the controller gives it.
+  final BarcodeCapture capture;
+
+  /// Create the event.
+  const BarcodeScannerCaptureEvent({required this.capture});
+
+  /// {@macro act_flutter_utility.BlocEventForMixin.props}
+  @override
+  List<Object?> get props => [...super.props, capture];
+}
+
 /// Tell the bloc that the state of the scanner controller changed.
 class BarcodeScannerControllerEvent extends BarcodeScannerEvent {
   /// Hold the new state of the scanner controller.

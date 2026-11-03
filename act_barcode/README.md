@@ -66,9 +66,15 @@ drawn by [flutter_svg](https://pub.dev/packages/flutter_svg).
 on [mobile_scanner](https://pub.dev/packages/mobile_scanner), which reads all the usual formats, and
 the reading is continuous: the application stops, pauses or starts the camera again through a
 `MobileScannerController`. The widget wraps a bloc, `BarcodeScannerBloc`, which is not exported: it
-holds the status of the scanner, follows the camera permission and the controller, and owns the
-controller lifecycle. The parameters, the size rules and the controller ownership are documented on
-the widget.
+holds the status of the scanner, follows the camera permission and the controller, receives the
+barcodes read, and owns the controller lifecycle. The widget gives the barcodes of the bloc to the
+`validator` and the `onCodeFound` of its last build. The parameters, the size rules and the
+controller ownership are documented on the widget.
+
+The controller the widget creates, when the application gives none, uses
+`DetectionSpeed.noDuplicates`: a code held in front of the camera is reported once, and the same
+code is reported again only after another code was read or the camera restarted. An application
+which wants every detection gives its own controller.
 
 ### The status of the scanner
 
@@ -114,9 +120,11 @@ which has not started yet is `starting`.
 ### The camera permission
 
 The permission is not asked by `mobile_scanner` but through `act_permissions_manager`, with
-`PermissionElement.camera`. That is what shows the pages the application registered to explain why
-the camera is needed, and what tells a refusal from a permanent refusal: for the latter, the page
-of the application is displayed, or the settings are opened.
+`PermissionElement.camera`. That is what tells a refusal from a permanent refusal, and what can
+show the pages the application registered to explain why the camera is needed. By default, the
+permission is asked of the device directly, and a permanent refusal opens the settings. With
+`displayContextualIfNeeded: true`, the pages of the application are displayed first, the one of a
+permanent refusal included.
 
 The bloc asks as soon as the widget is displayed. It also follows the permission: one granted in the
 settings makes a denied scanner start, and one withdrawn makes a running scanner denied. The button
@@ -184,10 +192,10 @@ class AppGlobalManager extends AbsGlobalManager {
 }
 ```
 
-An application which registers the pages of `act_permissions_manager` registers the ones of
-`PermissionElement.camera` too, see the README of that package. One which has none passes
-`displayContextualIfNeeded: false`: the permission is then asked of the device directly, and a
-permanent refusal opens the settings.
+By default, the permission is asked of the device directly. An application which registers the
+pages of `act_permissions_manager` registers the ones of `PermissionElement.camera` too, see the
+README of that package, and passes `displayContextualIfNeeded: true` to display them. It then
+registers the `ContextualViewsManager` as well, which displays these pages.
 
 ### Platform prerequisites
 
@@ -210,21 +218,25 @@ The scanner is tested without any real camera. `FakeMobileScannerPlatform` repla
 gives it. `FakePermissionsPlatform`, `FakePlatformManager` and `FakeAppLifeCycleManager` answer the
 permissions, the platform and the life cycle of the application; they are copies of the fakes of
 `act_permissions_manager`, whose `test` folder another package can't import, each in its own file.
-The tests pass `displayContextualIfNeeded: false`: the display of the pages is covered by the tests
-of that package.
+The tests keep `displayContextualIfNeeded` at `false`: the display of the pages is covered by the
+tests of that package.
 
 The bloc is tested on the platforms which are unsupported and ask nothing of the device, the
 permission which is already granted, the one which is asked for and then given, the one which is
 refused, the one which is asked for again after a refusal, the one which is granted or withdrawn in
-the settings, the values of the controller which give `scanning`, `stopped` and `error`, and the
-controller which is disposed only when the bloc created it. The state is tested on its copy methods
-(the status after the permission and after each value of the controller, and the `forceStatusValue`
-flag of `copyWith`), and the events on their equality.
+the settings, the values of the controller which give `scanning`, `stopped` and `error`, the
+barcodes read which are kept or dropped, the state each capture gets, the controller it creates,
+which reports a code once, and the controller which is disposed only when the bloc created it. The
+state is tested on its copy methods (the status after the permission and after each value of the
+controller, the capture, and the `forceStatusValue` flag of `copyWith`), and the events on their
+equality.
 
-The widget is tested on the text of each status, the button which asks the permission again, the
-codes which reach `onCodeFound` according to the validator, the status given to `onStatusChanged`,
-the overlay drawn over the camera, the sizes, the status which survives a new build, and the
-controller which is disposed only when the widget's bloc created it.
+The widget is tested on the permission asked of the device with the default settings, the text of
+each status, the button which asks the permission again, the codes which reach `onCodeFound`
+according to the validator, the callbacks of the last build, the codes given after an error of the
+camera, the status given to `onStatusChanged`, the overlay drawn over the camera, the sizes, the
+status which survives a new build, and the controller which is disposed only when the widget's bloc
+created it.
 
 ```console
 > flutter analyze --fatal-infos .

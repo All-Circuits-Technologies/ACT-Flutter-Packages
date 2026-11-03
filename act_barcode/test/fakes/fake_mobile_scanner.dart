@@ -63,6 +63,9 @@ class FakeMobileScannerPlatform extends MobileScannerPlatform {
   /// Send a capture of the given [barcodes], as the camera does when it reads them.
   void emit(List<Barcode> barcodes) => _barcodesCtrl.add(BarcodeCapture(barcodes: barcodes));
 
+  /// Send an [error], as the camera does when it fails to read barcodes.
+  void emitError(Object error) => _barcodesCtrl.addError(error);
+
   /// Build an empty view, in place of the camera view.
   @override
   Widget buildCameraView() => const SizedBox.shrink();
