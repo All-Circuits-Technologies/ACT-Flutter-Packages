@@ -4,7 +4,7 @@
 
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_flutter_utility/src/widget/action_error_retry/action_error_retry_theme.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This widget is used to display a message when an error occurred with a retry button.
 class ActionErrorRetryWidget extends StatelessWidget {

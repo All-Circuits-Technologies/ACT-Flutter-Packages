@@ -9,8 +9,8 @@ import 'package:act_barcode/src/types/barcode_scanner_text.dart';
 import 'package:act_barcode/src/ui/scanner/barcode_scanner_bloc.dart';
 import 'package:act_barcode/src/ui/scanner/barcode_scanner_event.dart';
 import 'package:act_barcode/src/ui/scanner/barcode_scanner_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 /// Display what the camera sees and hand over every barcode it reads.

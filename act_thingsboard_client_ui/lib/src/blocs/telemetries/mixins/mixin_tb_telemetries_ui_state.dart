@@ -7,7 +7,7 @@ import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_thingsboard_client/act_thingsboard_client.dart';
 import 'package:act_thingsboard_client_ui/src/blocs/telemetries/tb_telemetries_ui_error.dart';
 import 'package:act_thingsboard_client_ui/src/blocs/telemetries/tb_telemetries_ui_state.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:thingsboard_client/thingsboard_client.dart';
 
 /// Help to keep [TbTelemetriesUiState] in your bloc state, and regenerate the view if one element

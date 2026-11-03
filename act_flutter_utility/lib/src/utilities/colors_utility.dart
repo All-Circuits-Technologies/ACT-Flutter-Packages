@@ -5,7 +5,7 @@
 
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Helper class which contains Color utility methods
 class ColorsUtility {

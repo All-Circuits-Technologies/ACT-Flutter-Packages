@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/src/graphical_assets/graphical_asset.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// PNG Asset helps working with PNG (matricial) images
 class PngAsset implements GraphicalAsset {

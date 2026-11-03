@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/src/widget/tab_bars/abs_simple_tab_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This mixin is used to define useful methods for the state of the [AbsSimpleTabBar] widget.
 mixin MixinSimpleTabBarState<T extends AbsSimpleTabBar<T>> on State<T> {

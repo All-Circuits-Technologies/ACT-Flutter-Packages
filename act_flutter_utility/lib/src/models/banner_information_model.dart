@@ -4,7 +4,7 @@
 
 import 'package:act_flutter_utility/src/types/banner_information_type.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// Represents an info banner to display above pages
 class BannerInformationModel extends Equatable {

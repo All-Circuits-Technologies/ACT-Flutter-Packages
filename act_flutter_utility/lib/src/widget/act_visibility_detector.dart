@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:visibility_detector/visibility_detector.dart';
 
 /// Widget used to detect show/hidden widget events.

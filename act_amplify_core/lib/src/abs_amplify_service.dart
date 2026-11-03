@@ -5,7 +5,7 @@
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// This is the abstract skeleton for the amplify services
 abstract class AbsAmplifyService extends AbsWithLifeCycle {

@@ -6,9 +6,9 @@ import 'dart:async';
 
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../fakes/fake_routes.dart';
 

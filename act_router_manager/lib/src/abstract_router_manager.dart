@@ -13,8 +13,8 @@ import 'package:act_router_manager/src/routes_helper_companion.dart';
 import 'package:act_router_manager/src/types/mixin_route.dart';
 import 'package:act_router_manager/src/types/pop_until_predicate.dart';
 import 'package:act_router_manager/src/types/push_and_remove_until_predicate.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This function allows to register router redirection
 /// If the function returns null, it means that there is nothing to do

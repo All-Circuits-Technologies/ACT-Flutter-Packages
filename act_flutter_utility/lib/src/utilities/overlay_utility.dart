@@ -7,7 +7,7 @@
 import 'dart:async';
 
 import 'package:act_global_manager/act_global_manager.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/widgets.dart';
 
 /// Defines a factory to build the widget which will overlay the current view
 ///

@@ -4,7 +4,7 @@
 
 import 'package:act_intl/act_intl.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fakes/fake_locale_app.dart';

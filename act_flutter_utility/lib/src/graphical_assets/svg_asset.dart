@@ -5,7 +5,7 @@
 import 'dart:ui' as ui;
 
 import 'package:act_flutter_utility/src/graphical_assets/graphical_asset.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
 /// SVG Asset helps working with SVG (vectorial) images

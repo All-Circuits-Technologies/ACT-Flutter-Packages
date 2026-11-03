@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_splash_screen_manager/act_splash_screen_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// Time the example pretends to need to be ready, so that the splash screen can be seen.
 const initializationDuration = Duration(seconds: 2);

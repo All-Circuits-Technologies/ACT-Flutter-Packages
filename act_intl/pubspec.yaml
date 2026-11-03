@@ -60,6 +60,9 @@ dev_dependencies:
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
 
+  # Material Design widgets, out of the Flutter SDK
+  material_ui: ^1.9.0
+
   # The in memory storage the tests keep the properties in
   shared_preferences_platform_interface: ^2.4.1
 

@@ -16,7 +16,7 @@
 /// Therefore, think carefully before adding a new type definition in this file.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This is a builder function which uses the [BuildContext] to build a type.
 ///

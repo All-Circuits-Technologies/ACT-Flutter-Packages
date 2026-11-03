@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This is a custom [ReorderableListView] to manage scroll when the listview is embedded in a
 /// scrolling page.

@@ -4,7 +4,7 @@
 
 import 'package:act_config_manager/src/services/config_singleton.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// [AbsConfigVar] wraps a single config variable of type T, providing strongly-typed read helper.
 abstract class AbsConfigVar<T> extends Equatable {

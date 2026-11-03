@@ -4,7 +4,7 @@
 
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// This abstract model contains information to pass to the authentication views when going to
 /// those views with the router manager

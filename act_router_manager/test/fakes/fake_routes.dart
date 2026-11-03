@@ -4,7 +4,7 @@
 
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_router_manager/act_router_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The pages of an application, with a page nested under another one.
 enum FakeRoute with MixinRoute {

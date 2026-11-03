@@ -7,9 +7,8 @@
 import 'dart:async';
 
 import 'package:act_intl/act_intl.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The widget loads and display an asset file which contains translated text
 ///
@@ -105,7 +104,7 @@ class _TranslatedHtmlTextState extends State<TranslatedHtmlText> {
       alignment: widget.alignment,
       child: (_txtTranslated == null)
           ? const CircularProgressIndicator()
-          : CupertinoScrollbar(
+          : Scrollbar(
               controller: _scrollController,
               thumbVisibility: true,
               child: SingleChildScrollView(

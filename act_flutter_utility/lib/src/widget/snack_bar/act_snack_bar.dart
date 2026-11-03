@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This is the SnackBar for the ACT projects
 class ActSnackBar extends SnackBar {

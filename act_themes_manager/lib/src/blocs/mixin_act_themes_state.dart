@@ -4,7 +4,7 @@
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_themes_manager/src/types/mixin_act_themes.dart';
-import 'package:flutter/material.dart' show Brightness, ThemeMode;
+import 'package:material_ui/material_ui.dart' show Brightness, ThemeMode;
 
 /// This mixin is used for the main app state, to get the current theme of the application
 mixin MixinActThemesState<S extends MixinActThemesState<S>> on BlocStateForMixin<S> {
