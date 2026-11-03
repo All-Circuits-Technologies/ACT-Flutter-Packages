@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:convert';
 import 'dart:ffi' as ffi;
 
 import 'package:act_ffi_utility/act_ffi_utility.dart';
@@ -32,13 +33,13 @@ void main() {
     return pointer;
   }
 
-  group("RuntimeStringUtility.charArrayToString", () {
+  group("RuntimeStringUtility.charArrayToUtf8String", () {
     test("reads the characters up to the one which ends the name", () {
       final device = aDevice("abc".codeUnits);
       addTearDown(() => calloc.free(device));
 
       expect(
-        RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: _nameLength),
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: _nameLength),
         "abc",
       );
     });
@@ -48,7 +49,7 @@ void main() {
       addTearDown(() => calloc.free(device));
 
       expect(
-        RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: _nameLength),
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: _nameLength),
         isEmpty,
       );
     });
@@ -58,7 +59,7 @@ void main() {
       addTearDown(() => calloc.free(device));
 
       expect(
-        RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: _nameLength),
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: _nameLength),
         "aaaaaaaa",
       );
     });
@@ -67,7 +68,30 @@ void main() {
       final device = aDevice("abcdefgh".codeUnits);
       addTearDown(() => calloc.free(device));
 
-      expect(RuntimeStringUtility.charArrayToString(array: device.ref.name, maxLength: 3), "abc");
+      expect(
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: 3),
+        "abc",
+      );
+    });
+
+    test("reads the characters which take more than one byte", () {
+      final device = aDevice(utf8.encode("Timéo"));
+      addTearDown(() => calloc.free(device));
+
+      expect(
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: _nameLength),
+        "Timéo",
+      );
+    });
+
+    test("replaces a character which the length cuts in the middle", () {
+      final device = aDevice(utf8.encode("Timéo"));
+      addTearDown(() => calloc.free(device));
+
+      expect(
+        RuntimeStringUtility.charArrayToUtf8String(array: device.ref.name, maxLength: 4),
+        "Tim\u{FFFD}",
+      );
     });
   });
 
