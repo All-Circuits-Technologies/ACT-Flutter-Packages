@@ -45,7 +45,6 @@ void main() {
         FakeLicensesConfig,
       ]);
     });
-
   });
 
   group("ActLicensesManager", () {

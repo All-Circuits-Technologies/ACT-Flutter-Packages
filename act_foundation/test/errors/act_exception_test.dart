@@ -27,7 +27,10 @@ void main() {
     });
 
     test("can be thrown and caught as an exception", () {
-      expect(() => throw const _TestException("the value is invalid"), throwsA(isA<ActException>()));
+      expect(
+        () => throw const _TestException("the value is invalid"),
+        throwsA(isA<ActException>()),
+      );
     });
   });
 

@@ -25,7 +25,7 @@ abstract class AbstractHaloInstantDataHardware extends AbstractHaloComponentHard
 
   /// Class constructor
   AbstractHaloInstantDataHardware()
-      : _instantDataNewValueCtrl = StreamController<HaloPacket>.broadcast();
+    : _instantDataNewValueCtrl = StreamController<HaloPacket>.broadcast();
 
   /// This method allows to write a specific instant data value to the device
   Future<HaloErrorType> writeInstantData({required HaloPacket packet});
@@ -52,9 +52,7 @@ abstract class AbstractHaloInstantDataHardware extends AbstractHaloComponentHard
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _instantDataNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_instantDataNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

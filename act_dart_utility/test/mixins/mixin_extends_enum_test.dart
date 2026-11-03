@@ -6,7 +6,7 @@ import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// The contract the shared columns and the specific ones both answer.
-mixin _Column on Enum {}
+mixin _Column on Enum;
 
 /// The columns every application shares.
 enum _SharedColumn with _Column { name, date }

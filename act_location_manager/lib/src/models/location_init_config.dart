@@ -30,14 +30,10 @@ class LocationInitConfig extends Equatable {
 
   /// Default class constructor
   const LocationInitConfig.defaultConfig()
-      : accuracy = LocationAccuracy.reduced,
-        isLocationUsageAlways = false,
-        timeLimitWhenGettingPosition = defaultTimeLimitWhenGettingPosition;
+    : accuracy = LocationAccuracy.reduced,
+      isLocationUsageAlways = false,
+      timeLimitWhenGettingPosition = defaultTimeLimitWhenGettingPosition;
 
   @override
-  List<Object?> get props => [
-        accuracy,
-        isLocationUsageAlways,
-        timeLimitWhenGettingPosition,
-      ];
+  List<Object?> get props => [accuracy, isLocationUsageAlways, timeLimitWhenGettingPosition];
 }

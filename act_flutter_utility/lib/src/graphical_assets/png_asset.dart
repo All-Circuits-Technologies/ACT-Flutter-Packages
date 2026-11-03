@@ -15,11 +15,7 @@ class PngAsset implements GraphicalAsset {
 
   /// Build associated widget
   @override
-  Widget getWidget({
-    double? width,
-    double? height,
-    Color? color,
-  }) {
+  Widget getWidget({double? width, double? height, Color? color}) {
     final devicePixelRatio =
         WidgetsBinding.instance.platformDispatcher.implicitView?.devicePixelRatio ?? 1;
 

@@ -24,10 +24,7 @@ void main() {
       final first = SafeExternalLoggers.toExternalLoggersMap();
       final second = SafeExternalLoggers.toExternalLoggersMap();
 
-      expect(
-        second[SafeExternalLoggers.console],
-        isNot(same(first[SafeExternalLoggers.console])),
-      );
+      expect(second[SafeExternalLoggers.console], isNot(same(first[SafeExternalLoggers.console])));
     });
   });
 }

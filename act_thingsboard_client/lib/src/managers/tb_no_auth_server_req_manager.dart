@@ -62,9 +62,8 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   /// Class constructor
   TbNoAuthServerReqManager({
     required MixinAuthStorageService? Function()? storageServiceGetter,
-    required MixinThingsboardConf Function() confGetter,
-  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
-       _confGetter = confGetter;
+    required this._confGetter,
+  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter);
 
   /// Init the service
   @override

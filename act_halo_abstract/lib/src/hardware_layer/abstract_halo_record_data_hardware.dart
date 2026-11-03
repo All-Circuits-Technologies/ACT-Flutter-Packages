@@ -36,8 +36,8 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
 
   /// Class constructor
   AbstractHaloRecordDataHardware()
-      : _recordDataNewValueCtrl = StreamController<HaloRecordPacket>.broadcast(),
-        _recordKeysNewValueCtrl = StreamController<HaloRecordKey>.broadcast();
+    : _recordDataNewValueCtrl = StreamController<HaloRecordPacket>.broadcast(),
+      _recordKeysNewValueCtrl = StreamController<HaloRecordKey>.broadcast();
 
   /// This method allows to subscribe to the modification of a specific kind of record data thanks
   /// to the [HaloDataId] given
@@ -70,10 +70,7 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _recordDataNewValueCtrl.close(),
-      _recordKeysNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_recordDataNewValueCtrl.close(), _recordKeysNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

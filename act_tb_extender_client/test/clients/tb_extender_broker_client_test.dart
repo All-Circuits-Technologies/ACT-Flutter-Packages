@@ -101,14 +101,17 @@ void main() {
       final client = TbExtenderBrokerClient(baseUrlGetter: () => baseUrl);
       baseUrl = _baseUrl;
 
-      await http.runWithClient(() async {
-        await client.initLifeCycle();
-        await client.deleteAccount("kc");
-        await client.disposeLifeCycle();
-      }, () => MockClient((request) async {
-        capturedUri = request.url;
-        return http.Response("", 204);
-      }));
+      await http.runWithClient(
+        () async {
+          await client.initLifeCycle();
+          await client.deleteAccount("kc");
+          await client.disposeLifeCycle();
+        },
+        () => MockClient((request) async {
+          capturedUri = request.url;
+          return http.Response("", 204);
+        }),
+      );
 
       expect(capturedUri.toString(), _accountUri);
     });
@@ -207,36 +210,16 @@ void main() {
 
     /// Each documented error and the status it comes with.
     const errorCases = <({int status, String code, BrokerAuthError expected})>[
-      (
-        status: 401,
-        code: "invalid_token",
-        expected: BrokerAuthError.invalidToken,
-      ),
-      (
-        status: 403,
-        code: "invalid_audience",
-        expected: BrokerAuthError.invalidAudience,
-      ),
-      (
-        status: 403,
-        code: "email_not_verified",
-        expected: BrokerAuthError.emailNotVerified,
-      ),
-      (
-        status: 409,
-        code: "provisioning_conflict",
-        expected: BrokerAuthError.provisioningConflict,
-      ),
+      (status: 401, code: "invalid_token", expected: BrokerAuthError.invalidToken),
+      (status: 403, code: "invalid_audience", expected: BrokerAuthError.invalidAudience),
+      (status: 403, code: "email_not_verified", expected: BrokerAuthError.emailNotVerified),
+      (status: 409, code: "provisioning_conflict", expected: BrokerAuthError.provisioningConflict),
       (
         status: 502,
         code: "thingsboard_unavailable",
         expected: BrokerAuthError.thingsboardUnavailable,
       ),
-      (
-        status: 500,
-        code: "internal_error",
-        expected: BrokerAuthError.internalError,
-      ),
+      (status: 500, code: "internal_error", expected: BrokerAuthError.internalError),
     ];
 
     for (final testCase in errorCases) {
@@ -261,10 +244,7 @@ void main() {
     });
 
     test("reads an answer which isn't a 200 and carries no body as an unknown failure", () async {
-      final result = await ask(
-        (_) async => http.Response("", 503),
-        (client) => client.login("kc"),
-      );
+      final result = await ask((_) async => http.Response("", 503), (client) => client.login("kc"));
 
       expect(result.status, BrokerAuthError.unknown);
     });

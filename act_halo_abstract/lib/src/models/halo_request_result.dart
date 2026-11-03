@@ -29,10 +29,7 @@ class HaloRequestResult extends ResultWithStatus<HaloErrorType, HaloPayloadPacke
   });
 
   /// An easy constructor when you want to create an error result
-  const HaloRequestResult.error({
-    required this.requestId,
-    required super.status,
-  }) : nbValues = 0;
+  const HaloRequestResult.error({required this.requestId, required super.status}) : nbValues = 0;
 
   @override
   List<Object?> get props => [...super.props, requestId, nbValues];

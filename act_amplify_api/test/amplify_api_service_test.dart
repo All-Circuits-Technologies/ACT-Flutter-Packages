@@ -14,7 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'fakes/fake_api.dart';
 
 /// An error the cloud throws which has nothing to do with the credentials of the user.
-class _AFailure implements Exception {}
+class _AFailure implements Exception;
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();

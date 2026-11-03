@@ -18,9 +18,7 @@ class CognitoUserService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor
-  CognitoUserService({
-    required this.logsHelper,
-  }) : super();
+  CognitoUserService({required this.logsHelper}) : super();
 
   /// Test if an user is signed to the app (or not)
   Future<bool> isUserSigned() async {
@@ -42,9 +40,7 @@ class CognitoUserService extends AbsWithLifeCycle {
   /// us-west-2:d2cf2506-40fc-c9e7-2bb5-d09d109fbe16
   /// If [includeRegion] is equals to false, only the UUID part will be returned
   /// {@endtemplate}
-  Future<String?> getCurrentUserId({
-    bool includeRegion = true,
-  }) async {
+  Future<String?> getCurrentUserId({bool includeRegion = true}) async {
     String userId;
     try {
       final amplifyResult = await Amplify.Auth.fetchAuthSession() as CognitoAuthSession;
@@ -131,10 +127,7 @@ class CognitoUserService extends AbsWithLifeCycle {
       );
       return amplifyResult.nextStep.updateAttributeStep == AuthUpdateAttributeStep.done
           ? const AuthPropertyResult(status: AuthPropertyStatus.done)
-          : AuthPropertyResult(
-              status: AuthPropertyStatus.confirmWithCode,
-              extra: amplifyResult,
-            );
+          : AuthPropertyResult(status: AuthPropertyStatus.confirmWithCode, extra: amplifyResult);
     } on AuthException catch (e) {
       logsHelper.d("Error modifying user email address: ${e.message}");
       return AuthPropertyResult(status: _parsePropertyException(e), extra: e);
@@ -160,10 +153,10 @@ class CognitoUserService extends AbsWithLifeCycle {
 
   /// This parses the received error to a [AuthPropertyStatus]
   static AuthPropertyStatus _parsePropertyException(AuthException exception) => switch (exception) {
-        AliasExistsException _ => AuthPropertyStatus.accountPropertyConflict,
-        CodeMismatchException _ => AuthPropertyStatus.wrongConfirmationCode,
-        InvalidParameterException _ => AuthPropertyStatus.badArgument,
-        NetworkException _ => AuthPropertyStatus.networkError,
-        _ => AuthPropertyStatus.genericError,
-      };
+    AliasExistsException _ => AuthPropertyStatus.accountPropertyConflict,
+    CodeMismatchException _ => AuthPropertyStatus.wrongConfirmationCode,
+    InvalidParameterException _ => AuthPropertyStatus.badArgument,
+    NetworkException _ => AuthPropertyStatus.networkError,
+    _ => AuthPropertyStatus.genericError,
+  };
 }

@@ -35,10 +35,10 @@ class FirebaseManagerConfig extends Equatable {
 
   @override
   List<Object?> get props => [
-        loggerEnabled,
-        parentLogsHelper,
-        firebaseAppName,
-        options,
-        firebaseServices,
-      ];
+    loggerEnabled,
+    parentLogsHelper,
+    firebaseAppName,
+    options,
+    firebaseServices,
+  ];
 }

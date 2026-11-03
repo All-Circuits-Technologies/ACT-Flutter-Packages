@@ -6,5 +6,5 @@
 /// service.
 enum CrashlyticsLoggerType {
   /// This logger type is used to log messages to crashlytics
-  crash;
+  crash,
 }

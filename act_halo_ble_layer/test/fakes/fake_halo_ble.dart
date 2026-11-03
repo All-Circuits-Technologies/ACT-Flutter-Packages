@@ -292,7 +292,11 @@ class FakeBlePlatform extends ReactiveBlePlatform {
       throw error!;
     }
 
-    written.add((characteristic: characteristic.characteristicId, value: value, withResponse: true));
+    written.add((
+      characteristic: characteristic.characteristicId,
+      value: value,
+      withResponse: true,
+    ));
 
     return WriteCharacteristicInfo(
       characteristic: characteristic,

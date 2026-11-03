@@ -12,14 +12,13 @@ import 'package:act_test_utility/act_test_utility.dart';
 const configPath = "assets/config/";
 
 /// The configuration of the application under test.
-class FakeAuthConfig extends AbstractConfigManager
-    with MixinStoresConf, MixinAuthLocalStorageConf {
+class FakeAuthConfig extends AbstractConfigManager with MixinStoresConf, MixinAuthLocalStorageConf {
   /// Class constructor
   FakeAuthConfig() : super(logger: const SilentLogger());
 }
 
 /// The properties of the application under test, which hold the tokens in clear text.
-class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecuredSecrets {}
+class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecuredSecrets;
 
 /// The secrets of the application under test, which hold the tokens where the platform keeps its
 /// secrets.

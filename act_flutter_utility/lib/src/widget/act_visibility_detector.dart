@@ -34,11 +34,7 @@ class ActVisibilityDetector extends StatefulWidget {
   final Widget child;
 
   /// HiddenDetector constructor
-  const ActVisibilityDetector({
-    super.key,
-    required this.onVisibilityChanged,
-    required this.child,
-  });
+  const ActVisibilityDetector({super.key, required this.onVisibilityChanged, required this.child});
 
   /// Create [_ActVisibilityDetectorState] linked to [ActVisibilityDetector] stateful widget
   @override
@@ -68,12 +64,12 @@ class _ActVisibilityDetectorState extends State<ActVisibilityDetector> with Widg
   /// Build widget tree
   @override
   Widget build(BuildContext context) => VisibilityDetector(
-        key: _visibilityDetectorKey,
-        onVisibilityChanged: (VisibilityInfo info) {
-          _setVisible(info.visibleFraction > 0);
-        },
-        child: widget.child,
-      );
+    key: _visibilityDetectorKey,
+    onVisibilityChanged: (VisibilityInfo info) {
+      _setVisible(info.visibleFraction > 0);
+    },
+    child: widget.child,
+  );
 
   /// From WidgetsBindingObserver mixin, catches minimized or restored app
   @override

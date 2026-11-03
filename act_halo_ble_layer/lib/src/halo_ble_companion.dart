@@ -41,17 +41,17 @@ class HaloBleCompanion {
   ///
   /// If [bleDevice] is null, this calls the method [_onUnsafeDisconnection]
   Future<void> onNewHaloBleDevice(BleDevice? bleDevice) => _bleMutex.protect(() async {
-        if (bleDevice == null) {
-          return _onUnsafeDisconnection();
-        }
+    if (bleDevice == null) {
+      return _onUnsafeDisconnection();
+    }
 
-        _bleDevice = bleDevice;
-        _bleDeviceState = _bleDevice!.connectionStateStream.listen(_onDeviceBleStateUpdate);
+    _bleDevice = bleDevice;
+    _bleDeviceState = _bleDevice!.connectionStateStream.listen(_onDeviceBleStateUpdate);
 
-        if (!(await _subscribeToNotifs(bleDevice: bleDevice))) {
-          return;
-        }
-      });
+    if (!(await _subscribeToNotifs(bleDevice: bleDevice))) {
+      return;
+    }
+  });
 
   /// Called when the current BLE device [_bleDevice] is disconnected from us
   Future<void> onDisconnection() => _bleMutex.protect(_onUnsafeDisconnection);
@@ -80,15 +80,14 @@ class HaloBleCompanion {
   Future<HaloErrorType> onlyWrite({
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
-  }) =>
-      _bleMutex.protect(() async {
-        if (_bleDevice == null) {
-          appLogger().w("The BLE device isn't connected we can't write data to it");
-          return HaloErrorType.commError;
-        }
+  }) => _bleMutex.protect(() async {
+    if (_bleDevice == null) {
+      appLogger().w("The BLE device isn't connected we can't write data to it");
+      return HaloErrorType.commError;
+    }
 
-        return _unsafeOnlyWrite(dataToWrite: dataToWrite, toWriteInto: toWriteInto);
-      });
+    return _unsafeOnlyWrite(dataToWrite: dataToWrite, toWriteInto: toWriteInto);
+  });
 
   /// Call to write the [dataToWrite] data in the characteristic [toWriteInto]
   /// This method doesn't verify if the [_bleDevice] is null or not (this has to be done in the
@@ -97,11 +96,15 @@ class HaloBleCompanion {
     required AbstractHaloCharacteristic toWriteInto,
     required Uint8List dataToWrite,
   }) async {
-    if (!(await bleManager.bleGattService
-            .writeBleCharacteristic(_bleDevice!, toWriteInto.uuid, dataToWrite))
-        .isSuccess) {
-      appLogger().w("A problem occurred when tried to write in the HALO characteristic: "
-          "${toWriteInto.name} (uuid: ${toWriteInto.uuid})");
+    if (!(await bleManager.bleGattService.writeBleCharacteristic(
+      _bleDevice!,
+      toWriteInto.uuid,
+      dataToWrite,
+    )).isSuccess) {
+      appLogger().w(
+        "A problem occurred when tried to write in the HALO characteristic: "
+        "${toWriteInto.name} (uuid: ${toWriteInto.uuid})",
+      );
       return HaloErrorType.commError;
     }
 
@@ -115,55 +118,53 @@ class HaloBleCompanion {
     required Uint8List dataToWrite,
     required MixCharNotification toWaitNotifyFrom,
     Duration? timeout = halo_ble_constants.maxWaitForResponseDuration,
-  }) =>
-      _bleMutex.protect(() async {
-        if (_bleDevice == null) {
-          appLogger().w("The BLE device isn't connected we can't write data to it");
-          return const ResultWithRequiredValue(status: HaloErrorType.commError);
-        }
+  }) => _bleMutex.protect(() async {
+    if (_bleDevice == null) {
+      appLogger().w("The BLE device isn't connected we can't write data to it");
+      return const ResultWithRequiredValue(status: HaloErrorType.commError);
+    }
 
-        final waiter = await toWaitNotifyFrom.prepareWaitResponse();
+    final waiter = await toWaitNotifyFrom.prepareWaitResponse();
 
-        if (waiter == null) {
-          // A problem occurred when tried to prepare the waiting
-          return const ResultWithRequiredValue(status: HaloErrorType.genericError);
-        }
+    if (waiter == null) {
+      // A problem occurred when tried to prepare the waiting
+      return const ResultWithRequiredValue(status: HaloErrorType.genericError);
+    }
 
-        final writeResult =
-            await _unsafeOnlyWrite(dataToWrite: dataToWrite, toWriteInto: toWriteInto);
+    final writeResult = await _unsafeOnlyWrite(dataToWrite: dataToWrite, toWriteInto: toWriteInto);
 
-        if (writeResult != HaloErrorType.noError) {
-          await waiter.cancel();
-          return ResultWithRequiredValue(status: writeResult);
-        }
+    if (writeResult != HaloErrorType.noError) {
+      await waiter.cancel();
+      return ResultWithRequiredValue(status: writeResult);
+    }
 
-        final result = await waiter.waitResponse(
-          timeout: timeout,
-        );
+    final result = await waiter.waitResponse(timeout: timeout);
 
-        if (result == null) {
-          // The waiter has been cancelled or an error occurred
-          return const ResultWithRequiredValue(status: HaloErrorType.genericError);
-        }
+    if (result == null) {
+      // The waiter has been cancelled or an error occurred
+      return const ResultWithRequiredValue(status: HaloErrorType.genericError);
+    }
 
-        return ResultWithRequiredValue(
-          status: HaloErrorType.noError,
-          value: Uint8List.fromList(result),
-        );
-      });
+    return ResultWithRequiredValue(
+      status: HaloErrorType.noError,
+      value: Uint8List.fromList(result),
+    );
+  });
 
   /// Subscribe to the HALO [bleDevice] characteristics notifications
   /// Returns false if a problem occurred in the process
-  Future<bool> _subscribeToNotifs({
-    required BleDevice bleDevice,
-  }) async {
+  Future<bool> _subscribeToNotifs({required BleDevice bleDevice}) async {
     for (final charToSub in haloBleConfig.notifiableHaloCharacteristics) {
-      final (result, stream) =
-          await bleManager.bleGattService.subscribeBleNotification(bleDevice, charToSub.uuid);
+      final (result, stream) = await bleManager.bleGattService.subscribeBleNotification(
+        bleDevice,
+        charToSub.uuid,
+      );
 
       if (!result.isSuccess || stream == null) {
-        appLogger().w("A problem occurred when tried to subscribe to the characteristic: "
-            "${charToSub.name} (uuid: ${charToSub.uuid}), in the device: ${bleDevice.name}");
+        appLogger().w(
+          "A problem occurred when tried to subscribe to the characteristic: "
+          "${charToSub.name} (uuid: ${charToSub.uuid}), in the device: ${bleDevice.name}",
+        );
         return false;
       }
 

@@ -113,33 +113,33 @@ class ActionErrorRetryTheme extends Equatable {
     bool forceContentTextStyleValue = false,
     double? buttonsSeparator,
     bool forceButtonsSeparatorValue = false,
-  }) =>
-      ActionErrorRetryTheme(
-          expandInParent: expandInParent ?? this.expandInParent,
-          headerContentColor:
-              headerContentColor ?? (forceHeaderContentColorValue ? null : this.headerContentColor),
-          topPadding: topPadding ?? (forceToPaddingValue ? null : this.topPadding),
-          headerPadding: headerPadding ?? (forceHeaderPaddingValue ? null : this.headerPadding),
-          headerTitleStyle:
-              headerTitleStyle ?? (forceHeaderTitleStyleValue ? null : this.headerTitleStyle),
-          bottomPadding: bottomPadding ?? (forceBottomPaddingValue ? null : this.bottomPadding),
-          contentPadding: contentPadding ?? (forceContentPaddingValue ? null : this.contentPadding),
-          contentTextStyle:
-              contentTextStyle ?? (forceContentTextStyleValue ? null : this.contentTextStyle),
-          buttonsSeparator:
-              buttonsSeparator ?? (forceButtonsSeparatorValue ? null : this.buttonsSeparator));
+  }) => ActionErrorRetryTheme(
+    expandInParent: expandInParent ?? this.expandInParent,
+    headerContentColor:
+        headerContentColor ?? (forceHeaderContentColorValue ? null : this.headerContentColor),
+    topPadding: topPadding ?? (forceToPaddingValue ? null : this.topPadding),
+    headerPadding: headerPadding ?? (forceHeaderPaddingValue ? null : this.headerPadding),
+    headerTitleStyle:
+        headerTitleStyle ?? (forceHeaderTitleStyleValue ? null : this.headerTitleStyle),
+    bottomPadding: bottomPadding ?? (forceBottomPaddingValue ? null : this.bottomPadding),
+    contentPadding: contentPadding ?? (forceContentPaddingValue ? null : this.contentPadding),
+    contentTextStyle:
+        contentTextStyle ?? (forceContentTextStyleValue ? null : this.contentTextStyle),
+    buttonsSeparator:
+        buttonsSeparator ?? (forceButtonsSeparatorValue ? null : this.buttonsSeparator),
+  );
 
   /// Class properties
   @override
   List<Object?> get props => [
-        expandInParent,
-        headerContentColor,
-        headerPadding,
-        headerTitleStyle,
-        topPadding,
-        bottomPadding,
-        contentPadding,
-        contentTextStyle,
-        buttonsSeparator
-      ];
+    expandInParent,
+    headerContentColor,
+    headerPadding,
+    headerTitleStyle,
+    topPadding,
+    bottomPadding,
+    contentPadding,
+    contentTextStyle,
+    buttonsSeparator,
+  ];
 }

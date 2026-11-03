@@ -29,9 +29,6 @@ analyzer:
     missing_enum_constant_in_switch: error
     unused_element_parameter: ignore
 
-  language:
-    strict-casts: true
-
 # To know the available rules to enable or disable, see https://dart.dev/tools/linter-rules
 linter:
   # The lint rules applied to this project can be customized in the
@@ -87,9 +84,6 @@ linter:
 
     # Avoid positional boolean parameters.
     avoid_positional_boolean_parameters: true
-
-    # Avoid private typedef functions.
-    avoid_private_typedef_functions: true
 
     # Avoid redundant argument values.
     avoid_redundant_argument_values: true
@@ -154,6 +148,9 @@ linter:
     # Document ignore comments.
     document_ignores: true
 
+    # Write empty bodies with a semicolon.
+    empty_container_bodies: true
+
     # Put a single newline at end of file.
     eol_at_end_of_file: true
 
@@ -180,6 +177,9 @@ linter:
 
     # Missing whitespace between adjacent strings.
     missing_whitespace_between_adjacent_strings: true
+
+    # Do not implicitly cast from dynamic.
+    no_dynamic_casts: true
 
     # Don't compare boolean expressions to boolean literals.
     no_literal_bool_comparisons: true

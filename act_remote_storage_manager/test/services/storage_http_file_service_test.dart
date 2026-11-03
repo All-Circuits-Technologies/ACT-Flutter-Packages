@@ -25,10 +25,7 @@ void main() {
         ..downloadUrl = null;
       final fileService = StorageHttpFileService(storageService: service);
 
-      expect(
-        () => fileService.get("aFile"),
-        throwsA(isA<ActStorageDownloadUrlException>()),
-      );
+      expect(() => fileService.get("aFile"), throwsA(isA<ActStorageDownloadUrlException>()));
     });
 
     test("says which file it could not find the address of", () async {

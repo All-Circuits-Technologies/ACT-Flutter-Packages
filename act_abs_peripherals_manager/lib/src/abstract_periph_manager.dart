@@ -55,8 +55,6 @@ abstract class AbstractPeriphManager extends AbsWithLifeCycle
       return false;
     }
 
-    return checkAndAskForEnabling(
-      isAcceptanceCompulsory: isAcceptanceCompulsory,
-    );
+    return checkAndAskForEnabling(isAcceptanceCompulsory: isAcceptanceCompulsory);
   }
 }

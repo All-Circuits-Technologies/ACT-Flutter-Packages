@@ -48,9 +48,9 @@ class BaseValueKeeper<S extends T, T> {
   set value(S newValue) => _value = newValue;
 
   /// Class constructor
-  BaseValueKeeper({required T value}) : _value = value;
+  BaseValueKeeper({required this._value});
 
   /// Class constructor to create a ValueKeeper from a setter value, which can be useful when you
   /// want to use the ValueKeeper in a setter callback
-  BaseValueKeeper.fromSetterValue({required S value}) : _value = value;
+  BaseValueKeeper.fromSetterValue({required S this._value});
 }

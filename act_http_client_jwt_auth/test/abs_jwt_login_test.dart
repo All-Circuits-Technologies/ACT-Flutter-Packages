@@ -42,7 +42,9 @@ void main() {
     });
 
     test("adds the token of the user to the request", () async {
-      final login = aLogin(answered: AuthTokens(accessToken: aToken(name: "a raw token")));
+      final login = aLogin(
+        answered: AuthTokens(accessToken: aToken(name: "a raw token")),
+      );
       final request = aRequest();
 
       await login.manageLogInWithRequest(request);

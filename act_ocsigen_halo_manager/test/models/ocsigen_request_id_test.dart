@@ -15,10 +15,7 @@ void main() {
   group("OcsigenRequestId", () {
     test("tells a function and a procedure which share a value apart", () {
       expect(OcsigenRequestId.echo.rawValue, OcsigenRequestId.quitCommunication.rawValue);
-      expect(
-        OcsigenRequestId.echo.uniqueId,
-        isNot(OcsigenRequestId.quitCommunication.uniqueId),
-      );
+      expect(OcsigenRequestId.echo.uniqueId, isNot(OcsigenRequestId.quitCommunication.uniqueId));
     });
 
     test("says which requests are answered with a value", () {

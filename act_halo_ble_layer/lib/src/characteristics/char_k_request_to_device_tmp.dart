@@ -9,18 +9,16 @@ import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteris
 import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
 
 /// The HALO characteristic K for request to device temporary exchange
-class CharKRequestToDeviceTmp extends AbstractHaloCharacteristic
-    with MixCharNotification {
+class CharKRequestToDeviceTmp extends AbstractHaloCharacteristic with MixCharNotification {
   /// The characteristic name
   static const characteristicName = "request_to_device_exchange_zone";
 
   /// Class constructor
-  CharKRequestToDeviceTmp({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readWrite,
-          receiveType: Uint8List,
-          sendType: Uint8List,
-        );
+  CharKRequestToDeviceTmp({required super.uuid})
+    : super(
+        name: characteristicName,
+        scope: CharacteristicScope.readWrite,
+        receiveType: Uint8List,
+        sendType: Uint8List,
+      );
 }

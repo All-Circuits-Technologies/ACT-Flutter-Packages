@@ -16,9 +16,7 @@ class CognitoDeleteService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor
-  CognitoDeleteService({
-    required this.logsHelper,
-  }) : super();
+  CognitoDeleteService({required this.logsHelper}) : super();
 
   /// User account deletion entry-point
   ///
@@ -38,18 +36,18 @@ class CognitoDeleteService extends AbsWithLifeCycle {
 
   /// AWS API throw upon any error. This method converts those errors into an enum.
   static AuthDeleteStatus _parseException(AuthException exception) => switch (exception) {
-        NetworkException _ =>
-          // Message example: "The request failed due to a network error."
-          // Recovery suggestion example: "Ensure that you have an active network connection"
-          AuthDeleteStatus.networkError,
-        NotAuthorizedServiceException _ =>
-          // ex: "User is disabled"
-          // (no recovery suggestion)
-          AuthDeleteStatus.genericError,
-        UserNotFoundException _ =>
-          // ex: "User does not exist"
-          // (no recovery suggestion)
-          AuthDeleteStatus.genericError,
-        _ => AuthDeleteStatus.genericError,
-      };
+    NetworkException _ =>
+      // Message example: "The request failed due to a network error."
+      // Recovery suggestion example: "Ensure that you have an active network connection"
+      AuthDeleteStatus.networkError,
+    NotAuthorizedServiceException _ =>
+      // ex: "User is disabled"
+      // (no recovery suggestion)
+      AuthDeleteStatus.genericError,
+    UserNotFoundException _ =>
+      // ex: "User does not exist"
+      // (no recovery suggestion)
+      AuthDeleteStatus.genericError,
+    _ => AuthDeleteStatus.genericError,
+  };
 }

@@ -56,10 +56,9 @@ class LockUtility {
   int _currentParallelNb;
 
   /// Class constructor
-  LockUtility({
-    this.maxParallelRequestsNb = defaultMaxParallelRequestsNb,
-  })  : _currentParallelNb = 0,
-        _lockEntity = LockEntity();
+  LockUtility({this.maxParallelRequestsNb = defaultMaxParallelRequestsNb})
+    : _currentParallelNb = 0,
+      _lockEntity = LockEntity();
 
   /// Test if the lock is currently locked
   bool get isLocked => _lockEntity.isLocked;

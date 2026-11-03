@@ -50,10 +50,10 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
 
   /// Class constructor
   TbStdAuthService()
-      : _authStatus = AuthStatus.signedOut,
-        _authStatusCtrl = StreamController<AuthStatus>.broadcast(),
-        _logsHelper = LogsHelper(category: _logsCategory),
-        _mutex = Mutex();
+    : _authStatus = AuthStatus.signedOut,
+      _authStatusCtrl = StreamController<AuthStatus>.broadcast(),
+      _logsHelper = LogsHelper(category: _logsCategory),
+      _mutex = Mutex();
 
   /// Init the service
   @override
@@ -83,13 +83,13 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override
   Future<bool> signOut() => _mutex.protect(() async {
-        await _noAuthReqManager.tbClient.logout();
-        await _storageService?.clearUserIds();
+    await _noAuthReqManager.tbClient.logout();
+    await _storageService?.clearUserIds();
 
-        _setAuthStatus(AuthStatus.signedOut);
+    _setAuthStatus(AuthStatus.signedOut);
 
-        return true;
-      });
+    return true;
+  });
 
   /// {@macro act_shared_auth.MixinAuthService.isUserSigned}
   @override
@@ -97,9 +97,9 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
 
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
-  Future<AuthTokens?> getTokens() => _mutex.protect(() async => _unSafeGetTokens(
-        initTokensLoading: _noAuthReqManager.readTokensFromClient,
-      ));
+  Future<AuthTokens?> getTokens() => _mutex.protect(
+    () async => _unSafeGetTokens(initTokensLoading: _noAuthReqManager.readTokensFromClient),
+  );
 
   /// This method is useful to update, if needed, the [AuthStatus] by calling [_setAuthStatus].
   ///
@@ -129,35 +129,38 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   Future<AuthSignInResult> _unSafeSignInUser({
     required String username,
     required String password,
-  }) =>
-      _wrapSetAuthUser(() async {
-        final loginResponse = await _noAuthReqManager.request(
-          (tbClient) async => tbClient.login(LoginRequest(username, password)),
+  }) => _wrapSetAuthUser(
+    () async {
+      final loginResponse = await _noAuthReqManager.request(
+        (tbClient) async => tbClient.login(LoginRequest(username, password)),
+      );
+
+      if (loginResponse.status != RequestStatus.success) {
+        _logsHelper.w(
+          "A problem occurred when tried to sign in the user thanks to the identifiers "
+          "given",
         );
+        return AuthSignInResult(status: loginResponse.status.signInStatus);
+      }
 
-        if (loginResponse.status != RequestStatus.success) {
-          _logsHelper
-              .w("A problem occurred when tried to sign in the user thanks to the identifiers "
-                  "given");
-          return AuthSignInResult(status: loginResponse.status.signInStatus);
-        }
+      if (await _storageService?.isUserIdsStorageSupported() ?? false) {
+        await _storageService?.storeUserIds(username: username, password: password);
+      }
 
-        if (await _storageService?.isUserIdsStorageSupported() ?? false) {
-          await _storageService?.storeUserIds(username: username, password: password);
-        }
+      return const AuthSignInResult(status: AuthSignInStatus.done);
+    },
+    testResult: (result) {
+      if (result.status == AuthSignInStatus.done) {
+        return AuthStatus.signedIn;
+      }
 
-        return const AuthSignInResult(status: AuthSignInStatus.done);
-      }, testResult: (result) {
-        if (result.status == AuthSignInStatus.done) {
-          return AuthStatus.signedIn;
-        }
+      if (result.status == AuthSignInStatus.sessionExpired) {
+        return AuthStatus.sessionExpired;
+      }
 
-        if (result.status == AuthSignInStatus.sessionExpired) {
-          return AuthStatus.sessionExpired;
-        }
-
-        return null;
-      });
+      return null;
+    },
+  );
 
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   ///
@@ -166,41 +169,42 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// [initTokensLoading] is used to get the tokens from memory at start
   Future<AuthTokens?> _unSafeGetTokens({
     required FutureOr<AuthTokens?> Function() initTokensLoading,
-  }) =>
-      _wrapSetAuthUser(() async {
-        if (await _tryToLogInFromTokens(loadTokens: initTokensLoading)) {
-          final tokens = _noAuthReqManager.readTokensFromClient();
-          if (tokens == null) {
-            appLogger()
-                .e("We try to log in from tokens, it succeeds but there is no value stored in "
-                    "tb client (which can't happen)");
-            return null;
-          }
+  }) => _wrapSetAuthUser(() async {
+    if (await _tryToLogInFromTokens(loadTokens: initTokensLoading)) {
+      final tokens = _noAuthReqManager.readTokensFromClient();
+      if (tokens == null) {
+        appLogger().e(
+          "We try to log in from tokens, it succeeds but there is no value stored in "
+          "tb client (which can't happen)",
+        );
+        return null;
+      }
 
-          _setAuthStatus(AuthStatus.signedIn);
-          return tokens;
-        }
+      _setAuthStatus(AuthStatus.signedIn);
+      return tokens;
+    }
 
-        if (_storageService == null || !(await _storageService!.isUserIdsStorageSupported())) {
-          // The storage service doesn't exist or we don't support the user ids storage
-          return null;
-        }
+    if (_storageService == null || !(await _storageService!.isUserIdsStorageSupported())) {
+      // The storage service doesn't exist or we don't support the user ids storage
+      return null;
+    }
 
-        if (!(await _tryToLogInFromUsersInMemory(storageService: _storageService!))) {
-          // Failed to log user from memory (this may happen if there are no ids in memory)
-          return null;
-        }
+    if (!(await _tryToLogInFromUsersInMemory(storageService: _storageService!))) {
+      // Failed to log user from memory (this may happen if there are no ids in memory)
+      return null;
+    }
 
-        final tokens = _noAuthReqManager.readTokensFromClient();
-        if (tokens == null) {
-          appLogger()
-              .e("We try to log in from user ids, it succeeds but there is no value stored in "
-                  "tb client (which can't happen)");
-          return null;
-        }
+    final tokens = _noAuthReqManager.readTokensFromClient();
+    if (tokens == null) {
+      appLogger().e(
+        "We try to log in from user ids, it succeeds but there is no value stored in "
+        "tb client (which can't happen)",
+      );
+      return null;
+    }
 
-        return tokens;
-      }, testResult: (result) => result != null ? AuthStatus.signedIn : AuthStatus.sessionExpired);
+    return tokens;
+  }, testResult: (result) => result != null ? AuthStatus.signedIn : AuthStatus.sessionExpired);
 
   /// To call in order to the set the [AuthStatus] and send an event to the [AuthStatus] stream
   void _setAuthStatus(AuthStatus value) {
@@ -217,9 +221,7 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
   /// Try to sign in the user from the tokens returned by [loadTokens] method
   ///
   /// Return true if no problem occurred
-  Future<bool> _tryToLogInFromTokens({
-    required FutureOr<AuthTokens?> Function() loadTokens,
-  }) async {
+  Future<bool> _tryToLogInFromTokens({required FutureOr<AuthTokens?> Function() loadTokens}) async {
     final tokens = await loadTokens();
     if (tokens == null) {
       // We can't log the user, there is no tokens to use
@@ -274,8 +276,10 @@ class TbStdAuthService extends AbsWithLifeCycle with MixinAuthService {
       return false;
     }
 
-    final signInResult =
-        await _unSafeSignInUser(username: userIds.username, password: userIds.password);
+    final signInResult = await _unSafeSignInUser(
+      username: userIds.username,
+      password: userIds.password,
+    );
     if (signInResult.status != AuthSignInStatus.done) {
       // If we failed to signIn user from memory, we clear the storage
       await storageService.clearUserIds();

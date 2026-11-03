@@ -20,11 +20,8 @@ class TbDeviceTimeSeries extends ATbTelemetry<TbTsValue> {
 
   /// Create a subscription command linked to time series
   @override
-  SubscriptionCmd createSubCmd(String keys) => TimeseriesSubscriptionCmd(
-        entityType: EntityType.DEVICE,
-        entityId: deviceId,
-        keys: keys,
-      );
+  SubscriptionCmd createSubCmd(String keys) =>
+      TimeseriesSubscriptionCmd(entityType: EntityType.DEVICE, entityId: deviceId, keys: keys);
 
   /// Called to parse the subscription update received and get the [TsValue] linked
   @override

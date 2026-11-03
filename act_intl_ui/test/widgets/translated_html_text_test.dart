@@ -85,9 +85,7 @@ void main() {
     });
 
     testWidgets("lets the user scroll a text which is longer than the page", (tester) async {
-      FakeAssets.serve({
-        "assets/texts/terms_fr_FR.html": "<p>${"les conditions " * 500}</p>",
-      });
+      FakeAssets.serve({"assets/texts/terms_fr_FR.html": "<p>${"les conditions " * 500}</p>"});
 
       await aPage(tester);
       await tester.pumpAndSettle();

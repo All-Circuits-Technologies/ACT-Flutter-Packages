@@ -33,9 +33,7 @@ class ElementLoaderConfig<T> extends Equatable {
   ///
   /// This is useful to use methods of the derived class as [sortItems] method.
   @protected
-  ElementLoaderConfig.lateConstruct()
-      : callbacks = [],
-        extraAppFilters = [];
+  ElementLoaderConfig.lateConstruct() : callbacks = [], extraAppFilters = [];
 
   /// {@template act_http_client_manager.ElementLoaderConfig.copyWith}
   /// Copy the current state and update the properties with those given
@@ -44,12 +42,11 @@ class ElementLoaderConfig<T> extends Equatable {
     List<ElementLoaderCallback<T>>? callbacks,
     Comparator<T>? sortItems,
     List<bool Function(T model)>? extraAppFilters,
-  }) =>
-      ElementLoaderConfig(
-        callbacks: callbacks ?? this.callbacks,
-        sortItems: sortItems ?? this.sortItems,
-        extraAppFilters: extraAppFilters ?? this.extraAppFilters,
-      );
+  }) => ElementLoaderConfig(
+    callbacks: callbacks ?? this.callbacks,
+    sortItems: sortItems ?? this.sortItems,
+    extraAppFilters: extraAppFilters ?? this.extraAppFilters,
+  );
 
   /// Class properties
   @mustCallSuper

@@ -25,9 +25,7 @@ void main() {
 
   group("MixinAuthLocalStorageConf", () {
     test("reads that an application keeps the credentials of its users", () async {
-      final config = await aConfig(
-        "auth:\n  secrets:\n    localStorage:\n      saveUserIds: true",
-      );
+      final config = await aConfig("auth:\n  secrets:\n    localStorage:\n      saveUserIds: true");
 
       expect(config.saveUserIdsInStorage.load(), isTrue);
     });

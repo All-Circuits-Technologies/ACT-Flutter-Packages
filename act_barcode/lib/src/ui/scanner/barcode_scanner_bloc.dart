@@ -60,15 +60,13 @@ class BarcodeScannerBloc extends BlocForMixin<BarcodeScannerState>
   /// front of the camera once (`DetectionSpeed.noDuplicates`), and disposes it.
   BarcodeScannerBloc({
     MobileScannerController? controller,
-    bool displayContextualIfNeeded = false,
-    bool isAcceptanceCompulsory = false,
+    this._displayContextualIfNeeded = false,
+    this._isAcceptanceCompulsory = false,
   }) : _logsHelper = LogsHelper(category: _loggerCategory),
        _controller =
            controller ?? MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates),
        _ownsController = controller == null,
        _monitor = _createMonitor(),
-       _displayContextualIfNeeded = displayContextualIfNeeded,
-       _isAcceptanceCompulsory = isAcceptanceCompulsory,
        super(const BarcodeScannerState.init());
 
   /// {@macro act_flutter_utility.BlocForMixin.registerMixinEvents}

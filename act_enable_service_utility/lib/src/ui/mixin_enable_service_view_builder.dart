@@ -8,14 +8,9 @@ import 'package:act_enable_service_utility/act_enable_service_utility.dart';
 /// Add specific methods to [AbstractViewBuilder] when using enable service utility
 mixin MixinEnableServiceViewBuilder on AbstractViewBuilder {
   /// This allows to register a page to display when a service enabling is asked to user
-  void onEnablePage({
-    required MixinRoute route,
-    required EnableServiceElement element,
-  }) =>
+  void onEnablePage({required MixinRoute route, required EnableServiceElement element}) =>
       onContextualPage(
-        context: EnableServiceViewContext(
-          element: element,
-        ),
+        context: EnableServiceViewContext(element: element),
         route: route,
       );
 
@@ -23,11 +18,8 @@ mixin MixinEnableServiceViewBuilder on AbstractViewBuilder {
   void onEnableDialog({
     required EnableServiceElement element,
     required DisplayDialog<EnableServiceViewContext> displayDialog,
-  }) =>
-      onContextualDialog(
-        context: EnableServiceViewContext(
-          element: element,
-        ),
-        displayDialog: displayDialog,
-      );
+  }) => onContextualDialog(
+    context: EnableServiceViewContext(element: element),
+    displayDialog: displayDialog,
+  );
 }

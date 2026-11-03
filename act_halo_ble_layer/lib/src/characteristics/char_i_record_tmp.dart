@@ -13,11 +13,6 @@ class CharIRecordTmp extends AbstractHaloCharacteristic {
   static const characteristicName = "record_data_exchange_zone";
 
   /// Class constructor
-  CharIRecordTmp({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readOnly,
-          receiveType: Uint8List,
-        );
+  CharIRecordTmp({required super.uuid})
+    : super(name: characteristicName, scope: CharacteristicScope.readOnly, receiveType: Uint8List);
 }

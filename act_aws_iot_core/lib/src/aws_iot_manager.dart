@@ -21,29 +21,33 @@ import 'package:flutter/foundation.dart';
 /// You must specify the [AuthManager] and [AmplifyManager] types to use in the
 /// [AwsIotManager] instance.
 class AwsIotBuilder<
-    T extends AwsIotManager<AuthManager, AmplifyManager, ConfigManager>,
-    AuthManager extends AbsAuthManager,
-    AmplifyManager extends AbsAmplifyManager,
-    ConfigManager extends MixinAwsIotConf> extends AbsLifeCycleFactory<T> {
+  T extends AwsIotManager<AuthManager, AmplifyManager, ConfigManager>,
+  AuthManager extends AbsAuthManager,
+  AmplifyManager extends AbsAmplifyManager,
+  ConfigManager extends MixinAwsIotConf
+>
+    extends AbsLifeCycleFactory<T> {
   /// Class constructor
   AwsIotBuilder(super.factory);
 
   @override
   @mustCallSuper
   Iterable<Type> dependsOn() => [
-        LoggerManager,
-        ConfigManager,
-        InternetConnectivityManager,
-        AmplifyManager,
-        AuthManager,
-      ];
+    LoggerManager,
+    ConfigManager,
+    InternetConnectivityManager,
+    AmplifyManager,
+    AuthManager,
+  ];
 }
 
 /// Abstract class to store aws iot services and manage them in an application.
 abstract class AwsIotManager<
-    AuthManager extends AbsAuthManager,
-    AmplifyManager extends AbsAmplifyManager,
-    ConfigManager extends MixinAwsIotConf> extends AbsWithLifeCycle {
+  AuthManager extends AbsAuthManager,
+  AmplifyManager extends AbsAmplifyManager,
+  ConfigManager extends MixinAwsIotConf
+>
+    extends AbsWithLifeCycle {
   /// Class logger category
   static const String _awsIotManagerLogCategory = 'aws_iot';
 
@@ -75,9 +79,7 @@ abstract class AwsIotManager<
   @mustCallSuper
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    logsHelper = LogsHelper(
-      category: _awsIotManagerLogCategory,
-    );
+    logsHelper = LogsHelper(category: _awsIotManagerLogCategory);
     logsHelper.d('Starting aws iot services...');
 
     // Create the configuration for the services

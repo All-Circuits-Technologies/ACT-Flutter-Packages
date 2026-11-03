@@ -48,20 +48,12 @@ class HaloPayloadPacket {
   /// This method transforms the payload as a packet ready to be received by the device.
   ///
   /// The method also splits the packet in several part, depending of the [maxPacketSize]
-  List<Uint8List> getDataToSend({
-    int maxPacketSize = -1,
-  }) =>
-      HaloPacketUtility.formatPackets(
-        escapedDataToSend: _elements,
-        maxPacketSize: maxPacketSize,
-      );
+  List<Uint8List> getDataToSend({int maxPacketSize = -1}) =>
+      HaloPacketUtility.formatPackets(escapedDataToSend: _elements, maxPacketSize: maxPacketSize);
 
   /// Helpful method to add a string in the list of packet element, you may also prepend the value
   /// with a [ts] timestamp
-  void addString(
-    String toSend, {
-    DateTime? ts,
-  }) {
+  void addString(String toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatString(toSend, ts: ts);
     _elements.add(element);
   }
@@ -69,10 +61,7 @@ class HaloPayloadPacket {
   /// Helpful method to add a string list in the list of packet elements, you may also prepend the
   /// values list with a [ts] timestamp
   /// The list is flattened in the packet elements list
-  void addStringList(
-    List<String> toSend, {
-    DateTime? ts,
-  }) {
+  void addStringList(List<String> toSend, {DateTime? ts}) {
     for (var idx = 0; idx < toSend.length; ++idx) {
       addString(toSend[idx], ts: (idx == 0) ? ts : null);
     }
@@ -84,8 +73,10 @@ class HaloPayloadPacket {
   /// If a timestamp is attached to the element, it will be returned
   BoolResultWithRequiredValue<HaloTimestampedValue<String>> getString(int elemIdx) {
     if (elemIdx >= elementsNb) {
-      appLogger().w("We can't get a string where the idx: $elemIdx, overflows the payload packet "
-          "element list size: $elementsNb");
+      appLogger().w(
+        "We can't get a string where the idx: $elemIdx, overflows the payload packet "
+        "element list size: $elementsNb",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -110,14 +101,18 @@ class HaloPayloadPacket {
     if (fromStartIdx > elementsNb) {
       // If the [fromStartIdx] is equal to the elementsNb this can mean that the list you want to
       // get is empty
-      appLogger().w("We can't get a string list where the idx: $fromStartIdx, overflows the "
-          "payload packet element list size: $elementsNb");
+      appLogger().w(
+        "We can't get a string list where the idx: $fromStartIdx, overflows the "
+        "payload packet element list size: $elementsNb",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
     if (length != -1 && (fromStartIdx + length - 1) >= elementsNb) {
-      appLogger().w("We can't get a string list where the last idx: ${fromStartIdx + length - 1}, "
-          "overflows the payload packet element list size: $elementsNb");
+      appLogger().w(
+        "We can't get a string list where the last idx: ${fromStartIdx + length - 1}, "
+        "overflows the payload packet element list size: $elementsNb",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -159,10 +154,7 @@ class HaloPayloadPacket {
   /// Helpful method to add a boolean list in the list of packet elements, you may also prepend the
   /// values list with a [ts] timestamp
   /// The list is flattened in the packet elements list
-  void addBooleanList(
-    List<bool> toSend, {
-    DateTime? ts,
-  }) {
+  void addBooleanList(List<bool> toSend, {DateTime? ts}) {
     for (var idx = 0; idx < toSend.length; ++idx) {
       addBoolean(toSend[idx], ts: (idx == 0) ? ts : null);
     }
@@ -175,8 +167,10 @@ class HaloPayloadPacket {
   /// If a timestamp is attached to the element, it will be returned
   BoolResultWithRequiredValue<HaloTimestampedValue<bool>> getBoolean(int elemIdx) {
     if (elemIdx >= elementsNb) {
-      appLogger().w("We can't a boolean where the idx: $elemIdx, overflows the payload packet "
-          "element list size: $elementsNb");
+      appLogger().w(
+        "We can't a boolean where the idx: $elemIdx, overflows the payload packet "
+        "element list size: $elementsNb",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -185,10 +179,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add an unsigned integer of 8bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addUInt8(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addUInt8(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatUInt8(toSend, ts: ts);
 
     if (element == null) {
@@ -201,10 +192,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add an unsigned integer of 16bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addUInt16(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addUInt16(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatUInt16(toSend, ts: ts);
 
     if (element == null) {
@@ -217,10 +205,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add an unsigned integer of 32bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addUInt32(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addUInt32(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatUInt32(toSend, ts: ts);
 
     if (element == null) {
@@ -233,10 +218,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add a signed integer of 8bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addInt8(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addInt8(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatInt8(toSend, ts: ts);
 
     if (element == null) {
@@ -249,10 +231,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add a signed integer of 16bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addInt16(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addInt16(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatInt16(toSend, ts: ts);
 
     if (element == null) {
@@ -265,10 +244,7 @@ class HaloPayloadPacket {
 
   /// Helpful method to add a signed integer of 32bits in the list of packet element, you may
   /// also prepend the value with a [ts] timestamp
-  bool addInt32(
-    int toSend, {
-    DateTime? ts,
-  }) {
+  bool addInt32(int toSend, {DateTime? ts}) {
     final element = HaloPacketUtility.formatInt32(toSend, ts: ts);
 
     if (element == null) {
@@ -289,16 +265,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaInt8(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToInt8(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaInt8(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToInt8(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -317,16 +285,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaInt16(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToInt16(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaInt16(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToInt16(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -345,16 +305,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaInt32(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToInt32(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaInt32(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToInt32(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -373,16 +325,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaUInt8(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToUInt8(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaUInt8(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToUInt8(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -401,16 +345,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaUInt16(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToUInt16(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaUInt16(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToUInt16(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -429,16 +365,8 @@ class HaloPayloadPacket {
   ///
   /// If you want to set [powerOfTenCoeff] to 0, it's better to use the method [double.toInt] and
   /// uses the add integer methods
-  bool addDoubleViaUInt32(
-    double toSend,
-    int powerOfTenCoeff, {
-    DateTime? ts,
-  }) {
-    final intValue = NumUtility.convertDoubleToUInt32(
-      toSend,
-      powerOfTenCoeff,
-      logger: appLogger(),
-    );
+  bool addDoubleViaUInt32(double toSend, int powerOfTenCoeff, {DateTime? ts}) {
+    final intValue = NumUtility.convertDoubleToUInt32(toSend, powerOfTenCoeff, logger: appLogger());
 
     if (intValue == null) {
       return false;
@@ -474,8 +402,10 @@ class HaloPayloadPacket {
     required bool isSigned,
   }) {
     if (elemIdx >= elementsNb) {
-      appLogger().w("We can't a number where the idx: $elemIdx, overflows the payload packet "
-          "element list size: $elementsNb");
+      appLogger().w(
+        "We can't a number where the idx: $elemIdx, overflows the payload packet "
+        "element list size: $elementsNb",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 

@@ -60,10 +60,7 @@ void main() {
     });
 
     test("uses the given unique element", () {
-      expect(
-        ["a1", "b1", "a2"].distinct<String>(getUniqueElem: (item) => item[0]),
-        ["a1", "b1"],
-      );
+      expect(["a1", "b1", "a2"].distinct<String>(getUniqueElem: (item) => item[0]), ["a1", "b1"]);
     });
   });
 

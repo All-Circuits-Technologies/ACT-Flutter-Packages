@@ -51,14 +51,13 @@ class RemoteLocalDirOptions extends Equatable {
     bool forceCacheVersionValue = false,
     bool? cacheFile,
     bool forceCacheFileValue = false,
-  }) =>
-      RemoteLocalDirOptions(
-        locales: locales ?? (forceLocalesValue ? null : this.locales),
-        versionToFileName:
-            versionToFileName ?? (forceVersionToFileNameValue ? null : this.versionToFileName),
-        cacheVersion: cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
-        cacheFile: cacheFile ?? (forceCacheFileValue ? null : this.cacheFile),
-      );
+  }) => RemoteLocalDirOptions(
+    locales: locales ?? (forceLocalesValue ? null : this.locales),
+    versionToFileName:
+        versionToFileName ?? (forceVersionToFileNameValue ? null : this.versionToFileName),
+    cacheVersion: cacheVersion ?? (forceCacheVersionValue ? null : this.cacheVersion),
+    cacheFile: cacheFile ?? (forceCacheFileValue ? null : this.cacheFile),
+  );
 
   /// Parses a [RemoteLocalDirOptions] from a JSON map.
   /// Returns `null` if the parsing fails.

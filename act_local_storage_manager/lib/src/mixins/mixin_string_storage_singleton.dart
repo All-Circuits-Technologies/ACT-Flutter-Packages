@@ -81,9 +81,7 @@ mixin MixinStringStorageSingleton on MixinStorageSingleton {
       // A _SecretItem<unsupported T> member was added to SecretsManager.
       // Dear developer, please add the support for your specific T.
       appLogger().e('Unsupported type $T');
-      throw ActUnsupportedTypeError<T>(
-        context: "key: $key",
-      );
+      throw ActUnsupportedTypeError<T>(context: "key: $key");
     }
 
     return valueStrResult.value;

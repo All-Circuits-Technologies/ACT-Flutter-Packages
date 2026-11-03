@@ -56,10 +56,7 @@ sealed class UriUtility {
     required List<String> segments,
     Map<String, String> parameters = const {},
   }) {
-    final path = formatPathFromSegments(
-      segments: segments,
-      parameters: parameters,
-    );
+    final path = formatPathFromSegments(segments: segments, parameters: parameters);
 
     return Uri.encodeFull(path);
   }

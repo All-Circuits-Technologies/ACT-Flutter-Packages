@@ -52,12 +52,9 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsRemoteStorageMa
 
     _registerPaintingImagePath(
       fileId: fileId,
-      paintingImageFileKey: flutterPaintingImageKey ??
-          createKey(
-            fileId: fileId,
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-          ),
+      paintingImageFileKey:
+          flutterPaintingImageKey ??
+          createKey(fileId: fileId, maxWidth: maxWidth, maxHeight: maxHeight),
     );
 
     return imageResult;
@@ -75,10 +72,7 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsRemoteStorageMa
   ///
   /// If [clearPaintingCache] is equals to false, it's like calling [clearFileFromCache].
   /// {@endtemplate}
-  Future<void> clearImageFileFromCache(
-    String fileId, {
-    bool clearPaintingCache = true,
-  }) async {
+  Future<void> clearImageFileFromCache(String fileId, {bool clearPaintingCache = true}) async {
     await super.clearFileFromCache(fileId);
 
     final keys = _paintingImagesKeys[fileId];
@@ -91,8 +85,10 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsRemoteStorageMa
       try {
         PaintingBinding.instance.imageCache.evict(key);
       } catch (error) {
-        logsHelper.e("An error occurred when tried to evict the files linked to: $fileId, and "
-            "the key: $key, from the painting image cache");
+        logsHelper.e(
+          "An error occurred when tried to evict the files linked to: $fileId, and "
+          "the key: $key, from the painting image cache",
+        );
       }
     }
 
@@ -112,31 +108,28 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsRemoteStorageMa
     bool useCache = true,
   }) async {
     if (useCache && cacheService != null) {
-      return cacheService!.getImageFile(
-        fileId,
-        maxWidth: maxWidth,
-        maxHeight: maxHeight,
-      );
+      return cacheService!.getImageFile(fileId, maxWidth: maxWidth, maxHeight: maxHeight);
     }
 
     if (useCache && cacheService == null) {
-      logsHelper.w('Trying to use cache to get image file but no cache service is available, '
-          'ignoring cache.');
+      logsHelper.w(
+        'Trying to use cache to get image file but no cache service is available, '
+        'ignoring cache.',
+      );
     }
 
     if (maxWidth != null || maxHeight != null) {
-      logsHelper.i("You try to get the image file: $fileId, from the storage service and not the "
-          "cache service. The maxWidth and maxHeight parameters won't be used to get the image "
-          "file");
+      logsHelper.i(
+        "You try to get the image file: $fileId, from the storage service and not the "
+        "cache service. The maxWidth and maxHeight parameters won't be used to get the image "
+        "file",
+      );
     }
     return storageService.getFile(fileId);
   }
 
   /// Register the [paintingImageFileKey] linked to the given [fileId] in the [_paintingImagesKeys].
-  void _registerPaintingImagePath({
-    required String fileId,
-    required Object paintingImageFileKey,
-  }) {
+  void _registerPaintingImagePath({required String fileId, required Object paintingImageFileKey}) {
     final files = _paintingImagesKeys.putIfAbsent(fileId, () => []);
     if (!files.contains(paintingImageFileKey)) {
       files.add(paintingImageFileKey);
@@ -150,12 +143,11 @@ mixin MixinImageCacheService<C extends MixinStorageConfig> on AbsRemoteStorageMa
     required String fileId,
     required double? maxWidth,
     required double? maxHeight,
-  }) =>
-      createKey(
-        fileId: fileId,
-        maxWidth: maxWidth != null && maxWidth.isFinite ? maxWidth.ceil() : null,
-        maxHeight: maxHeight != null && maxHeight.isFinite ? maxHeight.ceil() : null,
-      );
+  }) => createKey(
+    fileId: fileId,
+    maxWidth: maxWidth != null && maxWidth.isFinite ? maxWidth.ceil() : null,
+    maxHeight: maxHeight != null && maxHeight.isFinite ? maxHeight.ceil() : null,
+  );
 
   /// {@template act_remote_storage_ui.MixinImageCacheService.createKey}
   /// Create an image key with the [maxWidth] and [maxHeight] in the key. This is useful, to have an

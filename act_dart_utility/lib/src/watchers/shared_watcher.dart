@@ -37,10 +37,7 @@ abstract class SharedWatcher<T extends SharedHandler> {
   int _handlerNb;
 
   /// Class constructor
-  SharedWatcher({
-    this.thresholdDuration,
-  })  : _handlerMutex = Mutex(),
-        _handlerNb = 0;
+  SharedWatcher({this.thresholdDuration}) : _handlerMutex = Mutex(), _handlerNb = 0;
 
   /// Returns the current state of the watcher
   @protected
@@ -65,45 +62,45 @@ abstract class SharedWatcher<T extends SharedHandler> {
 
   /// Call by a handler at it's creation
   Future<void> _takeOne() async => _handlerMutex.protect(() async {
-        _handlerNb++;
+    _handlerNb++;
 
-        if (_handlerNb == 1) {
-          if (_thresholdTimer != null) {
-            // No need to call first handler because the whenNoMoreHandler method hasn't been called
-            // yet
-            _thresholdTimer?.cancel();
-            _thresholdTimer = null;
-          } else {
-            await atFirstHandler();
-          }
-        }
-      });
+    if (_handlerNb == 1) {
+      if (_thresholdTimer != null) {
+        // No need to call first handler because the whenNoMoreHandler method hasn't been called
+        // yet
+        _thresholdTimer?.cancel();
+        _thresholdTimer = null;
+      } else {
+        await atFirstHandler();
+      }
+    }
+  });
 
   /// Call by a handler when it's closed before it's destruction
   Future<void> _releaseOne() async => _handlerMutex.protect(() async {
-        _handlerNb--;
+    _handlerNb--;
 
-        if (_handlerNb == 0 && _thresholdTimer == null) {
-          if (thresholdDuration != null) {
-            // We wait the threshold duration before calling whenNoMoreHandler
-            _thresholdTimer = Timer(thresholdDuration!, _thresholdTimeout);
-          } else {
-            await whenNoMoreHandler();
-          }
-        }
-      });
+    if (_handlerNb == 0 && _thresholdTimer == null) {
+      if (thresholdDuration != null) {
+        // We wait the threshold duration before calling whenNoMoreHandler
+        _thresholdTimer = Timer(thresholdDuration!, _thresholdTimeout);
+      } else {
+        await whenNoMoreHandler();
+      }
+    }
+  });
 
   /// Called when the threshold timeout is raised and the handler number is equal to zero
   Future<void> _thresholdTimeout() async => _handlerMutex.protect(() async {
-        _thresholdTimer?.cancel();
-        _thresholdTimer = null;
+    _thresholdTimer?.cancel();
+    _thresholdTimer = null;
 
-        if (_handlerNb == 0) {
-          // We verify if the handler number is still equal to 0 ; which should be always the case
-          // when we are here
-          await whenNoMoreHandler();
-        }
-      });
+    if (_handlerNb == 0) {
+      // We verify if the handler number is still equal to 0 ; which should be always the case
+      // when we are here
+      await whenNoMoreHandler();
+    }
+  });
 
   /// To call in order to stop properly all running tasks
   Future<void> close() async {}

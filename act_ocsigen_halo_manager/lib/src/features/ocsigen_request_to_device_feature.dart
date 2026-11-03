@@ -15,9 +15,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   static const defaultAuthMode = OcsigenWiFiAuthMode.wiFiAuthAuto;
 
   /// Class constructor
-  OcsigenRequestToDeviceFeature({
-    required super.haloManagerConfig,
-  });
+  OcsigenRequestToDeviceFeature({required super.haloManagerConfig});
 
   /// Claim a device for a particular user
   ///
@@ -54,9 +52,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }) async {
     final result = await callFunction(
       hardwareType: hardwareType,
-      request: HaloRequestParamsPacket.voidParams(
-        requestId: OcsigenRequestId.wiFiSsidScan,
-      ),
+      request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.wiFiSsidScan),
       executionTimeout: executionTimeout,
     );
 
@@ -87,21 +83,18 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   /// The result value is the list of the scanned WiFi.
   /// If a problem occurred in the process, the result status is the error.
   Future<ResultWithRequiredValue<HaloErrorType, List<OcsigenWiFiCompleteScanResult>>>
-      wiFiCompleteScan({
-    required HardwareType hardwareType,
-    Duration? executionTimeout,
-  }) async {
+  wiFiCompleteScan({required HardwareType hardwareType, Duration? executionTimeout}) async {
     final result = await callFunction(
       hardwareType: hardwareType,
-      request: HaloRequestParamsPacket.voidParams(
-        requestId: OcsigenRequestId.wiFiCompleteScan,
-      ),
+      request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.wiFiCompleteScan),
       executionTimeout: executionTimeout,
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when calling the wifi complete scan function, can't "
-          "proceed");
+      appLogger().w(
+        "A problem occurred when calling the wifi complete scan function, can't "
+        "proceed",
+      );
       return ResultWithRequiredValue(status: result.status);
     }
 
@@ -139,8 +132,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
     Duration? executionTimeout,
   }) async {
     if (authMode != defaultAuthMode && !supportAuthMode) {
-      appLogger().w("We don't support the auth mode but the calling method has set an auth mode, "
-          "different to the default mode: $defaultAuthMode");
+      appLogger().w(
+        "We don't support the auth mode but the calling method has set an auth mode, "
+        "different to the default mode: $defaultAuthMode",
+      );
       return const ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
@@ -153,11 +148,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
 
     final packet = HaloRequestParamsPacket(
       requestId: OcsigenRequestId.wiFiConnect,
-      nbValues: [
-        1,
-        1,
-        if (supportAuthMode) 1,
-      ],
+      nbValues: [1, 1, if (supportAuthMode) 1],
       parameters: payload,
     );
 
@@ -196,14 +187,11 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   Future<ResultWithRequiredValue<HaloErrorType, bool>> wiFiDisconnect({
     required HardwareType hardwareType,
     Duration? executionTimeout,
-  }) async =>
-      callBooleanFunction(
-        hardwareType: hardwareType,
-        request: HaloRequestParamsPacket.voidParams(
-          requestId: OcsigenRequestId.wiFiDisconnect,
-        ),
-        executionTimeout: executionTimeout,
-      );
+  }) async => callBooleanFunction(
+    hardwareType: hardwareType,
+    request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.wiFiDisconnect),
+    executionTimeout: executionTimeout,
+  );
 
   /// Try to get the current WiFi status on the device
   ///
@@ -215,15 +203,15 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }) async {
     final result = await callFunction(
       hardwareType: materialType,
-      request: HaloRequestParamsPacket.voidParams(
-        requestId: OcsigenRequestId.wiFiGetStatus,
-      ),
+      request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.wiFiGetStatus),
       executionTimeout: executionTimeout,
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when calling the wifi get status function, can't "
-          "proceed");
+      appLogger().w(
+        "A problem occurred when calling the wifi get status function, can't "
+        "proceed",
+      );
       return ResultWithRequiredValue(status: result.status);
     }
 
@@ -251,14 +239,11 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   Future<ResultWithRequiredValue<HaloErrorType, String>> wiFiGetMacAddress({
     required HardwareType hardwareType,
     Duration? executionTimeout,
-  }) async =>
-      callStringFunction(
-        hardwareType: hardwareType,
-        request: HaloRequestParamsPacket.voidParams(
-          requestId: OcsigenRequestId.wiFiGetMacAddress,
-        ),
-        executionTimeout: executionTimeout,
-      );
+  }) async => callStringFunction(
+    hardwareType: hardwareType,
+    request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.wiFiGetMacAddress),
+    executionTimeout: executionTimeout,
+  );
 
   /// Try to activate the WiFi access point
   ///
@@ -321,14 +306,11 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   Future<ResultWithRequiredValue<HaloErrorType, String>> getSerialNumber({
     required HardwareType hardwareType,
     Duration? executionTimeout,
-  }) async =>
-      callStringFunction(
-        hardwareType: hardwareType,
-        request: HaloRequestParamsPacket.voidParams(
-          requestId: OcsigenRequestId.getSerialNumber,
-        ),
-        executionTimeout: executionTimeout,
-      );
+  }) async => callStringFunction(
+    hardwareType: hardwareType,
+    request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.getSerialNumber),
+    executionTimeout: executionTimeout,
+  );
 
   /// Set the GPS coordinates to the device
   ///
@@ -388,9 +370,7 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
   }) async {
     final result = await callFunction(
       hardwareType: hardwareType,
-      request: HaloRequestParamsPacket.voidParams(
-        requestId: OcsigenRequestId.getSavedWiFi,
-      ),
+      request: HaloRequestParamsPacket.voidParams(requestId: OcsigenRequestId.getSavedWiFi),
       executionTimeout: executionTimeout,
     );
 
@@ -473,8 +453,10 @@ class OcsigenRequestToDeviceFeature<HardwareType> extends HaloRequestToDeviceFea
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when calling the QUIT Communication procedure, can't "
-          "proceed");
+      appLogger().w(
+        "A problem occurred when calling the QUIT Communication procedure, can't "
+        "proceed",
+      );
     }
 
     return result;

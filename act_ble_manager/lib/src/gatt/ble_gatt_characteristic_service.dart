@@ -29,11 +29,9 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
   /// Class constructor
   BleGattCharacteristicService({
     required FlutterReactiveBle flutterReactiveBle,
-    required BleManager bleManager,
-    required Mutex bleMutex,
-  })  : _bleMutex = bleMutex,
-        _flutterBle = flutterReactiveBle,
-        _bleManager = bleManager;
+    required this._bleManager,
+    required this._bleMutex,
+  }) : _flutterBle = flutterReactiveBle;
 
   /// {@template act_ble_manager.BleGattCharacteristicService.writeBleCharacteristic}
   /// Write [values] to characteristic from [uuid]
@@ -43,47 +41,48 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
     String uuid,
     List<int> values, {
     bool withoutResponse = false,
-  }) async =>
-      _bleMutex.protect(() async {
-        final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
+  }) async => _bleMutex.protect(() async {
+    final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
 
-        if (result != CharacteristicsError.success) {
-          return result;
-        }
+    if (result != CharacteristicsError.success) {
+      return result;
+    }
 
-        final characteristic = tmpChar!;
+    final characteristic = tmpChar!;
 
-        var success = CharacteristicsError.genericError;
-        _bleManager.logsHelper.d('Try to write characteristic: '
-            '${characteristic.characteristicId}, with value: $values in device: '
-            '${device.id}');
-        try {
-          // Write without response does not work on iOS, always use write with response
-          if (withoutResponse && !globalGetIt().get<PlatformManager>().isIos) {
-            await _flutterBle.writeCharacteristicWithoutResponse(characteristic, value: values);
-          } else {
-            await _flutterBle.writeCharacteristicWithResponse(characteristic, value: values);
-          }
+    var success = CharacteristicsError.genericError;
+    _bleManager.logsHelper.d(
+      'Try to write characteristic: '
+      '${characteristic.characteristicId}, with value: $values in device: '
+      '${device.id}',
+    );
+    try {
+      // Write without response does not work on iOS, always use write with response
+      if (withoutResponse && !globalGetIt().get<PlatformManager>().isIos) {
+        await _flutterBle.writeCharacteristicWithoutResponse(characteristic, value: values);
+      } else {
+        await _flutterBle.writeCharacteristicWithResponse(characteristic, value: values);
+      }
 
-          success = CharacteristicsError.success;
-        } catch (e) {
-          success = await _manageDeviceInteractionError(
-            error: e,
-            device: device,
-            characteristic: characteristic,
-          );
-        }
+      success = CharacteristicsError.success;
+    } catch (e) {
+      success = await _manageDeviceInteractionError(
+        error: e,
+        device: device,
+        characteristic: characteristic,
+      );
+    }
 
-        if (success != CharacteristicsError.success) {
-          if (globalGetIt().get<PlatformManager>().isAndroid) {
-            // When an exception occurred, this block the next connection of the app
-            // on Android that's why we force the reinitialization of the ble lib
-            await _bleManager.reInitFlutterBle();
-          }
-        }
+    if (success != CharacteristicsError.success) {
+      if (globalGetIt().get<PlatformManager>().isAndroid) {
+        // When an exception occurred, this block the next connection of the app
+        // on Android that's why we force the reinitialization of the ble lib
+        await _bleManager.reInitFlutterBle();
+      }
+    }
 
-        return success;
-      });
+    return success;
+  });
 
   /// {@template act_ble_manager.BleGattCharacteristicService.readBleCharacteristic}
   /// Read characteristic from [uuid]
@@ -92,37 +91,38 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
   Future<(CharacteristicsError, List<int>?)> readBleCharacteristic(
     BleDevice device,
     String uuid,
-  ) async =>
-      _bleMutex.protect(() async {
-        final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
+  ) async => _bleMutex.protect(() async {
+    final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
 
-        if (result != CharacteristicsError.success) {
-          return (result, null);
-        }
+    if (result != CharacteristicsError.success) {
+      return (result, null);
+    }
 
-        final characteristic = tmpChar!;
+    final characteristic = tmpChar!;
 
-        var success = CharacteristicsError.genericError;
-        List<int>? values;
-        try {
-          values = await _flutterBle
-              .readCharacteristic(characteristic)
-              .timeout(ble_constants.simpleCommunicationDuration);
-          success = CharacteristicsError.success;
-        } catch (e) {
-          success = await _manageDeviceInteractionError(
-            error: e,
-            device: device,
-            characteristic: characteristic,
-          );
-        }
+    var success = CharacteristicsError.genericError;
+    List<int>? values;
+    try {
+      values = await _flutterBle
+          .readCharacteristic(characteristic)
+          .timeout(ble_constants.simpleCommunicationDuration);
+      success = CharacteristicsError.success;
+    } catch (e) {
+      success = await _manageDeviceInteractionError(
+        error: e,
+        device: device,
+        characteristic: characteristic,
+      );
+    }
 
-        _bleManager.logsHelper.d('Characteristic read: '
-            '${characteristic.characteristicId}, with value: $values in device: '
-            '${device.id}');
+    _bleManager.logsHelper.d(
+      'Characteristic read: '
+      '${characteristic.characteristicId}, with value: $values in device: '
+      '${device.id}',
+    );
 
-        return (success, values);
-      });
+    return (success, values);
+  });
 
   /// {@template act_ble_manager.BleGattCharacteristicService.subscribeBleNotification}
   /// Set notification on characteristic from [uuid]
@@ -131,31 +131,30 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
   Future<(CharacteristicsError, Stream<List<int>>?)> subscribeBleNotification(
     BleDevice device,
     String uuid,
-  ) async =>
-      _bleMutex.protect(() async {
-        final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
+  ) async => _bleMutex.protect(() async {
+    final (result, tmpChar) = await _verifyDeviceAndGetWantedChar(device: device, uuid: uuid);
 
-        if (result != CharacteristicsError.success) {
-          return (result, null);
-        }
+    if (result != CharacteristicsError.success) {
+      return (result, null);
+    }
 
-        final characteristic = tmpChar!;
+    final characteristic = tmpChar!;
 
-        Stream<List<int>>? notifStream;
-        var success = CharacteristicsError.genericError;
-        try {
-          notifStream = _flutterBle.subscribeToCharacteristic(characteristic);
-          success = CharacteristicsError.success;
-        } catch (e) {
-          success = await _manageDeviceInteractionError(
-            error: e,
-            device: device,
-            characteristic: characteristic,
-          );
-        }
+    Stream<List<int>>? notifStream;
+    var success = CharacteristicsError.genericError;
+    try {
+      notifStream = _flutterBle.subscribeToCharacteristic(characteristic);
+      success = CharacteristicsError.success;
+    } catch (e) {
+      success = await _manageDeviceInteractionError(
+        error: e,
+        device: device,
+        characteristic: characteristic,
+      );
+    }
 
-        return (success, notifStream?.handleError(_onSubscribeErrors));
-      });
+    return (success, notifStream?.handleError(_onSubscribeErrors));
+  });
 
   /// Verify the device and get the wanted characteristic known by its [uuid]
   ///
@@ -166,24 +165,30 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
     required String uuid,
   }) async {
     if (device.connectionState != DeviceConnectionState.connected) {
-      _bleManager.logsHelper.w("The device you want to interact with, isn't connected: "
-          "${device.id}");
+      _bleManager.logsHelper.w(
+        "The device you want to interact with, isn't connected: "
+        "${device.id}",
+      );
       return const (CharacteristicsError.genericError, null);
     }
 
     if (!(await _bleManager.checkAndAskForPermissionsAndServices())) {
       // This test manage the case where the user haven't accepted the BLE permissions or started
       // BLE
-      _bleManager.logsHelper.w("The user don't have accepted the BLE permission or started the BLE "
-          "service; therefore we can't write characteristic");
+      _bleManager.logsHelper.w(
+        "The user don't have accepted the BLE permission or started the BLE "
+        "service; therefore we can't write characteristic",
+      );
       return const (CharacteristicsError.genericError, null);
     }
 
     final characteristic = device.findCharacteristic(uuid);
 
     if (characteristic == null) {
-      _bleManager.logsHelper.w("The characteristic: $uuid, hasn't been found in the "
-          "device: ${device.id}, can't manage writing");
+      _bleManager.logsHelper.w(
+        "The characteristic: $uuid, hasn't been found in the "
+        "device: ${device.id}, can't manage writing",
+      );
       return const (CharacteristicsError.genericError, null);
     }
 
@@ -198,8 +203,10 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
   }) async {
     var charError = CharacteristicsError.genericError;
 
-    _bleManager.logsHelper.w('The interaction with ble characteristic: '
-        '${characteristic.characteristicId}, on device: ${device.id}, failed: $error');
+    _bleManager.logsHelper.w(
+      'The interaction with ble characteristic: '
+      '${characteristic.characteristicId}, on device: ${device.id}, failed: $error',
+    );
 
     // Check if iOS bonding error
     if (_isIosBondingError(error)) {
@@ -241,8 +248,10 @@ class BleGattCharacteristicService extends AbsWithLifeCycle {
     final errString = error.toString();
 
     if (errString.contains(error_messages.gattSuccessDisconnectedError)) {
-      _bleManager.logsHelper.e("A disconnection has been detected, we disconnect the last "
-          "connected ble device");
+      _bleManager.logsHelper.e(
+        "A disconnection has been detected, we disconnect the last "
+        "connected ble device",
+      );
       await lastConnectedDevice.disconnect();
     }
   }

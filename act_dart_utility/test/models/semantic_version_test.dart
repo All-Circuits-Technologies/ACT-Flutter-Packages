@@ -37,7 +37,10 @@ void main() {
     });
 
     test("accepts a version made of zeros", () {
-      expect(SemanticVersion.tryToParse("0.0.0"), const SemanticVersion(major: 0, minor: 0, patch: 0));
+      expect(
+        SemanticVersion.tryToParse("0.0.0"),
+        const SemanticVersion(major: 0, minor: 0, patch: 0),
+      );
     });
 
     test("returns null when a part is missing", () {
@@ -129,10 +132,7 @@ void main() {
     test("replaces the numbers it is given", () {
       const version = SemanticVersion(major: 1, minor: 2, patch: 3);
 
-      expect(
-        version.copyWith(minor: 5),
-        const SemanticVersion(major: 1, minor: 5, patch: 3),
-      );
+      expect(version.copyWith(minor: 5), const SemanticVersion(major: 1, minor: 5, patch: 3));
     });
 
     test("drops the prerelease when it is forced without a new one", () {
@@ -150,10 +150,7 @@ void main() {
     test("keeps the new prerelease even when the drop is forced", () {
       const version = SemanticVersion(major: 1, minor: 2, patch: 3, prerelease: "rc.1");
 
-      expect(
-        version.copyWith(prerelease: "rc.2", forcePrereleaseValue: true).prerelease,
-        "rc.2",
-      );
+      expect(version.copyWith(prerelease: "rc.2", forcePrereleaseValue: true).prerelease, "rc.2");
     });
   });
 

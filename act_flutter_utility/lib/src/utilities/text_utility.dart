@@ -19,16 +19,14 @@ class TextUtility {
     required String wordToHighlight,
     TextStyle? mainTextStyle,
     TextStyle? highLightTextStyle,
-  }) =>
-      highlightTextMultipleWithConfig(
-          text: text,
-          keys: [wordToHighlight],
-          mainTextConfig: TextSpanConfig(style: mainTextStyle),
-          highLightTextConfigs: (highLightTextStyle != null)
-              ? {
-                  wordToHighlight: TextSpanConfig(style: highLightTextStyle),
-                }
-              : {});
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: [wordToHighlight],
+    mainTextConfig: TextSpanConfig(style: mainTextStyle),
+    highLightTextConfigs: (highLightTextStyle != null)
+        ? {wordToHighlight: TextSpanConfig(style: highLightTextStyle)}
+        : {},
+  );
 
   /// This method allows to highlight some part of a text [text] this is the global text where we
   /// want to highlight the word [wordToHighlight].
@@ -39,16 +37,14 @@ class TextUtility {
     required String wordToHighlight,
     TextSpanConfig? mainTextConfig,
     TextSpanConfig? highLightTextConfig,
-  }) =>
-      highlightTextMultipleWithConfig(
-          text: text,
-          keys: [wordToHighlight],
-          mainTextConfig: mainTextConfig,
-          highLightTextConfigs: (highLightTextConfig != null)
-              ? {
-                  wordToHighlight: highLightTextConfig,
-                }
-              : {});
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: [wordToHighlight],
+    mainTextConfig: mainTextConfig,
+    highLightTextConfigs: (highLightTextConfig != null)
+        ? {wordToHighlight: highLightTextConfig}
+        : {},
+  );
 
   /// This method allows to replace some part of a text [text] this is the global text where we
   /// want to replace the word [wordToReplace] with the widget [widgetToReplace].
@@ -59,15 +55,12 @@ class TextUtility {
     required String wordToReplace,
     required Widget widgetToReplace,
     TextStyle? mainTextStyle,
-  }) =>
-      highlightTextMultipleWithConfig(
-        text: text,
-        keys: [wordToReplace],
-        mainTextConfig: TextSpanConfig(style: mainTextStyle),
-        replaceTextsWithWidgets: {
-          wordToReplace: widgetToReplace,
-        },
-      );
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: [wordToReplace],
+    mainTextConfig: TextSpanConfig(style: mainTextStyle),
+    replaceTextsWithWidgets: {wordToReplace: widgetToReplace},
+  );
 
   /// This method allows to replace some part of a text [text] this is the global text where we want to replace the word [wordToReplace] with the widget [widgetToReplace].
   /// [mainTextConfig] is used with the text and the replaced widget won't be styled even if it's
@@ -77,15 +70,12 @@ class TextUtility {
     required String wordToReplace,
     required Widget widgetToReplace,
     TextSpanConfig? mainTextConfig,
-  }) =>
-      highlightTextMultipleWithConfig(
-        text: text,
-        keys: [wordToReplace],
-        mainTextConfig: mainTextConfig,
-        replaceTextsWithWidgets: {
-          wordToReplace: widgetToReplace,
-        },
-      );
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: [wordToReplace],
+    mainTextConfig: mainTextConfig,
+    replaceTextsWithWidgets: {wordToReplace: widgetToReplace},
+  );
 
   /// This method allows to highlight some part of a text [text] this is the global text where we
   /// want to highlight the words [keys].
@@ -111,9 +101,7 @@ class TextUtility {
   }) {
     final highLightTextConfigs = <String, TextSpanConfig>{};
     for (final entry in highLightTextStyles.entries) {
-      highLightTextConfigs[entry.key] = TextSpanConfig(
-        style: entry.value,
-      );
+      highLightTextConfigs[entry.key] = TextSpanConfig(style: entry.value);
     }
 
     return highlightTextMultipleWithConfig(
@@ -133,13 +121,12 @@ class TextUtility {
     required String text,
     required Map<String, Widget> replaceTextsWithWidgets,
     TextStyle? mainTextStyle,
-  }) =>
-      highlightTextMultipleWithConfig(
-        text: text,
-        keys: replaceTextsWithWidgets.keys.toList(),
-        mainTextConfig: TextSpanConfig(style: mainTextStyle),
-        replaceTextsWithWidgets: replaceTextsWithWidgets,
-      );
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: replaceTextsWithWidgets.keys.toList(),
+    mainTextConfig: TextSpanConfig(style: mainTextStyle),
+    replaceTextsWithWidgets: replaceTextsWithWidgets,
+  );
 
   /// This method allows to highlight some part of a text [text] this is the global text where we
   /// want to highlight the words [keys].
@@ -162,36 +149,35 @@ class TextUtility {
     TextSpanConfig? mainTextConfig,
     Map<String, TextSpanConfig> highLightTextConfigs = const {},
     Map<String, Widget> replaceTextsWithWidgets = const {},
-  }) =>
-      StringIntervalUtility.actOnInterval(
-        text,
-        keys,
-        (interval) {
-          TextSpanConfig? highLightTextConfig;
-          Widget? widgetToReplace;
+  }) => StringIntervalUtility.actOnInterval(
+    text,
+    keys,
+    (interval) {
+      TextSpanConfig? highLightTextConfig;
+      Widget? widgetToReplace;
 
-          final key = interval.key;
-          if (key != null) {
-            highLightTextConfig = highLightTextConfigs[key];
-            widgetToReplace = replaceTextsWithWidgets[key];
-          }
+      final key = interval.key;
+      if (key != null) {
+        highLightTextConfig = highLightTextConfigs[key];
+        widgetToReplace = replaceTextsWithWidgets[key];
+      }
 
-          if (widgetToReplace != null) {
-            return WidgetSpan(child: widgetToReplace);
-          }
+      if (widgetToReplace != null) {
+        return WidgetSpan(child: widgetToReplace);
+      }
 
-          return TextSpan(
-            text: interval.getIntervalString(text),
-            style: highLightTextConfig?.style,
-            recognizer: highLightTextConfig?.recognizer,
-          );
-        },
-        (intervals) => TextSpan(
-          style: mainTextConfig?.style,
-          recognizer: mainTextConfig?.recognizer,
-          children: intervals,
-        ),
+      return TextSpan(
+        text: interval.getIntervalString(text),
+        style: highLightTextConfig?.style,
+        recognizer: highLightTextConfig?.recognizer,
       );
+    },
+    (intervals) => TextSpan(
+      style: mainTextConfig?.style,
+      recognizer: mainTextConfig?.recognizer,
+      children: intervals,
+    ),
+  );
 
   /// The [replaceTextsWithWidgets] allows to replace some part of the text with a widget, the key
   /// of the map is the part of the text to replace and the value is the widget to put instead of
@@ -201,11 +187,10 @@ class TextUtility {
     required String text,
     required Map<String, Widget> replaceTextsWithWidgets,
     TextSpanConfig? mainTextConfig,
-  }) =>
-      highlightTextMultipleWithConfig(
-        text: text,
-        keys: replaceTextsWithWidgets.keys.toList(),
-        mainTextConfig: mainTextConfig,
-        replaceTextsWithWidgets: replaceTextsWithWidgets,
-      );
+  }) => highlightTextMultipleWithConfig(
+    text: text,
+    keys: replaceTextsWithWidgets.keys.toList(),
+    mainTextConfig: mainTextConfig,
+    replaceTextsWithWidgets: replaceTextsWithWidgets,
+  );
 }

@@ -16,9 +16,7 @@ class OrientationObserver<T extends MixinRoute> extends NavigatorObserver {
   final RoutesHelperCompanion<T> _helperCompanion;
 
   /// Class constructor
-  OrientationObserver({required RoutesHelperCompanion<T> helperCompanion})
-      : _helperCompanion = helperCompanion,
-        super();
+  OrientationObserver({required this._helperCompanion}) : super();
 
   @override
   void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) {

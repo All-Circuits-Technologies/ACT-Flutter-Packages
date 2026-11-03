@@ -42,9 +42,8 @@ void main() {
       ..registerSingleton<PermissionsManager>(PermissionsManager())
       ..registerSingleton<FakeLocationRouterManager>(FakeLocationRouterManager());
 
-    final contextualViews = ContextualViewsBuilder<FakeLocationRouterManager>(
-      viewBuilder: views,
-    ).factory();
+    final contextualViews = ContextualViewsBuilder<FakeLocationRouterManager>(viewBuilder: views)
+        .factory();
     await contextualViews.initLifeCycle();
     globalGetIt().registerSingleton<ContextualViewsManager>(contextualViews);
     addTearDown(contextualViews.disposeLifeCycle);

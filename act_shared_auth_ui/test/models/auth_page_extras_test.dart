@@ -121,10 +121,7 @@ void main() {
 
   group("MixinAuthRoute", () {
     test("says which pages of an application need a signed in user", () {
-      expect(
-        FakeAuthRoute.values.where((route) => route.isAuthNeeded),
-        [FakeAuthRoute.profile],
-      );
+      expect(FakeAuthRoute.values.where((route) => route.isAuthNeeded), [FakeAuthRoute.profile]);
     });
   });
 }

@@ -38,10 +38,7 @@ void main() {
     });
 
     test("refuses a negative index", () {
-      expect(
-        () => HaloRecordKey(dataId: _dataId, uniqueIndex: -1),
-        throwsA(isA<AssertionError>()),
-      );
+      expect(() => HaloRecordKey(dataId: _dataId, uniqueIndex: -1), throwsA(isA<AssertionError>()));
     });
   });
 

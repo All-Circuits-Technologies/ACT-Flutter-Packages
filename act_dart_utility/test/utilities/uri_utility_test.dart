@@ -8,17 +8,11 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("UriUtility.formatPathFromSegments", () {
     test("joins the segments with the path separator", () {
-      expect(
-        UriUtility.formatPathFromSegments(segments: ["api", "v1", "users"]),
-        "api/v1/users",
-      );
+      expect(UriUtility.formatPathFromSegments(segments: ["api", "v1", "users"]), "api/v1/users");
     });
 
     test("joins the segments with the given separator", () {
-      expect(
-        UriUtility.formatPathFromSegments(segments: ["a", "b"], separator: "-"),
-        "a-b",
-      );
+      expect(UriUtility.formatPathFromSegments(segments: ["a", "b"], separator: "-"), "a-b");
     });
 
     test("replaces the parameters it finds in the path", () {
@@ -33,19 +27,13 @@ void main() {
 
     test("replaces every occurrence of a parameter", () {
       expect(
-        UriUtility.formatPathFromSegments(
-          segments: [":id", ":id"],
-          parameters: {":id": "42"},
-        ),
+        UriUtility.formatPathFromSegments(segments: [":id", ":id"], parameters: {":id": "42"}),
         "42/42",
       );
     });
 
     test("leaves an unknown parameter in the path", () {
-      expect(
-        UriUtility.formatPathFromSegments(segments: ["users", ":id"]),
-        "users/:id",
-      );
+      expect(UriUtility.formatPathFromSegments(segments: ["users", ":id"]), "users/:id");
     });
 
     test("returns an empty path when there is no segment", () {
@@ -55,17 +43,11 @@ void main() {
 
   group("UriUtility.formatRelativeUrlPathFromSegments", () {
     test("joins the segments as the path formatting does", () {
-      expect(
-        UriUtility.formatRelativeUrlPathFromSegments(segments: ["api", "users"]),
-        "api/users",
-      );
+      expect(UriUtility.formatRelativeUrlPathFromSegments(segments: ["api", "users"]), "api/users");
     });
 
     test("encodes the characters which are not allowed in a url", () {
-      expect(
-        UriUtility.formatRelativeUrlPathFromSegments(segments: ["a b", "c"]),
-        "a%20b/c",
-      );
+      expect(UriUtility.formatRelativeUrlPathFromSegments(segments: ["a b", "c"]), "a%20b/c");
     });
 
     test("encodes the value a parameter was replaced with", () {

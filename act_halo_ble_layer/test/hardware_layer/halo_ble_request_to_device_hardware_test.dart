@@ -226,9 +226,7 @@ void main() {
     });
 
     test("asks the device for nothing more once the procedure was called", () async {
-      await hardware.callProcedure(
-        request: aRequest(requestId: FakeHaloRequestId.aProcedure),
-      );
+      await hardware.callProcedure(request: aRequest(requestId: FakeHaloRequestId.aProcedure));
 
       expect(companion.writes.length, 2);
     });
@@ -246,9 +244,10 @@ void main() {
           status: HaloErrorType.noError,
           value: anAck(requestId: FakeHaloRequestId.aFunction),
         ),
-        ...aPayloadFromDevice(values, maxPacketSize: maxPacketSize).map(
-          (packet) => ResultWithRequiredValue(status: HaloErrorType.noError, value: packet),
-        ),
+        ...aPayloadFromDevice(
+          values,
+          maxPacketSize: maxPacketSize,
+        ).map((packet) => ResultWithRequiredValue(status: HaloErrorType.noError, value: packet)),
       ]);
     }
 

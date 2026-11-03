@@ -127,11 +127,8 @@ void main() {
     test("gives up when the login of the server cannot be initialized", () async {
       final manager = FakeClientManager(
         config: aConfig(),
-        loginBuilder: (requester, logsHelper) => FakeClientLogin(
-          serverRequester: requester,
-          logsHelper: logsHelper,
-          initResult: false,
-        ),
+        loginBuilder: (requester, logsHelper) =>
+            FakeClientLogin(serverRequester: requester, logsHelper: logsHelper, initResult: false),
       );
 
       expect(manager.initLifeCycle, throwsA(isA<ActServerLoginInitException>()));
@@ -227,11 +224,7 @@ void main() {
       final manager = await aManager();
       final watch = Stopwatch()..start();
 
-      await ask(
-        manager,
-        retryRequestIfErrorNb: 1,
-        retryTimeout: const Duration(milliseconds: 100),
-      );
+      await ask(manager, retryRequestIfErrorNb: 1, retryTimeout: const Duration(milliseconds: 100));
 
       expect(watch.elapsed, greaterThanOrEqualTo(const Duration(milliseconds: 200)));
     });

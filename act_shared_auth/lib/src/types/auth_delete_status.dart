@@ -20,7 +20,5 @@ enum AuthDeleteStatus {
   bool get isError => !isSuccess;
 
   /// Class constructor
-  const AuthDeleteStatus({
-    this.isSuccess = false,
-  });
+  const AuthDeleteStatus({this.isSuccess = false});
 }

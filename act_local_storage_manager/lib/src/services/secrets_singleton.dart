@@ -43,11 +43,10 @@ class SecretsSingleton extends AbsWithLifeCycle
   /// Create the [SecretsSingleton] singleton.
   static SecretsSingleton createInstance() {
     _instance ??= SecretsSingleton._(
-        secureStorage: const FlutterSecureStorage(
-      aOptions: AndroidOptions(
-        encryptedSharedPreferences: true,
+      secureStorage: const FlutterSecureStorage(
+        aOptions: AndroidOptions(encryptedSharedPreferences: true),
       ),
-    ));
+    );
     return _instance!;
   }
 
@@ -64,9 +63,7 @@ class SecretsSingleton extends AbsWithLifeCycle
   final FlutterSecureStorage _secureStorage;
 
   /// Private constructor
-  SecretsSingleton._({
-    required FlutterSecureStorage secureStorage,
-  }) : _secureStorage = secureStorage;
+  SecretsSingleton._({required this._secureStorage});
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.store}
   @override
@@ -75,8 +72,7 @@ class SecretsSingleton extends AbsWithLifeCycle
     required T? value,
     bool doNotMigrate = false,
     Object? extra,
-  }) async =>
-      super.store(key: key, value: value, extra: doNotMigrate);
+  }) async => super.store(key: key, value: value, extra: doNotMigrate);
 
   /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
   @override
@@ -104,12 +100,14 @@ class SecretsSingleton extends AbsWithLifeCycle
     Object? extra,
   }) async {
     await _secureStorage.write(
-        key: key,
-        value: value,
-        iOptions: IOSOptions(
-            accessibility: (extra! as bool)
-                ? KeychainAccessibility.first_unlock_this_device
-                : KeychainAccessibility.first_unlock));
+      key: key,
+      value: value,
+      iOptions: IOSOptions(
+        accessibility: (extra! as bool)
+            ? KeychainAccessibility.first_unlock_this_device
+            : KeychainAccessibility.first_unlock,
+      ),
+    );
     return true;
   }
 }

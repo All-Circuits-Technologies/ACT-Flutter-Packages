@@ -55,9 +55,7 @@ class LocationManager extends AbstractPeriphManager {
   Future<void> initLifeCycle() async {
     _initConfig = await getInitConfig();
 
-    _logsHelper = LogsHelper(
-      category: logsCategory,
-    );
+    _logsHelper = LogsHelper(category: logsCategory);
 
     // We get init config before calling super init manager, because [_initConfig] is used in
     // the [getPermissionsConfig] method. And this method is called in the super initLifeCycle
@@ -82,17 +80,17 @@ class LocationManager extends AbstractPeriphManager {
   @override
   @mustCallSuper
   List<PermissionConfig> getPermissionsConfig() => [
-        if (_initConfig.isLocationUsageAlways)
-          PermissionConfig(
-            element: PermissionElement.locationAlways,
-            whenAskingForceGoToSettings: globalGetIt().get<PlatformManager>().isIos,
-            whenAskingDependsOn: const [PermissionElement.locationWhenInUse],
-          ),
-        const PermissionConfig(
-          element: PermissionElement.locationWhenInUse,
-          whenAskingCheckRationale: true,
-        ),
-      ];
+    if (_initConfig.isLocationUsageAlways)
+      PermissionConfig(
+        element: PermissionElement.locationAlways,
+        whenAskingForceGoToSettings: globalGetIt().get<PlatformManager>().isIos,
+        whenAskingDependsOn: const [PermissionElement.locationWhenInUse],
+      ),
+    const PermissionConfig(
+      element: PermissionElement.locationWhenInUse,
+      whenAskingCheckRationale: true,
+    ),
+  ];
 
   /// This allow to return the enable service element type
   @override
@@ -169,11 +167,11 @@ class LocationManager extends AbstractPeriphManager {
     Duration? overrideDefaultTimeLimit,
     bool askPermissionToUser = true,
   }) async {
-    if (!(await checkAndAskForPermissionsAndServices(
-      askActionsToUser: askPermissionToUser,
-    ))) {
-      _logsHelper.w("We can't get the current location: the permissions and services aren't "
-          "activated");
+    if (!(await checkAndAskForPermissionsAndServices(askActionsToUser: askPermissionToUser))) {
+      _logsHelper.w(
+        "We can't get the current location: the permissions and services aren't "
+        "activated",
+      );
       return null;
     }
 
@@ -200,14 +198,12 @@ class LocationManager extends AbstractPeriphManager {
   ///
   /// If the location is disabled in the phone, this will return null (even if you retrieved
   /// positions before)
-  Future<Position?> getLastKnownPosition({
-    bool askPermissionToUser = true,
-  }) async {
-    if (!(await checkAndAskForPermissionsAndServices(
-      askActionsToUser: askPermissionToUser,
-    ))) {
-      _logsHelper.w("We can't get the last known location: the permissions and services aren't "
-          "activated");
+  Future<Position?> getLastKnownPosition({bool askPermissionToUser = true}) async {
+    if (!(await checkAndAskForPermissionsAndServices(askActionsToUser: askPermissionToUser))) {
+      _logsHelper.w(
+        "We can't get the last known location: the permissions and services aren't "
+        "activated",
+      );
       return null;
     }
 
@@ -228,9 +224,7 @@ class LocationManager extends AbstractPeriphManager {
   /// Dispose method of the manager
   @override
   Future<void> disposeLifeCycle() async {
-    final futuresList = <Future>[
-      _enabledSub.cancel(),
-    ];
+    final futuresList = <Future>[_enabledSub.cancel()];
 
     await Future.wait(futuresList);
 

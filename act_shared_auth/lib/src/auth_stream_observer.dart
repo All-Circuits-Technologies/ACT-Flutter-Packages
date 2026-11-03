@@ -18,17 +18,11 @@ class AuthStreamObserver<A extends AbsAuthManager> extends StreamObserver<AuthSt
   factory AuthStreamObserver.ofService(MixinAuthService authService) {
     AuthStatus get() => authService.authStatus;
 
-    return AuthStreamObserver._(
-      stream: authService.authStatusStream,
-      get: get,
-    );
+    return AuthStreamObserver._(stream: authService.authStatusStream, get: get);
   }
 
   /// Private class constructor.
-  AuthStreamObserver._({
-    required super.stream,
-    required super.get,
-  });
+  AuthStreamObserver._({required super.stream, required super.get});
 
   /// Evalute the validity of the new [AuthStatus] value.
   @override

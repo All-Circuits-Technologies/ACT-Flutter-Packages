@@ -6,17 +6,14 @@ import 'package:act_foundation/act_foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A singleton class, only used for the name it gives to the message of the error.
-class _Manager {}
+class _Manager;
 
 void main() {
   group("ActSingletonAlreadyCreatedError", () {
     test("names the type of the singleton", () {
       final error = ActSingletonAlreadyCreatedError<_Manager>();
 
-      expect(
-        error.message,
-        "The singleton: _Manager, had already been created don't do it again",
-      );
+      expect(error.message, "The singleton: _Manager, had already been created don't do it again");
     });
 
     test("is an ACT error", () {

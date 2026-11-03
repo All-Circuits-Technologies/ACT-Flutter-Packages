@@ -58,10 +58,7 @@ void main() {
     test("carries the colors the application added to the ones of the scheme", () {
       final model = ActThemeModel<FakeSpecificColors>(lightColors: _lightColors);
 
-      expect(
-        model.lightThemeData?.extension<FakeSpecificColors>()?.highlight,
-        Colors.amber,
-      );
+      expect(model.lightThemeData?.extension<FakeSpecificColors>()?.highlight, Colors.amber);
     });
 
     test("writes with the font the application asked for", () {
@@ -98,9 +95,8 @@ void main() {
         lightColors: _lightColors,
         overrideDefaultTextTheme: ({required baseThemeData}) =>
             baseThemeData.textTheme.copyWith(bodyMedium: const TextStyle(fontSize: 42)),
-        overrideDefaultThemeData: ({required baseThemeData}) => baseThemeData.copyWith(
-          primaryTextTheme: baseThemeData.textTheme,
-        ),
+        overrideDefaultThemeData: ({required baseThemeData}) =>
+            baseThemeData.copyWith(primaryTextTheme: baseThemeData.textTheme),
       );
 
       expect(model.lightThemeData?.primaryTextTheme.bodyMedium?.fontSize, 42);

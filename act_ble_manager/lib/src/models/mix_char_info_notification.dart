@@ -66,9 +66,11 @@ mixin MixCharInfoNotification on AbstractCharacteristicInfo {
   /// used to cancel the waiting
   Future<ResponseWaiter?> prepareWaitResponse() async {
     if (_notifyStreamSubscription == null) {
-      globalGetIt().get<BleManager>().logsHelper.w("We can't wait for a notification of the "
-          "characteristic: $name (uuid: $uuid), because the characteristic hasn't subscribed the "
-          "BLE Device");
+      globalGetIt().get<BleManager>().logsHelper.w(
+        "We can't wait for a notification of the "
+        "characteristic: $name (uuid: $uuid), because the characteristic hasn't subscribed the "
+        "BLE Device",
+      );
       return null;
     }
 
@@ -91,10 +93,7 @@ mixin MixCharInfoNotification on AbstractCharacteristicInfo {
   /// Clean the stream and subscriptions
   Future<void> cleanStream() async {
     if (_notifyStreamSubscription != null) {
-      await Future.wait([
-        _notifyStreamSubscription!.cancel(),
-        _deviceStateSub!.cancel(),
-      ]);
+      await Future.wait([_notifyStreamSubscription!.cancel(), _deviceStateSub!.cancel()]);
 
       _deviceStateSub = null;
       _notifyStreamSubscription = null;
@@ -127,8 +126,8 @@ class ResponseWaiter {
 
   /// Private constructor to build the response waiter
   ResponseWaiter._(MixCharInfoNotification parentToRegister)
-      : _parentToRegister = parentToRegister,
-        _completer = CancelableCompleter<List<int>?>() {
+    : _parentToRegister = parentToRegister,
+      _completer = CancelableCompleter<List<int>?>() {
     _operation = _completer.operation;
     parentToRegister._packetResponseWaiter.add(this);
   }
@@ -160,9 +159,11 @@ class ResponseWaiter {
           return;
         }
 
-        globalGetIt().get<BleManager>().logsHelper.w("The timeout raised before we retrieved the "
-            "expected value from characteristic: ${_parentToRegister.name} "
-            "(uuid: ${_parentToRegister.uuid}),");
+        globalGetIt().get<BleManager>().logsHelper.w(
+          "The timeout raised before we retrieved the "
+          "expected value from characteristic: ${_parentToRegister.name} "
+          "(uuid: ${_parentToRegister.uuid}),",
+        );
         await cancel();
       });
     }

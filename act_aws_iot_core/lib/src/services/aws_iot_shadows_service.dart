@@ -30,14 +30,14 @@ class AwsIotShadowsService extends AbsAwsIotService {
     required this.config,
     required this.mqttService,
     required super.iotManagerLogsHelper,
-  })  : _shadowsMap = {},
-        super(logsCategory: _logsCategory);
+  }) : _shadowsMap = {},
+       super(logsCategory: _logsCategory);
 
   /// This method will add the shadows of a given [deviceName] to the service if they don't
   /// exist yet and return them
   /// [ShadowEnum] must be the type of the values in shadowsList of [config]
   Future<Map<ShadowEnum, AwsIotNamedShadow>>
-      addAndGetShadowsForDevice<ShadowEnum extends MixinAwsIotShadowEnum>(String deviceName) async {
+  addAndGetShadowsForDevice<ShadowEnum extends MixinAwsIotShadowEnum>(String deviceName) async {
     // Return the shadows if they already exist
     if (_shadowsMap.containsKey(deviceName)) {
       return _shadowsMap[deviceName]!.cast<ShadowEnum, AwsIotNamedShadow>();
@@ -62,10 +62,7 @@ class AwsIotShadowsService extends AbsAwsIotService {
 
   /// This method returns the shadow of a given [deviceName] and [shadow]
   /// Null is returned if no shadows exist for the provided [deviceName]
-  AwsIotNamedShadow? getShadow(
-    String deviceName,
-    MixinAwsIotShadowEnum shadow,
-  ) =>
+  AwsIotNamedShadow? getShadow(String deviceName, MixinAwsIotShadowEnum shadow) =>
       _shadowsMap[deviceName]?[shadow];
 
   /// This method removes the shadows of a given [deviceName]

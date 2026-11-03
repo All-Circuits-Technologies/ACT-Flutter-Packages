@@ -34,9 +34,8 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   MixinLoggerConfig Function() get loggerConfigGetter => _loggerConfigGetter;
 
   /// Class constructor
-  LoggerManager({required MixinLoggerConfig Function() loggerConfigGetter})
-    : _loggerConfigGetter = loggerConfigGetter,
-      _flutterExceptionHandler = {},
+  LoggerManager({required this._loggerConfigGetter})
+    : _flutterExceptionHandler = {},
       _platformErrorCallback = {};
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}

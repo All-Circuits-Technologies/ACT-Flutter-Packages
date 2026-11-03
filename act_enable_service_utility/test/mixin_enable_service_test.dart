@@ -28,9 +28,8 @@ void main() {
       ..registerSingleton<AppLifeCycleManager>(lifeCycle)
       ..registerSingleton<FakeServiceRouterManager>(FakeServiceRouterManager());
 
-    final contextualViews = ContextualViewsBuilder<FakeServiceRouterManager>(
-      viewBuilder: views,
-    ).factory();
+    final contextualViews = ContextualViewsBuilder<FakeServiceRouterManager>(viewBuilder: views)
+        .factory();
     await contextualViews.initLifeCycle();
     globalGetIt().registerSingleton<ContextualViewsManager>(contextualViews);
     addTearDown(contextualViews.disposeLifeCycle);

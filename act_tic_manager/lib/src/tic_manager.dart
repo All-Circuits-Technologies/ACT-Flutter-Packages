@@ -80,8 +80,8 @@ class TicGenerator {
 
   /// Create a main tic which produce incremental numbers at given [interval].
   TicGenerator(Duration interval)
-      : assert(!interval.isNegative, "The interval duration can't be negative"),
-        assert(interval != Duration.zero, "The interval duration can't be equal to zero") {
+    : assert(!interval.isNegative, "The interval duration can't be negative"),
+      assert(interval != Duration.zero, "The interval duration can't be equal to zero") {
     Timer.periodic(interval, (timer) {
       _counter++;
       _counter &= TicManager.countersMaxValue;
@@ -116,8 +116,10 @@ class TicModulo {
   ///
   /// Resulting [stream] will generate one tic each [modulo] ticks of [source].
   TicModulo(this.source, this.modulo)
-      : assert(modulo > 1,
-            "The module as to be greater than one in order to be really relevant here") {
+    : assert(
+        modulo > 1,
+        "The module as to be greater than one in order to be really relevant here",
+      ) {
     source.listen((counter) {
       if ((counter % modulo) == 0) {
         _counter++;

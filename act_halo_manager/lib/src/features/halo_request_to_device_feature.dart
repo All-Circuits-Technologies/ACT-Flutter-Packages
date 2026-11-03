@@ -8,19 +8,12 @@ import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_manager/src/features/abstract_halo_feature.dart';
 
 /// Defines the wanted returned type when calling function
-enum _OneReturnType {
-  bool,
-  string,
-  uInt,
-  int,
-}
+enum _OneReturnType { bool, string, uInt, int }
 
 /// This is the definition of feature when calling the requests
 class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<HardwareType> {
   /// Class constructor
-  HaloRequestToDeviceFeature({
-    required super.haloManagerConfig,
-  });
+  HaloRequestToDeviceFeature({required super.haloManagerConfig});
 
   /// Call function in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -28,15 +21,14 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) =>
-      _callAndRetryResult(
-        requestId: request.requestId,
-        hardwareType: hardwareType,
-        callRequest: (service) => service.requestToDeviceHardware.callFunction(
-          request: request,
-          executionTimeout: _getExecutionTimeout(request.requestId, executionTimeout),
-        ),
-      );
+  }) => _callAndRetryResult(
+    requestId: request.requestId,
+    hardwareType: hardwareType,
+    callRequest: (service) => service.requestToDeviceHardware.callFunction(
+      request: request,
+      executionTimeout: _getExecutionTimeout(request.requestId, executionTimeout),
+    ),
+  );
 
   /// Call function with boolean return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -46,13 +38,12 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) async =>
-      _callOneReturnFunction<bool>(
-        hardwareType: hardwareType,
-        request: request,
-        type: _OneReturnType.bool,
-        executionTimeout: executionTimeout,
-      );
+  }) async => _callOneReturnFunction<bool>(
+    hardwareType: hardwareType,
+    request: request,
+    type: _OneReturnType.bool,
+    executionTimeout: executionTimeout,
+  );
 
   /// Call function with string return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -62,13 +53,12 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) async =>
-      _callOneReturnFunction<String>(
-        hardwareType: hardwareType,
-        request: request,
-        type: _OneReturnType.string,
-        executionTimeout: executionTimeout,
-      );
+  }) async => _callOneReturnFunction<String>(
+    hardwareType: hardwareType,
+    request: request,
+    type: _OneReturnType.string,
+    executionTimeout: executionTimeout,
+  );
 
   /// Call function with signed integer return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -78,13 +68,12 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) async =>
-      _callOneReturnFunction<int>(
-        hardwareType: hardwareType,
-        request: request,
-        type: _OneReturnType.int,
-        executionTimeout: executionTimeout,
-      );
+  }) async => _callOneReturnFunction<int>(
+    hardwareType: hardwareType,
+    request: request,
+    type: _OneReturnType.int,
+    executionTimeout: executionTimeout,
+  );
 
   /// Call function with unsigned integer return in the device and wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -94,13 +83,12 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) async =>
-      _callOneReturnFunction<int>(
-        hardwareType: hardwareType,
-        request: request,
-        type: _OneReturnType.uInt,
-        executionTimeout: executionTimeout,
-      );
+  }) async => _callOneReturnFunction<int>(
+    hardwareType: hardwareType,
+    request: request,
+    type: _OneReturnType.uInt,
+    executionTimeout: executionTimeout,
+  );
 
   /// Call a function a specify the expected result type
   /// With [hardwareType] you specify through what hardware you want to request the device
@@ -122,8 +110,10 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     );
 
     if (result.isError) {
-      appLogger().w("A problem occurred when calling the ${request.requestId} function, can't "
-          "proceed");
+      appLogger().w(
+        "A problem occurred when calling the ${request.requestId} function, can't "
+        "proceed",
+      );
       return ResultWithRequiredValue(status: result.status);
     }
 
@@ -156,10 +146,7 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
       return ResultWithRequiredValue(status: HaloErrorType.formatError);
     }
 
-    return ResultWithRequiredValue(
-      status: HaloErrorType.noError,
-      value: decoded as T,
-    );
+    return ResultWithRequiredValue(status: HaloErrorType.noError, value: decoded as T);
   }
 
   /// Call procedure in the device and wait for the result
@@ -168,27 +155,25 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
     Duration? executionTimeout,
-  }) =>
-      _callAndRetryError(
-        requestId: request.requestId,
-        hardwareType: hardwareType,
-        callRequest: (service) => service.requestToDeviceHardware.callProcedure(
-          request: request,
-          executionTimeout: _getExecutionTimeout(request.requestId, executionTimeout),
-        ),
-      );
+  }) => _callAndRetryError(
+    requestId: request.requestId,
+    hardwareType: hardwareType,
+    callRequest: (service) => service.requestToDeviceHardware.callProcedure(
+      request: request,
+      executionTimeout: _getExecutionTimeout(request.requestId, executionTimeout),
+    ),
+  );
 
   /// Call order in the device and doesn't wait for the result
   /// With [hardwareType] you specify through what hardware you want to request the device
   Future<HaloErrorType> callOrder({
     required HardwareType hardwareType,
     required HaloRequestParamsPacket request,
-  }) =>
-      _callAndRetryError(
-        requestId: request.requestId,
-        hardwareType: hardwareType,
-        callRequest: (service) => service.requestToDeviceHardware.callOrder(request: request),
-      );
+  }) => _callAndRetryError(
+    requestId: request.requestId,
+    hardwareType: hardwareType,
+    callRequest: (service) => service.requestToDeviceHardware.callOrder(request: request),
+  );
 
   /// This method calls the [_callAndRetry] and specify the case where the request returns a
   /// [HaloErrorType]
@@ -196,13 +181,12 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required MixinHaloRequestId requestId,
     required Future<HaloErrorType> Function(AbstractHaloHardware) callRequest,
-  }) =>
-      _callAndRetry(
-        hardwareType: hardwareType,
-        requestId: requestId,
-        errorDefaultResult: HaloErrorType.genericError,
-        callRequest: callRequest,
-      );
+  }) => _callAndRetry(
+    hardwareType: hardwareType,
+    requestId: requestId,
+    errorDefaultResult: HaloErrorType.genericError,
+    callRequest: callRequest,
+  );
 
   /// This method calls the [_callAndRetry] and specify the case where the request returns a
   /// [HaloRequestResult]
@@ -210,16 +194,15 @@ class HaloRequestToDeviceFeature<HardwareType> extends AbstractHaloFeature<Hardw
     required HardwareType hardwareType,
     required MixinHaloRequestId requestId,
     required Future<HaloRequestResult> Function(AbstractHaloHardware) callRequest,
-  }) =>
-      _callAndRetry(
-        hardwareType: hardwareType,
-        requestId: requestId,
-        errorDefaultResult: HaloRequestResult.error(
-          requestId: requestId,
-          status: HaloErrorType.genericError,
-        ),
-        callRequest: callRequest,
-      );
+  }) => _callAndRetry(
+    hardwareType: hardwareType,
+    requestId: requestId,
+    errorDefaultResult: HaloRequestResult.error(
+      requestId: requestId,
+      status: HaloErrorType.genericError,
+    ),
+    callRequest: callRequest,
+  );
 
   /// Call a request and retry if an error occurred and if it makes sens to do it
   /// With [hardwareType] you specify through what material you want to request the device

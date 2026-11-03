@@ -41,9 +41,7 @@ void main() {
     });
 
     test("reports the file it cannot read", () async {
-      await XFileUtilities.getBinaryFileContent(
-        xFile: XFile("a/file/which/does/not/exist.txt"),
-      );
+      await XFileUtilities.getBinaryFileContent(xFile: XFile("a/file/which/does/not/exist.txt"));
 
       expect(logger.recordsAtLevel(LogsLevel.error).length, 1);
     });

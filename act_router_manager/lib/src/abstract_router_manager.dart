@@ -24,8 +24,11 @@ import 'package:go_router/go_router.dart';
 ///     built and displayed),
 ///   - this method will be recalled with the new view we ask (so be careful to not create
 ///     infinite redirection)
-typedef RouterRedirect<T extends MixinRoute> =
-    Future<T?> Function(BuildContext context, T route, GoRouterState state);
+typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
+  BuildContext context,
+  T route,
+  GoRouterState state,
+);
 
 /// Builder for creating the AbstractGorouterManager
 class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsLifeCycleFactory<M> {

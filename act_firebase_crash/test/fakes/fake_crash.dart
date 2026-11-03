@@ -183,9 +183,7 @@ class FakeCrashConfig extends AbstractConfigManager with MixinFirebaseCrashConf,
   }
 
   /// Class constructor
-  FakeCrashConfig({Environment env = Environment.development})
-    : _env = env,
-      super(logger: const SilentLogger());
+  FakeCrashConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 
   /// Serves [content] as the configuration file of an application which runs in [env], and returns
   /// the manager which reads it.

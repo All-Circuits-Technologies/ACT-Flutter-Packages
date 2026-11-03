@@ -43,11 +43,10 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
   Stream<Exception> get authFailuresStream => _authFailureCtrl.stream;
 
   /// Class constructor
-  AmplifyApiService({
-    this.nonTransientAuthFailureTypes,
-  })  : _apiStreamSubs = [],
-        _authFailureCtrl = StreamController<Exception>.broadcast(),
-        super();
+  AmplifyApiService({this.nonTransientAuthFailureTypes})
+    : _apiStreamSubs = [],
+      _authFailureCtrl = StreamController<Exception>.broadcast(),
+      super();
 
   /// Get the list of the linked Amplify plugin needed by the service
   @override
@@ -68,9 +67,7 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
 
   /// Init the api service
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  }) async {
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
     await super.initLifeCycle();
     _logsHelper = AbsAmplifyService.createLogsHelper(
       logCategory: _logsCategory,
@@ -78,10 +75,9 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     );
 
     // Listen on Amplify Auth Hub event to get the known information
-    _apiStreamSubs.add(Amplify.Hub.listen<ApiHubEventPayload, ApiHubEvent>(
-      HubChannel.Api,
-      _onApiEvent,
-    ));
+    _apiStreamSubs.add(
+      Amplify.Hub.listen<ApiHubEventPayload, ApiHubEvent>(HubChannel.Api, _onApiEvent),
+    );
   }
 
   /// Request the server by using the HTTP get method
@@ -93,14 +89,13 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     Map<String, String>? headers,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethod(
-        Amplify.API.get,
-        path,
-        headers: headers,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethod(
+    Amplify.API.get,
+    path,
+    headers: headers,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the HTTP head method
   ///
@@ -111,14 +106,13 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     Map<String, String>? headers,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethod(
-        Amplify.API.head,
-        path,
-        headers: headers,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethod(
+    Amplify.API.head,
+    path,
+    headers: headers,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the HTTP put method
   ///
@@ -130,15 +124,14 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     HttpPayload? body,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethodWithBody(
-        Amplify.API.put,
-        path,
-        headers: headers,
-        body: body,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethodWithBody(
+    Amplify.API.put,
+    path,
+    headers: headers,
+    body: body,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the HTTP post method
   ///
@@ -150,15 +143,14 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     HttpPayload? body,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethodWithBody(
-        Amplify.API.post,
-        path,
-        headers: headers,
-        body: body,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethodWithBody(
+    Amplify.API.post,
+    path,
+    headers: headers,
+    body: body,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the HTTP delete method
   ///
@@ -170,15 +162,14 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
     HttpPayload? body,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethodWithBody(
-        Amplify.API.delete,
-        path,
-        headers: headers,
-        body: body,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethodWithBody(
+    Amplify.API.delete,
+    path,
+    headers: headers,
+    body: body,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the given [methodToCall], the method to call has no body to send
   /// to the server in its request.
@@ -191,24 +182,20 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
       Map<String, String>? headers,
       Map<String, String>? queryParameters,
       String? apiName,
-    }) methodToCall,
+    })
+    methodToCall,
     String path, {
     Map<String, String>? headers,
     Map<String, String>? queryParameters,
     String? apiName,
-  }) async =>
-      _callHttpMethodWithBody(
-        (path, {apiName, body, headers, queryParameters}) => methodToCall(
-          path,
-          apiName: apiName,
-          headers: headers,
-          queryParameters: queryParameters,
-        ),
-        path,
-        headers: headers,
-        queryParameters: queryParameters,
-        apiName: apiName,
-      );
+  }) async => _callHttpMethodWithBody(
+    (path, {apiName, body, headers, queryParameters}) =>
+        methodToCall(path, apiName: apiName, headers: headers, queryParameters: queryParameters),
+    path,
+    headers: headers,
+    queryParameters: queryParameters,
+    apiName: apiName,
+  );
 
   /// Request the server by using the given [methodToCall], the method to call has a body to send
   /// to the server in its request.
@@ -222,7 +209,8 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
       HttpPayload? body,
       Map<String, String>? queryParameters,
       String? apiName,
-    }) methodToCall,
+    })
+    methodToCall,
     String path, {
     Map<String, String>? headers,
     HttpPayload? body,
@@ -265,9 +253,7 @@ class AmplifyApiService<C extends MixinAmplifyApiConfig> extends AbsAmplifyServi
   /// Dispose the service
   @override
   Future<void> disposeLifeCycle() async {
-    final futuresList = <Future>[
-      _authFailureCtrl.close(),
-    ];
+    final futuresList = <Future>[_authFailureCtrl.close()];
 
     for (final sub in _apiStreamSubs) {
       futuresList.add(sub.cancel());

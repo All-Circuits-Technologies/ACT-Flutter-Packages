@@ -117,8 +117,10 @@ abstract class HaloPacketUtility {
 
     if (payloadPacket[0] != HaloPacketUtility._startByte ||
         payloadPacket[payloadLength - 1] != HaloPacketUtility._endByte) {
-      appLogger().w("The HALO payload packet received isn't complete, we haven't the start and/or "
-          "end byte");
+      appLogger().w(
+        "The HALO payload packet received isn't complete, we haven't the start and/or "
+        "end byte",
+      );
       return null;
     }
 
@@ -145,10 +147,7 @@ abstract class HaloPacketUtility {
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
   /// the [toSend] String given and the optional [ts] DateTime
-  static PayloadPacketElem formatString(
-    String toSend, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem formatString(String toSend, {DateTime? ts}) =>
       _formatAndEscapePacketElem(Uint8List.fromList(toSend.codeUnits), ts);
 
   /// Parse the [element] given to extract a string, and the optional DateTime if it's present
@@ -160,8 +159,10 @@ abstract class HaloPacketUtility {
     final tmp = _extractDataFromPacketElem(element);
 
     if (tmp.isError) {
-      appLogger().w("A problem occurred when tried to get the string representation from a payload "
-          "packet element");
+      appLogger().w(
+        "A problem occurred when tried to get the string representation from a payload "
+        "packet element",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -198,8 +199,10 @@ abstract class HaloPacketUtility {
     final tmp = _extractDataFromPacketElem(element);
 
     if (tmp.isError) {
-      appLogger().w("A problem occurred when tried to get the boolean representation from a "
-          "payload packet element");
+      appLogger().w(
+        "A problem occurred when tried to get the boolean representation from a "
+        "payload packet element",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -224,10 +227,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatUInt8(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatUInt8(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt8, false, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -235,10 +235,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatUInt16(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatUInt16(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt16, false, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -246,10 +243,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatUInt32(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatUInt32(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt32, false, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -257,10 +251,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatInt8(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatInt8(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt8, true, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -268,10 +259,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatInt16(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatInt16(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt16, true, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -279,10 +267,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatInt32(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatInt32(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt32, true, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -290,10 +275,7 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? formatInt64(
-    int number, {
-    DateTime? ts,
-  }) =>
+  static PayloadPacketElem? formatInt64(int number, {DateTime? ts}) =>
       HaloPacketUtility._formatNumber(number, ByteUtility.bytesNbUInt64, true, ts: ts);
 
   /// Format a [PayloadPacketElem] (with the needed escaped bytes and the timestamp prepend) from
@@ -303,21 +285,14 @@ abstract class HaloPacketUtility {
   ///
   /// Returns null if a problem occurred in the process (for instance if the [number] given
   /// overflows the expected integer size)
-  static PayloadPacketElem? _formatNumber(
-    int number,
-    int bytesNb,
-    bool isSigned, {
-    DateTime? ts,
-  }) {
-    final tmp = ByteUtility.convertToLsbFirst(
-      number: number,
-      bytesNb: bytesNb,
-      isSigned: isSigned,
-    );
+  static PayloadPacketElem? _formatNumber(int number, int bytesNb, bool isSigned, {DateTime? ts}) {
+    final tmp = ByteUtility.convertToLsbFirst(number: number, bytesNb: bytesNb, isSigned: isSigned);
 
     if (tmp == null) {
-      appLogger().w("A problem occurred when tried to convert the number: $number to LSB, with "
-          "bytes number: $bytesNb, and is it signed ? $isSigned");
+      appLogger().w(
+        "A problem occurred when tried to convert the number: $number to LSB, with "
+        "bytes number: $bytesNb, and is it signed ? $isSigned",
+      );
       return null;
     }
 
@@ -335,8 +310,10 @@ abstract class HaloPacketUtility {
     final tmp = _extractDataFromPacketElem(element);
 
     if (tmp.isError) {
-      appLogger().w("A problem occurred when tried to get the number representation from a "
-          "payload packet element");
+      appLogger().w(
+        "A problem occurred when tried to get the number representation from a "
+        "payload packet element",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -405,8 +382,10 @@ abstract class HaloPacketUtility {
       if (value == HaloPacketUtility._escapeElement) {
         if (idx == (tmp.length - 1)) {
           // This case should never happen (it means that the packet hasn't well formatted
-          appLogger().w("There is an escape character at the end of a payload element, this case "
-              "should never happen, but it happened.");
+          appLogger().w(
+            "There is an escape character at the end of a payload element, this case "
+            "should never happen, but it happened.",
+          );
           return null;
         }
 
@@ -434,17 +413,16 @@ abstract class HaloPacketUtility {
       // We have a timestamp to extract
       final tmpTs = _unescapeGivenElementIfNeeded(element.sublist(0, tsSepIndex));
       if (tmpTs == null) {
-        appLogger().w("A problem occurred when tried to unescape a timestamp from a payload packet "
-            "element");
+        appLogger().w(
+          "A problem occurred when tried to unescape a timestamp from a payload packet "
+          "element",
+        );
         return const BoolResultWithRequiredValue.error();
       }
 
       // The protocol carries the timestamp as a number of seconds, not of milliseconds
       final tsInS = ByteUtility.unsafeConvertFromLsb(lsbNumber: tmpTs, isSigned: false);
-      ts = DateTime.fromMillisecondsSinceEpoch(
-        tsInS * Duration.millisecondsPerSecond,
-        isUtc: true,
-      );
+      ts = DateTime.fromMillisecondsSinceEpoch(tsInS * Duration.millisecondsPerSecond, isUtc: true);
 
       // Remove the ts from the temporary element
       tmpElement = element.sublist(tsSepIndex + 1);
@@ -453,8 +431,10 @@ abstract class HaloPacketUtility {
     final unTmpElem = _unescapeGivenElementIfNeeded(tmpElement);
 
     if (unTmpElem == null) {
-      appLogger().w("A problem occurred when tried to unescape a value from a payload packet "
-          "element");
+      appLogger().w(
+        "A problem occurred when tried to unescape a value from a payload packet "
+        "element",
+      );
       return const BoolResultWithRequiredValue.error();
     }
 
@@ -475,9 +455,10 @@ abstract class HaloPacketUtility {
     }
 
     if (packet.contains(HaloPacketUtility._endByte)) {
-      appLogger()
-          .w("The end byte has been seen in the middle of packet received but this should never "
-              "happen. The end byte has to be the last byte of the packet");
+      appLogger().w(
+        "The end byte has been seen in the middle of packet received but this should never "
+        "happen. The end byte has to be the last byte of the packet",
+      );
       return null;
     }
 
@@ -505,8 +486,10 @@ abstract class HaloPacketUtility {
       }
     }
 
-    appLogger().w("After the end byte, there are only 0x00 bytes; therefore, we remove them "
-        "considering they don't exist, but they can be relevant data");
+    appLogger().w(
+      "After the end byte, there are only 0x00 bytes; therefore, we remove them "
+      "considering they don't exist, but they can be relevant data",
+    );
     newPacket.removeRange(endByteIndex + 1, packetLastIdx + 1);
     return Uint8List.fromList(newPacket);
   }

@@ -33,23 +33,19 @@ class SingleExpandableChildScrollView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) => SingleChildScrollView(
-          scrollDirection: scrollDirection,
-          controller: controller,
-          physics: physics,
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: (scrollDirection == Axis.vertical) ? constraints.maxHeight : 0,
-              minWidth: (scrollDirection == Axis.horizontal) ? constraints.maxWidth : 0,
-            ),
-            child: (scrollDirection == Axis.vertical)
-                ? IntrinsicHeight(
-                    child: child,
-                  )
-                : IntrinsicWidth(
-                    child: child,
-                  ),
-          ),
+    builder: (context, constraints) => SingleChildScrollView(
+      scrollDirection: scrollDirection,
+      controller: controller,
+      physics: physics,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: (scrollDirection == Axis.vertical) ? constraints.maxHeight : 0,
+          minWidth: (scrollDirection == Axis.horizontal) ? constraints.maxWidth : 0,
         ),
-      );
+        child: (scrollDirection == Axis.vertical)
+            ? IntrinsicHeight(child: child)
+            : IntrinsicWidth(child: child),
+      ),
+    ),
+  );
 }

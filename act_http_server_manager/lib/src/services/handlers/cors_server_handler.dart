@@ -63,12 +63,11 @@ class CorsServerHandler extends AbsServerHandler {
   /// Class constructor
   CorsServerHandler({
     required super.httpLoggingManager,
-    required List<AbsApiService> apiServices,
+    required this._apiServices,
     this.accessControlAllowOriginValue = allowOriginAll,
     String? accessControlAllowMethodsValue,
     String? accessControlAllowHeadersValue,
-  }) : _apiServices = apiServices,
-       accessControlAllowMethodsValue = accessControlAllowMethodsValue ?? allowMethodsAll,
+  }) : accessControlAllowMethodsValue = accessControlAllowMethodsValue ?? allowMethodsAll,
        accessControlAllowHeadersValue = accessControlAllowHeadersValue ?? allowsGenericHeaders;
 
   /// {@macro act_http_server_manager.AbsServerHandler.beforeHandler}

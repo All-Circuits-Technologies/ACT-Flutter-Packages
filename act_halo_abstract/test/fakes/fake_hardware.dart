@@ -14,8 +14,7 @@ class FakeAttributeHardware extends AbstractHaloAttributeHardware {
   void pushNewValue(HaloPacket packet) => attributeNewValueCtrl.add(packet);
 
   @override
-  Future<HaloErrorType> writeAttribute({required HaloPacket packet}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> writeAttribute({required HaloPacket packet}) async => HaloErrorType.noError;
 
   @override
   Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
@@ -26,8 +25,7 @@ class FakeAttributeHardware extends AbstractHaloAttributeHardware {
   Future<HaloErrorType> subAttribute({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
-  Future<HaloErrorType> unSubAttribute({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> unSubAttribute({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
   Future<void> close() async {
@@ -55,8 +53,7 @@ class FakeInstantDataHardware extends AbstractHaloInstantDataHardware {
   }) async => const ResultWithRequiredValue(status: HaloErrorType.commError);
 
   @override
-  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
   Future<HaloErrorType> unSubInstantData({required HaloDataId dataId}) async =>
@@ -99,10 +96,8 @@ class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
   @override
   Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
     required HaloDataId dataId,
-  }) async => const ResultWithRequiredValue(
-    status: HaloErrorType.noError,
-    value: <HaloRecordKey>[],
-  );
+  }) async =>
+      const ResultWithRequiredValue(status: HaloErrorType.noError, value: <HaloRecordKey>[]);
 
   @override
   Future<HaloErrorType> ackRecordData({required HaloRecordKey recordKey}) async =>

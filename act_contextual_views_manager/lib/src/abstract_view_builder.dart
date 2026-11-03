@@ -20,15 +20,13 @@ import 'package:flutter/cupertino.dart';
 typedef DoActionDisplayCallback<C> = FutureOr<(bool, C?)> Function();
 
 /// This method represents a callback to display a contextual view
-typedef ViewDisplayCallback<T extends AbstractViewContext, C> = FutureOr<ViewDisplayResult<C>>
-    Function(
-  T viewContext,
-  DoActionDisplayCallback<C>? callback,
-);
+typedef ViewDisplayCallback<T extends AbstractViewContext, C> =
+    FutureOr<ViewDisplayResult<C>> Function(T viewContext, DoActionDisplayCallback<C>? callback);
 
 /// This method represents a callback to display a contextual view
 typedef DisplayDialog<T extends AbstractViewContext> = Future<void> Function(
-    ExtraContextualViewConfig<T> extra);
+  ExtraContextualViewConfig<T> extra,
+);
 
 /// This is the abstract view builder which is used to manage the building of contextual views in
 /// your app
@@ -85,14 +83,10 @@ abstract class AbstractViewBuilder {
   void registerViewDisplay<T extends AbstractViewContext>({
     required T context,
     required ViewDisplayCallback<T, dynamic> callback,
-  }) =>
-      registerAbsViewDisplay(
-        context: context,
-        callback: (context, result) async => callback(
-          context as T,
-          result,
-        ),
-      );
+  }) => registerAbsViewDisplay(
+    context: context,
+    callback: (context, result) async => callback(context as T, result),
+  );
 
   /// {@template act_contextual_views_manager.AbstractViewBuilder.onContextualPage}
   /// Register a page to display when the given context is asked
@@ -100,15 +94,11 @@ abstract class AbstractViewBuilder {
   void onContextualPage<T extends AbstractViewContext>({
     required T context,
     required MixinRoute route,
-  }) =>
-      registerAbsViewDisplay(
-        context: context,
-        callback: (context, doAction) async => _onContextualPageDisplay(
-          context: context as T,
-          doAction: doAction,
-          route: route,
-        ),
-      );
+  }) => registerAbsViewDisplay(
+    context: context,
+    callback: (context, doAction) async =>
+        _onContextualPageDisplay(context: context as T, doAction: doAction, route: route),
+  );
 
   /// {@template act_contextual_views_manager.AbstractViewBuilder.onContextualDialog}
   /// Register a dialog to display when the given context is asked
@@ -116,15 +106,14 @@ abstract class AbstractViewBuilder {
   void onContextualDialog<T extends AbstractViewContext>({
     required T context,
     required DisplayDialog<T> displayDialog,
-  }) =>
-      registerAbsViewDisplay(
-        context: context,
-        callback: (context, doAction) async => _onContextualDialogDisplay(
-          context: context as T,
-          doAction: doAction,
-          displayDialog: displayDialog,
-        ),
-      );
+  }) => registerAbsViewDisplay(
+    context: context,
+    callback: (context, doAction) async => _onContextualDialogDisplay(
+      context: context as T,
+      doAction: doAction,
+      displayDialog: displayDialog,
+    ),
+  );
 
   /// This method is called when a page has to be displayed
   ///
@@ -137,22 +126,24 @@ abstract class AbstractViewBuilder {
     final completer = Completer<ViewDisplayStatus>();
     C? tmpOtherValue;
 
-    unawaited(_routerManager.push(
-      route,
-      extra: ExtraContextualViewConfig<T>(
-        context: context,
-        requestExtraAction: (doAction != null)
-            ? () async {
-                final (ok, value) = await doAction();
+    unawaited(
+      _routerManager.push(
+        route,
+        extra: ExtraContextualViewConfig<T>(
+          context: context,
+          requestExtraAction: (doAction != null)
+              ? () async {
+                  final (ok, value) = await doAction();
 
-                tmpOtherValue = value;
+                  tmpOtherValue = value;
 
-                return ok;
-              }
-            : null,
-        callWhenEnded: (status) async => completer.complete(status),
+                  return ok;
+                }
+              : null,
+          callWhenEnded: (status) async => completer.complete(status),
+        ),
       ),
-    ));
+    );
 
     final result = await completer.future;
 
@@ -161,10 +152,7 @@ abstract class AbstractViewBuilder {
       _routerManager.pop();
     }
 
-    return ViewDisplayResult(
-      status: result,
-      customResult: tmpOtherValue,
-    );
+    return ViewDisplayResult(status: result, customResult: tmpOtherValue);
   }
 
   /// This method is called when a dialog has to be displayed
@@ -196,10 +184,7 @@ abstract class AbstractViewBuilder {
 
     final result = await completer.future;
 
-    return ViewDisplayResult(
-      status: result,
-      customResult: tmpOtherValue,
-    );
+    return ViewDisplayResult(status: result, customResult: tmpOtherValue);
   }
 
   /// {@template act_contextual_views_manager.AbstractViewBuilder.registerAbsViewDisplay}
@@ -212,12 +197,16 @@ abstract class AbstractViewBuilder {
     required AbstractViewContext context,
     required ViewDisplayCallback callback,
   }) {
-    assert(!_registeredBuilders.containsKey(context.uniqueKey),
-        "The view builder has already registered this context: $context");
+    assert(
+      !_registeredBuilders.containsKey(context.uniqueKey),
+      "The view builder has already registered this context: $context",
+    );
 
     if (_registeredBuilders.containsKey(context.uniqueKey)) {
-      _logsHelper.e("The view builder has already registered this context: $context, we don't "
-          "override it");
+      _logsHelper.e(
+        "The view builder has already registered this context: $context, we don't "
+        "override it",
+      );
       return;
     }
 
@@ -240,8 +229,10 @@ abstract class AbstractViewBuilder {
     final builder = _registeredBuilders[context.uniqueKey];
 
     if (builder == null) {
-      _logsHelper.e("No view builder has been attached to this view context: $context and there is "
-          "no default one, we can't proceed");
+      _logsHelper.e(
+        "No view builder has been attached to this view context: $context and there is "
+        "no default one, we can't proceed",
+      );
       return const ViewDisplayResult.error();
     }
 

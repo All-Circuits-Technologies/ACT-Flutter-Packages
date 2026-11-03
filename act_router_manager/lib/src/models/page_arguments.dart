@@ -18,11 +18,8 @@ class PageArguments<T extends MixinRoute> extends Equatable {
   final Object? otherArguments;
 
   /// Class constructor
-  const PageArguments({
-    required this.screenOrientation,
-    required this.route,
-    this.otherArguments,
-  }) : super();
+  const PageArguments({required this.screenOrientation, required this.route, this.otherArguments})
+    : super();
 
   @override
   List<Object?> get props => [screenOrientation, route, otherArguments];

@@ -13,12 +13,10 @@ mixin MixinRemoteLocalVersFileConfig<T extends MixinRemoteLocalVersFileType>
   /// The configuration variable for the server local version files.
   late final remoteLocalVersFileConfig =
       ParserConfigVar<RemoteLocalDirConfig<T>, Map<String, dynamic>>(
-    "remoteLocalVersFile.config",
-    parser: (value) => RemoteLocalDirConfig.parseFromJson<T>(
-      value,
-      dirTypes: getMultiDirTypes(),
-    ),
-  );
+        "remoteLocalVersFile.config",
+        parser: (value) =>
+            RemoteLocalDirConfig.parseFromJson<T>(value, dirTypes: getMultiDirTypes()),
+      );
 
   /// {@template act_remote_local_vers_file_manager.MixinRemoteLocalVersFileConfig.getMultiDirTypes}
   /// Get the list of [T]

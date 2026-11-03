@@ -28,15 +28,15 @@ class HaloRequestParamsPacket extends Equatable {
     required this.nbValues,
     required this.parameters,
   }) : assert(
-            nbValues.length <= halo_constants.maxRequestParameterNumber,
-            "The protocol standard defined that the request can't have more than: "
-            "${halo_constants.maxRequestParameterNumber} parameters");
+         nbValues.length <= halo_constants.maxRequestParameterNumber,
+         "The protocol standard defined that the request can't have more than: "
+         "${halo_constants.maxRequestParameterNumber} parameters",
+       );
 
   /// This is a shortcut to create a void parameters object
-  HaloRequestParamsPacket.voidParams({
-    required this.requestId,
-  })  : nbValues = [],
-        parameters = HaloPayloadPacket();
+  HaloRequestParamsPacket.voidParams({required this.requestId})
+    : nbValues = [],
+      parameters = HaloPayloadPacket();
 
   @override
   List<Object?> get props => [requestId, nbValues, parameters];

@@ -54,10 +54,7 @@ enum HaloErrorType with MixinHaloType, MixinResultStatus {
   bool get isSuccess => this == HaloErrorType.noError;
 
   /// Enum constructor
-  const HaloErrorType({
-    required this.rawValue,
-    this.canBeRetried = false,
-  });
+  const HaloErrorType({required this.rawValue, this.canBeRetried = false});
 
   /// Parse the raw value given and returns the [HaloErrorType] enum linked, if the value isn't
   /// known, the method returns [HaloErrorType.unknown]

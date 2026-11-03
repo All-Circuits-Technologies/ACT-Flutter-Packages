@@ -56,11 +56,11 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
     this.scanMode = ScanMode.balanced,
     this.isDeviceHasToBeDisplayed,
     this.isAcceptanceCompulsoryForPermRequest = false,
-  })  : _scanHandler = globalGetIt().get<BleManager>().bleGapService.toGenerateScanHandler(),
-        _manageDeviceMutex = Mutex(),
-        super(InitBleScannedDevicesState(
-          isBluetoothActive: globalGetIt().get<BleManager>().isEnabled,
-        )) {
+  }) : _scanHandler = globalGetIt().get<BleManager>().bleGapService.toGenerateScanHandler(),
+       _manageDeviceMutex = Mutex(),
+       super(
+         InitBleScannedDevicesState(isBluetoothActive: globalGetIt().get<BleManager>().isEnabled),
+       ) {
     final bleManager = globalGetIt().get<BleManager>();
     _scannedDevicesSub = _scanHandler.scannedDevices.listen(_onScannedDevicesReceived);
     _bluetoothEnableSub = bleManager.enabledStream.listen(_onBluetoothEnableUpdated);
@@ -89,12 +89,7 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
     // Start scan
     final success = await _scanHandler.startScan(scanMode: scanMode);
 
-    emitter.call(
-      BleScanState(
-        previousState: state,
-        isScanActive: success,
-      ),
-    );
+    emitter.call(BleScanState(previousState: state, isScanActive: success));
   }
 
   /// Called when the [StopBleScanEvent] event is received
@@ -106,12 +101,7 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
   ) async {
     await _scanHandler.stopScan();
 
-    emitter.call(
-      BleScanState(
-        previousState: state,
-        isScanActive: false,
-      ),
-    );
+    emitter.call(BleScanState(previousState: state, isScanActive: false));
   }
 
   /// Called when the [ClearScannedDevicesListEvent] event is received
@@ -120,13 +110,9 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
   Future<void> _onClearScannedDevicesListEvent(
     ClearScannedDevicesListEvent event,
     Emitter<BleScannedDevicesState> emitter,
-  ) =>
-      _manageDeviceMutex.protect(() async {
-        emitter(BleUpdateDevicesState(
-          previousState: state,
-          devices: const [],
-        ));
-      });
+  ) => _manageDeviceMutex.protect(() async {
+    emitter(BleUpdateDevicesState(previousState: state, devices: const []));
+  });
 
   /// Called when the [BleScanUpdateStatusEvent] event is received
   ///
@@ -134,30 +120,26 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
   Future<void> _onBleScanUpdateStatusEvent(
     BleScanUpdateStatusEvent event,
     Emitter<BleScannedDevicesState> emitter,
-  ) =>
-      _manageDeviceMutex.protect(() async {
-        List<BleScannedDevice>? newDeviceList;
+  ) => _manageDeviceMutex.protect(() async {
+    List<BleScannedDevice>? newDeviceList;
 
-        switch (event.scanUpdateStatus.type) {
-          case BleScanUpdateType.addDevice:
-          case BleScanUpdateType.updateDevice:
-            newDeviceList = _onAddOrUpdateScannedDevice(event.scanUpdateStatus.device);
-            break;
-          case BleScanUpdateType.removeDevice:
-            newDeviceList = _onRemoveScannedDevice(event.scanUpdateStatus.device);
-            break;
-        }
+    switch (event.scanUpdateStatus.type) {
+      case BleScanUpdateType.addDevice:
+      case BleScanUpdateType.updateDevice:
+        newDeviceList = _onAddOrUpdateScannedDevice(event.scanUpdateStatus.device);
+        break;
+      case BleScanUpdateType.removeDevice:
+        newDeviceList = _onRemoveScannedDevice(event.scanUpdateStatus.device);
+        break;
+    }
 
-        if (newDeviceList == null) {
-          // Nothing to do
-          return;
-        }
+    if (newDeviceList == null) {
+      // Nothing to do
+      return;
+    }
 
-        emitter(BleUpdateDevicesState(
-          previousState: state,
-          devices: newDeviceList,
-        ));
-      });
+    emitter(BleUpdateDevicesState(previousState: state, devices: newDeviceList));
+  });
 
   /// Return a new list to use with the added or updated device
   /// If no device is added to the list, the method returns null.
@@ -215,8 +197,8 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
     Emitter<BleScannedDevicesState> emitter,
   ) async {
     final status = await globalGetIt().get<BleManager>().checkAndAskForPermissionsAndServices(
-          isAcceptanceCompulsory: isAcceptanceCompulsoryForPermRequest,
-        );
+      isAcceptanceCompulsory: isAcceptanceCompulsoryForPermRequest,
+    );
 
     if (isClosed) {
       // The bloc has been closed while we request for the permissions; we don't go further
@@ -239,9 +221,7 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
       return;
     }
 
-    add(BluetoothEnableStatusEvent(
-      isBluetoothActive: value,
-    ));
+    add(BluetoothEnableStatusEvent(isBluetoothActive: value));
   }
 
   /// Called when the [BluetoothEnableStatusEvent] event is received
@@ -251,19 +231,15 @@ class BleScannedDevicesBloc extends Bloc<BleScannedDevicesEvent, BleScannedDevic
     BluetoothEnableStatusEvent event,
     Emitter<BleScannedDevicesState> emitter,
   ) async {
-    emitter(BluetoothEnableNewState(
-      previousState: state,
-      isBluetoothActive: event.isBluetoothActive,
-    ));
+    emitter(
+      BluetoothEnableNewState(previousState: state, isBluetoothActive: event.isBluetoothActive),
+    );
   }
 
   /// Call when the BLoC has be to be closed
   @override
   Future<void> close() async {
-    await Future.wait([
-      _scannedDevicesSub.cancel(),
-      _bluetoothEnableSub.cancel(),
-    ]);
+    await Future.wait([_scannedDevicesSub.cancel(), _bluetoothEnableSub.cancel()]);
 
     await _scanHandler.dispose();
 

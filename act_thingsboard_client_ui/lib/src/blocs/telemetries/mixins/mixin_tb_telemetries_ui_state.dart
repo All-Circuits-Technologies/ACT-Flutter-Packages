@@ -55,13 +55,8 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
   });
 
   /// Represents the error state of the device telemetries page
-  S copyWithErrorUiState({
-    required TbTelemetriesUiError genericError,
-  }) =>
-      copyWithTbTelemetriesState(
-        genericError: genericError,
-        telemetryLoading: false,
-      );
+  S copyWithErrorUiState({required TbTelemetriesUiError genericError}) =>
+      copyWithTbTelemetriesState(genericError: genericError, telemetryLoading: false);
 
   /// Represents the loading state of the device telemetries page
   ///
@@ -70,13 +65,12 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
     DeviceInfo? device,
     Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
-  }) =>
-      copyWithTbTelemetriesState(
-        genericError: TbTelemetriesUiError.noError,
-        attributesValues: attributesValues,
-        tsValues: tsValues,
-        device: device,
-      );
+  }) => copyWithTbTelemetriesState(
+    genericError: TbTelemetriesUiError.noError,
+    attributesValues: attributesValues,
+    tsValues: tsValues,
+    device: device,
+  );
 
   /// Represents a state for managing the telemetries reception
   S copyWithNewValuesUiState({
@@ -127,11 +121,5 @@ mixin MixinTbTelemetriesUiState<S extends BlocStateForMixin<S>> on BlocStateForM
 
   /// State properties
   @override
-  List<Object?> get props => [
-        device,
-        telemetryLoading,
-        genericError,
-        tsValues,
-        attributesValues,
-      ];
+  List<Object?> get props => [device, telemetryLoading, genericError, tsValues, attributesValues];
 }

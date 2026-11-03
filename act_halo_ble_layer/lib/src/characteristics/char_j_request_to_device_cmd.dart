@@ -9,18 +9,16 @@ import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteris
 import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
 
 /// The HALO characteristic J for request to device command exchange
-class CharJRequestToDeviceCmd extends AbstractHaloCharacteristic
-    with MixCharNotification {
+class CharJRequestToDeviceCmd extends AbstractHaloCharacteristic with MixCharNotification {
   /// The characteristic name
   static const characteristicName = "request_to_device_command_and_result";
 
   /// Class constructor
-  CharJRequestToDeviceCmd({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readWrite,
-          receiveType: Uint8List,
-          sendType: Uint8List,
-        );
+  CharJRequestToDeviceCmd({required super.uuid})
+    : super(
+        name: characteristicName,
+        scope: CharacteristicScope.readWrite,
+        receiveType: Uint8List,
+        sendType: Uint8List,
+      );
 }

@@ -23,10 +23,10 @@ void main() {
     test("builds the url of a file under the root of the server", () async {
       final service = await aService("https://files.example/root");
 
-      expect(
-        await service.getDownloadUrl("a/file.txt"),
-        (result: StorageRequestResult.success, downloadUrl: "https://files.example/root/a/file.txt"),
-      );
+      expect(await service.getDownloadUrl("a/file.txt"), (
+        result: StorageRequestResult.success,
+        downloadUrl: "https://files.example/root/a/file.txt",
+      ));
     });
 
     test("builds the url of a file whose identifier starts with a separator", () async {
@@ -50,10 +50,10 @@ void main() {
     test("refuses a file which would climb out of the root of the server", () async {
       final service = await aService("https://files.example/root");
 
-      expect(
-        await service.getDownloadUrl("../elsewhere/file.txt"),
-        (result: StorageRequestResult.genericError, downloadUrl: null),
-      );
+      expect(await service.getDownloadUrl("../elsewhere/file.txt"), (
+        result: StorageRequestResult.genericError,
+        downloadUrl: null,
+      ));
     });
 
     test("refuses a file which is the root itself", () async {

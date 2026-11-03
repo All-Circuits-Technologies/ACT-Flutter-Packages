@@ -62,22 +62,20 @@ class AwsIotShadowAttribute<T> {
   /// [castValue] can be set to specify how to cast the value from the json value to the attribute
   /// type. If not set, the default cast function will be used (which can handle primitive types).
   AwsIotShadowAttribute({
-    required String attributeName,
+    required this._attributeName,
     required AwsIotNamedShadow shadow,
     // We use the dynamic type here because we store the data as dynamic and cast its value to what we
     // expect to have.
     // ignore: avoid_annotating_with_dynamic
     T? Function(dynamic jsonValue)? castValue,
-    bool writable = true,
-  })  : _shadow = shadow,
-        _attributeName = attributeName,
-        _writable = writable,
-        _castValue = castValue ?? _castPrimitiveType<T>,
-        _desiredStreamController = StreamController<T>.broadcast(),
-        _reportedStreamController = StreamController<T>.broadcast(),
-        _streamSubscriptions = [],
-        _desiredValueMutex = Mutex(),
-        _reportedValueMutex = Mutex() {
+    this._writable = true,
+  }) : _shadow = shadow,
+       _castValue = castValue ?? _castPrimitiveType<T>,
+       _desiredStreamController = StreamController<T>.broadcast(),
+       _reportedStreamController = StreamController<T>.broadcast(),
+       _streamSubscriptions = [],
+       _desiredValueMutex = Mutex(),
+       _reportedValueMutex = Mutex() {
     // Listen to the desired and reported state of the shadow
     _streamSubscriptions.addAll([
       shadow.desiredStateStream.listen(_onDesiredState),
@@ -91,52 +89,40 @@ class AwsIotShadowAttribute<T> {
 
   /// This method is called when the desired state of the shadow changes. It will update the
   /// [_desiredValue] if the desired value of the attribute has changed
-  Future<void> _onDesiredState(
-    Map<String, dynamic> desiredState,
-  ) =>
-      _desiredValueMutex.protect(
-        () async {
-          final newDesiredValue = _castValue(desiredState[_attributeName]);
+  Future<void> _onDesiredState(Map<String, dynamic> desiredState) =>
+      _desiredValueMutex.protect(() async {
+        final newDesiredValue = _castValue(desiredState[_attributeName]);
 
-          if (newDesiredValue == null || newDesiredValue == _desiredValue) {
-            return;
-          }
+        if (newDesiredValue == null || newDesiredValue == _desiredValue) {
+          return;
+        }
 
-          _desiredValue = newDesiredValue;
-          _desiredStreamController.add(newDesiredValue);
-        },
-      );
+        _desiredValue = newDesiredValue;
+        _desiredStreamController.add(newDesiredValue);
+      });
 
   /// This method is called when the reported state of the shadow changes. It will update the
   /// [_reportedValue] if the reported value of the attribute has changed
-  Future<void> _onReportedState(
-    Map<String, dynamic> reportedState,
-  ) =>
-      _reportedValueMutex.protect(
-        () async {
-          final newReportedValue = _castValue(reportedState[_attributeName]);
+  Future<void> _onReportedState(Map<String, dynamic> reportedState) =>
+      _reportedValueMutex.protect(() async {
+        final newReportedValue = _castValue(reportedState[_attributeName]);
 
-          if (newReportedValue == null || newReportedValue == _reportedValue) {
-            return;
-          }
+        if (newReportedValue == null || newReportedValue == _reportedValue) {
+          return;
+        }
 
-          _reportedValue = newReportedValue;
-          _reportedStreamController.add(newReportedValue);
-        },
-      );
+        _reportedValue = newReportedValue;
+        _reportedStreamController.add(newReportedValue);
+      });
 
   /// Change the desired value of the attribute
-  Future<bool> setDesired(
-    T newValue,
-  ) async {
+  Future<bool> setDesired(T newValue) async {
     if (!_writable) {
       appLogger().w('Attribute $_attributeName is not writable');
       return false;
     }
 
-    return _shadow.requestUpdate(
-      {_attributeName: newValue},
-    );
+    return _shadow.requestUpdate({_attributeName: newValue});
   }
 
   /// This method can cast a dynamic value to a primitive type

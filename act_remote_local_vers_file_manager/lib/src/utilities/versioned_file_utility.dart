@@ -36,10 +36,9 @@ sealed class VersionedFileUtility {
   /// Result can be cached or not by [storage] using [cacheVersion] and [cacheFile] which
   /// respectively enable caching of the content of "current" file or of result versioned file.
   static Future<
-      ({
-        StorageRequestResult result,
-        ({String version, String filePath, File file})? data,
-      })> getVersionedFile({
+    ({StorageRequestResult result, ({String version, String filePath, File file})? data})
+  >
+  getVersionedFile({
     required AbsRemoteStorageManager storage,
     required String dirId,
     required String Function(String) versionToFileName,
@@ -75,10 +74,7 @@ sealed class VersionedFileUtility {
     // Fetched versioned file
     final versionedFileName = versionToFileName(versionToFetch);
     final versionedFilePath = [dirId, versionedFileName].join(storage.getPathSeparator());
-    final fileFetchResult = await storage.getFile(
-      versionedFilePath,
-      useCache: cacheFile,
-    );
+    final fileFetchResult = await storage.getFile(versionedFilePath, useCache: cacheFile);
 
     if (fileFetchResult.result != StorageRequestResult.success) {
       return (result: fileFetchResult.result, data: null);
@@ -92,11 +88,7 @@ sealed class VersionedFileUtility {
 
     return (
       result: StorageRequestResult.success,
-      data: (
-        version: versionToFetch,
-        filePath: versionedFilePath,
-        file: fileFetchResult.file!,
-      ),
+      data: (version: versionToFetch, filePath: versionedFilePath, file: fileFetchResult.file!),
     );
   }
 
@@ -104,11 +96,7 @@ sealed class VersionedFileUtility {
   ///
   /// That is, read "version" file within [storage] [dirId] folder, optionally caching result
   /// using [cacheVersion].
-  static Future<
-      ({
-        StorageRequestResult requestResult,
-        String? version,
-      })> getFileCurrentVersion({
+  static Future<({StorageRequestResult requestResult, String? version})> getFileCurrentVersion({
     required AbsRemoteStorageManager storage,
     required String dirId,
     required bool cacheVersion,
@@ -116,8 +104,10 @@ sealed class VersionedFileUtility {
   }) async {
     // Get "current" file, fail upon any issue
     final requestResult = await storage.getFile(
-      [dirId, server_local_vers_file_constants.currentVersionStampFileName]
-          .join(storage.getPathSeparator()),
+      [
+        dirId,
+        server_local_vers_file_constants.currentVersionStampFileName,
+      ].join(storage.getPathSeparator()),
       useCache: cacheVersion,
     );
 
@@ -139,9 +129,6 @@ sealed class VersionedFileUtility {
     }
 
     // Success
-    return (
-      requestResult: StorageRequestResult.success,
-      version: version,
-    );
+    return (requestResult: StorageRequestResult.success, version: version);
   }
 }

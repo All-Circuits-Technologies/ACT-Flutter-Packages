@@ -30,23 +30,22 @@ class CrashlyticsExternalLogger
   }
 
   /// Class constructor
-  const CrashlyticsExternalLogger({
-    required this.crashDebugConfig,
-  });
+  const CrashlyticsExternalLogger({required this.crashDebugConfig});
 
   /// {@macro act_logger_manager.MixinExternalLogger.log}
   @override
-  void log(
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      {required dynamic message,
-      required LogsLevel level,
-      // We don't know the type of the objects we pass to the log messages
-      // ignore: avoid_annotating_with_dynamic
-      dynamic error,
-      StackTrace? stackTrace,
-      List<String>? categories,
-      DateTime? time}) {
+  void log({
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    required dynamic message,
+    required LogsLevel level,
+    // We don't know the type of the objects we pass to the log messages
+    // ignore: avoid_annotating_with_dynamic
+    dynamic error,
+    StackTrace? stackTrace,
+    List<String>? categories,
+    DateTime? time,
+  }) {
     if (!_testIfLogWouldBeLogged(level: level)) {
       return;
     }
@@ -72,9 +71,7 @@ class CrashlyticsExternalLogger
   bool _testIfLogWouldBeLogged({required LogsLevel level}) => level.index >= minLevel.index;
 
   /// This method is used to log messages to firebase crashlytics.
-  Future<void> _logMessagesToCrashlytics({
-    required List<String> logMessages,
-  }) async {
+  Future<void> _logMessagesToCrashlytics({required List<String> logMessages}) async {
     final crashlytics = FirebaseCrashlytics.instance;
     for (final logMessage in logMessages) {
       await crashlytics.log(logMessage);

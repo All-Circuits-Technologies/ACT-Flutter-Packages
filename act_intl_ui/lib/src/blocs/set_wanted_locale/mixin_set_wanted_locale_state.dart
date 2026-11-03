@@ -30,21 +30,12 @@ mixin MixinSetWantedLocaleState<S extends MixinSetWantedLocaleState<S>> on BlocS
   });
 
   /// This method is used to copy the state with a new wanted locale
-  S copyToNewCurrentLocaleState({
-    required Locale currentLocale,
-  }) =>
-      copySetWantedLocaleState(
-        currentLocale: currentLocale,
-      );
+  S copyToNewCurrentLocaleState({required Locale currentLocale}) =>
+      copySetWantedLocaleState(currentLocale: currentLocale);
 
   /// This method is used to copy the state with a new wanted locale
-  S copyToNewLocaleWantedByUserState({
-    required Locale? wantedLocale,
-  }) =>
-      copySetWantedLocaleState(
-        wantedLocale: wantedLocale,
-        forceWantedLocaleValue: true,
-      );
+  S copyToNewLocaleWantedByUserState({required Locale? wantedLocale}) =>
+      copySetWantedLocaleState(wantedLocale: wantedLocale, forceWantedLocaleValue: true);
 
   /// {@macro act_flutter_utility.BlocStateForMixin.props}
   @override

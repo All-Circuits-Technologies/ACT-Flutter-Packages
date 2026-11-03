@@ -47,8 +47,8 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
     this.headerAuthKey = HeaderConstants.authorizationHeaderKey,
     this.headerAuthValueFormatted = HeaderConstants.authBearer,
     this.verifyTokenExpirationDate = true,
-  })  : _tokensInfo = null,
-        _newTokensCtrl = StreamController.broadcast();
+  }) : _tokensInfo = null,
+       _newTokensCtrl = StreamController.broadcast();
 
   /// {@macro act_http_client_manager.AbsServerLogin.manageLogInWithRequest}
   @override
@@ -73,8 +73,10 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
     // I redo the test to avoid to have a warning with the next lines (and because the content
     // of the method may change in future and we may forget to apply the modifications here)
     if (accessToken == null || !verifyTokenInfo(accessToken)) {
-      logsHelper.e("The token info aren't correct but we succeeded all the login process, that "
-          "can't happen but it happened...");
+      logsHelper.e(
+        "The token info aren't correct but we succeeded all the login process, that "
+        "can't happen but it happened...",
+      );
       return RequestStatus.globalError;
     }
 
@@ -140,9 +142,7 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
   /// This manages the logIn into the server via the given login request
   /// {@endtemplate}
   @protected
-  Future<RequestStatus> manageLogInToServer({
-    required RequestParam requestParam,
-  }) async {
+  Future<RequestStatus> manageLogInToServer({required RequestParam requestParam}) async {
     final response = await serverRequester.executeRequestWithoutAuth(requestParam: requestParam);
 
     if (response.status != RequestStatus.success) {
@@ -153,8 +153,10 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
     final jwtResponse = await parseLoginResponse(response);
 
     if (jwtResponse == null) {
-      logsHelper.w("A problem occurred when parsed the response received to get the JWT login "
-          "token");
+      logsHelper.w(
+        "A problem occurred when parsed the response received to get the JWT login "
+        "token",
+      );
       return RequestStatus.globalError;
     }
 
@@ -184,8 +186,10 @@ abstract class AbsJwtLogin extends AbsHttpClientLogin {
     final jwtResponse = await parseLoginResponse(response);
 
     if (jwtResponse == null) {
-      logsHelper.w("A problem occurred when parsed the response received to get the JWT login "
-          "token");
+      logsHelper.w(
+        "A problem occurred when parsed the response received to get the JWT login "
+        "token",
+      );
       return RequestStatus.globalError;
     }
 

@@ -21,11 +21,11 @@ class TbDeviceAttributes extends ATbTelemetry<AttributeData> {
   /// Create a subscription command linked to attributes
   @override
   SubscriptionCmd createSubCmd(String keys) => AttributesSubscriptionCmd(
-        entityType: EntityType.DEVICE,
-        entityId: deviceId,
-        scope: scope,
-        keys: keys,
-      );
+    entityType: EntityType.DEVICE,
+    entityId: deviceId,
+    scope: scope,
+    keys: keys,
+  );
 
   /// Called to parse the subscription update received and get the [AttributeData] linked
   @override

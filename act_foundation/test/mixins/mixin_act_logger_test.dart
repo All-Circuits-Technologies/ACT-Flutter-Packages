@@ -27,9 +27,7 @@ class _RecordingLogger with MixinActLogger {
   // The logger interface takes the messages as dynamic values.
   // ignore: avoid_annotating_with_dynamic
   void log(dynamic message, {required LogsLevel level, dynamic error, StackTrace? stackTrace}) =>
-      calls.add(
-        _LoggedCall(message: message, level: level, error: error, stackTrace: stackTrace),
-      );
+      calls.add(_LoggedCall(message: message, level: level, error: error, stackTrace: stackTrace));
 
   @override
   // The logger interface takes the messages as dynamic values.
@@ -141,10 +139,7 @@ void main() {
         ..w("second")
         ..e("third");
 
-      expect(
-        logger.calls.map((call) => call.message).toList(),
-        ["first", "second", "third"],
-      );
+      expect(logger.calls.map((call) => call.message).toList(), ["first", "second", "third"]);
     });
   });
 }

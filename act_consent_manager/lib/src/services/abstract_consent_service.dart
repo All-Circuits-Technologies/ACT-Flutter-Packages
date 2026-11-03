@@ -54,10 +54,8 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   String? _latestVersion;
 
   /// Get the global state of the consent
-  ConsentStateEnum get consentState => _guessStatus(
-        latestVersion: _latestVersion,
-        consentData: _consentData,
-      );
+  ConsentStateEnum get consentState =>
+      _guessStatus(latestVersion: _latestVersion, consentData: _consentData);
 
   /// Get the stream that streams the state of the consent
   Stream<ConsentStateEnum> get stateStream => _stateController.stream;
@@ -72,17 +70,15 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
 
   /// Class constructor
   AbstractConsentService({
-    required LogsHelper logsHelper,
+    required this._logsHelper,
     required List<T> optionsList,
-    required List<StreamObserver> observers,
-  })  : _logsHelper = logsHelper,
-        _optionKeys = optionsList,
-        _stateController = StreamController<ConsentStateEnum>.broadcast(),
-        _loadTextWidgetMutex = Mutex(),
-        _stateMutex = Mutex(),
-        _observers = observers,
-        _observersSubs = [],
-        super();
+    required this._observers,
+  }) : _optionKeys = optionsList,
+       _stateController = StreamController<ConsentStateEnum>.broadcast(),
+       _loadTextWidgetMutex = Mutex(),
+       _stateMutex = Mutex(),
+       _observersSubs = [],
+       super();
 
   /// {@macro act_life_cycle.MixinUiLifeCycle.initAfterView}
   @override
@@ -106,70 +102,66 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   /// We might fail to load the text of the consent, in this case the method
   /// will return null.
   Future<Widget?> getConsentTextWidget() async => _loadTextWidgetMutex.protect(() async {
-        if (_latestVersion == null) {
-          _logsHelper.e(
-            "We can't load the text of the consent if we don't know what is the latest version!",
-          );
-          return null;
-        }
+    if (_latestVersion == null) {
+      _logsHelper.e(
+        "We can't load the text of the consent if we don't know what is the latest version!",
+      );
+      return null;
+    }
 
-        if (_textWidget == null) {
-          final textResult = await loadConsentText(_latestVersion!);
-          if (!textResult.isSuccess) {
-            _logsHelper.w('Failed to load the text of the consent');
-            return null;
-          }
+    if (_textWidget == null) {
+      final textResult = await loadConsentText(_latestVersion!);
+      if (!textResult.isSuccess) {
+        _logsHelper.w('Failed to load the text of the consent');
+        return null;
+      }
 
-          _textWidget = await widgetFromConsentText(textResult.value!);
-        }
+      _textWidget = await widgetFromConsentText(textResult.value!);
+    }
 
-        return _textWidget;
-      });
+    return _textWidget;
+  });
 
   /// Get the consent options of the user.
-  Future<ConsentOptionsModel<T>> getConsentOptions() => _stateMutex.protect(() async =>
-      _consentData?.options ??
-      ConsentOptionsModel.fromKeys(
-        _optionKeys,
-        ConsentStateEnum.unknown,
-      ));
+  Future<ConsentOptionsModel<T>> getConsentOptions() => _stateMutex.protect(
+    () async =>
+        _consentData?.options ??
+        ConsentOptionsModel.fromKeys(_optionKeys, ConsentStateEnum.unknown),
+  );
 
   /// Accept the consent.
   /// This method saves the consent data of the user with the latest version
   /// of the consent. It also updates the state of the consent.
   Future<bool> consent(ConsentOptionsModel<T> options) => _stateMutex.protect(() async {
-        if (_consentData == null || _latestVersion == null) {
-          _logsHelper.w("We can't consent if we don't have all the information");
-          return false;
-        }
+    if (_consentData == null || _latestVersion == null) {
+      _logsHelper.w("We can't consent if we don't have all the information");
+      return false;
+    }
 
-        // We don't want to send data to the server if nothing changed
-        if (options == _consentData!.options && _latestVersion == _consentData!.version) {
-          return true;
-        }
+    // We don't want to send data to the server if nothing changed
+    if (options == _consentData!.options && _latestVersion == _consentData!.version) {
+      return true;
+    }
 
-        // Merge the options with the current options since we might have some options that are not
-        // specified in the new options
-        final mergedOptions = _consentData!.options.merge(options: options);
+    // Merge the options with the current options since we might have some options that are not
+    // specified in the new options
+    final mergedOptions = _consentData!.options.merge(options: options);
 
-        // Update the consent data and try to save it
-        final newConsentData = ConsentDataModel<T>(
-          version: _latestVersion,
-          options: mergedOptions,
-        );
+    // Update the consent data and try to save it
+    final newConsentData = ConsentDataModel<T>(version: _latestVersion, options: mergedOptions);
 
-        final result = await saveConsentData(newConsentData);
+    final result = await saveConsentData(newConsentData);
 
-        // Update the state of the consent if the consent data is saved successfully
-        if (!result) {
-          _logsHelper.w("A problem occurred when tried to save consent data");
-          return false;
-        }
+    // Update the state of the consent if the consent data is saved successfully
+    if (!result) {
+      _logsHelper.w("A problem occurred when tried to save consent data");
+      return false;
+    }
 
-        _setConsentData(newConsentData);
+    _setConsentData(newConsentData);
 
-        return true;
-      });
+    return true;
+  });
 
   /// Cancel the stream subscription of the [StreamObserver]. This method checks if the
   /// subscriptions are already canceled before trying to cancel them.
@@ -215,104 +207,104 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   /// is markdown, override this method to support other formats.
   /// {@endtemplate}
   @protected
-  Future<Widget> widgetFromConsentText(String text) async => MarkdownBody(
-        data: text,
-        selectable: true,
-      );
+  Future<Widget> widgetFromConsentText(String text) async =>
+      MarkdownBody(data: text, selectable: true);
 
   /// Load all the consent information required to determine the state of the consent.
   Future<void> loadAllConsentInfo() async => _stateMutex.protect(() async {
-        // If we have both the _latestVersion and the _consentData, we already have all the
-        // information we need.
-        if (_latestVersion != null && _consentData != null) {
+    // If we have both the _latestVersion and the _consentData, we already have all the
+    // information we need.
+    if (_latestVersion != null && _consentData != null) {
+      return;
+    }
+
+    // Check if each observer is invalid
+    for (final observer in _observers) {
+      if (!observer.isValid) {
+        // If one observer is invalid, we don't want to go further but we need to subscribe to
+        // the observers so they can notify us when they are valid
+
+        // If we are already subscribed to the observers, we don't need to subscribe again
+        if (_observersSubs.isNotEmpty || _observers.isEmpty) {
           return;
         }
 
-        // Check if each observer is invalid
+        // Subscribe to the observers
         for (final observer in _observers) {
-          if (!observer.isValid) {
-            // If one observer is invalid, we don't want to go further but we need to subscribe to
-            // the observers so they can notify us when they are valid
-
-            // If we are already subscribed to the observers, we don't need to subscribe again
-            if (_observersSubs.isNotEmpty || _observers.isEmpty) {
-              return;
-            }
-
-            // Subscribe to the observers
-            for (final observer in _observers) {
-              final sub = observer.stream.listen(_onObserverData);
-              _observersSubs.add(sub);
-            }
-
-            // We stop here and we will come back later
-            return;
-          }
+          final sub = observer.stream.listen(_onObserverData);
+          _observersSubs.add(sub);
         }
 
-        // Evaluate our loading status which default to success
-        var state = ConsentLoadStatus.success;
+        // We stop here and we will come back later
+        return;
+      }
+    }
 
-        // Load the consent data if it is not already loaded
-        if (_consentData == null) {
-          final consentResult = await loadUserConsentData();
+    // Evaluate our loading status which default to success
+    var state = ConsentLoadStatus.success;
 
-          if (consentResult.isSuccess) {
-            // Here we merge the default option values with values retrieved from the server
-            _setConsentData(ConsentDataModel<T>.init(
-              values: _optionKeys,
-            ).merge(
-              other: consentResult.value,
-            ));
-          } else if (consentResult.canBeRetried) {
-            state = ConsentLoadStatus.retryLater;
-          } else {
-            state = ConsentLoadStatus.failed;
-          }
-        }
+    // Load the consent data if it is not already loaded
+    if (_consentData == null) {
+      final consentResult = await loadUserConsentData();
 
-        // If we failed to load the consent data and we know we can't get them later if we retry
-        // we stop here
-        if (state == ConsentLoadStatus.failed) {
-          _logsHelper.e('Failed to load the consent data required to determine the '
-              'state of the consent');
-          // We won't try again so there is no need to keep the observers
-          await _cancelSubs();
-          return;
-        }
+      if (consentResult.isSuccess) {
+        // Here we merge the default option values with values retrieved from the server
+        _setConsentData(
+          ConsentDataModel<T>.init(values: _optionKeys).merge(other: consentResult.value),
+        );
+      } else if (consentResult.canBeRetried) {
+        state = ConsentLoadStatus.retryLater;
+      } else {
+        state = ConsentLoadStatus.failed;
+      }
+    }
 
-        if (_latestVersion == null) {
-          final latestVersionResult = await loadLatestVersion();
+    // If we failed to load the consent data and we know we can't get them later if we retry
+    // we stop here
+    if (state == ConsentLoadStatus.failed) {
+      _logsHelper.e(
+        'Failed to load the consent data required to determine the '
+        'state of the consent',
+      );
+      // We won't try again so there is no need to keep the observers
+      await _cancelSubs();
+      return;
+    }
 
-          if (latestVersionResult.isSuccess) {
-            _setLatestVersion(latestVersionResult.value);
-          } else if (latestVersionResult.canBeRetried) {
-            state = ConsentLoadStatus.retryLater;
-          } else {
-            state = ConsentLoadStatus.failed;
-          }
-        }
+    if (_latestVersion == null) {
+      final latestVersionResult = await loadLatestVersion();
 
-        if (state == ConsentLoadStatus.failed) {
-          _logsHelper.e('Failed to load the latest version which is required to determine the '
-              'state of the consent');
-          // We won't try again so there is no need to keep the observers
-          await _cancelSubs();
-          return;
-        }
+      if (latestVersionResult.isSuccess) {
+        _setLatestVersion(latestVersionResult.value);
+      } else if (latestVersionResult.canBeRetried) {
+        state = ConsentLoadStatus.retryLater;
+      } else {
+        state = ConsentLoadStatus.failed;
+      }
+    }
 
-        if (state == ConsentLoadStatus.retryLater) {
-          Timer(_retryLoadLaterDelay, loadAllConsentInfo);
-          return;
-        }
+    if (state == ConsentLoadStatus.failed) {
+      _logsHelper.e(
+        'Failed to load the latest version which is required to determine the '
+        'state of the consent',
+      );
+      // We won't try again so there is no need to keep the observers
+      await _cancelSubs();
+      return;
+    }
 
-        // If we have all the information we need, we can cancel subscriptions of the observers
-        await _cancelSubs();
+    if (state == ConsentLoadStatus.retryLater) {
+      Timer(_retryLoadLaterDelay, loadAllConsentInfo);
+      return;
+    }
 
-        if (_latestVersion != _consentData!.version || !_consentData!.options.isAccepted) {
-          await getConsentTextWidget();
-        }
-      });
+    // If we have all the information we need, we can cancel subscriptions of the observers
+    await _cancelSubs();
+
+    if (_latestVersion != _consentData!.version || !_consentData!.options.isAccepted) {
+      await getConsentTextWidget();
+    }
+  });
 
   /// Reset the local consent info, i.e. the latest version, the text widget and what the user
   /// agreed to, then load it all again.
@@ -323,13 +315,15 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   Future<void> resetLocalConsentInfo() async {
     // First we forget everything which has been loaded
     _logsHelper.i('Resetting local consent info');
-    await _stateMutex.protect(() async => _loadTextWidgetMutex.protect(() async {
-          final previous = consentState;
-          _textWidget = null;
-          _latestVersion = null;
-          _consentData = null;
-          _emitIfNecessary(previous: previous);
-        }));
+    await _stateMutex.protect(
+      () async => _loadTextWidgetMutex.protect(() async {
+        final previous = consentState;
+        _textWidget = null;
+        _latestVersion = null;
+        _consentData = null;
+        _emitIfNecessary(previous: previous);
+      }),
+    );
 
     // Then we retry to get the info
     await loadAllConsentInfo();
@@ -358,9 +352,7 @@ abstract class AbstractConsentService<T extends MixinConsentOptions> extends Abs
   }
 
   /// Publish the new global state if needed
-  void _emitIfNecessary({
-    required ConsentStateEnum previous,
-  }) {
+  void _emitIfNecessary({required ConsentStateEnum previous}) {
     final tmpState = consentState;
 
     if (tmpState != previous) {

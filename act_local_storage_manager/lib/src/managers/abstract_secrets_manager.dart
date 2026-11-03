@@ -10,8 +10,12 @@ import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 
 /// Builder for creating the SecretsManager
-abstract class AbstractSecretsBuilder<P extends AbstractPropertiesManager,
-    E extends MixinStoresConf, T extends AbstractSecretsManager> extends AbsLifeCycleFactory<T> {
+abstract class AbstractSecretsBuilder<
+  P extends AbstractPropertiesManager,
+  E extends MixinStoresConf,
+  T extends AbstractSecretsManager
+>
+    extends AbsLifeCycleFactory<T> {
   /// A factory to create a manager instance
   const AbstractSecretsBuilder(super.factory);
 
@@ -44,10 +48,8 @@ abstract class AbstractSecretsManager extends AbsWithLifeCycle {
   ///
   /// You may want to use created instance as a singleton
   /// in order to save memory.
-  const AbstractSecretsManager({
-    required this.propertiesGetter,
-    required this.confGetter,
-  }) : super();
+  const AbstractSecretsManager({required this.propertiesGetter, required this.confGetter})
+    : super();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

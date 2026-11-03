@@ -154,9 +154,8 @@ class FakeTelemetryService implements TelemetryService {
   List<String> get currentKeys => keysOf(current);
 
   /// The subscriber which is currently listening the attributes of [scope], if there is one.
-  TelemetrySubscriber? attributesOf(AttributeScope scope) => _lastListening(
-    (command) => command is AttributesSubscriptionCmd && command.scope == scope,
-  );
+  TelemetrySubscriber? attributesOf(AttributeScope scope) =>
+      _lastListening((command) => command is AttributesSubscriptionCmd && command.scope == scope);
 
   /// The subscriber which is currently listening the time series, if there is one.
   TelemetrySubscriber? get timeSeries =>
@@ -213,7 +212,7 @@ class FakeTbClient extends Mock implements ThingsboardClient {
 }
 
 /// The service of the devices of the server, which answers what the test decided.
-class FakeDeviceService extends Mock implements DeviceService {}
+class FakeDeviceService extends Mock implements DeviceService;
 
 /// A manager of the requests to the server which answers what the test decided.
 ///
@@ -379,9 +378,11 @@ SubscriptionUpdate anUpdate(Map<String, (int, String?)> values, {int errorCode =
     SubscriptionUpdate.fromJson({
       "subscriptionId": 1,
       "errorCode": errorCode,
-      "data": values.map((key, value) => MapEntry(key, [
-        [value.$1, value.$2],
-      ])),
+      "data": values.map(
+        (key, value) => MapEntry(key, [
+          [value.$1, value.$2],
+        ]),
+      ),
     });
 
 /// An attribute of a device, as the server answers it.

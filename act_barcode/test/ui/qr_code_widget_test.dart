@@ -104,9 +104,7 @@ void main() {
     });
 
     testWidgets("draws the code with the lowest correction level by default", (tester) async {
-      await tester.pumpWidget(
-        const QrCodeImageDefaults(),
-      );
+      await tester.pumpWidget(const QrCodeImageDefaults());
 
       final byDefault = tester.widget<SvgPicture>(find.byType(SvgPicture));
       final low = await pumpQrCode(tester);

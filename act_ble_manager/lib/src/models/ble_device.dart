@@ -71,25 +71,25 @@ class BleDevice {
   /// Abstract BLE device constructor
   /// Device state defaults to disconnected
   BleDevice(BleScannedDevice scannedDevice)
-      : name = scannedDevice.name,
-        id = scannedDevice.id,
-        _bondState = BondState.unknown,
-        _connectionStateCtrl = StreamController<DeviceConnectionState>.broadcast(),
-        _bondStateCtrl = StreamController<BondState>.broadcast(),
-        _connectionState = DeviceConnectionState.disconnected,
-        _characteristics = [],
-        _logsHelper = globalGetIt().get<BleManager>().logsHelper;
+    : name = scannedDevice.name,
+      id = scannedDevice.id,
+      _bondState = BondState.unknown,
+      _connectionStateCtrl = StreamController<DeviceConnectionState>.broadcast(),
+      _bondStateCtrl = StreamController<BondState>.broadcast(),
+      _connectionState = DeviceConnectionState.disconnected,
+      _characteristics = [],
+      _logsHelper = globalGetIt().get<BleManager>().logsHelper;
 
   /// Abstract BLE Device error factory
   BleDevice.error()
-      : name = '',
-        id = '',
-        _bondState = BondState.unknown,
-        _connectionStateCtrl = StreamController<DeviceConnectionState>.broadcast(),
-        _bondStateCtrl = StreamController<BondState>.broadcast(),
-        _connectionState = DeviceConnectionState.disconnected,
-        _characteristics = [],
-        _logsHelper = globalGetIt().get<BleManager>().logsHelper;
+    : name = '',
+      id = '',
+      _bondState = BondState.unknown,
+      _connectionStateCtrl = StreamController<DeviceConnectionState>.broadcast(),
+      _bondStateCtrl = StreamController<BondState>.broadcast(),
+      _connectionState = DeviceConnectionState.disconnected,
+      _characteristics = [],
+      _logsHelper = globalGetIt().get<BleManager>().logsHelper;
 
   /// Test if BLE device is on error
   bool isError() => name.isEmpty && id.isEmpty;
@@ -175,7 +175,8 @@ class BleDevice {
 
     if (stateUpdate.failure != null) {
       _logsHelper.w(
-          "An error occurred in the process: ${stateUpdate.failure}, state: ${stateUpdate.connectionState}");
+        "An error occurred in the process: ${stateUpdate.failure}, state: ${stateUpdate.connectionState}",
+      );
       _setConnectionState(DeviceConnectionState.disconnected);
       return;
     }
@@ -192,9 +193,6 @@ class BleDevice {
   Future<void> dispose() async {
     await disconnect();
 
-    await Future.wait([
-      _connectionStateCtrl.close(),
-      _bondStateCtrl.close(),
-    ]);
+    await Future.wait([_connectionStateCtrl.close(), _bondStateCtrl.close()]);
   }
 }

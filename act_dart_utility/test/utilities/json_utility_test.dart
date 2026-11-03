@@ -262,11 +262,7 @@ void main() {
 
     test("returns null when the key is missing", () {
       expect(
-        JsonUtility.getNotNullElementsList<int, int>(
-          json: const {},
-          key: "counts",
-          logger: logger,
-        ),
+        JsonUtility.getNotNullElementsList<int, int>(json: const {}, key: "counts", logger: logger),
         isNull,
       );
     });
@@ -338,10 +334,7 @@ void main() {
     });
 
     test("returns null when the key is missing", () {
-      expect(
-        JsonUtility.getNotNullJsonObject(json: const {}, key: "user", logger: logger),
-        isNull,
-      );
+      expect(JsonUtility.getNotNullJsonObject(json: const {}, key: "user", logger: logger), isNull);
     });
   });
 
@@ -409,10 +402,9 @@ void main() {
 
   group("JsonUtility.parseJsonBodyToObj", () {
     test("parses a JSON object", () {
-      expect(
-        JsonUtility.parseJsonBodyToObj('{"name":"a name"}', logger: logger),
-        {"name": "a name"},
-      );
+      expect(JsonUtility.parseJsonBodyToObj('{"name":"a name"}', logger: logger), {
+        "name": "a name",
+      });
     });
 
     test("returns null when the body is null", () {
@@ -441,12 +433,9 @@ void main() {
 
   group("JsonUtility.parseJsonArrayBodyToArray", () {
     test("parses an array of JSON objects", () {
-      expect(
-        JsonUtility.parseJsonArrayBodyToArray('[{"name":"a"}]', logger: logger),
-        [
-          {"name": "a"},
-        ],
-      );
+      expect(JsonUtility.parseJsonArrayBodyToArray('[{"name":"a"}]', logger: logger), [
+        {"name": "a"},
+      ]);
     });
 
     test("returns null when an element is not an object", () {
@@ -461,24 +450,22 @@ void main() {
 
   group("JsonUtility.mergeJson", () {
     test("adds the keys which are only in the overriding object", () {
-      expect(
-        JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {"b": 2}),
-        {"a": 1, "b": 2},
-      );
+      expect(JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {"b": 2}), {
+        "a": 1,
+        "b": 2,
+      });
     });
 
     test("keeps the keys which are only in the base object", () {
-      expect(
-        JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {}),
-        {"a": 1},
-      );
+      expect(JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {}), {
+        "a": 1,
+      });
     });
 
     test("overrides the value of a key which is in both objects", () {
-      expect(
-        JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {"a": 2}),
-        {"a": 2},
-      );
+      expect(JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {"a": 2}), {
+        "a": 2,
+      });
     });
 
     test("merges the nested objects in depth", () {
@@ -511,10 +498,7 @@ void main() {
 
     test("keeps the base value when the overriding one is null", () {
       expect(
-        JsonUtility.mergeJson(
-          baseJson: const {"a": 1},
-          jsonToOverrideWith: const {"a": null},
-        ),
+        JsonUtility.mergeJson(baseJson: const {"a": 1}, jsonToOverrideWith: const {"a": null}),
         {"a": 1},
       );
     });

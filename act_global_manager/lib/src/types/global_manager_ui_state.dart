@@ -16,13 +16,9 @@ enum GlobalManagerUiState with MixinExtendsEnum {
   final int idxToInsertInSharedEnum;
 
   /// Class constructor
-  const GlobalManagerUiState({
-    required this.idxToInsertInSharedEnum,
-  });
+  const GlobalManagerUiState({required this.idxToInsertInSharedEnum});
 
   /// {@macro act_dart_utility.MixinExtendsEnum.getAllColumns}
-  static List<Enum> getAllColumns() => MixinExtendsEnum.getAllColumns(
-        sharedEnums: GlobalManagerState.values,
-        specificEnums: values,
-      );
+  static List<Enum> getAllColumns() =>
+      MixinExtendsEnum.getAllColumns(sharedEnums: GlobalManagerState.values, specificEnums: values);
 }

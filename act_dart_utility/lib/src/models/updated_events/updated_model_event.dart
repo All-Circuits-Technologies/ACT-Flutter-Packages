@@ -32,9 +32,7 @@ class UpdatedModelEvent<M extends Equatable, U extends Object> extends Equatable
   bool get isObjectDeleted => previousUniqueId != null && current == null;
 
   /// Used as constructor when an object is created
-  const UpdatedModelEvent.newObjectCreated({
-    required M this.current,
-  }) : previousUniqueId = null;
+  const UpdatedModelEvent.newObjectCreated({required M this.current}) : previousUniqueId = null;
 
   /// Used as constructor when an object is updated
   const UpdatedModelEvent.objectUpdated({
@@ -43,9 +41,7 @@ class UpdatedModelEvent<M extends Equatable, U extends Object> extends Equatable
   });
 
   /// Used as constructor when an object is deleted
-  const UpdatedModelEvent.objectDeleted({
-    required U this.previousUniqueId,
-  }) : current = null;
+  const UpdatedModelEvent.objectDeleted({required U this.previousUniqueId}) : current = null;
 
   /// Class properties
   @override

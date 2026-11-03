@@ -79,31 +79,29 @@ class RequestParam extends Equatable {
     bool forceRequestMimeType = false,
     HttpMimeTypes? expectedMimeType,
     bool forceExpectedMimeType = false,
-  }) =>
-      RequestParam(
-        httpMethod: httpMethod ?? this.httpMethod,
-        relativeRoute: relativeRoute ?? this.relativeRoute,
-        headers: headers ?? this.headers,
-        routeParams: routeParams ?? (forceRouteParams ? null : this.routeParams),
-        queryParameters: queryParameters ?? (forceQueryParameters ? null : this.queryParameters),
-        body: body ?? (forceBody ? null : this.body),
-        encoding: encoding ?? (forceEncoding ? null : this.encoding),
-        timeout: timeout ?? (forceTimeout ? null : this.timeout),
-        requestMimeType: requestMimeType ?? (forceRequestMimeType ? null : this.requestMimeType),
-        expectedMimeType:
-            expectedMimeType ?? (forceExpectedMimeType ? null : this.expectedMimeType),
-      );
+  }) => RequestParam(
+    httpMethod: httpMethod ?? this.httpMethod,
+    relativeRoute: relativeRoute ?? this.relativeRoute,
+    headers: headers ?? this.headers,
+    routeParams: routeParams ?? (forceRouteParams ? null : this.routeParams),
+    queryParameters: queryParameters ?? (forceQueryParameters ? null : this.queryParameters),
+    body: body ?? (forceBody ? null : this.body),
+    encoding: encoding ?? (forceEncoding ? null : this.encoding),
+    timeout: timeout ?? (forceTimeout ? null : this.timeout),
+    requestMimeType: requestMimeType ?? (forceRequestMimeType ? null : this.requestMimeType),
+    expectedMimeType: expectedMimeType ?? (forceExpectedMimeType ? null : this.expectedMimeType),
+  );
 
   @override
   List<Object?> get props => [
-        httpMethod,
-        relativeRoute,
-        headers,
-        routeParams,
-        queryParameters,
-        body,
-        encoding,
-        requestMimeType,
-        expectedMimeType,
-      ];
+    httpMethod,
+    relativeRoute,
+    headers,
+    routeParams,
+    queryParameters,
+    body,
+    encoding,
+    requestMimeType,
+    expectedMimeType,
+  ];
 }

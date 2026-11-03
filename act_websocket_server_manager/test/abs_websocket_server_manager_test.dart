@@ -234,10 +234,7 @@ void main() {
 
       await aClient();
 
-      expect(
-        logging.messages.any((message) => message.contains("start listening")),
-        isTrue,
-      );
+      expect(logging.messages.any((message) => message.contains("start listening")), isTrue);
     });
 
     test("writes in the logs of the server that a client went away", () async {
@@ -314,17 +311,11 @@ void main() {
       final first = await aClient();
       final second = await aClient();
 
-      final expected = jsonEncode({
-        "event": FakeEvents.goodbye.stringValue,
-        "data": "see you",
-      });
+      final expected = jsonEncode({"event": FakeEvents.goodbye.stringValue, "data": "see you"});
       final firstRead = expectLater(first.stream, emits(expected));
       final secondRead = expectLater(second.stream, emits(expected));
 
-      expect(
-        await service.sendMessageToAll(event: FakeEvents.goodbye, data: "see you"),
-        isTrue,
-      );
+      expect(await service.sendMessageToAll(event: FakeEvents.goodbye, data: "see you"), isTrue);
       await firstRead;
       await secondRead;
     });

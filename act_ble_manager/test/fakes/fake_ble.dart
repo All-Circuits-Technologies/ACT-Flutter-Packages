@@ -120,9 +120,7 @@ class FakePermissionsPlatform extends PermissionHandlerPlatform {
       statuses[permission] ?? PermissionStatus.granted;
 
   @override
-  Future<Map<Permission, PermissionStatus>> requestPermissions(
-    List<Permission> permissions,
-  ) async {
+  Future<Map<Permission, PermissionStatus>> requestPermissions(List<Permission> permissions) async {
     for (final permission in permissions) {
       statuses[permission] = answerToRequest;
     }
@@ -297,7 +295,9 @@ class FakeBlePlatform extends ReactiveBlePlatform {
           characteristicInstanceId: "0",
           serviceInstanceId: "0",
         ),
-        result: const Result<List<int>, GenericFailure<CharacteristicValueUpdateError>?>.success([]),
+        result: const Result<List<int>, GenericFailure<CharacteristicValueUpdateError>?>.success(
+          [],
+        ),
       ),
     );
 
@@ -396,7 +396,11 @@ class FakeBlePlatform extends ReactiveBlePlatform {
       throw error!;
     }
 
-    written.add((characteristic: characteristic.characteristicId, value: value, withResponse: true));
+    written.add((
+      characteristic: characteristic.characteristicId,
+      value: value,
+      withResponse: true,
+    ));
 
     return WriteCharacteristicInfo(
       characteristic: characteristic,

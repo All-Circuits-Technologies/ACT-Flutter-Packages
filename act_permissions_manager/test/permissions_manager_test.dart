@@ -49,9 +49,7 @@ void main() {
     test("answers that a permission the device granted is granted", () async {
       permissions.statuses[Permission.locationWhenInUse] = PermissionStatus.granted;
 
-      final status = await PermissionsManager().getPermission(
-        PermissionElement.locationWhenInUse,
-      );
+      final status = await PermissionsManager().getPermission(PermissionElement.locationWhenInUse);
 
       expect(status, PermissionStatus.granted);
     });
@@ -59,56 +57,66 @@ void main() {
     test("answers that a permission the device refused is denied", () async {
       permissions.statuses[Permission.locationWhenInUse] = PermissionStatus.denied;
 
-      final status = await PermissionsManager().getPermission(
-        PermissionElement.locationWhenInUse,
-      );
+      final status = await PermissionsManager().getPermission(PermissionElement.locationWhenInUse);
 
       expect(status, PermissionStatus.denied);
     });
 
     test("answers that an element which asks for nothing is granted", () async {
-      expect(await PermissionsManager().getPermission(PermissionElement.wifi),
-          PermissionStatus.granted);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.wifi),
+        PermissionStatus.granted,
+      );
     });
 
     test("answers the worst status of the permissions an element asks for", () async {
       permissions.statuses[Permission.bluetoothScan] = PermissionStatus.granted;
       permissions.statuses[Permission.bluetoothConnect] = PermissionStatus.denied;
 
-      expect(await PermissionsManager().getPermission(PermissionElement.ble),
-          PermissionStatus.denied);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.ble),
+        PermissionStatus.denied,
+      );
     });
 
     test("answers that a permission which is refused for good is refused for good", () async {
       permissions.statuses[Permission.bluetoothScan] = PermissionStatus.denied;
       permissions.statuses[Permission.bluetoothConnect] = PermissionStatus.permanentlyDenied;
 
-      expect(await PermissionsManager().getPermission(PermissionElement.ble),
-          PermissionStatus.permanentlyDenied);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.ble),
+        PermissionStatus.permanentlyDenied,
+      );
     });
 
     test("prefers a restriction of the device over a refusal of the user", () async {
       permissions.statuses[Permission.bluetoothScan] = PermissionStatus.denied;
       permissions.statuses[Permission.bluetoothConnect] = PermissionStatus.restricted;
 
-      expect(await PermissionsManager().getPermission(PermissionElement.ble),
-          PermissionStatus.restricted);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.ble),
+        PermissionStatus.restricted,
+      );
     });
 
     test("prefers a refusal of the user over a permission which is limited", () async {
       permissions.statuses[Permission.bluetoothScan] = PermissionStatus.limited;
       permissions.statuses[Permission.bluetoothConnect] = PermissionStatus.denied;
 
-      expect(await PermissionsManager().getPermission(PermissionElement.ble),
-          PermissionStatus.denied);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.ble),
+        PermissionStatus.denied,
+      );
     });
 
     test("prefers a permission which is limited over one which is granted", () async {
       permissions.statuses[Permission.bluetoothScan] = PermissionStatus.granted;
       permissions.statuses[Permission.bluetoothConnect] = PermissionStatus.limited;
 
-      expect(await PermissionsManager().getPermission(PermissionElement.ble),
-          PermissionStatus.limited);
+      expect(
+        await PermissionsManager().getPermission(PermissionElement.ble),
+        PermissionStatus.limited,
+      );
     });
 
     test("stops reading the permissions once one is refused for good", () async {
@@ -118,8 +126,10 @@ void main() {
 
       await manager.getPermission(PermissionElement.ble);
 
-      expect(await manager.getPermission(PermissionElement.ble),
-          PermissionStatus.permanentlyDenied);
+      expect(
+        await manager.getPermission(PermissionElement.ble),
+        PermissionStatus.permanentlyDenied,
+      );
     });
   });
 
@@ -134,10 +144,7 @@ void main() {
     test("says that an element which is only limited is not granted", () async {
       permissions.statuses[Permission.locationWhenInUse] = PermissionStatus.limited;
 
-      expect(
-        await PermissionsManager().isGranted(PermissionElement.locationWhenInUse),
-        isFalse,
-      );
+      expect(await PermissionsManager().isGranted(PermissionElement.locationWhenInUse), isFalse);
     });
   });
 

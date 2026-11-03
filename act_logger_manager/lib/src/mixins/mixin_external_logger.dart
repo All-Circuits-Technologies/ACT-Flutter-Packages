@@ -40,8 +40,5 @@ mixin MixinExternalLogger on MixinWithLifeCycle {
   /// This method is used to know if a message with a given level and categories would be logged by
   /// the external logger.
   /// {@endtemplate}
-  bool wouldBeLogged({
-    required LogsLevel level,
-    List<String>? categories,
-  });
+  bool wouldBeLogged({required LogsLevel level, List<String>? categories});
 }

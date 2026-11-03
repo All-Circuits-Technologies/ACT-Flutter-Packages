@@ -106,9 +106,7 @@ class FakeConsentService extends AbstractConsentService<FakeOptions> {
 
   /// {@macro act_consent_manager.AbstractConsentService.loadConsentText}
   @override
-  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadConsentText(
-    String version,
-  ) async {
+  Future<ResultWithRequiredValue<ConsentLoadStatus, String>> loadConsentText(String version) async {
     askedTexts.add(version);
 
     return textAnswer;
@@ -150,7 +148,7 @@ class FakeLocaleConfig extends AbstractConfigManager with MixinLocaleConfig {
 }
 
 /// The properties of the application under test, which keep the locale the user chose.
-class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties {}
+class FakeLocaleProperties extends AbstractPropertiesManager with MixinLocaleProperties;
 
 /// The locales of the application under test.
 ///

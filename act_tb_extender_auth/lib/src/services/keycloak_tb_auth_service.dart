@@ -122,27 +122,22 @@ class KeycloakTbAuthService extends AbsWithLifeCycle with MixinAuthService {
 
   /// Class constructor
   ///
-  /// [keycloakProvider] runs the PKCE flow, [brokerClient] speaks to the broker,
-  /// [keycloakStorageService] is where the Keycloak tokens are kept, [tbTokenRefresher] refreshes
-  /// the ThingsBoard ones and [keycloakConfLoader] answers the Keycloak configuration.
+  /// [keycloakProvider] runs the PKCE flow, [_brokerClient] speaks to the broker,
+  /// [_keycloakStorageService] is where the Keycloak tokens are kept, [_tbTokenRefresher] refreshes
+  /// the ThingsBoard ones and [_keycloakConfLoader] answers the Keycloak configuration.
   ///
-  /// [appAuth] defaults to a plain [FlutterAppAuth], and [onSignOut] is what an application is
+  /// [appAuth] defaults to a plain [FlutterAppAuth], and [_onSignOut] is what an application is
   /// told a session ended with.
   KeycloakTbAuthService({
     required AbsOAuth2ProviderService keycloakProvider,
-    required TbExtenderBrokerClient brokerClient,
-    required MixinAuthStorageService keycloakStorageService,
-    required TbTokenRefresher tbTokenRefresher,
-    required KeycloakConfLoader keycloakConfLoader,
+    required this._brokerClient,
+    required this._keycloakStorageService,
+    required this._tbTokenRefresher,
+    required this._keycloakConfLoader,
     FlutterAppAuth? appAuth,
-    OnSignOut? onSignOut,
+    this._onSignOut,
   }) : _provider = keycloakProvider,
-       _brokerClient = brokerClient,
-       _keycloakStorageService = keycloakStorageService,
-       _tbTokenRefresher = tbTokenRefresher,
-       _keycloakConfLoader = keycloakConfLoader,
        _appAuth = appAuth ?? const FlutterAppAuth(),
-       _onSignOut = onSignOut,
        _authStatus = AuthStatus.signedOut,
        _authStatusCtrl = StreamController<AuthStatus>.broadcast(),
        _mutex = Mutex(),

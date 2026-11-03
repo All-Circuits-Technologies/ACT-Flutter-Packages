@@ -14,9 +14,7 @@ abstract class AbsAmplifyService extends AbsWithLifeCycle {
   /// {@endtemplate}
   @mustCallSuper
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  });
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper});
 
   /// The service may need to extend the amplify configuration
   ///
@@ -29,12 +27,7 @@ abstract class AbsAmplifyService extends AbsWithLifeCycle {
   /// Create a logs helper from a parent logs helper if one is given or from start if
   /// [parentLogsHelper] is null.
   @protected
-  static LogsHelper createLogsHelper({
-    required String logCategory,
-    LogsHelper? parentLogsHelper,
-  }) =>
+  static LogsHelper createLogsHelper({required String logCategory, LogsHelper? parentLogsHelper}) =>
       parentLogsHelper?.createSubLogger(subCategory: logCategory) ??
-      LogsHelper(
-        category: logCategory,
-      );
+      LogsHelper(category: logCategory);
 }

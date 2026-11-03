@@ -15,10 +15,7 @@ void main() {
     });
 
     test("accepts boundaries which are equal", () {
-      expect(
-        () => CustomComparableBoundaries<int, int, int, num>(min: 5, max: 5),
-        returnsNormally,
-      );
+      expect(() => CustomComparableBoundaries<int, int, int, num>(min: 5, max: 5), returnsNormally);
     });
 
     test("refuses a minimum which is greater than the maximum", () {

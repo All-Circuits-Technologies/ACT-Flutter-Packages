@@ -90,7 +90,6 @@ class _SplashScreenManagerUnderTest extends AbsSplashScreenManager {
   Future<void> hideNativeSplashScreen() async => hideCalls++;
 }
 
-
 /// Builds a view and returns its context.
 BuildContext _aContext(WidgetTester tester) {
   tester.binding.attachRootWidget(const SizedBox());

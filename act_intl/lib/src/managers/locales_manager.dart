@@ -144,14 +144,11 @@ class LocalesManager extends AbsWithLifeCycleAndUi {
 
   /// Class constructor
   LocalesManager({
-    required List<Locale> Function() getSupportedLocales,
-    required MixinLocaleProperties Function() propertiesGetter,
-    required MixinLocaleConfig Function() configGetter,
+    required this._getSupportedLocales,
+    required this._propertiesGetter,
+    required this._configGetter,
   }) : _currentLocaleCtrl = StreamController<Locale>.broadcast(),
-       _wantedLocaleCtrl = StreamController<Locale?>.broadcast(),
-       _getSupportedLocales = getSupportedLocales,
-       _propertiesGetter = propertiesGetter,
-       _configGetter = configGetter;
+       _wantedLocaleCtrl = StreamController<Locale?>.broadcast();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override

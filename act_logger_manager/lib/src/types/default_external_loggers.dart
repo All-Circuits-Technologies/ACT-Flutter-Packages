@@ -5,5 +5,5 @@
 /// This file contains the default external loggers that can be used with the DefaultLoggerManager.
 enum DefaultExternalLoggers {
   /// The console logger, which is the default logger of the Logger package.
-  console;
+  console,
 }

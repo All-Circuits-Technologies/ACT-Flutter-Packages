@@ -7,8 +7,8 @@ description: Shows the splash screen of a desktop application, and how long it l
 publish_to: none
 
 environment:
-  sdk: ^3.11.1
-  flutter: ">=3.29.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:

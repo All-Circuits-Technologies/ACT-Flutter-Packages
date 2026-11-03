@@ -12,18 +12,14 @@ import 'package:flutter_test/flutter_test.dart';
 class _PlainService extends AbsAmplifyService {
   /// {@macro act_amplify_core.AbsAmplifyService.initLifeCycle}
   @override
-  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async =>
-      super.initLifeCycle();
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async => super.initLifeCycle();
 
   @override
   Future<List<AmplifyPluginInterface>> getLinkedPluginsList() async => const [];
 
   /// Builds the helper of a service the way the base class offers it.
   static LogsHelper buildHelper({required String category, LogsHelper? parentLogsHelper}) =>
-      AbsAmplifyService.createLogsHelper(
-        logCategory: category,
-        parentLogsHelper: parentLogsHelper,
-      );
+      AbsAmplifyService.createLogsHelper(logCategory: category, parentLogsHelper: parentLogsHelper);
 }
 
 void main() {

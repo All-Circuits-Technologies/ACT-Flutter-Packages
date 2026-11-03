@@ -33,8 +33,7 @@ class FakeStorageConfig extends AbstractConfigManager with MixinStorageConfig {
 }
 
 /// The configuration of the application under test.
-class FakeDirConfig extends AbstractConfigManager
-    with MixinRemoteLocalVersFileConfig<FakeDirType> {
+class FakeDirConfig extends AbstractConfigManager with MixinRemoteLocalVersFileConfig<FakeDirType> {
   /// Class constructor
   FakeDirConfig() : super(logger: const SilentLogger());
 
@@ -139,8 +138,11 @@ class FakeDirManager extends AbsRemoteLocalVersFileManager<FakeDirType> {
 /// The builder of the manager of an application which reads files from its remote storage.
 class FakeDirBuilder
     extends
-        AbsRemoteLocalVersFileBuilder<FakeDirType, MixinRemoteLocalVersFileConfig<FakeDirType>,
-            FakeDirManager> {
+        AbsRemoteLocalVersFileBuilder<
+          FakeDirType,
+          MixinRemoteLocalVersFileConfig<FakeDirType>,
+          FakeDirManager
+        > {
   /// Class constructor
   FakeDirBuilder(super.factory);
 }

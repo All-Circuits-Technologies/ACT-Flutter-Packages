@@ -30,10 +30,7 @@ void main() {
     });
 
     test("keeps the files of the cache for two weeks by default", () async {
-      expect(
-        (await aConfig()).storageCacheStalePeriodConf.load(),
-        const Duration(days: 14),
-      );
+      expect((await aConfig()).storageCacheStalePeriodConf.load(), const Duration(days: 14));
     });
 
     test("reads the days the files are kept for from the configuration", () async {

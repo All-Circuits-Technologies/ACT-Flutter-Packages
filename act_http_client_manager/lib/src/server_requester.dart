@@ -50,11 +50,10 @@ class ServerRequester extends AbsWithLifeCycle {
   /// done at the same time. If null, there is no limit on the number of parallel requests.
   ServerRequester({
     required this.logsHelper,
-    required ServerUrls serverUrls,
+    required this._serverUrls,
     required this.defaultTimeout,
     required int? maxParallelRequestsNb,
-  }) : _serverUrls = serverUrls,
-       _lockUtility = (maxParallelRequestsNb != null)
+  }) : _lockUtility = (maxParallelRequestsNb != null)
            ? LockUtility(maxParallelRequestsNb: maxParallelRequestsNb)
            : null {
     _onReleaseWatcher = OnReleaseWatcher(

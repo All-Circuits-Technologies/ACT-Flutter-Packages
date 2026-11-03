@@ -35,27 +35,15 @@ void main() {
     test("asks for the pages one after the other", () async {
       final source = _PagedSource(List.generate(7, (index) => index));
 
-      await LoopUtility.requestAllInMultipart(
-        offset: 0,
-        elementsLimit: 3,
-        request: source.request,
-      );
+      await LoopUtility.requestAllInMultipart(offset: 0, elementsLimit: 3, request: source.request);
 
-      expect(source.calls, [
-        (offset: 0, limit: 3),
-        (offset: 3, limit: 3),
-        (offset: 6, limit: 3),
-      ]);
+      expect(source.calls, [(offset: 0, limit: 3), (offset: 3, limit: 3), (offset: 6, limit: 3)]);
     });
 
     test("stops as soon as a page is not full", () async {
       final source = _PagedSource(List.generate(2, (index) => index));
 
-      await LoopUtility.requestAllInMultipart(
-        offset: 0,
-        elementsLimit: 3,
-        request: source.request,
-      );
+      await LoopUtility.requestAllInMultipart(offset: 0, elementsLimit: 3, request: source.request);
 
       expect(source.calls.length, 1);
     });

@@ -25,7 +25,7 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
 
   /// Class constructor
   AbstractHaloAttributeHardware()
-      : _attributeNewValueCtrl = StreamController<HaloPacket>.broadcast();
+    : _attributeNewValueCtrl = StreamController<HaloPacket>.broadcast();
 
   /// This method allows to write a specific attribute value to the device
   Future<HaloErrorType> writeAttribute({required HaloPacket packet});
@@ -52,9 +52,7 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _attributeNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_attributeNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

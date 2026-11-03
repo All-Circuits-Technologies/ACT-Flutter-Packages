@@ -9,14 +9,12 @@ import 'package:go_router/go_router.dart';
 /// Class for Fade transition page in GoRouter navigation
 class PageFadeTransition extends CustomTransitionPage<void> {
   /// Class constructor
-  PageFadeTransition({
-    super.key,
-    super.name,
-    super.arguments,
-    required super.child,
-  }) : super(
-          transitionDuration: const Duration(milliseconds: 500),
-          transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
-              opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation), child: child),
-        );
+  PageFadeTransition({super.key, super.name, super.arguments, required super.child})
+    : super(
+        transitionDuration: const Duration(milliseconds: 500),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) => FadeTransition(
+          opacity: CurveTween(curve: Curves.easeInOutCirc).animate(animation),
+          child: child,
+        ),
+      );
 }

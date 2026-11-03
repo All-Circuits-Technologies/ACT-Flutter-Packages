@@ -19,19 +19,9 @@ class StorageFile extends Equatable {
   final String? eTag;
 
   /// Class constructor;
-  const StorageFile({
-    required this.path,
-    this.size,
-    this.lastModified,
-    this.eTag,
-  });
+  const StorageFile({required this.path, this.size, this.lastModified, this.eTag});
 
   /// Get the properties of the object.
   @override
-  List<Object?> get props => [
-        path,
-        size,
-        lastModified,
-        eTag,
-      ];
+  List<Object?> get props => [path, size, lastModified, eTag];
 }

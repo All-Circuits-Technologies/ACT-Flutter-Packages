@@ -45,9 +45,8 @@ void main() {
 
       return LoginResponse(answered, refreshToken);
     });
-    when(
-      () => noAuthManager.client.refreshJwtToken(refreshToken: any(named: "refreshToken")),
-    ).thenAnswer((_) async => clientHolds(token: answered, refreshToken: refreshToken));
+    when(() => noAuthManager.client.refreshJwtToken(refreshToken: any(named: "refreshToken")))
+        .thenAnswer((_) async => clientHolds(token: answered, refreshToken: refreshToken));
     when(noAuthManager.client.logout).thenAnswer((_) async => clientHolds());
   }
 
@@ -92,9 +91,7 @@ void main() {
 
       final service = await aService();
 
-      verify(
-        () => noAuthManager.client.refreshJwtToken(refreshToken: "a refresh token"),
-      ).called(1);
+      verify(() => noAuthManager.client.refreshJwtToken(refreshToken: "a refresh token")).called(1);
       expect(service.authStatus, AuthStatus.signedIn);
     });
 

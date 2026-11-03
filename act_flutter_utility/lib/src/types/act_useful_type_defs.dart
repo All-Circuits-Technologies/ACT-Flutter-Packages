@@ -33,5 +33,7 @@ typedef IndexedGenericWidgetBuilder<T extends Widget> = T Function(BuildContext 
 /// may return null.
 ///
 /// Copy from [NullableIndexedWidgetBuilder] for a more generic version of it.
-typedef NullableIndexedGenericWidgetBuilder<T extends Widget> =
-    T? Function(BuildContext context, int index);
+typedef NullableIndexedGenericWidgetBuilder<T extends Widget> = T? Function(
+  BuildContext context,
+  int index,
+);

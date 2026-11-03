@@ -12,9 +12,7 @@ class WantedLocaleUpdatedByUserEvent extends BlocEventForMixin {
   final Locale? wantedLocale;
 
   /// Class constructor
-  const WantedLocaleUpdatedByUserEvent({
-    required this.wantedLocale,
-  });
+  const WantedLocaleUpdatedByUserEvent({required this.wantedLocale});
 
   /// {@macro act_flutter_utility.BlocEventForMixin.props}
   @override

@@ -32,10 +32,7 @@ void main() {
         return result;
       }
 
-      await FutureUtility.waitGlobalBooleanSuccess([
-        track(result: false),
-        track(result: true),
-      ]);
+      await FutureUtility.waitGlobalBooleanSuccess([track(result: false), track(result: true)]);
 
       expect(completed, 2);
     });
@@ -96,10 +93,10 @@ void main() {
   group("FutureUtility.waitGlobalResult", () {
     test("gives every result to the aggregation function", () async {
       expect(
-        await FutureUtility.waitGlobalResult(
-          [Future.value(1), Future.value(2)],
-          (results) => results.fold<int>(0, (sum, result) => sum + result),
-        ),
+        await FutureUtility.waitGlobalResult([
+          Future.value(1),
+          Future.value(2),
+        ], (results) => results.fold<int>(0, (sum, result) => sum + result)),
         3,
       );
     });
@@ -113,10 +110,9 @@ void main() {
 
     test("lets the error of a future reach the caller", () {
       expect(
-        FutureUtility.waitGlobalResult(
-          [Future<int>.error(Exception("boom"))],
-          (results) => results.length,
-        ),
+        FutureUtility.waitGlobalResult([
+          Future<int>.error(Exception("boom")),
+        ], (results) => results.length),
         throwsException,
       );
     });

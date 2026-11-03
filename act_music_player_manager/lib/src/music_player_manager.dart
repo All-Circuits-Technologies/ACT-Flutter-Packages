@@ -18,10 +18,12 @@ class MusicPlayerBuilder<T> extends AbsLifeCycleFactory<MusicPlayerManager<T>> {
   MusicPlayerBuilder({
     required String audioFilePrefix,
     required AbstractMusicSoundHelper<T> musicSoundsHelper,
-  }) : super(() => MusicPlayerManager<T>(
-              audioFilePrefix: audioFilePrefix,
-              musicSoundsHelper: musicSoundsHelper,
-            ));
+  }) : super(
+         () => MusicPlayerManager<T>(
+           audioFilePrefix: audioFilePrefix,
+           musicSoundsHelper: musicSoundsHelper,
+         ),
+       );
 
   /// List of manager dependence
   @override
@@ -44,12 +46,9 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
   final Map<String, AudioPlayerHelper> _audioPlayers;
 
   /// Class constructor
-  MusicPlayerManager({
-    required this.audioFilePrefix,
-    required AbstractMusicSoundHelper<T> musicSoundsHelper,
-  })  : _musicSoundsHelper = musicSoundsHelper,
-        _audioPlayers = {},
-        super();
+  MusicPlayerManager({required this.audioFilePrefix, required this._musicSoundsHelper})
+    : _audioPlayers = {},
+      super();
 
   /// The [initLifeCycle] method has to be called to initialize the class
   /// The method will load all sounds in cache
@@ -57,9 +56,7 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     AudioCache.instance.prefix = audioFilePrefix;
-    await AudioPlayer.global.setAudioContext(AudioContextConfig(
-      respectSilence: true,
-    ).build());
+    await AudioPlayer.global.setAudioContext(AudioContextConfig(respectSilence: true).build());
 
     if (AudioCache.instance.loadedFiles.isNotEmpty) {
       appLogger().i('The class has already be initialized');
@@ -89,8 +86,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
     final tmpMusicSound = _musicSoundsHelper.musicSounds[musicSound];
 
     if (tmpMusicSound == null) {
-      appLogger().w("The music sound $musicSound doesn't exist in manager, "
-          "can't play the wanted sound");
+      appLogger().w(
+        "The music sound $musicSound doesn't exist in manager, "
+        "can't play the wanted sound",
+      );
       return;
     }
 
@@ -125,13 +124,12 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
       if (releaseMode != helper.audioPlayer.releaseMode) {
         await helper.audioPlayer.setReleaseMode(releaseMode);
       }
-      await helper.audioPlayer.play(
-        helper.audioPlayer.source!,
-        volume: volume,
-      );
+      await helper.audioPlayer.play(helper.audioPlayer.source!, volume: volume);
     } catch (error) {
-      appLogger().e("A crash occurred when calling audio player music sound: $musicSound, error: "
-          "$error");
+      appLogger().e(
+        "A crash occurred when calling audio player music sound: $musicSound, error: "
+        "$error",
+      );
     }
 
     helper.elapsedTimer.start();
@@ -141,15 +139,14 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
   /// Call the [stop] method to stop a particular sound played
   ///
   /// Set [stopAllSounds] to true, to stop all the sounds
-  Future<void> stop(
-    T musicSound, {
-    bool stopAllSounds = false,
-  }) async {
+  Future<void> stop(T musicSound, {bool stopAllSounds = false}) async {
     final tmpMusicSound = _musicSoundsHelper.musicSounds[musicSound];
 
     if (tmpMusicSound == null) {
-      appLogger().w("The music sound $musicSound doesn't exist in manager, "
-          "can't stop the wanted sound");
+      appLogger().w(
+        "The music sound $musicSound doesn't exist in manager, "
+        "can't stop the wanted sound",
+      );
       return;
     }
 
@@ -175,8 +172,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
     try {
       duration = await player?.getDuration();
     } catch (error) {
-      appLogger().e("An error occurred when tried to get the duration of: $musicSound, "
-          "error: $error");
+      appLogger().e(
+        "An error occurred when tried to get the duration of: $musicSound, "
+        "error: $error",
+      );
     }
 
     return duration;
@@ -205,8 +204,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
         await audioPlayer.setPlayerMode(PlayerMode.lowLatency);
         await audioPlayer.setReleaseMode(ReleaseMode.stop);
       } catch (error) {
-        appLogger().e("A crash occurred when fetching a sound from memory: $musicSound, "
-            "error: $error");
+        appLogger().e(
+          "A crash occurred when fetching a sound from memory: $musicSound, "
+          "error: $error",
+        );
       }
 
       _audioPlayers[filePath] = AudioPlayerHelper(audioPlayer: audioPlayer);
@@ -216,9 +217,7 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
   /// Private method to stop the music wanted
   ///
   /// Stop all the music in the [musicFilesPath] list
-  Future<void> _stopAllElements({
-    required List<String> musicFilesPath,
-  }) async {
+  Future<void> _stopAllElements({required List<String> musicFilesPath}) async {
     if (musicFilesPath.isEmpty) {
       // Nothing to do
       return;
@@ -239,8 +238,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
       }
 
       if (help.audioPlayer.state != PlayerState.stopped) {
-        appLogger().w("The sound $filePath can't be stopped, current state: "
-            "${help.audioPlayer.state}");
+        appLogger().w(
+          "The sound $filePath can't be stopped, current state: "
+          "${help.audioPlayer.state}",
+        );
       }
 
       help.elapsedTimer.stop();
@@ -256,8 +257,10 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
     final tmpMusicSound = _musicSoundsHelper.musicSounds[musicSound];
 
     if (tmpMusicSound == null) {
-      appLogger().w("The music sound $musicSound doesn't exist in manager, "
-          "can't get its backend player");
+      appLogger().w(
+        "The music sound $musicSound doesn't exist in manager, "
+        "can't get its backend player",
+      );
       return null;
     }
 
@@ -278,13 +281,17 @@ class MusicPlayerManager<T> extends AbsWithLifeCycle {
         try {
           await help.audioPlayer.stop();
         } catch (error) {
-          appLogger().e("An error occurred when tried to stop the audio player: ${player.key}, "
-              "while disposing the audio manager");
+          appLogger().e(
+            "An error occurred when tried to stop the audio player: ${player.key}, "
+            "while disposing the audio manager",
+          );
         }
 
         if (help.audioPlayer.state != PlayerState.stopped) {
-          appLogger().w("The sound ${player.key} can't be stopped, current state: "
-              "${help.audioPlayer.state}, while disposing");
+          appLogger().w(
+            "The sound ${player.key} can't be stopped, current state: "
+            "${help.audioPlayer.state}, while disposing",
+          );
         }
       }
 

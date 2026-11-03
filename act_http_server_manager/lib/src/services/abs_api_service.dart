@@ -49,11 +49,10 @@ abstract class AbsApiService extends AbsWithLifeCycle {
   /// The [serviceRelativePath] is a path used for all the routes in the service and which is
   /// between the relative request route and the server base path.
   AbsApiService({
-    required HttpLoggingManager httpLoggingManager,
+    required this._httpLoggingManager,
     required HttpServerConfig config,
     String? serviceRelativePath,
-  }) : _httpLoggingManager = httpLoggingManager,
-       _config = config,
+  }) : _config = config,
        serviceBasePath = _formatServiceBasePath(
          config: config,
          serviceRelativePath: serviceRelativePath,

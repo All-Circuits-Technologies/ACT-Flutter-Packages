@@ -41,13 +41,12 @@ class ActionErrorRetryWidget extends StatelessWidget {
     required ActionErrorRetryTheme theme,
     required String text,
     required List<Widget> buttons,
-  }) =>
-      ActionErrorRetryWidget(
-        key: key,
-        theme: theme,
-        content: Text(text, style: theme.contentTextStyle),
-        buttons: buttons,
-      );
+  }) => ActionErrorRetryWidget(
+    key: key,
+    theme: theme,
+    content: Text(text, style: theme.contentTextStyle),
+    buttons: buttons,
+  );
 
   /// This is the factory to create a view with a text as [content] and a header text/icon
   factory ActionErrorRetryWidget.textContentWithHeader({
@@ -57,15 +56,14 @@ class ActionErrorRetryWidget extends StatelessWidget {
     required List<Widget> buttons,
     IconData? headerIcon,
     String? headerTitle,
-  }) =>
-      ActionErrorRetryWidget(
-        key: key,
-        headerIcon: headerIcon ?? Icons.error_outline,
-        headerTitle: headerTitle,
-        theme: theme,
-        content: Text(text, style: theme.contentTextStyle),
-        buttons: buttons,
-      );
+  }) => ActionErrorRetryWidget(
+    key: key,
+    headerIcon: headerIcon ?? Icons.error_outline,
+    headerTitle: headerTitle,
+    theme: theme,
+    content: Text(text, style: theme.contentTextStyle),
+    buttons: buttons,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -84,15 +82,12 @@ class ActionErrorRetryWidget extends StatelessWidget {
             child: Column(
               children: [
                 if (headerIcon != null)
-                  Icon(
-                    headerIcon,
-                    color: theme.headerContentColor,
-                    size: 100,
-                  ),
+                  Icon(headerIcon, color: theme.headerContentColor, size: 100),
                 if (headerTitle != null)
                   Text(
                     headerTitle!,
-                    style: theme.headerTitleStyle ??
+                    style:
+                        theme.headerTitleStyle ??
                         themeData.textTheme.headlineMedium?.copyWith(
                           color: theme.headerContentColor,
                         ),
@@ -107,15 +102,14 @@ class ActionErrorRetryWidget extends StatelessWidget {
               defaultFlexSpacer: 6,
             ),
         ],
-        _wrapPadding(
-          padding: theme.contentPadding,
-          child: content,
-        ),
+        _wrapPadding(padding: theme.contentPadding, child: content),
         // We add a default spacer between the buttons and the content if [expandInParent] is equals
         // to true, because the user can't add himself a flex spacer.
         if (theme.expandInParent && theme.contentPadding == null) const Spacer(flex: 4),
         ...ListUtility.interleaveWithBuilder(
-            buttons, () => SizedBox(height: theme.buttonsSeparator ?? 15)),
+          buttons,
+          () => SizedBox(height: theme.buttonsSeparator ?? 15),
+        ),
         _buildDefaultSizedBoxOrSpacer(
           userHeight: theme.bottomPadding,
           defaultHeight: 15,
@@ -126,18 +120,12 @@ class ActionErrorRetryWidget extends StatelessWidget {
   }
 
   /// Wrap the [child] with a [Padding] widget if the given [padding] is not null
-  Widget _wrapPadding({
-    required EdgeInsets? padding,
-    required Widget child,
-  }) {
+  Widget _wrapPadding({required EdgeInsets? padding, required Widget child}) {
     if (padding == null) {
       return child;
     }
 
-    return Padding(
-      padding: padding,
-      child: child,
-    );
+    return Padding(padding: padding, child: child);
   }
 
   /// Build a widget to add a space between elements.

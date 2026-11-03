@@ -14,17 +14,11 @@ void main() {
     });
 
     test("tells apart two requests which share a raw value but not a type", () {
-      expect(
-        FakeRequestId.readTemperature.uniqueId,
-        isNot(FakeRequestId.stopHeating.uniqueId),
-      );
+      expect(FakeRequestId.readTemperature.uniqueId, isNot(FakeRequestId.stopHeating.uniqueId));
     });
 
     test("gives the same id to the same request declared twice", () {
-      expect(
-        FakeRequestId.readTemperature.uniqueId,
-        OtherFakeRequestId.readTemperature.uniqueId,
-      );
+      expect(FakeRequestId.readTemperature.uniqueId, OtherFakeRequestId.readTemperature.uniqueId);
     });
 
     test("gives a distinct id to each request of a same type", () {

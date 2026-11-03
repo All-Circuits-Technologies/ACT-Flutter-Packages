@@ -24,10 +24,7 @@ void main() {
     test("reports a key it does not serve as missing", () async {
       FakeAssets.serve({"assets/config/default.yaml": "a: 1"});
 
-      expect(
-        () => rootBundle.loadString("assets/config/local.yaml"),
-        throwsA(isA<FlutterError>()),
-      );
+      expect(() => rootBundle.loadString("assets/config/local.yaml"), throwsA(isA<FlutterError>()));
     });
 
     test("replaces the contents of a previous call", () async {

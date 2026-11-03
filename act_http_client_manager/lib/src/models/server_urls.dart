@@ -14,10 +14,7 @@ class ServerUrls extends Equatable {
   final Map<String, Uri> byRelRoute;
 
   /// Class constructor
-  const ServerUrls({
-    required this.defaultUrl,
-    required this.byRelRoute,
-  });
+  const ServerUrls({required this.defaultUrl, required this.byRelRoute});
 
   @override
   List<Object?> get props => [defaultUrl, byRelRoute];

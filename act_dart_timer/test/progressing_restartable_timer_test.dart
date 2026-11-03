@@ -165,14 +165,10 @@ void main() {
       final firedAt = <Duration>[];
 
       fakeAsync((async) {
-        final timer = ProgressingRestartableTimer.simpleFactor(
-          _initDuration,
-          () {
-            firedAt.add(async.elapsed);
-            return true;
-          },
-          autoRestart: true,
-        );
+        final timer = ProgressingRestartableTimer.simpleFactor(_initDuration, () {
+          firedAt.add(async.elapsed);
+          return true;
+        }, autoRestart: true);
 
         async.elapse(_initDuration * 3);
         timer
@@ -188,14 +184,10 @@ void main() {
       final firedAt = <Duration>[];
 
       fakeAsync((async) {
-        final timer = ProgressingRestartableTimer.noneFactor(
-          _initDuration,
-          () {
-            firedAt.add(async.elapsed);
-            return true;
-          },
-          autoRestart: true,
-        );
+        final timer = ProgressingRestartableTimer.noneFactor(_initDuration, () {
+          firedAt.add(async.elapsed);
+          return true;
+        }, autoRestart: true);
 
         async.elapse(_initDuration);
         timer.reset();
@@ -247,15 +239,11 @@ void main() {
 
       fakeAsync((async) {
         var calls = 0;
-        ProgressingRestartableTimer.noneFactor(
-          _initDuration,
-          () {
-            calls++;
-            firedAt.add(async.elapsed);
-            return calls < 2;
-          },
-          autoRestart: true,
-        );
+        ProgressingRestartableTimer.noneFactor(_initDuration, () {
+          calls++;
+          firedAt.add(async.elapsed);
+          return calls < 2;
+        }, autoRestart: true);
 
         async.elapse(_initDuration * 5);
       });

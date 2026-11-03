@@ -128,9 +128,8 @@ enum ServerResponseStatus {
     : _isOk = null;
 
   /// Class constructor for the generic errors
-  const ServerResponseStatus.generic({bool isOk = false})
-    : _isOk = isOk,
-      httpStatus = null,
+  const ServerResponseStatus.generic({bool this._isOk = false})
+    : httpStatus = null,
       _linkedGeneric = null;
 
   /// Parse the error from the http status

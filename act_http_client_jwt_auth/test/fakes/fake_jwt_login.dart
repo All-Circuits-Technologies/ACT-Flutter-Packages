@@ -212,8 +212,5 @@ class FakeStoredJwtLogin extends AbsJwtLogin with MixinAuthStorageJwtLogin {
 }
 
 /// A request of the application which needs the user to be signed in.
-RequestParam aRequest() => RequestParam(
-  httpMethod: HttpMethods.get,
-  relativeRoute: "/something",
-  encoding: utf8,
-);
+RequestParam aRequest() =>
+    RequestParam(httpMethod: HttpMethods.get, relativeRoute: "/something", encoding: utf8);

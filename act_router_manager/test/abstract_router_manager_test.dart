@@ -30,10 +30,9 @@ void main() {
 
   group("AbstractRouterBuilder", () {
     test("depends on the logger manager", () {
-      expect(
-        const AbstractRouterBuilder(factory: FakeRouterManager.new).dependsOn(),
-        [LoggerManager],
-      );
+      expect(const AbstractRouterBuilder(factory: FakeRouterManager.new).dependsOn(), [
+        LoggerManager,
+      ]);
     });
   });
 
@@ -181,10 +180,7 @@ void main() {
       final manager = await pumpManager(tester);
       await _goTo(tester, () => manager.push(FakeRoute.settings));
 
-      expect(
-        manager.getFirstRouteInNavStack([FakeRoute.settings, FakeRoute.home]),
-        FakeRoute.home,
-      );
+      expect(manager.getFirstRouteInNavStack([FakeRoute.settings, FakeRoute.home]), FakeRoute.home);
     });
 
     testWidgets("returns null when none of the pages given is stacked", (tester) async {
@@ -216,9 +212,7 @@ void main() {
       expect(manager.getCurrentNavStack(), [FakeRoute.home, FakeRoute.settings]);
     });
 
-    testWidgets("stops on the first page when the one it is given is not stacked", (
-      tester,
-    ) async {
+    testWidgets("stops on the first page when the one it is given is not stacked", (tester) async {
       final manager = await pumpManager(tester);
       await _goTo(tester, () => manager.push(FakeRoute.settings));
 
@@ -286,9 +280,7 @@ void main() {
       expect(manager.getCurrentNavStack(), [FakeRoute.home]);
     });
 
-    testWidgets("replaces the first page when the page it is given is not stacked", (
-      tester,
-    ) async {
+    testWidgets("replaces the first page when the page it is given is not stacked", (tester) async {
       final manager = await pumpManager(tester);
       await _goTo(tester, () => manager.push(FakeRoute.settings));
 
@@ -416,9 +408,7 @@ void main() {
       expect(manager.getCurrentTopView(), FakeRoute.home);
     });
 
-    testWidgets("displays the page asked for when the redirection lets it through", (
-      tester,
-    ) async {
+    testWidgets("displays the page asked for when the redirection lets it through", (tester) async {
       final manager = await pumpManager(tester);
       manager.registerRedirect(_noRedirection);
 

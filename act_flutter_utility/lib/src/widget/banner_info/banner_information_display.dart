@@ -56,10 +56,7 @@ class BannerInformationDisplay extends StatelessWidget {
     this.bannerNbToDisplay = 1,
     this.internetBannerInfoModel,
     this.boxShadows,
-    this.padding = const EdgeInsets.symmetric(
-      horizontal: 20,
-      vertical: 4,
-    ),
+    this.padding = const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
     this.minHeight = 48,
     this.separatorHeight = 6,
     this.bannerElementsSeparator = 0,
@@ -96,9 +93,7 @@ class BannerInformationDisplay extends StatelessWidget {
                   return Container(
                     padding: padding,
                     alignment: Alignment.centerLeft,
-                    constraints: BoxConstraints(
-                      minHeight: minHeight,
-                    ),
+                    constraints: BoxConstraints(minHeight: minHeight),
                     decoration: BoxDecoration(
                       color: bannerModel.backgroundColor,
                       boxShadow: boxShadows,
@@ -106,9 +101,8 @@ class BannerInformationDisplay extends StatelessWidget {
                     child: _buildBannerContent(theme: theme, model: bannerModel),
                   );
                 },
-                separatorBuilder: (BuildContext context, int index) => SizedBox(
-                  height: separatorHeight,
-                ),
+                separatorBuilder: (BuildContext context, int index) =>
+                    SizedBox(height: separatorHeight),
                 physics: const ClampingScrollPhysics(),
                 shrinkWrap: true,
               );
@@ -120,16 +114,10 @@ class BannerInformationDisplay extends StatelessWidget {
   }
 
   /// Build the banner content depending of the [model] given
-  Widget _buildBannerContent({
-    required BannerInformationModel model,
-    required ThemeData theme,
-  }) {
+  Widget _buildBannerContent({required BannerInformationModel model, required ThemeData theme}) {
     final text = Text(
       model.text,
-      style: theme.textTheme.bodyMedium!.copyWith(
-        color: model.foregroundColor,
-        fontSize: fontSize,
-      ),
+      style: theme.textTheme.bodyMedium!.copyWith(color: model.foregroundColor, fontSize: fontSize),
     );
 
     if (model.icon == null && model.action == null) {

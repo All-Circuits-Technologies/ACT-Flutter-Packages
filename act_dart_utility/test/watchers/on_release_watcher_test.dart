@@ -82,10 +82,7 @@ void main() {
       var calls = 0;
       final watcher = OnReleaseWatcher(callback: () => calls++);
 
-      await expectLater(
-        watcher.supervise(() async => throw Exception("boom")),
-        throwsException,
-      );
+      await expectLater(watcher.supervise(() async => throw Exception("boom")), throwsException);
 
       expect(calls, 1);
     });

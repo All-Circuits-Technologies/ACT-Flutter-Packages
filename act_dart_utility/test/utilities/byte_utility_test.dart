@@ -32,64 +32,34 @@ void main() {
 
   group("ByteUtility.testNumberLimits", () {
     test("accepts a number which fits in a signed integer", () {
-      expect(
-        ByteUtility.testNumberLimits(number: 127, bytesNb: 1, isSigned: true),
-        isTrue,
-      );
-      expect(
-        ByteUtility.testNumberLimits(number: -128, bytesNb: 1, isSigned: true),
-        isTrue,
-      );
+      expect(ByteUtility.testNumberLimits(number: 127, bytesNb: 1, isSigned: true), isTrue);
+      expect(ByteUtility.testNumberLimits(number: -128, bytesNb: 1, isSigned: true), isTrue);
     });
 
     test("rejects a number which overflows a signed integer", () {
-      expect(
-        ByteUtility.testNumberLimits(number: 128, bytesNb: 1, isSigned: true),
-        isFalse,
-      );
-      expect(
-        ByteUtility.testNumberLimits(number: -129, bytesNb: 1, isSigned: true),
-        isFalse,
-      );
+      expect(ByteUtility.testNumberLimits(number: 128, bytesNb: 1, isSigned: true), isFalse);
+      expect(ByteUtility.testNumberLimits(number: -129, bytesNb: 1, isSigned: true), isFalse);
     });
 
     test("accepts a number which fits in an unsigned integer", () {
-      expect(
-        ByteUtility.testNumberLimits(number: 255, bytesNb: 1, isSigned: false),
-        isTrue,
-      );
+      expect(ByteUtility.testNumberLimits(number: 255, bytesNb: 1, isSigned: false), isTrue);
     });
 
     test("rejects a negative number for an unsigned integer", () {
-      expect(
-        ByteUtility.testNumberLimits(number: -1, bytesNb: 1, isSigned: false),
-        isFalse,
-      );
+      expect(ByteUtility.testNumberLimits(number: -1, bytesNb: 1, isSigned: false), isFalse);
     });
 
     test("rejects a bytes number which makes no sense", () {
-      expect(
-        ByteUtility.testNumberLimits(number: 0, bytesNb: 0, isSigned: true),
-        isFalse,
-      );
-      expect(
-        ByteUtility.testNumberLimits(number: 0, bytesNb: 9, isSigned: true),
-        isFalse,
-      );
+      expect(ByteUtility.testNumberLimits(number: 0, bytesNb: 0, isSigned: true), isFalse);
+      expect(ByteUtility.testNumberLimits(number: 0, bytesNb: 9, isSigned: true), isFalse);
     });
 
     test("accepts any number in a signed integer of 64 bits", () {
-      expect(
-        ByteUtility.testNumberLimits(number: -1, bytesNb: 8, isSigned: true),
-        isTrue,
-      );
+      expect(ByteUtility.testNumberLimits(number: -1, bytesNb: 8, isSigned: true), isTrue);
     });
 
     test("rejects an unsigned integer of 64 bits, which a Dart integer cannot hold", () {
-      expect(
-        ByteUtility.testNumberLimits(number: 1, bytesNb: 8, isSigned: false),
-        isFalse,
-      );
+      expect(ByteUtility.testNumberLimits(number: 1, bytesNb: 8, isSigned: false), isFalse);
     });
   });
 
@@ -150,10 +120,7 @@ void main() {
 
   group("ByteUtility.convertFromLsb", () {
     test("rebuilds a number from its bytes", () {
-      expect(
-        ByteUtility.convertFromLsb(lsbNumber: Uint8List.fromList([0x34, 0x12])),
-        0x1234,
-      );
+      expect(ByteUtility.convertFromLsb(lsbNumber: Uint8List.fromList([0x34, 0x12])), 0x1234);
     });
 
     test("reads the sign of a signed number", () {
@@ -168,10 +135,7 @@ void main() {
     });
 
     test("returns null when the bytes number is not a supported one", () {
-      expect(
-        ByteUtility.convertFromLsb(lsbNumber: Uint8List.fromList([1, 2, 3])),
-        isNull,
-      );
+      expect(ByteUtility.convertFromLsb(lsbNumber: Uint8List.fromList([1, 2, 3])), isNull);
     });
 
     test("returns null for an unsigned number of eight bytes", () {
@@ -193,17 +157,11 @@ void main() {
 
   group("ByteUtility.convertFromMsb", () {
     test("rebuilds a number from its bytes", () {
-      expect(
-        ByteUtility.convertFromMsb(msbNumber: Uint8List.fromList([0x12, 0x34])),
-        0x1234,
-      );
+      expect(ByteUtility.convertFromMsb(msbNumber: Uint8List.fromList([0x12, 0x34])), 0x1234);
     });
 
     test("returns null when the bytes number is not a supported one", () {
-      expect(
-        ByteUtility.convertFromMsb(msbNumber: Uint8List.fromList([1, 2, 3])),
-        isNull,
-      );
+      expect(ByteUtility.convertFromMsb(msbNumber: Uint8List.fromList([1, 2, 3])), isNull);
     });
 
     test("warns through the logger when the bytes cannot be converted", () {

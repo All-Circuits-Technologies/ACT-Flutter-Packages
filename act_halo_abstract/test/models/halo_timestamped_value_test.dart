@@ -30,10 +30,7 @@ void main() {
     });
 
     test("differs from one which carries another value", () {
-      expect(
-        const HaloTimestampedValue(data: 1),
-        isNot(const HaloTimestampedValue(data: 2)),
-      );
+      expect(const HaloTimestampedValue(data: 1), isNot(const HaloTimestampedValue(data: 2)));
     });
 
     test("differs from one which carries another timestamp", () {

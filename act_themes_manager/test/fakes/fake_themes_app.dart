@@ -68,13 +68,11 @@ class FakeThemesConfig extends AbstractConfigManager with MixinThemesConfig {
   }
 
   /// Class constructor
-  FakeThemesConfig({Environment env = Environment.development})
-    : _env = env,
-      super(logger: const SilentLogger());
+  FakeThemesConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }
 
 /// The properties of the application under test.
-class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties {}
+class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties;
 
 /// The state of the page of the application under test.
 class FakeThemesState extends BlocStateForMixin<FakeThemesState>
