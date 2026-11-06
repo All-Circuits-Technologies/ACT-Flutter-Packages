@@ -126,6 +126,221 @@ void main() {
 
       expect(built, 0);
     });
+
+    test("builds the interleaves in their order in the list, the ends included", () {
+      var built = 0;
+
+      final list = ListUtility.interleaveWithBuilder(
+        [1, 2],
+        () => --built,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(list, [-1, 1, -2, 2, -3]);
+    });
+
+    test("returns a growable list by default", () {
+      final list = ListUtility.interleaveWithBuilder([1, 2], () => 0);
+
+      expect(() => list.add(3), returnsNormally);
+    });
+
+    test("returns a fixed-length list when it is asked to", () {
+      final list = ListUtility.interleaveWithBuilder([1, 2], () => 0, growable: false);
+
+      expect(() => list.add(3), throwsUnsupportedError);
+    });
+  });
+
+  group("ListUtility.generateWithInterleave", () {
+    test("inserts the value between the generated elements", () {
+      expect(ListUtility.generateWithInterleave(3, 0, generator: (index) => index + 1), [
+        1,
+        0,
+        2,
+        0,
+        3,
+      ]);
+    });
+
+    test("adds the value at the ends when it is asked to", () {
+      expect(
+        ListUtility.generateWithInterleave(
+          2,
+          0,
+          generator: (index) => index + 1,
+          addLeft: true,
+          addRight: true,
+        ),
+        [0, 1, 0, 2, 0],
+      );
+    });
+
+    test("returns an empty list for a zero length, whatever the ends ask for", () {
+      expect(
+        ListUtility.generateWithInterleave(
+          0,
+          0,
+          generator: (index) => index + 1,
+          addLeft: true,
+          addRight: true,
+        ),
+        isEmpty,
+      );
+    });
+  });
+
+  group("ListUtility.generateWithInterleaveBuilder", () {
+    test("gives the generator the index of the element, not its position in the list", () {
+      final indexes = <int>[];
+
+      ListUtility.generateWithInterleaveBuilder<int>(
+        3,
+        generator: (index) {
+          indexes.add(index);
+          return index;
+        },
+        interleaveBuilder: () => -1,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(indexes, [0, 1, 2]);
+    });
+
+    test("inserts a built interleave between the generated elements", () {
+      var built = 0;
+
+      final list = ListUtility.generateWithInterleaveBuilder(
+        3,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => --built,
+      );
+
+      expect(list, [1, -1, 2, -2, 3]);
+    });
+
+    test("adds an interleave before the first element when it is asked to", () {
+      var built = 0;
+
+      final list = ListUtility.generateWithInterleaveBuilder(
+        2,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => --built,
+        addLeft: true,
+      );
+
+      expect(list, [-1, 1, -2, 2]);
+    });
+
+    test("adds an interleave after the last element when it is asked to", () {
+      var built = 0;
+
+      final list = ListUtility.generateWithInterleaveBuilder(
+        2,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => --built,
+        addRight: true,
+      );
+
+      expect(list, [1, -1, 2, -2]);
+    });
+
+    test("adds an interleave at both ends when it is asked to", () {
+      var built = 0;
+
+      final list = ListUtility.generateWithInterleaveBuilder(
+        2,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => --built,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(list, [-1, 1, -2, 2, -3]);
+    });
+
+    test("returns the only element of a length of one, without any interleave", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        1,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => 0,
+      );
+
+      expect(list, [1]);
+    });
+
+    test("surrounds the only element of a length of one when the ends ask for it", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        1,
+        generator: (index) => index + 1,
+        interleaveBuilder: () => 0,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(list, [0, 1, 0]);
+    });
+
+    test("returns an empty list for a zero length, without calling the builders", () {
+      var calls = 0;
+
+      final list = ListUtility.generateWithInterleaveBuilder(
+        0,
+        generator: (index) => ++calls,
+        interleaveBuilder: () => ++calls,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(list, isEmpty);
+      expect(calls, 0);
+    });
+
+    test("returns an empty list for a negative length", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        -2,
+        generator: (index) => index,
+        interleaveBuilder: () => 0,
+        addLeft: true,
+        addRight: true,
+      );
+
+      expect(list, isEmpty);
+    });
+
+    test("returns a growable list by default", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        2,
+        generator: (index) => index,
+        interleaveBuilder: () => 0,
+      );
+
+      expect(() => list.add(3), returnsNormally);
+    });
+
+    test("returns a fixed-length list when it is asked to", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        2,
+        generator: (index) => index,
+        interleaveBuilder: () => 0,
+        growable: false,
+      );
+
+      expect(() => list.add(3), throwsUnsupportedError);
+    });
+
+    test("returns a fixed-length empty list for a zero length when it is asked to", () {
+      final list = ListUtility.generateWithInterleaveBuilder(
+        0,
+        generator: (index) => index,
+        interleaveBuilder: () => 0,
+        growable: false,
+      );
+
+      expect(() => list.add(3), throwsUnsupportedError);
+    });
   });
 
   group("ListUtility.testIfAtLeastOneIsInList", () {

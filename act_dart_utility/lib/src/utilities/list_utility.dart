@@ -57,50 +57,112 @@ sealed class ListUtility {
   /// Return a given [list] with [interleave] value inserted between each [list] item.
   /// {@endtemplate}
   ///
-  /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
+  /// {@macro act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
   static List<T> interleave<T>(
     List<T> list,
     T interleave, {
     bool addLeft = false,
     bool addRight = false,
-  }) => interleaveWithBuilder(list, () => interleave, addLeft: addLeft, addRight: addRight);
+    bool growable = true,
+  }) => generateWithInterleaveBuilder<T>(
+    list.length,
+    generator: (index) => list[index],
+    interleaveBuilder: () => interleave,
+    addLeft: addLeft,
+    addRight: addRight,
+    growable: growable,
+  );
 
   /// {@template act_dart_utility.ListUtility.interleaveWithBuilder}
   /// Return a given [list] with built interleaves inserted between each [list] item.
   /// {@endtemplate}
   ///
-  /// {@template act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
-  /// If [addLeft] is true, an interleave will be added before the first element of the list.
-  /// If [addRight] is true, an interleave will be added after the last element of the list.
-  ///
-  /// If the list is empty, the method will return an empty list, even if [addLeft] and/or
-  /// [addRight] are true.
-  /// {@endtemplate}
+  /// {@macro act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
   static List<T> interleaveWithBuilder<T>(
     List<T> list,
     T Function() interleaveBuilder, {
     bool addLeft = false,
     bool addRight = false,
+    bool growable = true,
+  }) => generateWithInterleaveBuilder<T>(
+    list.length,
+    generator: (index) => list[index],
+    interleaveBuilder: interleaveBuilder,
+    addLeft: addLeft,
+    addRight: addRight,
+    growable: growable,
+  );
+
+  /// {@template act_dart_utility.ListUtility.generateWithInterleave}
+  /// Return a list generated with [generator] and interleaved with [interleave].
+  /// {@endtemplate}
+  ///
+  /// {@macro act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
+  static List<T> generateWithInterleave<T>(
+    int length,
+    T interleave, {
+    required T Function(int index) generator,
+    bool addLeft = false,
+    bool addRight = false,
+    bool growable = true,
+  }) => generateWithInterleaveBuilder<T>(
+    length,
+    generator: generator,
+    interleaveBuilder: () => interleave,
+    addLeft: addLeft,
+    addRight: addRight,
+    growable: growable,
+  );
+
+  /// {@template act_dart_utility.ListUtility.generateWithInterleaveBuilder}
+  /// Return a list generated with [generator] and interleaved with [interleaveBuilder].
+  /// {@endtemplate}
+  ///
+  /// {@template act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
+  /// If [addLeft] is true, an interleave will be added before the first element of the list.
+  /// If [addRight] is true, an interleave will be added after the last element of the list.
+  ///
+  /// If the list is empty, the method will return an empty list, even if [addLeft] and/or
+  /// [addRight] are true.
+  ///
+  /// The returned list is growable by default, but can be set to not growable using [growable]
+  /// argument.
+  /// {@endtemplate}
+  static List<T> generateWithInterleaveBuilder<T>(
+    int length, {
+    required T Function(int index) generator,
+    required T Function() interleaveBuilder,
+    bool addLeft = false,
+    bool addRight = false,
+    bool growable = true,
   }) {
-    if (list.isEmpty) {
-      return [];
+    if (length <= 0) {
+      return List<T>.empty(growable: growable);
     }
 
-    final newList = list.fold(
-      <T>[],
-      (previousValue, element) =>
-          previousValue.isEmpty ? [element] : [...previousValue, interleaveBuilder(), element],
-    );
-
+    var totalLength = (2 * length) - 1;
     if (addLeft) {
-      newList.insert(0, interleaveBuilder());
+      totalLength++;
     }
 
     if (addRight) {
-      newList.add(interleaveBuilder());
+      totalLength++;
     }
 
-    return newList;
+    return List<T>.generate(totalLength, (index) {
+      if (addLeft && index == 0) {
+        return interleaveBuilder();
+      }
+
+      if (addRight && index == totalLength - 1) {
+        return interleaveBuilder();
+      }
+
+      // Position in the "element, interleave, element, ..." sequence, left interleave excluded
+      final position = addLeft ? index - 1 : index;
+
+      return position.isEven ? generator(position ~/ 2) : interleaveBuilder();
+    }, growable: growable);
   }
 
   /// {@template act_dart_utility.ListUtility.testIfAtLeastOneIsInList}

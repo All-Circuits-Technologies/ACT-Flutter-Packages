@@ -29,22 +29,34 @@ extension ActListExtension<T> on List<T> {
 
   /// {@macro act_dart_utility.ListUtility.interleave}
   ///
-  /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
-  List<T> interleave(T interleave, {bool addLeft = false, bool addRight = false}) =>
-      ListUtility.interleave(this, interleave, addLeft: addLeft, addRight: addRight);
+  /// {@macro act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
+  List<T> interleave(
+    T interleave, {
+    bool addLeft = false,
+    bool addRight = false,
+    bool growable = true,
+  }) => ListUtility.interleave(
+    this,
+    interleave,
+    addLeft: addLeft,
+    addRight: addRight,
+    growable: growable,
+  );
 
   /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder}
   ///
-  /// {@macro act_dart_utility.ListUtility.interleaveWithBuilder.addElements}
+  /// {@macro act_dart_utility.ListUtility.generateWithInterleaveBuilder.addElements}
   List<T> interleaveWithBuilder(
     T Function() interleaveBuilder, {
     bool addLeft = false,
     bool addRight = false,
+    bool growable = true,
   }) => ListUtility.interleaveWithBuilder(
     this,
     interleaveBuilder,
     addLeft: addLeft,
     addRight: addRight,
+    growable: growable,
   );
 
   /// Returns a new list containing the elements between [start] and [end]. The [end] is not

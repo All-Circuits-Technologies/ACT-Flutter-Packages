@@ -38,6 +38,14 @@ void main() {
 
       expect([1, 2, 3].interleaveWithBuilder(() => --built), [1, -1, 2, -2, 3]);
     });
+
+    test("returns a fixed-length list when it is asked to", () {
+      final interleaved = [1, 2].interleave(0, growable: false);
+      final built = [1, 2].interleaveWithBuilder(() => 0, growable: false);
+
+      expect(() => interleaved.add(3), throwsUnsupportedError);
+      expect(() => built.add(3), throwsUnsupportedError);
+    });
   });
 
   group("ActListExtension sublists", () {
