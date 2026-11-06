@@ -42,5 +42,38 @@ void main() {
         isNot(HaloTimestampedValue(data: 1, timestamp: DateTime.utc(2024))),
       );
     });
+
+    test("gives the value with its timestamp required", () {
+      final ts = DateTime.utc(2024, 5, 17, 10, 30);
+
+      expect(
+        HaloTimestampedValue(data: "a", timestamp: ts).toRequired(),
+        HaloRequiredTimestampedValue(data: "a", timestamp: ts),
+      );
+    });
+
+    test("gives no required value without timestamp", () {
+      expect(const HaloTimestampedValue(data: 1).toRequired(), isNull);
+    });
+  });
+
+  group("HaloRequiredTimestampedValue", () {
+    test("keeps the value and the timestamp it was given", () {
+      final ts = DateTime.utc(2024, 5, 17, 10, 30);
+
+      final result = HaloRequiredTimestampedValue(data: 3, timestamp: ts);
+
+      expect(result.data, 3);
+      expect(result.timestamp, ts);
+    });
+
+    test("differs from a value whose timestamp is optional", () {
+      final ts = DateTime.utc(2024, 5, 17, 10, 30);
+
+      expect(
+        HaloRequiredTimestampedValue(data: 1, timestamp: ts),
+        isNot(HaloTimestampedValue(data: 1, timestamp: ts)),
+      );
+    });
   });
 }
