@@ -17,7 +17,11 @@ dependencies:
 
 dev_dependencies:
   test: ^1.32.0
-  lints: ^6.1.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0
 
 
   # Controls the time seen by the tests, so that they never wait on a real delay
