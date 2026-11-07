@@ -60,16 +60,11 @@ sealed class FileConfigLoader {
     final fileConfig = await _parseFromConfigFiles(directory, chosenEnv);
     final envConfig = await _parseFromEnv(directory, processEnv);
 
-    final finalValue = JsonUtility.mergeJson(
-      baseJson: fileConfig,
-      jsonToOverrideWith: envConfig,
-    );
+    final finalValue = JsonUtility.mergeJson(baseJson: fileConfig, jsonToOverrideWith: envConfig);
 
     final store = ConfigStore.create(logger: subLogger, configs: finalValue);
 
-    subLogger.i(
-      "Config store loaded from the directory '$directory' with environment: $chosenEnv",
-    );
+    subLogger.i("Config store loaded from the directory '$directory' with environment: $chosenEnv");
 
     return store;
   }
@@ -83,14 +78,8 @@ sealed class FileConfigLoader {
     final chosenConfig = await _parseConfigFile(directory, chosenEnv);
     final localConfig = await _parseConfigFile(directory, Environment.local);
 
-    var result = JsonUtility.mergeJson(
-      baseJson: defaultConfig,
-      jsonToOverrideWith: chosenConfig,
-    );
-    result = JsonUtility.mergeJson(
-      baseJson: result,
-      jsonToOverrideWith: localConfig,
-    );
+    var result = JsonUtility.mergeJson(baseJson: defaultConfig, jsonToOverrideWith: chosenConfig);
+    result = JsonUtility.mergeJson(baseJson: result, jsonToOverrideWith: localConfig);
 
     return result;
   }
