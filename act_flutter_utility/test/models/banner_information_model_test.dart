@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 void main() {
   /// Builds a banner of the given [type], whose weight the test moves with [priorityWeightOffset].

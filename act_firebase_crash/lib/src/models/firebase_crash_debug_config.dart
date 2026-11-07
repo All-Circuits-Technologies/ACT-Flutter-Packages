@@ -16,10 +16,7 @@ class FirebaseCrashDebugConfig extends Equatable {
   final LogsLevel level;
 
   /// Class constructor
-  const FirebaseCrashDebugConfig({
-    required this.identifier,
-    this.level = LogsLevel.warn,
-  });
+  const FirebaseCrashDebugConfig({required this.identifier, this.level = LogsLevel.warn});
 
   @override
   List<Object?> get props => [identifier, level];

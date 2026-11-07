@@ -16,8 +16,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.11.1
-  flutter: ">=3.29.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
@@ -29,6 +29,10 @@ dependencies:
   # Easily create managers
   act_life_cycle:
     path: ../act_life_cycle
+
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
 
   # Extend Dart functionalities
   act_dart_utility:

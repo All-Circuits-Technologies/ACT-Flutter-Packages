@@ -44,7 +44,10 @@ void main() {
       final packet = HaloPayloadPacket();
       _aStatus(packet, urc: OcsigenWiFiUrc.connecting.rawValue);
 
-      expect(OcsigenWiFiStatusResult.parseFromDevice(packet)?.single.urc, OcsigenWiFiUrc.connecting);
+      expect(
+        OcsigenWiFiStatusResult.parseFromDevice(packet)?.single.urc,
+        OcsigenWiFiUrc.connecting,
+      );
     });
 
     test("reads every network of an answer which carries several", () {

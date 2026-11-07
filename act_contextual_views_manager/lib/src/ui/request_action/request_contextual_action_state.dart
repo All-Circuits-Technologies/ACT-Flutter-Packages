@@ -13,45 +13,23 @@ class RequestContextualActionState extends BlocStateForMixin<RequestContextualAc
   final bool loading;
 
   /// Class constructor
-  const RequestContextualActionState({
-    required this.isOk,
-    required this.loading,
-  }) : super();
+  const RequestContextualActionState({required this.isOk, required this.loading}) : super();
 
   /// Init class constructor
-  const RequestContextualActionState.init({
-    required this.isOk,
-  })  : loading = true,
-        super();
+  const RequestContextualActionState.init({required this.isOk}) : loading = true, super();
 
   /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
-  RequestContextualActionState copyWith({
-    bool? isOk,
-    bool? loading,
-  }) =>
-      RequestContextualActionState(
-        isOk: isOk ?? this.isOk,
-        loading: loading ?? this.loading,
-      );
+  RequestContextualActionState copyWith({bool? isOk, bool? loading}) =>
+      RequestContextualActionState(isOk: isOk ?? this.isOk, loading: loading ?? this.loading);
 
   /// Copy the current state and update the loading value
-  RequestContextualActionState copyWithLoadingState({
-    required bool loading,
-  }) =>
-      copyWith(
-        loading: loading,
-      );
+  RequestContextualActionState copyWithLoadingState({required bool loading}) =>
+      copyWith(loading: loading);
 
   /// Copy the current state and update the result value
-  RequestContextualActionState copyWithResultState({
-    required bool isOk,
-    bool? loading,
-  }) =>
-      copyWith(
-        isOk: isOk,
-        loading: loading,
-      );
+  RequestContextualActionState copyWithResultState({required bool isOk, bool? loading}) =>
+      copyWith(isOk: isOk, loading: loading);
 
   /// This is the state properties
   @override

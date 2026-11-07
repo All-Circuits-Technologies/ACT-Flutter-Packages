@@ -19,18 +19,10 @@ class EnableServiceViewContext extends AbstractViewContext with MixinCompulsoryA
   final bool isAcceptanceCompulsory;
 
   /// Class constructor
-  EnableServiceViewContext({
-    required this.element,
-    this.isAcceptanceCompulsory = false,
-  }) : super(
-          uniqueKey: _createUniqueKey(
-            element: element,
-          ),
-        );
+  EnableServiceViewContext({required this.element, this.isAcceptanceCompulsory = false})
+    : super(uniqueKey: _createUniqueKey(element: element));
 
   /// Generate an unique key for all the abstract view context
-  static String _createUniqueKey({
-    required EnableServiceElement element,
-  }) =>
+  static String _createUniqueKey({required EnableServiceElement element}) =>
       "$_globalServiceKey:$element";
 }

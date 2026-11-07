@@ -9,5 +9,7 @@ export 'src/mixins/mixin_consent_options.dart';
 export 'src/models/consent_data_model.dart';
 export 'src/models/consent_options_model.dart';
 export 'src/services/abstract_consent_service.dart';
+export 'src/services/mixin_terms_redirect_service.dart';
 export 'src/types/consent_request_status_enum.dart';
 export 'src/types/consent_state_enum.dart';
+export 'src/types/mixin_terms_route.dart';

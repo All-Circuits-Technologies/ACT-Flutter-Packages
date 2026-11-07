@@ -35,16 +35,16 @@ class JwtManager extends AbsWithLifeCycle {
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    logsHelper = LogsHelper(
-      category: _jwtLogsCategory,
-    );
+    logsHelper = LogsHelper(category: _jwtLogsCategory);
   }
 
   /// Add and init a JWT handler
   Future<bool> addAndInitJwtHandler(AbstractJwtHandler handler) async {
     if (!(await handler.initHandler())) {
-      logsHelper.w("A problem occurred when tried to initialize the JWT handler given: "
-          "${handler.name}");
+      logsHelper.w(
+        "A problem occurred when tried to initialize the JWT handler given: "
+        "${handler.name}",
+      );
       return false;
     }
 

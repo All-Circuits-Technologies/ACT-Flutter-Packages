@@ -28,14 +28,15 @@ class SimpleMultiAuthService<P extends Enum> extends AbsWithLifeCycle
     required this.providers,
     P? currentProvider,
     String logsCategory = logsCategory,
-  })  : logsHelper = LogsHelper(category: logsCategory),
-        _initProviderKey = currentProvider;
+  }) : logsHelper = LogsHelper(category: logsCategory),
+       _initProviderKey = currentProvider;
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
     await setCurrentProviderKey(
-        _initProviderKey ?? ((providers.length == 1) ? providers.keys.first : null));
+      _initProviderKey ?? ((providers.length == 1) ? providers.keys.first : null),
+    );
   }
 }

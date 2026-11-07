@@ -121,10 +121,7 @@ void main() {
     });
 
     test("tells the page about the attributes which arrive", () async {
-      final bloc = await aBloc(
-        tsKeys: const [],
-        sharedKeys: const [FakeTelemetryKeys.temperature],
-      );
+      final bloc = await aBloc(tsKeys: const [], sharedKeys: const [FakeTelemetryKeys.temperature]);
 
       await pushAttributes({"temp": (42, "20.5")});
 

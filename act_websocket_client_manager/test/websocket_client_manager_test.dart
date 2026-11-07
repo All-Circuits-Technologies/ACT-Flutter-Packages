@@ -81,10 +81,7 @@ void main() {
     test("connects to the server when the application asks it to", () async {
       final manager = await aManager();
 
-      await expectLater(
-        manager.connectionStatusStream,
-        emitsThrough(WsConnectionStatus.connected),
-      );
+      await expectLater(manager.connectionStatusStream, emitsThrough(WsConnectionStatus.connected));
       expect(server.connectionCount, 1);
     });
 
@@ -223,12 +220,16 @@ void main() {
 
     test("connects again by itself when the application asked it to", () async {
       final manager = await aConnectedManager(autoReconnectEnabled: true);
-      final connectedAgain = expectLater(
-        manager.connectionStatusStream,
-        emitsThrough(WsConnectionStatus.disconnected),
-      ).then(
-        (_) => expectLater(manager.connectionStatusStream, emitsThrough(WsConnectionStatus.connected)),
-      );
+      final connectedAgain =
+          expectLater(
+            manager.connectionStatusStream,
+            emitsThrough(WsConnectionStatus.disconnected),
+          ).then(
+            (_) => expectLater(
+              manager.connectionStatusStream,
+              emitsThrough(WsConnectionStatus.connected),
+            ),
+          );
 
       await server.closeSockets();
       await connectedAgain;

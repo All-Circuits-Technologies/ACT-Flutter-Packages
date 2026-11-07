@@ -21,6 +21,17 @@ const _conf = DefaultOAuth2Conf(
 );
 
 /// A token which is still valid.
+/// The configuration of [_conf], for an application which wants the single sign on of the browser
+const _sharedSessionConf = DefaultOAuth2Conf(
+  clientId: "aClient",
+  issuer: "https://a.provider",
+  discoveryUrl: null,
+  providerUrlConf: null,
+  scopes: ["openid"],
+  appAuthRedirectScheme: "com.example.app",
+  ephemeralSession: false,
+);
+
 final _validToken = AuthToken(raw: "a token", expiration: DateTime.now().toUtc().add(_anHour));
 
 /// A token which has expired.
@@ -74,9 +85,15 @@ void main() {
   tearDown(() => globalManager.reset());
 
   /// The service of an application which signs its users in through a provider.
-  Future<FakeOAuth2Service> aService({FakeTokensStorage? storage}) async {
-    final service = FakeOAuth2Service(conf: _conf);
-    await service.initProvider(parentLogsHelper: logs.buildHelper(category: "auth"), appAuth: appAuth);
+  Future<FakeOAuth2Service> aService({
+    FakeTokensStorage? storage,
+    DefaultOAuth2Conf conf = _conf,
+  }) async {
+    final service = FakeOAuth2Service(conf: conf);
+    await service.initProvider(
+      parentLogsHelper: logs.buildHelper(category: "auth"),
+      appAuth: appAuth,
+    );
     addTearDown(service.disposeLifeCycle);
 
     if (storage != null) {
@@ -138,6 +155,51 @@ void main() {
     });
   });
 
+  group("AbsOAuth2ProviderService, the redirect URLs the application names", () {
+    /// The service of an application which names the URLs its provider sends the user back to.
+    Future<FakeOAuth2Service> aNamingService({
+      required String redirectUrl,
+      String? postLogoutRedirectUrl,
+    }) async {
+      final service = FakeOAuth2Service(
+        conf: _conf,
+        redirectUrl: redirectUrl,
+        postLogoutRedirectUrl: postLogoutRedirectUrl,
+      );
+      await service.initProvider(
+        parentLogsHelper: logs.buildHelper(category: "auth"),
+        appAuth: appAuth,
+      );
+      addTearDown(service.disposeLifeCycle);
+
+      return service;
+    }
+
+    test("sends the user back to the URL the application named, sign out included", () async {
+      final service = await aNamingService(redirectUrl: "com.example.app://oauth2redirect");
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn();
+      await service.signOut();
+
+      expect(appAuth.authorizations.single.redirectUrl, "com.example.app://oauth2redirect");
+      expect(appAuth.endSessions.single.postLogoutRedirectUrl, "com.example.app://oauth2redirect");
+    });
+
+    test("sends the user back to the sign out URL the application named for it", () async {
+      final service = await aNamingService(
+        redirectUrl: "com.example.app://oauth2redirect",
+        postLogoutRedirectUrl: "com.example.app://signedout",
+      );
+      appAuth.authorizationAnswer = _authorized();
+      await service.redirectToExternalUserSignIn();
+
+      await service.signOut();
+
+      expect(appAuth.endSessions.single.postLogoutRedirectUrl, "com.example.app://signedout");
+    });
+  });
+
   group("AbsOAuth2ProviderService.redirectToExternalUserSignIn", () {
     test("signs the user in through the provider", () async {
       final service = await aService();
@@ -160,6 +222,39 @@ void main() {
       expect(request.issuer, "https://a.provider");
       expect(request.scopes, ["openid"]);
       expect(request.redirectUrl, "com.example.app:/oauthredirect");
+    });
+
+    test("hands the provider the parameters the application adds to the sign in", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn(additionalParameters: {"max_age": "300"});
+
+      expect(appAuth.authorizations.single.additionalParameters, {"max_age": "300"});
+    });
+
+    test("opens the provider in an ephemeral session by default", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn();
+
+      expect(
+        appAuth.authorizations.single.externalUserAgent,
+        ExternalUserAgent.ephemeralAsWebAuthenticationSession,
+      );
+    });
+
+    test("opens the provider in the session of the browser when the conf asks for it", () async {
+      final service = await aService(conf: _sharedSessionConf);
+      appAuth.authorizationAnswer = _authorized();
+
+      await service.redirectToExternalUserSignIn();
+
+      expect(
+        appAuth.authorizations.single.externalUserAgent,
+        ExternalUserAgent.asWebAuthenticationSession,
+      );
     });
 
     test("keeps the tokens the provider handed over", () async {
@@ -240,6 +335,22 @@ void main() {
       expect(appAuth.endSessions.single.postLogoutRedirectUrl, "com.example.app:/");
     });
 
+    test("ends the session in the browser the user signed in with", () async {
+      for (final (conf, agent) in [
+        (_conf, ExternalUserAgent.ephemeralAsWebAuthenticationSession),
+        (_sharedSessionConf, ExternalUserAgent.asWebAuthenticationSession),
+      ]) {
+        appAuth = FakeAppAuth();
+        final service = await aService(storage: FakeTokensStorage(), conf: conf);
+        appAuth.authorizationAnswer = _authorized();
+        await service.redirectToExternalUserSignIn();
+
+        await service.signOut();
+
+        expect(appAuth.endSessions.single.externalUserAgent, agent);
+      }
+    });
+
     test("forgets the tokens of the user", () async {
       final storage = FakeTokensStorage();
       final service = await aService(storage: storage);
@@ -254,14 +365,21 @@ void main() {
       expect(service.authStatus, AuthStatus.signedOut);
     });
 
-    test("keeps the user signed in when the provider refused to end the session", () async {
-      final service = await aService();
+    test("forgets the tokens and signs the user out when the provider refused to end the "
+        "session", () async {
+      final storage = FakeTokensStorage();
+      final service = await aService(storage: storage);
       appAuth.authorizationAnswer = _authorized();
       await service.redirectToExternalUserSignIn();
-      appAuth.endSessionError = Exception("the provider is not there");
+      appAuth.endSessionError = Exception("the browser page was closed");
 
       expect(await service.signOut(), isFalse);
-      expect(service.authStatus, AuthStatus.signedIn);
+
+      expect(service.authStatus, AuthStatus.signedOut);
+      expect(storage.tokens, isNull);
+      expect(await service.getTokens(), isNull);
+      expect(await service.isUserSigned(), isFalse);
+      expect(appAuth.tokenRequests, isEmpty, reason: "nothing may sign the user in silently");
     });
   });
 
@@ -340,6 +458,27 @@ void main() {
       appAuth.tokenError = Exception("the provider is not there");
 
       expect(await service.getTokens(), isNull);
+    });
+  });
+
+  group("AbsOAuth2ProviderService.getTokens with forceRefresh", () {
+    test("refreshes the tokens on demand while the access token is still valid", () async {
+      final service = await aService();
+      appAuth.authorizationAnswer = _authorized();
+      await service.redirectToExternalUserSignIn();
+      appAuth.tokenAnswer = _tokens(refreshToken: "a newer refresh token");
+
+      final tokens = await service.getTokens(forceRefresh: true);
+
+      expect(tokens?.accessToken?.raw, "another token");
+      expect(appAuth.tokenRequests.single.refreshToken, "a refresh token");
+    });
+
+    test("answers null and asks nothing without a valid refresh token", () async {
+      final service = await aService();
+
+      expect(await service.getTokens(forceRefresh: true), isNull);
+      expect(appAuth.tokenRequests, isEmpty);
     });
   });
 

@@ -16,21 +16,14 @@ class ViewDisplayResult<T> extends Equatable {
   final T? customResult;
 
   /// Class constructor
-  const ViewDisplayResult({
-    required this.status,
-    this.customResult,
-  });
+  const ViewDisplayResult({required this.status, this.customResult});
 
   /// Helpful constructor to create an error result
-  const ViewDisplayResult.error()
-      : status = ViewDisplayStatus.error,
-        customResult = null;
+  const ViewDisplayResult.error() : status = ViewDisplayStatus.error, customResult = null;
 
   /// The method returns a new [ViewDisplayResult] with the customResult casted to the generic given
-  ViewDisplayResult<C> toCast<C>() => ViewDisplayResult<C>(
-        status: status,
-        customResult: customResult as C?,
-      );
+  ViewDisplayResult<C> toCast<C>() =>
+      ViewDisplayResult<C>(status: status, customResult: customResult as C?);
 
   @override
   @mustCallSuper

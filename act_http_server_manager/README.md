@@ -148,6 +148,8 @@ class ItemApiService extends AbsApiService {
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
 class MyServerManager extends AbsHttpServerManager with MixinFromConfigHttpServerManager {
   @override
@@ -170,7 +172,11 @@ class MyServerManager extends AbsHttpServerManager with MixinFromConfigHttpServe
   ];
 }
 
-globalManager.registerManagerAsync<MyServerManager>(MyServerBuilder(MyServerManager.new));
+class MyServerBuilder extends AbsHttpServerBuilder<MyServerManager> {
+  const MyServerBuilder(super.factory);
+}
+
+registerManagerAsync(MyServerBuilder(MyServerManager.new));
 ```
 
 ## Configuration

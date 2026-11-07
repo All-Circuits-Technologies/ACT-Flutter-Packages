@@ -11,27 +11,19 @@ class BannerInfoState extends BlocStateForMixin<BannerInfoState> {
   final bool isInternetOk;
 
   /// Class constructor
-  const BannerInfoState({
-    required this.isInternetOk,
-  });
+  const BannerInfoState({required this.isInternetOk});
 
   /// Init class constructor
   const BannerInfoState.init() : isInternetOk = true;
 
   /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
-  BannerInfoState copyWith({
-    bool? isInternetOk,
-  }) =>
+  BannerInfoState copyWith({bool? isInternetOk}) =>
       BannerInfoState(isInternetOk: isInternetOk ?? this.isInternetOk);
 
   /// Copy the state with internet update
-  BannerInfoState copyWithInternetState({
-    required bool isInternetOk,
-  }) =>
-      copyWith(
-        isInternetOk: isInternetOk,
-      );
+  BannerInfoState copyWithInternetState({required bool isInternetOk}) =>
+      copyWith(isInternetOk: isInternetOk);
 
   /// Get the banners to display. This manages the [knownBanners] and the banners added
   /// automatically.

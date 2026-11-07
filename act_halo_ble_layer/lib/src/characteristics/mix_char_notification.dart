@@ -42,8 +42,10 @@ mixin MixCharNotification on AbstractHaloCharacteristic {
   /// used to cancel the waiting
   Future<ResponseWaiter?> prepareWaitResponse() async {
     if (_notifyStreamSubscription == null) {
-      appLogger().w("We can't wait for a notification of the characteristic: $name (uuid: $uuid), "
-          "because the characteristic hasn't subscribed the BLE Device");
+      appLogger().w(
+        "We can't wait for a notification of the characteristic: $name (uuid: $uuid), "
+        "because the characteristic hasn't subscribed the BLE Device",
+      );
       return null;
     }
 
@@ -53,8 +55,10 @@ mixin MixCharNotification on AbstractHaloCharacteristic {
   /// Received when a new value is received from the notification
   /// We free all the pending [ResponseWaiter]
   Future<void> _onNotificationReceived(List<int> value) async {
-    globalGetIt().get<BleManager>().logsHelper.d('Notification received for characteristic: '
-        '$uuid, with value: $value');
+    globalGetIt().get<BleManager>().logsHelper.d(
+      'Notification received for characteristic: '
+      '$uuid, with value: $value',
+    );
     _completeValue(value);
   }
 
@@ -70,10 +74,7 @@ mixin MixCharNotification on AbstractHaloCharacteristic {
   /// Clean the stream and subscriptions
   Future<void> cleanStream() async {
     if (_notifyStreamSubscription != null) {
-      await Future.wait([
-        _notifyStreamSubscription!.cancel(),
-        _deviceStateSub!.cancel(),
-      ]);
+      await Future.wait([_notifyStreamSubscription!.cancel(), _deviceStateSub!.cancel()]);
 
       _deviceStateSub = null;
       _notifyStreamSubscription = null;
@@ -106,8 +107,8 @@ class ResponseWaiter {
 
   /// Private constructor to build the response waiter
   ResponseWaiter._(MixCharNotification parentToRegister)
-      : _parentToRegister = parentToRegister,
-        _completer = CancelableCompleter<List<int>?>() {
+    : _parentToRegister = parentToRegister,
+      _completer = CancelableCompleter<List<int>?>() {
     _operation = _completer.operation;
     parentToRegister._packetResponseWaiter.add(this);
   }
@@ -139,8 +140,10 @@ class ResponseWaiter {
           return;
         }
 
-        appLogger().w("The timeout raised before we retrieved the expected value from "
-            "characteristic: ${_parentToRegister.name} (uuid: ${_parentToRegister.uuid}),");
+        appLogger().w(
+          "The timeout raised before we retrieved the expected value from "
+          "characteristic: ${_parentToRegister.name} (uuid: ${_parentToRegister.uuid}),",
+        );
         await cancel();
       });
     }

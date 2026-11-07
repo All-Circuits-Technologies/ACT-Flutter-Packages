@@ -14,7 +14,7 @@ import 'package:act_remote_storage_manager/src/models/storage_page.dart';
 import 'package:act_remote_storage_manager/src/services/cache_service.dart';
 import 'package:act_remote_storage_manager/src/services/storage/mixin_storage_service.dart';
 import 'package:act_remote_storage_manager/src/types/storage_request_result.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// Abstract class for a storage manager builder. It specifies the other managers that the storage
 /// manager depends on.
@@ -28,9 +28,7 @@ abstract class AbsRemoteStorageBuilder<T extends AbsRemoteStorageManager>
   /// storage manager.
   @override
   @mustCallSuper
-  Iterable<Type> dependsOn() => [
-        LoggerManager,
-      ];
+  Iterable<Type> dependsOn() => [LoggerManager];
 }
 
 /// Abstract class for a storage manager. It provides a set of methods to interact with a storage
@@ -71,9 +69,7 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
   @mustCallSuper
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: _storageManagerLogCategory,
-    );
+    _logsHelper = LogsHelper(category: _storageManagerLogCategory);
 
     // Get the storage service from the derived class.
     _storageService = await getStorageService();
@@ -132,13 +128,12 @@ abstract class AbsRemoteStorageManager<C extends MixinStorageConfig> extends Abs
     int? pageSize,
     String? nextToken,
     bool recursiveSearch = false,
-  }) async =>
-      _storageService.listFiles(
-        searchPath,
-        pageSize: pageSize,
-        nextToken: nextToken,
-        recursiveSearch: recursiveSearch,
-      );
+  }) async => _storageService.listFiles(
+    searchPath,
+    pageSize: pageSize,
+    nextToken: nextToken,
+    recursiveSearch: recursiveSearch,
+  );
 
   /// List all the files in a given [searchPath].
   ///

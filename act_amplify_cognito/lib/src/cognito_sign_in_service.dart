@@ -21,23 +21,15 @@ class CognitoSignInService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor
-  CognitoSignInService({
-    required this.logsHelper,
-  }) : super();
+  CognitoSignInService({required this.logsHelper}) : super();
 
   /// Sign the user in the application
   ///
   /// If an exception has to be managed particularly, do it in [_parseException]
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  }) async {
+  Future<AuthSignInResult> signInUser({required String username, required String password}) async {
     SignInResult amplifyResult;
     try {
-      amplifyResult = await Amplify.Auth.signIn(
-        username: username,
-        password: password,
-      );
+      amplifyResult = await Amplify.Auth.signIn(username: username, password: password);
     } on AuthException catch (e) {
       logsHelper.e('Error sign in: ${e.message}');
       return AuthSignInResult(status: _parseException(e), extra: e);
@@ -51,14 +43,10 @@ class CognitoSignInService extends AbsWithLifeCycle {
   /// new password.
   ///
   /// If an exception has to be managed particularly, do it in [_parseException]
-  Future<AuthSignInResult> confirmSignIn({
-    required String confirmationValue,
-  }) async {
+  Future<AuthSignInResult> confirmSignIn({required String confirmationValue}) async {
     SignInResult? amplifyResult;
     try {
-      amplifyResult = await Amplify.Auth.confirmSignIn(
-        confirmationValue: confirmationValue,
-      );
+      amplifyResult = await Amplify.Auth.confirmSignIn(confirmationValue: confirmationValue);
     } on AuthException catch (e) {
       logsHelper.e('Error sign in confirmation: ${e.message}');
       return AuthSignInResult(status: _parseException(e), extra: e);

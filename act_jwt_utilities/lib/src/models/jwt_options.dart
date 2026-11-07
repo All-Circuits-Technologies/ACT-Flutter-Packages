@@ -37,12 +37,5 @@ class JwtOptions extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        algorithm,
-        audience,
-        issuer,
-        subject,
-        expirationTime,
-        notBefore,
-      ];
+  List<Object?> get props => [algorithm, audience, issuer, subject, expirationTime, notBefore];
 }

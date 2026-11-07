@@ -83,10 +83,11 @@ dependencies:
 
 ### Register the manager
 
-For an application which logs one end only, the manager needs no derived class:
+For an application which logs one end only, the manager needs no derived class. Register it in
+`registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
-GlobalManager.instance.register(const HttpLoggingBuilder());
+registerManagerAsync(const HttpLoggingBuilder());
 ```
 
 For an application which logs several ends, each of them brings its own manager and its own builder:

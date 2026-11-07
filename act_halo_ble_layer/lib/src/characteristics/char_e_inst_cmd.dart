@@ -14,12 +14,11 @@ class CharEInstCmd extends AbstractHaloCharacteristic with MixCharNotification {
   static const characteristicName = "instant_data_command_and_result";
 
   /// Class constructor
-  CharEInstCmd({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readWrite,
-          receiveType: Uint8List,
-          sendType: Uint8List,
-        );
+  CharEInstCmd({required super.uuid})
+    : super(
+        name: characteristicName,
+        scope: CharacteristicScope.readWrite,
+        receiveType: Uint8List,
+        sendType: Uint8List,
+      );
 }

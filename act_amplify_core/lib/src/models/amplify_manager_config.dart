@@ -34,10 +34,5 @@ class AmplifyManagerConfig extends Equatable {
   });
 
   @override
-  List<Object?> get props => [
-        loggerEnabled,
-        parentLogsHelper,
-        amplifyConfig,
-        amplifyServices,
-      ];
+  List<Object?> get props => [loggerEnabled, parentLogsHelper, amplifyConfig, amplifyServices];
 }

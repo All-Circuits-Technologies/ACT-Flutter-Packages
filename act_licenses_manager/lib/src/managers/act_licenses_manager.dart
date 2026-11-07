@@ -42,9 +42,8 @@ class ActLicensesManager extends AbsWithLifeCycle {
   final List<AbsLicensePackages> _loadedLicensesPackages;
 
   /// Class constructor
-  ActLicensesManager({required MixinLicensesConfig Function() configGetter})
-    : _configGetter = configGetter,
-      _loadLicensesLock = LockUtility(),
+  ActLicensesManager({required this._configGetter})
+    : _loadLicensesLock = LockUtility(),
       _loadedLicensesPackages = [];
 
   /// {@macro act_life_cycle.AbsWithLifeCycle.initLifeCycle}

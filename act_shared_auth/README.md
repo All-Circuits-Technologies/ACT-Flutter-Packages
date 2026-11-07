@@ -154,6 +154,8 @@ class MyAuthService with MixinAuthService {
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
 class MyAuthManager extends AbsAuthManager {
   @override
@@ -168,7 +170,11 @@ class MyAuthManager extends AbsAuthManager {
   }
 }
 
-globalManager.registerManagerAsync<MyAuthManager>(MyAuthBuilder(MyAuthManager.new));
+class MyAuthBuilder extends AbsAuthBuilder<MyAuthManager> {
+  const MyAuthBuilder(super.factory);
+}
+
+registerManagerAsync(MyAuthBuilder(MyAuthManager.new));
 ```
 
 ### Follow the user from elsewhere

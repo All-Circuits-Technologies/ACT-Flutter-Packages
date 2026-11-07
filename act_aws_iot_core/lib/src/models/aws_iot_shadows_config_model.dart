@@ -12,13 +12,9 @@ class AwsIotShadowsConfigModel extends Equatable {
   final List<MixinAwsIotShadowEnum> shadowsList;
 
   /// Class constructor
-  const AwsIotShadowsConfigModel({
-    required this.shadowsList,
-  });
+  const AwsIotShadowsConfigModel({required this.shadowsList});
 
   /// Get the properties of the class
   @override
-  List<Object?> get props => [
-        shadowsList,
-      ];
+  List<Object?> get props => [shadowsList];
 }

@@ -30,11 +30,7 @@ class AuthTokens extends Equatable {
   final String? idToken;
 
   /// Class constructor
-  const AuthTokens({
-    this.accessToken,
-    this.refreshToken,
-    this.idToken,
-  });
+  const AuthTokens({this.accessToken, this.refreshToken, this.idToken});
 
   /// Copy the current tokens and update the given elements
   AuthTokens copyWith({
@@ -44,19 +40,18 @@ class AuthTokens extends Equatable {
     bool forceRefreshTokenValue = false,
     String? idToken,
     bool forceIdTokenValue = false,
-  }) =>
-      AuthTokens(
-        accessToken: accessToken ?? (forceAccessTokenValue ? null : this.accessToken),
-        refreshToken: refreshToken ?? (forceRefreshTokenValue ? null : this.refreshToken),
-        idToken: idToken ?? (forceIdTokenValue ? null : this.idToken),
-      );
+  }) => AuthTokens(
+    accessToken: accessToken ?? (forceAccessTokenValue ? null : this.accessToken),
+    refreshToken: refreshToken ?? (forceRefreshTokenValue ? null : this.refreshToken),
+    idToken: idToken ?? (forceIdTokenValue ? null : this.idToken),
+  );
 
   /// Transform the element to a JSON object
   Map<String, dynamic> toJson() => {
-        if (accessToken != null) _accessTokenKey: accessToken!.toJson(),
-        if (refreshToken != null) _refreshTokenKey: refreshToken!.toJson(),
-        if (idToken != null) _idTokenKey: idToken,
-      };
+    if (accessToken != null) _accessTokenKey: accessToken!.toJson(),
+    if (refreshToken != null) _refreshTokenKey: refreshToken!.toJson(),
+    if (idToken != null) _idTokenKey: idToken,
+  };
 
   /// Parse the given [json] to a [AuthTokens] object
   static AuthTokens? fromJson(Map<String, dynamic> json) {
@@ -84,8 +79,9 @@ class AuthTokens extends Equatable {
     );
 
     if (!accessTokenResult.isOk || !refreshTokenResult.isOk || !idTokenResult.isOk) {
-      appLogger()
-          .w("A problem occurred when tried to get the authentication tokens from the given JSON");
+      appLogger().w(
+        "A problem occurred when tried to get the authentication tokens from the given JSON",
+      );
       return null;
     }
 

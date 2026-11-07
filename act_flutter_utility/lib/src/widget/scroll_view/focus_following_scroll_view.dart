@@ -7,8 +7,8 @@ import 'dart:math' as math;
 
 import 'package:act_flutter_utility/src/types/single_child_scroll_view_type.dart';
 import 'package:act_flutter_utility/src/widget/scroll_view/optional_single_child_scroll_view.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// A single child scroll view that keeps the currently focused descendant scrolled into view when
 /// the focus moves through keyboard or directional traversal.

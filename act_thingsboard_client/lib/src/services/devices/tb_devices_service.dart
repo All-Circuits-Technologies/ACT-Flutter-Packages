@@ -27,12 +27,9 @@ class TbDevicesService extends AbsWithLifeCycle {
   final Map<String, TbDeviceValues> _deviceValues;
 
   /// Class constructor
-  TbDevicesService({
-    required AbsTbServerReqManager requestManager,
-    required LogsHelper logsHelper,
-  })  : _requestManager = requestManager,
-        _deviceValues = {},
-        _logsHelper = logsHelper.createSubLogger(subCategory: _tbLogsCategory);
+  TbDevicesService({required this._requestManager, required LogsHelper logsHelper})
+    : _deviceValues = {},
+      _logsHelper = logsHelper.createSubLogger(subCategory: _tbLogsCategory);
 
   /// The method creates and returns a [TbTelemetryHandler] linked to the [deviceId] given
   TbTelemetryHandler createTelemetryHandler(String deviceId) {
@@ -55,8 +52,9 @@ class TbDevicesService extends AbsWithLifeCycle {
   ///
   /// Returns null if a problem occurred.
   Future<String?> getCurrentCustomerId() async {
-    final authUserResult =
-        await _requestManager.request((tbClient) async => tbClient.getAuthUser());
+    final authUserResult = await _requestManager.request(
+      (tbClient) async => tbClient.getAuthUser(),
+    );
     final authUser = authUserResult.requestResponse;
 
     if (!authUserResult.isOk || authUser == null) {
@@ -67,8 +65,10 @@ class TbDevicesService extends AbsWithLifeCycle {
     final customerId = authUser.customerId;
 
     if (customerId == null) {
-      _logsHelper.w("We aren't logged with a customer user account; therefore we can't get its "
-          "customer id");
+      _logsHelper.w(
+        "We aren't logged with a customer user account; therefore we can't get its "
+        "customer id",
+      );
       return null;
     }
 
@@ -78,26 +78,65 @@ class TbDevicesService extends AbsWithLifeCycle {
   /// Get the devices linked to the current user, the user has to be a customer user
   ///
   /// Returns null if a problem occurred.
-  Future<PageData<Device>?> getCurrentCustomerDevices({
-    PageLink? pageLink,
-  }) async {
+  Future<PageData<Device>?> getCurrentCustomerDevices({PageLink? pageLink}) async {
     final customerId = await getCurrentCustomerId();
 
     if (customerId == null) {
-      _logsHelper.w("There is a problem with user customer id; we can't get the current customer "
-          "devices");
+      _logsHelper.w(
+        "There is a problem with user customer id; we can't get the current customer "
+        "devices",
+      );
       return null;
     }
 
-    final result = await _requestManager
-        .request((tbClient) async => tbClient.getDeviceService().getCustomerDevices(
-              customerId,
-              pageLink ?? PageLink(_devicesNumberByPage),
-            ));
+    final result = await _requestManager.request(
+      (tbClient) async => tbClient.getDeviceService().getCustomerDevices(
+        customerId,
+        pageLink ?? PageLink(_devicesNumberByPage),
+      ),
+    );
 
     if (!result.isOk) {
-      _logsHelper.w("A problem occurred when tried to request the customer devices from the "
-          "server");
+      _logsHelper.w(
+        "A problem occurred when tried to request the customer devices from the "
+        "server",
+      );
+      return null;
+    }
+
+    return result.requestResponse;
+  }
+
+  /// Get the devices of the current user, with the information the server adds to them, the user
+  /// has to be a customer user.
+  ///
+  /// A [DeviceInfo] carries what a [Device] does not: whether the device is active, the title of
+  /// the customer it belongs to and the name of its profile.
+  ///
+  /// Returns null if a problem occurred.
+  Future<PageData<DeviceInfo>?> getCurrentCustomerDeviceInfos({PageLink? pageLink}) async {
+    final customerId = await getCurrentCustomerId();
+
+    if (customerId == null) {
+      _logsHelper.w(
+        "There is a problem with user customer id; we can't get the current customer "
+        "device infos",
+      );
+      return null;
+    }
+
+    final result = await _requestManager.request(
+      (tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
+        customerId,
+        pageLink ?? PageLink(_devicesNumberByPage),
+      ),
+    );
+
+    if (!result.isOk) {
+      _logsHelper.w(
+        "A problem occurred when tried to request the customer device infos from the "
+        "server",
+      );
       return null;
     }
 
@@ -127,17 +166,18 @@ class TbDevicesService extends AbsWithLifeCycle {
     var hasNext = true;
 
     while (deviceFound == null && hasNext) {
-      final result = await _requestManager
-          .request((tbClient) async => tbClient.getDeviceService().getCustomerDeviceInfos(
-                customerId,
-                pageLink,
-              ));
+      final result = await _requestManager.request(
+        (tbClient) async =>
+            tbClient.getDeviceService().getCustomerDeviceInfos(customerId, pageLink),
+      );
 
       final pageData = result.requestResponse;
 
       if (!result.isOk || pageData == null) {
-        _logsHelper.w("A problem occurred when tried to request the customer devices from the "
-            "server");
+        _logsHelper.w(
+          "A problem occurred when tried to request the customer devices from the "
+          "server",
+        );
         return const (success: false, deviceInfo: null);
       }
 
@@ -157,12 +197,21 @@ class TbDevicesService extends AbsWithLifeCycle {
     return (success: true, deviceInfo: deviceFound);
   }
 
-  /// Dispose the service
-  @override
-  Future<void> disposeLifeCycle() async {
+  /// Forget the values of every device watched so far: their subscriptions are given up, and the
+  /// next handler asked for a device starts from nothing. The request manager calls it when the
+  /// user leaves, so that nothing of an account reaches the next one.
+  Future<void> clear() async {
     for (final watcher in _deviceValues.values) {
       await watcher.dispose();
     }
+
+    _deviceValues.clear();
+  }
+
+  /// Dispose the service
+  @override
+  Future<void> disposeLifeCycle() async {
+    await clear();
 
     await super.disposeLifeCycle();
   }

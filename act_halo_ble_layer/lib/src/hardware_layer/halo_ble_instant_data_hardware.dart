@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
 
@@ -17,7 +18,9 @@ class HaloBleInstantDataHardware extends AbstractHaloInstantDataHardware {
   /// This method allows to read a specific instant data value from the device and thanks to the
   /// [HaloDataId] given
   @override
-  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId}) {
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({
+    required HaloDataId dataId,
+  }) {
     // TODO(brolandeau): implement readInstantData
     throw UnimplementedError();
   }

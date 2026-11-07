@@ -24,10 +24,7 @@ class FakeInternetConfig extends AbstractConfigManager with MixinInternetTestCon
   ///
   /// The test waits for two answers which agree, and does not pause between them, so that a test
   /// never waits on a real delay.
-  static Future<FakeInternetConfig> build({
-    String host = reachableHost,
-    String extra = "",
-  }) async {
+  static Future<FakeInternetConfig> build({String host = reachableHost, String extra = ""}) async {
     FakeAssets.serve({
       "${configPath}default.yaml":
           "internetConnectivity:\n"

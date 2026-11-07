@@ -18,9 +18,7 @@ List<String> _consoleLines(void Function() body) {
 
   runZoned(
     body,
-    zoneSpecification: ZoneSpecification(
-      print: (self, parent, zone, line) => lines.add(line),
-    ),
+    zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) => lines.add(line)),
   );
 
   return lines;
@@ -70,9 +68,7 @@ void main() {
     });
 
     test("drops a message below the level of the console of the configuration", () async {
-      final manager = await initManager(
-        "logs:\n  level: trace\n  console:\n    level: error",
-      );
+      final manager = await initManager("logs:\n  level: trace\n  console:\n    level: error");
 
       final lines = _consoleLines(() => manager.w("a message"));
 

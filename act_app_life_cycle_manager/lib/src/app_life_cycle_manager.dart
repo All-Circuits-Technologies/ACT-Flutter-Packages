@@ -47,9 +47,7 @@ class AppLifeCycleManager extends AbsWithLifeCycle {
   ///
   /// If [leaveTheApp] returns true, it means that a problem occurred and we don't need to wait
   /// forever.
-  Future<void> waitForegroundApp({
-    required Future<bool> Function() leaveTheApp,
-  }) async {
+  Future<void> waitForegroundApp({required Future<bool> Function() leaveTheApp}) async {
     // First we wait the app leaving detection
     await WaitUtility.waitForStatus(
       isExpectedStatus: (status) => (status == AppLifecycleState.paused),

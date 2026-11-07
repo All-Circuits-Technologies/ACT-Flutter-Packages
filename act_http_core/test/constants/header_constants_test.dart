@@ -8,10 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("HeaderConstants separators", () {
     test("adds a space to the separator of the values", () {
-      expect(
-        HeaderConstants.headerValueSeparator,
-        "${HeaderConstants.headerValueSeparatorChar} ",
-      );
+      expect(HeaderConstants.headerValueSeparator, "${HeaderConstants.headerValueSeparatorChar} ");
     });
   });
 
@@ -26,14 +23,8 @@ void main() {
     });
 
     test("holds the placeholder the credentials replace", () {
-      expect(
-        HeaderConstants.authBasic.contains(HeaderConstants.credsBasicKey),
-        isTrue,
-      );
-      expect(
-        HeaderConstants.authBearer.contains(HeaderConstants.tokenBearerKey),
-        isTrue,
-      );
+      expect(HeaderConstants.authBasic.contains(HeaderConstants.credsBasicKey), isTrue);
+      expect(HeaderConstants.authBearer.contains(HeaderConstants.tokenBearerKey), isTrue);
     });
   });
 }

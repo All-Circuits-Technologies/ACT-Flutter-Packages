@@ -49,13 +49,13 @@ class FakeAuthService with MixinAuthService {
 
   /// Class constructor
   FakeAuthService({
-    AuthStatus authStatus = AuthStatus.signedOut,
+    this._authStatus = AuthStatus.signedOut,
     this.tokens,
     this.userId,
     this.emailAddress,
     this.signOutAnswer = true,
     this.isUserSignedAnswer = false,
-  }) : _authStatus = authStatus;
+  });
 
   /// {@macro act_shared_auth.MixinAuthService.authStatus}
   @override

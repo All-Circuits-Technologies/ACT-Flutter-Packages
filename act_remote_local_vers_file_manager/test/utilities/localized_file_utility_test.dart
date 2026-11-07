@@ -70,7 +70,8 @@ void main() {
     });
 
     test("answers how the storage failed when no locale has a file", () async {
-      final storage = FakeStorage(root: root)..missingFileResult = StorageRequestResult.accessDenied;
+      final storage = FakeStorage(root: root)
+        ..missingFileResult = StorageRequestResult.accessDenied;
 
       final result = await aSearch(storage);
 

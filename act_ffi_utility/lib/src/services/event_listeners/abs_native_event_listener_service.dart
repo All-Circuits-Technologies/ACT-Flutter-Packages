@@ -45,13 +45,12 @@ abstract class AbsNativeEventListenerService<
   /// Class constructor
   AbsNativeEventListenerService({
     required String logsCategory,
-    required RegisterCallback<Result, Callback> registerNativeCallback,
+    required this._registerNativeCallback,
     LogsHelper? parentLogsHelper,
     super.emitUnchangedValue = false,
   }) : logsHelper =
            parentLogsHelper?.createSubLogger(subCategory: logsCategory) ??
            LogsHelper(category: logsCategory),
-       _registerNativeCallback = registerNativeCallback,
        super(value: null);
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}

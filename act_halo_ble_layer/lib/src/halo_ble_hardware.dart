@@ -16,23 +16,12 @@ class HaloBleHardware extends AbstractHaloHardware {
   final HaloBleCompanion bleCompanion;
 
   /// Class constructor
-  HaloBleHardware({
-    required this.bleCompanion,
-  }) : super(
-          attributeHardware: HaloBleAttributeHardware(
-            bleCompanion: bleCompanion,
-          ),
-          instantDataHardware: HaloBleInstantDataHardware(
-            bleCompanion: bleCompanion,
-          ),
-          recordDataHardware: HaloBleRecordDataHardware(
-            bleCompanion: bleCompanion,
-          ),
-          requestFromDeviceHardware: HaloBleRequestFromDeviceHardware(
-            bleCompanion: bleCompanion,
-          ),
-          requestToDeviceHardware: HaloBleRequestToDeviceHardware(
-            bleCompanion: bleCompanion,
-          ),
-        );
+  HaloBleHardware({required this.bleCompanion})
+    : super(
+        attributeHardware: HaloBleAttributeHardware(bleCompanion: bleCompanion),
+        instantDataHardware: HaloBleInstantDataHardware(bleCompanion: bleCompanion),
+        recordDataHardware: HaloBleRecordDataHardware(bleCompanion: bleCompanion),
+        requestFromDeviceHardware: HaloBleRequestFromDeviceHardware(bleCompanion: bleCompanion),
+        requestToDeviceHardware: HaloBleRequestToDeviceHardware(bleCompanion: bleCompanion),
+      );
 }

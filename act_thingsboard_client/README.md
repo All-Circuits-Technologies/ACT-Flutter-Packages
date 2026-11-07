@@ -72,8 +72,10 @@ server without ever asking who the user is. The authentication builds on it, and
 `AbsTbServerReqManager`, the manager of the requests which need a user.
 
 `TbStdAuthServerReqManager` is the implementation of that manager for a server which signs its users
-in itself. An application whose users are signed in elsewhere writes its own by extending
-`AbsTbServerReqManager`, and only has to say how a token reaches the client.
+in itself. It watches the status of the user, and forgets the values of the devices watched so far
+when the user leaves, so that nothing of an account reaches the next one. An application whose users
+are signed in elsewhere writes its own by extending `AbsTbServerReqManager`, and only has to say how
+a token reaches the client.
 
 ### Where the tokens of the user live
 
@@ -243,10 +245,16 @@ if (result.status == AuthSignInStatus.done) {
 final devices = globalGetIt().get<TbStdAuthServerReqManager>().devicesService;
 
 final page = await devices.getCurrentCustomerDevices();
+final infos = await devices.getCurrentCustomerDeviceInfos();
 final (success: found, deviceInfo: device) = await devices.getCustomerDeviceByName(
   deviceName: "a device",
 );
 ```
+
+`getCurrentCustomerDevices` answers `Device`, `getCurrentCustomerDeviceInfos` answers `DeviceInfo`,
+which is the same device plus what the server adds to it: whether it is active, the title of the
+customer it belongs to and the name of its profile. Both read the devices by pages of fifty unless
+they are handed a `PageLink` of their own.
 
 Anything the server can be asked which this package does not offer is one call away:
 
@@ -325,7 +333,8 @@ Signing a user in is covered on the three ways of signing a user in again, on th
 are kept and on the ones the server refuses, on the sign out, and on what is pushed on the stream of
 the status. The request which needs a user is covered on the tokens which are handed to the client,
 on the session which is over and has the request done once more, on the second failure which is
-given up on, and on the error which is answered without a second try.
+given up on, and on the error which is answered without a second try. The manager is covered on the
+devices it forgets when the user leaves, and keeps while the user stays.
 
 The telemetry is covered on the keys which are asked of the server and the order they are asked in,
 on the subscription which is rebuilt when a key is added, on the one which is kept when the server
@@ -333,8 +342,8 @@ refuses, on the value which is newer and the one which is older, on the update w
 error, and on the closing which gives the subscription up. The handler is covered on the four kinds
 of telemetry, on the keys of another handler it says nothing about, and on the device two handlers
 watch through a single subscription. The devices of a customer are covered on the pages which are
-read until the device is found. The barrel is covered on the upstream types it re-exports, which an
-application reaches through it alone.
+read until the device is found, and on the list of the device infos. The barrel is covered on the
+upstream types it re-exports, which an application reaches through it alone.
 
 What is out of reach is the ten seconds a key which is no longer watched is kept for, and the
 address the client is built with: the first is read from the clock of the device rather than from a

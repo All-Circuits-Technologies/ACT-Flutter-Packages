@@ -12,10 +12,7 @@ class OnReleaseWatcher extends SharedWatcher<OnReleaseHandler> {
   FutureOr<void> Function() callback;
 
   /// Default class constructor
-  OnReleaseWatcher({
-    required this.callback,
-    super.thresholdDuration,
-  });
+  OnReleaseWatcher({required this.callback, super.thresholdDuration});
 
   /// {@macro act_dart_utility.SharedWatcher.generateHandler}
   @override

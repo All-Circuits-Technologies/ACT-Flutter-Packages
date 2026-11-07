@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 - 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+# SPDX-FileCopyrightText: 2022 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 # SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
@@ -14,6 +14,10 @@
 # packages, and plugins designed to encourage good coding practices.
 include: package:flutter_lints/flutter.yaml
 
+# Line length of `dart format`, and so of the IDE formatters, aligned on the ACT convention
+formatter:
+  page_width: 100
+
 analyzer:
   exclude:
     - build/**
@@ -23,9 +27,7 @@ analyzer:
     missing_required_param: error
     missing_return: error
     missing_enum_constant_in_switch: error
-
-  language:
-    strict-casts: true
+    unused_element_parameter: ignore
 
 # To know the available rules to enable or disable, see https://dart.dev/tools/linter-rules
 linter:
@@ -80,14 +82,8 @@ linter:
     # Don't declare multiple variables on a single line.
     avoid_multiple_declarations_per_line: true
 
-    # Don't check for null in custom == operators.
-    avoid_null_checks_in_equality_operators: true
-
     # Avoid positional boolean parameters.
     avoid_positional_boolean_parameters: true
-
-    # Avoid private typedef functions.
-    avoid_private_typedef_functions: true
 
     # Avoid redundant argument values.
     avoid_redundant_argument_values: true
@@ -152,6 +148,9 @@ linter:
     # Document ignore comments.
     document_ignores: true
 
+    # Write empty bodies with a semicolon.
+    empty_container_bodies: true
+
     # Put a single newline at end of file.
     eol_at_end_of_file: true
 
@@ -178,6 +177,9 @@ linter:
 
     # Missing whitespace between adjacent strings.
     missing_whitespace_between_adjacent_strings: true
+
+    # Do not implicitly cast from dynamic.
+    no_dynamic_casts: true
 
     # Don't compare boolean expressions to boolean literals.
     no_literal_bool_comparisons: true

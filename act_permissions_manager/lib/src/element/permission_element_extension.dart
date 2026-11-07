@@ -38,6 +38,9 @@ sealed class PermissionElementHelper {
       case PermissionElement.ble:
         return _getBlePerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
+      case PermissionElement.camera:
+        return _getCameraPerms(isAndroid: isAndroid, isIos: isIos, version: version);
+
       case PermissionElement.locationAlways:
         return _getLocAlwaysPerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
@@ -62,9 +65,7 @@ sealed class PermissionElementHelper {
       return const [];
     }
 
-    return [
-      permission_handler.Permission.ignoreBatteryOptimizations,
-    ];
+    return [permission_handler.Permission.ignoreBatteryOptimizations];
   }
 
   /// Get the list of permissions linked to BLE
@@ -99,20 +100,27 @@ sealed class PermissionElementHelper {
     required bool isAndroid,
     required bool isIos,
     required int? version,
-  }) =>
-      [
-        permission_handler.Permission.locationAlways,
-      ];
+  }) => [permission_handler.Permission.locationAlways];
 
   /// Get the list of permissions linked to location when in use
   static List<permission_handler.Permission> _getLocWhenInUsePerms({
     required bool isAndroid,
     required bool isIos,
     required int? version,
-  }) =>
-      [
-        permission_handler.Permission.locationWhenInUse,
-      ];
+  }) => [permission_handler.Permission.locationWhenInUse];
+
+  /// Get the list of permissions linked to the camera
+  static List<permission_handler.Permission> _getCameraPerms({
+    required bool isAndroid,
+    required bool isIos,
+    required int? version,
+  }) {
+    if (!isAndroid && !isIos) {
+      return const [];
+    }
+
+    return [permission_handler.Permission.camera];
+  }
 
   /// Get the list of permissions linked to user tracking
   static List<permission_handler.Permission> _getTrackingPerms({
@@ -124,9 +132,7 @@ sealed class PermissionElementHelper {
       return const [];
     }
 
-    return [
-      permission_handler.Permission.appTrackingTransparency,
-    ];
+    return [permission_handler.Permission.appTrackingTransparency];
   }
 
   /// Get the list of permissions linked to BLE
@@ -134,6 +140,5 @@ sealed class PermissionElementHelper {
     required bool isAndroid,
     required bool isIos,
     required int? version,
-  }) =>
-      const [];
+  }) => const [];
 }

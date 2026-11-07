@@ -29,7 +29,11 @@ void main() {
 
     test("writes a message which carries no category", () {
       final lines = DefaultLogPrinter().log(
-        LogEvent(Level.warning, const LogMessage(message: "a message", categories: []), time: _time),
+        LogEvent(
+          Level.warning,
+          const LogMessage(message: "a message", categories: []),
+          time: _time,
+        ),
       );
 
       expect(lines, ["$_writtenTime-[warn]: a message"]);

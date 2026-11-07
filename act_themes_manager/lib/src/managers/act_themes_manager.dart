@@ -81,11 +81,10 @@ class ActThemesManager extends AbsWithLifeCycleAndUi {
 
   /// Class constructor
   ActThemesManager({
-    required MixinThemesProperties Function() propertiesGetter,
-    required MixinThemesConfig Function() configGetter,
+    required this._propertiesGetter,
+    required this._configGetter,
     required this.appThemes,
-  }) : _propertiesGetter = propertiesGetter,
-       _configGetter = configGetter {
+  }) {
     if (appThemes.isEmpty) {
       throw ActThemesNotDefinedError();
     }

@@ -7,18 +7,16 @@ sealed class FutureUtility {
   /// This method does the same thing as [Future.wait] method but aggregates the results of all the
   /// [Future] and returns false if at least one has returned false.
   /// Returns true if all has returned true.
-  static Future<bool> waitGlobalBooleanSuccess(Iterable<Future<bool>> results) => waitGlobalResult(
-        results,
-        (results) {
-          for (final result in results) {
-            if (!result) {
-              return false;
-            }
+  static Future<bool> waitGlobalBooleanSuccess(Iterable<Future<bool>> results) =>
+      waitGlobalResult(results, (results) {
+        for (final result in results) {
+          if (!result) {
+            return false;
           }
+        }
 
-          return true;
-        },
-      );
+        return true;
+      });
 
   /// This method does the same thing as [Future.wait] method but aggregates the results of all the
   /// [Future] and returns false if at least one has returned a null value.
@@ -26,18 +24,15 @@ sealed class FutureUtility {
   ///
   /// This method considers that you don't want to get the result of the [Future].
   static Future<bool> waitGlobalNotNullableSuccess(Iterable<Future<dynamic>> results) =>
-      waitGlobalResult(
-        results,
-        (results) {
-          for (final result in results) {
-            if (result == null) {
-              return false;
-            }
+      waitGlobalResult(results, (results) {
+        for (final result in results) {
+          if (result == null) {
+            return false;
           }
+        }
 
-          return true;
-        },
-      );
+        return true;
+      });
 
   /// This method does the same thing as [Future.wait] method but aggregates the results of all the
   /// [Future] and returns false if at least one has returned a null value.
@@ -45,19 +40,16 @@ sealed class FutureUtility {
   ///
   /// If the method returns false, the results value linked will be an empty list.
   static Future<({bool success, List<T> results})> waitForResults<T>(
-          Iterable<Future<T?>> results) =>
-      waitGlobalResult(
-        results,
-        (results) {
-          for (final result in results) {
-            if (result == null) {
-              return (success: false, results: []);
-            }
-          }
+    Iterable<Future<T?>> results,
+  ) => waitGlobalResult(results, (results) {
+    for (final result in results) {
+      if (result == null) {
+        return (success: false, results: []);
+      }
+    }
 
-          return (success: true, results: results.cast());
-        },
-      );
+    return (success: true, results: results.cast());
+  });
 
   /// This method does the same thing as [Future.wait] method but aggregates the results of all the
   /// [Future] and calls [generalizeResults] method.

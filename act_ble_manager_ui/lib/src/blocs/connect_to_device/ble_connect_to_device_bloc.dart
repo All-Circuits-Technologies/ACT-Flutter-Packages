@@ -36,10 +36,9 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
   StreamSubscription? _bondStateSub;
 
   /// Class constructor
-  BleConnectToDeviceBloc({
-    this.onLowLevelConnectionCallback,
-  })  : _connectionMutex = Mutex(),
-        super(const InitBleConnectToDeviceState()) {
+  BleConnectToDeviceBloc({this.onLowLevelConnectionCallback})
+    : _connectionMutex = Mutex(),
+      super(const InitBleConnectToDeviceState()) {
     on<ChooseDeviceToConnectToEvent>(_onChooseDeviceToConnectToEvent);
     on<NewDeviceStateEvent>(_onNewDeviceStateEvent);
     on<DisconnectDeviceEvent>(_onDisconnectDeviceEvent);
@@ -51,50 +50,40 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
   Future<void> _onChooseDeviceToConnectToEvent(
     ChooseDeviceToConnectToEvent event,
     Emitter<BleConnectToDeviceState> emitter,
-  ) =>
-      _connectionMutex.protect(() async {
-        final bleManager = globalGetIt().get<BleManager>();
-        var deviceToConnectTo = bleManager.bleGattService.lastConnectedDevice;
-        final sameDevice =
-            (deviceToConnectTo != null && event.deviceToConnectTo.id == deviceToConnectTo.id);
+  ) => _connectionMutex.protect(() async {
+    final bleManager = globalGetIt().get<BleManager>();
+    var deviceToConnectTo = bleManager.bleGattService.lastConnectedDevice;
+    final sameDevice =
+        (deviceToConnectTo != null && event.deviceToConnectTo.id == deviceToConnectTo.id);
 
-        if (!sameDevice) {
-          deviceToConnectTo = BleDevice(event.deviceToConnectTo);
-        }
+    if (!sameDevice) {
+      deviceToConnectTo = BleDevice(event.deviceToConnectTo);
+    }
 
-        await _focusOnNewDevice(deviceToConnectTo);
+    await _focusOnNewDevice(deviceToConnectTo);
 
-        emitter(BleNewDeviceState(
-          previousState: state,
-          device: deviceToConnectTo,
-        ));
+    emitter(BleNewDeviceState(previousState: state, device: deviceToConnectTo));
 
-        if (sameDevice) {
-          // Nothing more to do
-          return;
-        }
+    if (sameDevice) {
+      // Nothing more to do
+      return;
+    }
 
-        emitter(LoadingConnectState(
-          previousState: state,
-          loading: true,
-        ));
+    emitter(LoadingConnectState(previousState: state, loading: true));
 
-        if (!(await bleManager.bleGattService.connect(
-          deviceToConnectTo,
-          onLowLevelConnect: onLowLevelConnectionCallback,
-        ))) {
-          emitter.call(BleConnectionFailedState(previousState: state));
-          return;
-        }
+    if (!(await bleManager.bleGattService.connect(
+      deviceToConnectTo,
+      onLowLevelConnect: onLowLevelConnectionCallback,
+    ))) {
+      emitter.call(BleConnectionFailedState(previousState: state));
+      return;
+    }
 
-        // If the connection succeeds, there is nothing more to do: the connected state will be
-        // retrieved by the device connection state listening
-        // We at least set loading to false
-        emitter(LoadingConnectState(
-          previousState: state,
-          loading: false,
-        ));
-      });
+    // If the connection succeeds, there is nothing more to do: the connected state will be
+    // retrieved by the device connection state listening
+    // We at least set loading to false
+    emitter(LoadingConnectState(previousState: state, loading: false));
+  });
 
   /// This method update the device states subscriptions with he new device
   /// If [newDevice] is null, we simply cancel the subscriptions
@@ -144,12 +133,13 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
   void _onNewDeviceStateEvent(
     NewDeviceStateEvent event,
     Emitter<BleConnectToDeviceState> emitter,
-  ) =>
-      emitter(BleDeviceUpdateState(
-        previousState: state,
-        bondState: event.bondState,
-        connectionState: event.connectionState,
-      ));
+  ) => emitter(
+    BleDeviceUpdateState(
+      previousState: state,
+      bondState: event.bondState,
+      connectionState: event.connectionState,
+    ),
+  );
 
   /// Called when the [DisconnectDeviceEvent] event is emitted
   ///
@@ -157,11 +147,10 @@ class BleConnectToDeviceBloc extends Bloc<BleConnectToDeviceEvent, BleConnectToD
   Future<void> _onDisconnectDeviceEvent(
     DisconnectDeviceEvent event,
     Emitter<BleConnectToDeviceState> emitter,
-  ) =>
-      _connectionMutex.protect(() async {
-        await _focusOnNewDevice(null);
-        emitter(BleDeviceDisconnectState(previousState: state));
-      });
+  ) => _connectionMutex.protect(() async {
+    await _focusOnNewDevice(null);
+    emitter(BleDeviceDisconnectState(previousState: state));
+  });
 
   /// Called when the bloc is closing
   @override

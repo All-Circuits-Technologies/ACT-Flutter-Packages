@@ -15,10 +15,7 @@ class HaloRecordPacket extends Equatable {
   final HaloPayloadPacket payload;
 
   /// Class constructor
-  const HaloRecordPacket({
-    required this.recordKey,
-    required this.payload,
-  }) : super();
+  const HaloRecordPacket({required this.recordKey, required this.payload}) : super();
 
   /// Class properties
   @override

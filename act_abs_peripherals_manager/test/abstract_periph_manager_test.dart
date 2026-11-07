@@ -52,9 +52,7 @@ class _FakePermissionsPlatform extends PermissionHandlerPlatform {
       statuses[permission] ?? PermissionStatus.denied;
 
   @override
-  Future<Map<Permission, PermissionStatus>> requestPermissions(
-    List<Permission> permissions,
-  ) async {
+  Future<Map<Permission, PermissionStatus>> requestPermissions(List<Permission> permissions) async {
     for (final permission in permissions) {
       statuses[permission] = answerToRequest;
     }

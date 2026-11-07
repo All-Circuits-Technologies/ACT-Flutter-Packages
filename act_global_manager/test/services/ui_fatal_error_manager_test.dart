@@ -18,11 +18,12 @@ void main() {
     buildFatalErrorPage: (error) => Text("error: $error", textDirection: TextDirection.ltr),
   );
 
-  Future<void> pumpWrappedApp(WidgetTester tester, UiFatalErrorManager manager) => tester.pumpWidget(
-    manager.wrapWithFatalErrorWidget(
-      child: const Text("the app", textDirection: TextDirection.ltr),
-    ),
-  );
+  Future<void> pumpWrappedApp(WidgetTester tester, UiFatalErrorManager manager) =>
+      tester.pumpWidget(
+        manager.wrapWithFatalErrorWidget(
+          child: const Text("the app", textDirection: TextDirection.ltr),
+        ),
+      );
 
   group("UiFatalErrorManager", () {
     testWidgets("shows the application while no fatal error occurred", (tester) async {

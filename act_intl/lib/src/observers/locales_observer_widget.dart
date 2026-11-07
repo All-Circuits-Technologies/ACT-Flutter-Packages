@@ -14,10 +14,7 @@ class LocalesObserverWidget extends StatefulWidget {
   final Widget? child;
 
   /// Class constructor
-  const LocalesObserverWidget({
-    super.key,
-    this.child,
-  });
+  const LocalesObserverWidget({super.key, this.child});
 
   /// Create the state of this widget.
   @override

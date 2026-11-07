@@ -141,8 +141,7 @@ class FakeWsApiService extends AbsWebsocketApiService<FakeChannelService> {
 
   /// {@macro act_websocket_server_manager.AbsWebsocketService.getWsConfig}
   @override
-  Future<WebsocketServerConfig> getWsConfig() async =>
-      websocketConfig ?? super.getWsConfig();
+  Future<WebsocketServerConfig> getWsConfig() async => websocketConfig ?? super.getWsConfig();
 
   /// {@macro act_websocket_server_manager.AbsWebsocketService.createChannelService}
   @override
@@ -217,11 +216,7 @@ class FakeWsServerManager extends AbsWebsocketServerManager {
   bool disposed = false;
 
   /// Class constructor
-  FakeWsServerManager({
-    required this.serverConfig,
-    required this.logging,
-    required this.service,
-  });
+  FakeWsServerManager({required this.serverConfig, required this.logging, required this.service});
 
   /// {@macro act_http_server_manager.HttpServerManager.getLoggingManager}
   @override
@@ -271,7 +266,8 @@ class FakeConfiguredWsServerManager extends AbsWebsocketServerManager
 
   /// {@macro act_websocket_server_manager.MixinFromConfigWsServerManager.configGetter}
   @override
-  MixinWebsocketServerConfig Function() get configGetter => () => configManager;
+  MixinWebsocketServerConfig Function() get configGetter =>
+      () => configManager;
 
   /// The configuration of the server, as the mixin reads it from the configuration manager.
   Future<HttpServerConfig> readServerConfig(HttpLoggingManager logging) =>

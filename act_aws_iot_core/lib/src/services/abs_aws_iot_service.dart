@@ -11,8 +11,6 @@ abstract class AbsAwsIotService extends AbsWithLifeCycle {
   final LogsHelper logsHelper;
 
   /// Class constructor.
-  AbsAwsIotService({
-    required LogsHelper iotManagerLogsHelper,
-    required String logsCategory,
-  }) : logsHelper = iotManagerLogsHelper.createSubLogger(subCategory: logsCategory);
+  AbsAwsIotService({required LogsHelper iotManagerLogsHelper, required String logsCategory})
+    : logsHelper = iotManagerLogsHelper.createSubLogger(subCategory: logsCategory);
 }

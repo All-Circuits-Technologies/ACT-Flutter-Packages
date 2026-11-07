@@ -7,8 +7,8 @@ import 'dart:io';
 import 'package:act_remote_storage_manager/act_remote_storage_manager.dart';
 import 'package:act_remote_storage_ui/act_remote_storage_ui.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../fakes/fake_image_storage.dart';
 

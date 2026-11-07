@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 import 'package:act_halo_ble_layer/src/halo_ble_companion.dart';
 
@@ -24,7 +25,9 @@ class HaloBleRecordDataHardware extends AbstractHaloRecordDataHardware {
 
   /// This method allows to get all the record data linked to the [HaloDataId] given
   @override
-  Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({required HaloDataId dataId}) {
+  Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
+    required HaloDataId dataId,
+  }) {
     // TODO(brolandeau): implement getAllRecordDataKeys
     throw UnimplementedError();
   }
@@ -32,7 +35,9 @@ class HaloBleRecordDataHardware extends AbstractHaloRecordDataHardware {
   /// This method allows to read a specific record data from the device and thanks to the
   /// [HaloRecordKey] given
   @override
-  Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({required HaloRecordKey recordKey}) {
+  Future<ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>> readRecordData({
+    required HaloRecordKey recordKey,
+  }) {
     // TODO(brolandeau): implement readRecordData
     throw UnimplementedError();
   }

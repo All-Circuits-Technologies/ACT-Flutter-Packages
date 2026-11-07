@@ -30,7 +30,8 @@ void main() {
         hardwareType: FakeHwType.ble,
       );
 
-      expect(serialNumber, "a serial number");
+      expect(serialNumber.isSuccess, isTrue);
+      expect(serialNumber.value, "a serial number");
     });
 
     test("builds the feature which knows the OCSIGEN requests", () async {

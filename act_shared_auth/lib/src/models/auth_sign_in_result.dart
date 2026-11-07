@@ -18,10 +18,7 @@ class AuthSignInResult extends Equatable {
   final Object? extra;
 
   /// Class constructor
-  const AuthSignInResult({
-    required this.status,
-    this.extra,
-  });
+  const AuthSignInResult({required this.status, this.extra});
 
   /// Class properties
   @override

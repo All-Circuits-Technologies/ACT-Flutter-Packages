@@ -8,10 +8,5 @@ import 'package:go_router/go_router.dart';
 /// Class for default transition page in GoRouter navigation
 class PageNoTransition extends NoTransitionPage<void> {
   /// Class constructor
-  const PageNoTransition({
-    super.key,
-    super.name,
-    super.arguments,
-    required super.child,
-  }) : super();
+  const PageNoTransition({super.key, super.name, super.arguments, required super.child}) : super();
 }

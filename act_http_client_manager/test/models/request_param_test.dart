@@ -35,18 +35,12 @@ void main() {
     });
 
     test("is another request as soon as one parameter differs", () {
-      expect(
-        _fullRequest(),
-        isNot(_fullRequest().copyWith(relativeRoute: "tags")),
-      );
+      expect(_fullRequest(), isNot(_fullRequest().copyWith(relativeRoute: "tags")));
     });
 
     test("is the same request as one which only differs by its timeout", () {
       // The timeout is not part of what makes a request, it says how long we wait for its answer
-      expect(
-        _fullRequest(),
-        _fullRequest().copyWith(timeout: const Duration(minutes: 1)),
-      );
+      expect(_fullRequest(), _fullRequest().copyWith(timeout: const Duration(minutes: 1)));
     });
   });
 

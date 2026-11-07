@@ -14,5 +14,5 @@ enum GlobalManagerState {
   startInit,
 
   /// All the managers are ready
-  allReady;
+  allReady,
 }

@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/src/hardware_layer/abstract_halo_component_hardware.dart';
 import 'package:act_halo_abstract/src/models/halo_data_id.dart';
 import 'package:act_halo_abstract/src/models/halo_record_key.dart';
@@ -35,8 +36,8 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
 
   /// Class constructor
   AbstractHaloRecordDataHardware()
-      : _recordDataNewValueCtrl = StreamController<HaloRecordPacket>.broadcast(),
-        _recordKeysNewValueCtrl = StreamController<HaloRecordKey>.broadcast();
+    : _recordDataNewValueCtrl = StreamController<HaloRecordPacket>.broadcast(),
+      _recordKeysNewValueCtrl = StreamController<HaloRecordKey>.broadcast();
 
   /// This method allows to subscribe to the modification of a specific kind of record data thanks
   /// to the [HaloDataId] given
@@ -52,12 +53,12 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
 
   /// This method allows to read a specific record data from the device and thanks to the
   /// [HaloRecordKey] given
-  Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({
+  Future<ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>> readRecordData({
     required HaloRecordKey recordKey,
   });
 
   /// This method allows to get all the record data linked to the [HaloDataId] given
-  Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({
+  Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
     required HaloDataId dataId,
   });
 
@@ -69,10 +70,7 @@ abstract class AbstractHaloRecordDataHardware extends AbstractHaloComponentHardw
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _recordDataNewValueCtrl.close(),
-      _recordKeysNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_recordDataNewValueCtrl.close(), _recordKeysNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

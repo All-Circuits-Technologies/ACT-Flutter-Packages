@@ -50,17 +50,13 @@ abstract class AbsTbServerReqManager extends AbsWithLifeCycle {
   ThingsboardClient get tbClient => _noAuthManager.tbClient;
 
   /// Class constructor
-  AbsTbServerReqManager({
-    required String logCategory,
-  }) : _logCategory = logCategory;
+  AbsTbServerReqManager({required this._logCategory});
 
   /// Init the service
   @override
   Future<void> initLifeCycle() async {
     await super.initLifeCycle();
-    _logsHelper = LogsHelper(
-      category: tb_constants.getTbLogCategory(subCategory: _logCategory),
-    );
+    _logsHelper = LogsHelper(category: tb_constants.getTbLogCategory(subCategory: _logCategory));
 
     _noAuthManager = globalGetIt().get<TbNoAuthServerReqManager>();
     devicesService = TbDevicesService(requestManager: this, logsHelper: _logsHelper);

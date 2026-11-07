@@ -15,9 +15,7 @@ enum PopUntilAction {
   final bool isFinished;
 
   /// Enum constructor
-  const PopUntilAction({
-    this.isFinished = true,
-  });
+  const PopUntilAction({this.isFinished = true});
 }
 
 /// This method is used with the `popUntil` method, to guess if we need to pop the current

@@ -46,8 +46,10 @@ abstract class AbstractHaloRequestIdHelper {
       final uniqueId = tmpRequest.key;
 
       if (requestIds.containsKey(uniqueId)) {
-        appLogger().w("A request already exists: ${requestIds[uniqueId]}, we overwrite it with: "
-            "${tmpRequest.value}, the common key is: $uniqueId");
+        appLogger().w(
+          "A request already exists: ${requestIds[uniqueId]}, we overwrite it with: "
+          "${tmpRequest.value}, the common key is: $uniqueId",
+        );
       }
 
       requestIds[uniqueId] = tmpRequest.value;

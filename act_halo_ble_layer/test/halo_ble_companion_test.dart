@@ -94,7 +94,10 @@ void main() {
     test("listens to nothing of the characteristics which are only exchange zones", () async {
       await aDeviceOfTheCompanion();
 
-      expect(ble.subscribed.map((uuid) => uuid.toString()), isNot(contains(halo.charCAttrTmp.uuid)));
+      expect(
+        ble.subscribed.map((uuid) => uuid.toString()),
+        isNot(contains(halo.charCAttrTmp.uuid)),
+      );
     });
 
     test("listens to nothing when there is no device any more", () async {
@@ -108,10 +111,7 @@ void main() {
 
       await companion.onDisconnection();
 
-      expect(
-        ble.unsubscribed.length,
-        halo.notifiableHaloCharacteristics.length,
-      );
+      expect(ble.unsubscribed.length, halo.notifiableHaloCharacteristics.length);
     });
 
     test("stops listening to a device which disconnects by itself", () async {
@@ -128,10 +128,13 @@ void main() {
       );
       await pumpHalo();
 
-      expect(await companion.onlyWrite(
-        toWriteInto: halo.charJRequestToDeviceCmd,
-        dataToWrite: someData(),
-      ), HaloErrorType.commError);
+      expect(
+        await companion.onlyWrite(
+          toWriteInto: halo.charJRequestToDeviceCmd,
+          dataToWrite: someData(),
+        ),
+        HaloErrorType.commError,
+      );
     });
   });
 
@@ -184,34 +187,34 @@ void main() {
       await pumpHalo();
       await theDeviceNotifies(const [4, 5]);
 
-      final (error, data) = await answer;
+      final result = await answer;
 
-      expect(error, HaloErrorType.noError);
-      expect(data, const [4, 5]);
+      expect(result.status, HaloErrorType.noError);
+      expect(result.value, const [4, 5]);
     });
 
     test("writes nothing while there is no device to write to", () async {
-      final (error, data) = await companion.writeAndWaitNotifResult(
+      final result = await companion.writeAndWaitNotifResult(
         toWriteInto: halo.charJRequestToDeviceCmd,
         dataToWrite: someData(),
         toWaitNotifyFrom: halo.charJRequestToDeviceCmd,
       );
 
-      expect(error, HaloErrorType.commError);
-      expect(data, isNull);
+      expect(result.status, HaloErrorType.commError);
+      expect(result.value, isNull);
     });
 
     test("waits for nothing of a characteristic the application does not listen to", () async {
       await aDeviceOfTheCompanion();
       await halo.charJRequestToDeviceCmd.cleanStream();
 
-      final (error, _) = await companion.writeAndWaitNotifResult(
+      final result = await companion.writeAndWaitNotifResult(
         toWriteInto: halo.charJRequestToDeviceCmd,
         dataToWrite: someData(),
         toWaitNotifyFrom: halo.charJRequestToDeviceCmd,
       );
 
-      expect(error, HaloErrorType.genericError);
+      expect(result.status, HaloErrorType.genericError);
       expect(ble.written, isEmpty);
     });
 
@@ -219,27 +222,27 @@ void main() {
       await aDeviceOfTheCompanion();
       ble.error = Exception("the device is gone");
 
-      final (error, _) = await companion.writeAndWaitNotifResult(
+      final result = await companion.writeAndWaitNotifResult(
         toWriteInto: halo.charJRequestToDeviceCmd,
         dataToWrite: someData(),
         toWaitNotifyFrom: halo.charJRequestToDeviceCmd,
       );
 
-      expect(error, HaloErrorType.commError);
+      expect(result.status, HaloErrorType.commError);
     });
 
     test("gives up on a device which notifies nothing", () async {
       await aDeviceOfTheCompanion();
 
-      final (error, data) = await companion.writeAndWaitNotifResult(
+      final result = await companion.writeAndWaitNotifResult(
         toWriteInto: halo.charJRequestToDeviceCmd,
         dataToWrite: someData(),
         toWaitNotifyFrom: halo.charJRequestToDeviceCmd,
         timeout: aShortTimeout,
       );
 
-      expect(error, HaloErrorType.genericError);
-      expect(data, isNull);
+      expect(result.status, HaloErrorType.genericError);
+      expect(result.value, isNull);
     });
 
     test("gives up when the device is lost while it is waited for", () async {
@@ -261,10 +264,10 @@ void main() {
         ),
       );
 
-      final (error, data) = await answer;
+      final result = await answer;
 
-      expect(error, HaloErrorType.genericError);
-      expect(data, isNull);
+      expect(result.status, HaloErrorType.genericError);
+      expect(result.value, isNull);
     });
   });
 }

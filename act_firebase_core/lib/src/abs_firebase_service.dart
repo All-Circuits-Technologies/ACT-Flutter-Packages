@@ -11,19 +11,12 @@ abstract class AbsFirebaseService extends AbsWithLifeCycle {
   /// Asynchronous initialization of the service
   @mustCallSuper
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  });
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper});
 
   /// Create a logs helper from a parent logs helper if one is given or from start if
   /// [parentLogsHelper] is null.
   @protected
-  static LogsHelper createLogsHelper({
-    required String logCategory,
-    LogsHelper? parentLogsHelper,
-  }) =>
+  static LogsHelper createLogsHelper({required String logCategory, LogsHelper? parentLogsHelper}) =>
       parentLogsHelper?.createSubLogger(subCategory: logCategory) ??
-      LogsHelper(
-        category: logCategory,
-      );
+      LogsHelper(category: logCategory);
 }

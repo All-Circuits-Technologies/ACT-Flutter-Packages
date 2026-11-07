@@ -20,4 +20,12 @@ export 'package:act_thingsboard_client/src/services/devices/values/tb_telemetry_
 export 'package:act_thingsboard_client/src/services/tb_std_auth_service.dart';
 export 'package:act_thingsboard_client/src/utils/tb_telemetries_helper.dart';
 export 'package:thingsboard_client/thingsboard_client.dart'
-    show AttributeScope, ClaimRequest, ClaimResponse, ClaimResult;
+    show
+        AttributeKvEntry,
+        AttributeScope,
+        ClaimRequest,
+        ClaimResponse,
+        ClaimResult,
+        DeviceId,
+        PageLink,
+        TsKvEntry;

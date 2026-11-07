@@ -25,8 +25,5 @@ abstract class AbstractOcsigenHaloManager<MaterialType> extends AbstractHaloMana
   @override
   Future<HaloRequestToDeviceFeature<MaterialType>> createRequestToDeviceFeature({
     required HaloManagerConfig<MaterialType> haloManagerConfig,
-  }) async =>
-      OcsigenRequestToDeviceFeature<MaterialType>(
-        haloManagerConfig: haloManagerConfig,
-      );
+  }) async => OcsigenRequestToDeviceFeature<MaterialType>(haloManagerConfig: haloManagerConfig);
 }

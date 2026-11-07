@@ -10,7 +10,7 @@ description: This package contains useful methods and classes which extends dart
 publish_to: none
 
 environment:
-  sdk: ^3.11.1
+  sdk: ^3.13.0
 
 dependencies:
   meta: ^1.17.0

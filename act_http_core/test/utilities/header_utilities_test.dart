@@ -49,10 +49,10 @@ void main() {
     });
 
     test("reads the keys and the values", () {
-      expect(
-        HeaderUtilities.parseHeaderValue(value: "attachment; filename=filename.jpg"),
-        const [(value: "attachment", key: null), (value: "filename.jpg", key: "filename")],
-      );
+      expect(HeaderUtilities.parseHeaderValue(value: "attachment; filename=filename.jpg"), const [
+        (value: "attachment", key: null),
+        (value: "filename.jpg", key: "filename"),
+      ]);
     });
 
     test("trims the spaces around the keys and the values", () {
@@ -62,17 +62,15 @@ void main() {
     });
 
     test("removes the double quotes around a value", () {
-      expect(
-        HeaderUtilities.parseHeaderValue(value: 'filename="a file.jpg"'),
-        const [(value: "a file.jpg", key: "filename")],
-      );
+      expect(HeaderUtilities.parseHeaderValue(value: 'filename="a file.jpg"'), const [
+        (value: "a file.jpg", key: "filename"),
+      ]);
     });
 
     test("removes the single quotes around a value", () {
-      expect(
-        HeaderUtilities.parseHeaderValue(value: "filename='a file.jpg'"),
-        const [(value: "a file.jpg", key: "filename")],
-      );
+      expect(HeaderUtilities.parseHeaderValue(value: "filename='a file.jpg'"), const [
+        (value: "a file.jpg", key: "filename"),
+      ]);
     });
 
     test("returns an empty list for an empty value", () {
@@ -80,22 +78,17 @@ void main() {
     });
 
     test("splits on the given separator", () {
-      expect(
-        HeaderUtilities.parseHeaderValue(value: "a=1, b=2", valuesSeparator: ","),
-        const [(value: "1", key: "a"), (value: "2", key: "b")],
-      );
+      expect(HeaderUtilities.parseHeaderValue(value: "a=1, b=2", valuesSeparator: ","), const [
+        (value: "1", key: "a"),
+        (value: "2", key: "b"),
+      ]);
     });
 
     test("reads back what the formatting produced", () {
-      const values = [
-        (value: "attachment", key: null),
-        (value: "filename.jpg", key: "filename"),
-      ];
+      const values = [(value: "attachment", key: null), (value: "filename.jpg", key: "filename")];
 
       expect(
-        HeaderUtilities.parseHeaderValue(
-          value: HeaderUtilities.formatHeaderValue(values: values),
-        ),
+        HeaderUtilities.parseHeaderValue(value: HeaderUtilities.formatHeaderValue(values: values)),
         values,
       );
     });

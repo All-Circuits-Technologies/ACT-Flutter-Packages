@@ -67,10 +67,7 @@ enum OcsigenRequestId with MixinHaloType, MixinHaloRequestId {
   final HaloRequestType type;
 
   /// Class constructor
-  const OcsigenRequestId({
-    required this.rawValue,
-    required this.type,
-  });
+  const OcsigenRequestId({required this.rawValue, required this.type});
 }
 
 /// Helpful class to manage [OcsigenRequestId] enum

@@ -22,10 +22,9 @@ void main() {
 
   group("ConsentStateEnum.isNotAccepted", () {
     test("only says of a consent which was refused that it was refused", () {
-      expect(
-        ConsentStateEnum.values.where((state) => state.isNotAccepted),
-        [ConsentStateEnum.notAccepted],
-      );
+      expect(ConsentStateEnum.values.where((state) => state.isNotAccepted), [
+        ConsentStateEnum.notAccepted,
+      ]);
     });
   });
 }

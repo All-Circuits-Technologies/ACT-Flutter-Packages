@@ -30,37 +30,27 @@ class AwsIotMqttSubcriptionService extends AbsAwsIotService {
   AwsIotMqttSubcriptionService({
     required AwsIotMqttService mqttService,
     required super.iotManagerLogsHelper,
-  })  : _mqttService = mqttService,
-        _watchers = <String, AwsIotMqttSubWatcher>{},
-        _streamSubscriptions = <StreamSubscription>[],
-        super(
-          logsCategory: _logsCategory,
-        ) {
-    _streamSubscriptions.add(
-      mqttService.connectionStatusStream.listen(_onConnectionStatusChanged),
-    );
-    _streamSubscriptions.add(
-      mqttService.onSubEventStream.listen(_onSubEvent),
-    );
-    _streamSubscriptions.add(
-      mqttService.onMessageReceivedStream.listen(_onMsgReceived),
-    );
+  }) : _mqttService = mqttService,
+       _watchers = <String, AwsIotMqttSubWatcher>{},
+       _streamSubscriptions = <StreamSubscription>[],
+       super(logsCategory: _logsCategory) {
+    _streamSubscriptions.add(mqttService.connectionStatusStream.listen(_onConnectionStatusChanged));
+    _streamSubscriptions.add(mqttService.onSubEventStream.listen(_onSubEvent));
+    _streamSubscriptions.add(mqttService.onMessageReceivedStream.listen(_onMsgReceived));
   }
 
   /// Test if we are subscribed to all the current topic.
   ///
   /// This doesn't wait if a subscription is processing.
   Future<bool> isAllSubscribed() => FutureUtility.waitGlobalBooleanSuccess(
-      _watchers.values.map((value) => value.isSubscribed(defaultValue: false)));
+    _watchers.values.map((value) => value.isSubscribed(defaultValue: false)),
+  );
 
   /// Get a subscription watcher for a given topic.
   AwsIotMqttSubWatcher getWatcher(String topic) {
     // Add the watcher if it does not exist.
     if (!_watchers.containsKey(topic)) {
-      _watchers[topic] = AwsIotMqttSubWatcher(
-        topic: topic,
-        awsIotMqttService: _mqttService,
-      );
+      _watchers[topic] = AwsIotMqttSubWatcher(topic: topic, awsIotMqttService: _mqttService);
     }
 
     return _watchers[topic]!;

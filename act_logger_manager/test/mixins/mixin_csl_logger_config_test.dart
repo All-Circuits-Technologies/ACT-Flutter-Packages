@@ -20,9 +20,7 @@ void main() {
 
   group("MixinCslLoggerConfig", () {
     test("reads the level of the console logger from the configuration", () async {
-      config = await FakeLoggerConfigManager.withContent(
-        "logs:\n  console:\n    level: error",
-      );
+      config = await FakeLoggerConfigManager.withContent("logs:\n  console:\n    level: error");
 
       expect(config.cslLogLevelEnv.load(), LogsLevel.error);
     });

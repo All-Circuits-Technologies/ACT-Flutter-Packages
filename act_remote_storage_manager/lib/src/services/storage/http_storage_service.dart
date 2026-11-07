@@ -43,22 +43,18 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
   final HttpClient _httpClient;
 
   /// Class constructor
-  HttpStorageService({
-    required Uri httpRoot,
-    this.headers,
-  })  : _httpClient = HttpClient(),
-        // Early ensure a final slash in our _httpRoot member so our getDownloadUrl is simpler
-        _httpRoot = _ensureUriTrailingSlash(httpRoot),
-        super();
+  HttpStorageService({required Uri httpRoot, this.headers})
+    : _httpClient = HttpClient(),
+      // Early ensure a final slash in our _httpRoot member so our getDownloadUrl is simpler
+      _httpRoot = _ensureUriTrailingSlash(httpRoot),
+      super();
 
   /// Initialize the service by creating the logs helper
   @override
   Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
     await super.initLifeCycle();
     if (parentLogsHelper == null) {
-      _logsHelper = LogsHelper(
-        category: _logsCategory,
-      );
+      _logsHelper = LogsHelper(category: _logsCategory);
     } else {
       _logsHelper = parentLogsHelper.createSubLogger(subCategory: _logsCategory);
     }
@@ -66,22 +62,14 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
 
   /// Get the download url of a file based on a [fileId].
   @override
-  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
-    String fileId,
-  ) async {
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(String fileId) async {
     final fileUri = _getDownloadUri(fileId: fileId);
 
     if (fileUri == null) {
-      return (
-        result: StorageRequestResult.genericError,
-        downloadUrl: null,
-      );
+      return (result: StorageRequestResult.genericError, downloadUrl: null);
     }
 
-    return (
-      result: StorageRequestResult.success,
-      downloadUrl: fileUri.toString(),
-    );
+    return (result: StorageRequestResult.success, downloadUrl: fileUri.toString());
   }
 
   /// Download [fileId] file, in a local [directory] or in a default download directory.
@@ -164,11 +152,13 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
       dlFileWriteStream.add(chunk);
 
       downloadedBytes += chunk.length;
-      onProgress?.call(TransferProgress(
-        bytesTransferred: downloadedBytes,
-        totalBytes: contentLength, // Note: (-1) if unknown
-        transferStatus: TransferStatus.inProgress,
-      ));
+      onProgress?.call(
+        TransferProgress(
+          bytesTransferred: downloadedBytes,
+          totalBytes: contentLength, // Note: (-1) if unknown
+          transferStatus: TransferStatus.inProgress,
+        ),
+      );
     }
 
     // Free resources
@@ -180,11 +170,13 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     } on Exception catch (e) {
       _logsHelper.e('Error while downloading file $fileId: $e');
 
-      onProgress?.call(TransferProgress(
-        bytesTransferred: downloadedBytes,
-        totalBytes: contentLength, // Note: (-1) if unknown
-        transferStatus: TransferStatus.failure,
-      ));
+      onProgress?.call(
+        TransferProgress(
+          bytesTransferred: downloadedBytes,
+          totalBytes: contentLength, // Note: (-1) if unknown
+          transferStatus: TransferStatus.failure,
+        ),
+      );
 
       return (result: _parseException(e), file: null);
     }
@@ -196,11 +188,13 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
       return (result: StorageRequestResult.genericError, file: null);
     }
 
-    onProgress?.call(TransferProgress(
-      bytesTransferred: downloadedBytes,
-      totalBytes: contentLength, // Note: (-1) if unknown
-      transferStatus: TransferStatus.success,
-    ));
+    onProgress?.call(
+      TransferProgress(
+        bytesTransferred: downloadedBytes,
+        totalBytes: contentLength, // Note: (-1) if unknown
+        transferStatus: TransferStatus.success,
+      ),
+    );
 
     return (result: StorageRequestResult.success, file: dlFile);
   }
@@ -214,8 +208,7 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
     int? pageSize,
     String? nextToken,
     bool recursiveSearch = false,
-  }) async =>
-      throw UnsupportedError("HTTP features no generic directory listing command");
+  }) async => throw UnsupportedError("HTTP features no generic directory listing command");
 
   /// Tell if given [fileUri] (typically a download URI) appears safe or not
   ///
@@ -246,13 +239,15 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
 
   /// Announce an early download failure to [onProgress], if it is not null
   static void _handleEarlyFailureProgression(OnProgressCallback? onProgress) {
-    onProgress?.call(const TransferProgress(
-      // No bytes transferred
-      bytesTransferred: 0,
-      // Unknown source file size (we actually don't care for early failures)
-      totalBytes: -1,
-      transferStatus: TransferStatus.failure,
-    ));
+    onProgress?.call(
+      const TransferProgress(
+        // No bytes transferred
+        bytesTransferred: 0,
+        // Unknown source file size (we actually don't care for early failures)
+        totalBytes: -1,
+        transferStatus: TransferStatus.failure,
+      ),
+    );
   }
 
   /// Return an Uri which forcibly finishes with a slash
@@ -265,19 +260,19 @@ class HttpStorageService extends AbsWithLifeCycle with MixinStorageService {
 
   /// Convert a full download HTTP response code to a StorageRequestResult
   static StorageRequestResult _parseHttpResponseCode(int code) => switch (code) {
-        // We may want we use http_status or http_status_code package one day
-        200 => StorageRequestResult.success,
-        401 => StorageRequestResult.accessDenied,
-        403 => StorageRequestResult.accessDenied,
-        _ => StorageRequestResult.genericError,
-      };
+    // We may want we use http_status or http_status_code package one day
+    200 => StorageRequestResult.success,
+    401 => StorageRequestResult.accessDenied,
+    403 => StorageRequestResult.accessDenied,
+    _ => StorageRequestResult.genericError,
+  };
 
   /// Convert an exception to a StorageRequestResult
   static StorageRequestResult _parseException(Exception e) => switch (e) {
-        HttpException _ => StorageRequestResult.ioError, // Closed by peer
-        MissingPlatformDirectoryException _ => StorageRequestResult.ioError,
-        HandshakeException _ => StorageRequestResult.ioError, // TLS issue
-        SocketException _ => StorageRequestResult.ioError, // Hostname resolution failed
-        _ => StorageRequestResult.genericError,
-      };
+    HttpException _ => StorageRequestResult.ioError, // Closed by peer
+    MissingPlatformDirectoryException _ => StorageRequestResult.ioError,
+    HandshakeException _ => StorageRequestResult.ioError, // TLS issue
+    SocketException _ => StorageRequestResult.ioError, // Hostname resolution failed
+    _ => StorageRequestResult.genericError,
+  };
 }

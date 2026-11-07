@@ -17,10 +17,7 @@ class MusicSound<T> extends Equatable {
   final String filePath;
 
   /// Class constructor
-  const MusicSound({
-    required this.value,
-    required this.filePath,
-  });
+  const MusicSound({required this.value, required this.filePath});
 
   /// Class properties
   @override
@@ -38,9 +35,7 @@ abstract class AbstractMusicSoundHelper<T> {
   /// Class constructor
   ///
   /// [musicSounds] is the different [MusicSound] which can be played
-  AbstractMusicSoundHelper({
-    required this.musicSounds,
-  }) : super();
+  AbstractMusicSoundHelper({required this.musicSounds}) : super();
 
   /// Get the files list of all the [MusicSound] available
   List<String> getFilesList() {

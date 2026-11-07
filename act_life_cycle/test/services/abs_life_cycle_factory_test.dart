@@ -27,7 +27,7 @@ class _FailingManager extends AbsWithLifeCycle {
 }
 
 /// Another manager, only used as a declared dependency.
-class _OtherManager extends AbsWithLifeCycle {}
+class _OtherManager extends AbsWithLifeCycle;
 
 /// A factory which declares no dependency.
 class _ManagerFactory extends AbsLifeCycleFactory<_Manager> {

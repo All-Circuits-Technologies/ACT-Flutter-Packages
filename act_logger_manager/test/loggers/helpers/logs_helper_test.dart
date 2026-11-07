@@ -156,9 +156,7 @@ void main() {
     test("keeps the minimum level of its parent when it is given none", () {
       final parent = helper(minLevel: LogsLevel.error);
 
-      parent
-          .createSubLoggerMinLevel(subCategory: "http")
-          .log("a message", level: LogsLevel.warn);
+      parent.createSubLoggerMinLevel(subCategory: "http").log("a message", level: LogsLevel.warn);
 
       expect(external.records, isEmpty);
     });
@@ -170,9 +168,9 @@ void main() {
     });
 
     test("appends its sub category to the categories of its parent", () {
-      helper(
-        category: "manager",
-      ).createAbsSubLogger(subCategory: "http").log("a message", level: LogsLevel.warn);
+      helper(category: "manager")
+          .createAbsSubLogger(subCategory: "http")
+          .log("a message", level: LogsLevel.warn);
 
       expect(external.records.first.categories, ["manager", "http"]);
     });

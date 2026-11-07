@@ -48,9 +48,8 @@ void main() {
     });
 
     test("asks the device to start the exchange over", () {
-      final data = HaloBleRequestToDeviceCmdPacket.reset(
-        requestId: FakeHaloRequestId.anOrder,
-      ).getDataToSend();
+      final data = HaloBleRequestToDeviceCmdPacket.reset(requestId: FakeHaloRequestId.anOrder)
+          .getDataToSend();
 
       expect(data, [
         HaloCmdId.reset.rawValue,
@@ -61,9 +60,8 @@ void main() {
     });
 
     test("tells the device that the application is ready to read", () {
-      final data = HaloBleRequestToDeviceCmdPacket.readReady(
-        requestId: FakeHaloRequestId.aFunction,
-      ).getDataToSend();
+      final data = HaloBleRequestToDeviceCmdPacket.readReady(requestId: FakeHaloRequestId.aFunction)
+          .getDataToSend();
 
       expect(data, [
         HaloCmdId.readReady.rawValue,

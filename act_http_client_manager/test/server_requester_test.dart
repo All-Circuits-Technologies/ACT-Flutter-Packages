@@ -118,10 +118,7 @@ void main() {
     test("gives back a timeout error for a server which took too long to answer", () async {
       server.answers.add(const ServerAnswer(held: true));
 
-      final response = await ask<String>(
-        aRequester(),
-        timeout: const Duration(milliseconds: 200),
-      );
+      final response = await ask<String>(aRequester(), timeout: const Duration(milliseconds: 200));
 
       expect(response.status, RequestStatus.timeoutError);
       expect(logs.recordsAtLevel(LogsLevel.error), isNotEmpty);

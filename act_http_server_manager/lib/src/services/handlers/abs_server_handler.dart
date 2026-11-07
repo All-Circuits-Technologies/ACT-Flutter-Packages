@@ -17,8 +17,7 @@ abstract class AbsServerHandler extends AbsWithLifeCycle {
   HttpLoggingManager get httpLoggingManager => _httpLoggingManager;
 
   /// Class constructor
-  const AbsServerHandler({required HttpLoggingManager httpLoggingManager})
-    : _httpLoggingManager = httpLoggingManager;
+  const AbsServerHandler({required this._httpLoggingManager});
 
   /// {@template act_http_server_manager.AbsServerHandler.beforeHandler}
   /// This method is called before the route handler.

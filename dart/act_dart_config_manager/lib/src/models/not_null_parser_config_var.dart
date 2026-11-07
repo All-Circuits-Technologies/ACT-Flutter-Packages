@@ -26,11 +26,9 @@ class NotNullParserConfigVar<ParsedType, StoredType>
 
   /// Class constructor
   /// When null is retried from config, the [ActConfigNullValueError] is thrown.
-  const NotNullParserConfigVar.crashIfNull(
-    super.key, {
-    required super.parser,
-  })  : defaultValue = null,
-        super();
+  const NotNullParserConfigVar.crashIfNull(super.key, {required super.parser})
+    : defaultValue = null,
+      super();
 
   /// Load value from config variable.
   ///

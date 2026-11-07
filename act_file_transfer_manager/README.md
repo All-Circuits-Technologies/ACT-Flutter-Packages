@@ -86,10 +86,11 @@ dependencies:
 
 ### Register the managers
 
+Register the managers in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance
-  ..register(const FileSelectorBuilder())
-  ..register(const FileSaverBuilder());
+registerManagerAsync(const FileSelectorBuilder());
+registerManagerAsync(const FileSaverBuilder());
 ```
 
 ### Ask the user for a file

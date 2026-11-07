@@ -52,7 +52,7 @@ class FakeAuthService with MixinAuthService {
   AuthStatus _authStatus;
 
   /// Class constructor
-  FakeAuthService({AuthStatus authStatus = AuthStatus.signedIn}) : _authStatus = authStatus;
+  FakeAuthService({this._authStatus = AuthStatus.signedIn});
 
   /// {@macro act_shared_auth.MixinAuthService.authStatus}
   @override
@@ -77,10 +77,8 @@ class FakeAuthService with MixinAuthService {
 
   /// {@macro act_shared_auth.MixinAuthService.signInUser}
   @override
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  }) async => const AuthSignInResult(status: AuthSignInStatus.done);
+  Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
+      const AuthSignInResult(status: AuthSignInStatus.done);
 
   /// {@macro act_shared_auth.MixinAuthService.signOut}
   @override

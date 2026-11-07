@@ -5,7 +5,7 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This class is useful to add banner with the current environment used for the app.
 ///
@@ -26,11 +26,8 @@ class EnvBanner extends Banner {
   static const Color _defaultColor = Color(0xA0B71C1C);
 
   /// Class constructor
-  const EnvBanner._({
-    required super.message,
-    required super.color,
-    required Widget super.child,
-  }) : super(location: BannerLocation.topStart);
+  const EnvBanner._({required super.message, required super.color, required Widget super.child})
+    : super(location: BannerLocation.topStart);
 
   /// Build and display a Banner above the child if its needed.
   ///
@@ -47,18 +44,14 @@ class EnvBanner extends Banner {
       return child;
     }
 
-    return EnvBanner._(
-      message: shortTxt,
-      color: _getColor(configManager.env),
-      child: child,
-    );
+    return EnvBanner._(message: shortTxt, color: _getColor(configManager.env), child: child);
   }
 
   /// Get the color linked to the given [env]
   static Color _getColor(Environment env) => switch (env) {
-        Environment.production => _prodColor,
-        Environment.development => _devColor,
-        Environment.qualification => _qualColor,
-        _ => _defaultColor,
-      };
+    Environment.production => _prodColor,
+    Environment.development => _devColor,
+    Environment.qualification => _qualColor,
+    _ => _defaultColor,
+  };
 }

@@ -18,9 +18,8 @@ class FakeInternetConnectivityManager extends InternetConnectivityManager {
   bool _hasConnection;
 
   /// Class constructor
-  FakeInternetConnectivityManager({bool hasConnection = true})
-    : _hasConnection = hasConnection,
-      _controller = StreamController<bool>.broadcast(),
+  FakeInternetConnectivityManager({this._hasConnection = true})
+    : _controller = StreamController<bool>.broadcast(),
       super(configGetter: _noConfiguration);
 
   /// The manager never reads a configuration, because it never reaches a host.

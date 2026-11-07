@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This class allows to extend the [TextStyle] style of the [Text] widget
 class ExtendedTextStyle extends Equatable {
@@ -14,10 +14,7 @@ class ExtendedTextStyle extends Equatable {
   final TextAlign? align;
 
   /// Class constructor
-  const ExtendedTextStyle({
-    this.style,
-    this.align,
-  });
+  const ExtendedTextStyle({this.style, this.align});
 
   /// Copy the current object and update the wanted properties
   ExtendedTextStyle copyWith({
@@ -25,11 +22,10 @@ class ExtendedTextStyle extends Equatable {
     bool forceStyleValue = false,
     TextAlign? align,
     bool forceAlignValue = false,
-  }) =>
-      ExtendedTextStyle(
-        style: style ?? (forceStyleValue ? null : this.style),
-        align: align ?? (forceAlignValue ? null : this.align),
-      );
+  }) => ExtendedTextStyle(
+    style: style ?? (forceStyleValue ? null : this.style),
+    align: align ?? (forceAlignValue ? null : this.align),
+  );
 
   /// Class properties
   @override

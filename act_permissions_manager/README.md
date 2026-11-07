@@ -52,6 +52,7 @@ A `PermissionElement` is a feature of the application, not a permission of the d
 | ----------------------- | -------------------------------------------------- | ------------------------- |
 | `background`            | to be left running                                 | nothing                   |
 | `ble`                   | scanning and connecting, or the location before 31 | the Bluetooth             |
+| `camera`                | the camera                                         | the camera                |
 | `locationAlways`        | the location at all times                          | the location at all times |
 | `locationWhenInUse`     | the location while in use                          | the location while in use |
 | `trackingAuthorization` | nothing                                            | the tracking of the user  |

@@ -17,19 +17,15 @@ class ConsentOptionsModel<T extends MixinConsentOptions> extends Equatable {
   Map<T, ConsentStateEnum> get optionMap => _optionMap;
 
   /// Class constructor
-  const ConsentOptionsModel({
-    required Map<T, ConsentStateEnum> options,
-  }) : _optionMap = options;
+  const ConsentOptionsModel({required Map<T, ConsentStateEnum> options}) : _optionMap = options;
 
   /// Class constructor which copies a [ConsentOptionsModel].
   ConsentOptionsModel.copy(ConsentOptionsModel<T> options)
-      : _optionMap = Map<T, ConsentStateEnum>.from(options._optionMap);
+    : _optionMap = Map<T, ConsentStateEnum>.from(options._optionMap);
 
   /// Class constructor which init the option map with the given [keys] to the given [state].
-  ConsentOptionsModel.fromKeys(
-    List<T> keys,
-    ConsentStateEnum state,
-  ) : _optionMap = {for (var key in keys) key: state};
+  ConsentOptionsModel.fromKeys(List<T> keys, ConsentStateEnum state)
+    : _optionMap = {for (var key in keys) key: state};
 
   /// Get the [ConsentStateEnum] value of a given [option] or [ConsentStateEnum.unknown] when
   /// [option] is not yet in [_optionMap].
@@ -37,9 +33,7 @@ class ConsentOptionsModel<T extends MixinConsentOptions> extends Equatable {
 
   /// Merge the current consent options with another one. If an option present in [options] is not
   /// present in the current consent options, it will be ignored.
-  ConsentOptionsModel<T> merge({
-    required ConsentOptionsModel options,
-  }) {
+  ConsentOptionsModel<T> merge({required ConsentOptionsModel options}) {
     final values = <T, ConsentStateEnum>{};
 
     for (final key in _optionMap.keys) {
@@ -73,8 +67,8 @@ class ConsentOptionsModel<T extends MixinConsentOptions> extends Equatable {
   /// used the hash code of the map itself, and looking one of them up in a set or a map would fail.
   @override
   int get hashCode => Object.hashAllUnordered(
-        _optionMap.entries.map((entry) => Object.hash(entry.key, entry.value)),
-      );
+    _optionMap.entries.map((entry) => Object.hash(entry.key, entry.value)),
+  );
 
   /// Override the [props] getter expected by the [Equatable] class but since we override the
   /// equality operator, this getter won't be used.

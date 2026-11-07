@@ -91,9 +91,7 @@ mixin MixinBleConnectionRedirectService<T extends MixinBleConnectionRoute<T>>
   /// us to be connected to a BLE device.
   ///
   /// Returns null when you are nothing to do.
-  T? _getPageToRedirectToIfNeeded({
-    T? currentView,
-  }) {
+  T? _getPageToRedirectToIfNeeded({T? currentView}) {
     final tmpCurrent = currentView ?? routerManager.getCurrentTopView();
 
     if (tmpCurrent == null) {

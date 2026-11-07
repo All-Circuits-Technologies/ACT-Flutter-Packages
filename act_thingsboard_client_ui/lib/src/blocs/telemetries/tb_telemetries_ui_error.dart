@@ -20,7 +20,5 @@ enum TbTelemetriesUiError {
   final bool isError;
 
   /// Class constructor
-  const TbTelemetriesUiError({
-    this.isError = true,
-  });
+  const TbTelemetriesUiError({this.isError = true});
 }

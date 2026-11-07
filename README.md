@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2023, 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+SPDX-FileCopyrightText: 2023, 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 
 SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 -->
@@ -51,6 +51,7 @@ To install it globally, you have to call:
 | [act_amplify_storage_s3](act_amplify_storage_s3/)                         | This package is a wrapper around the Amplify Storage S3 plugin.                                                          |         |
 | [act_app_life_cycle_manager](act_app_life_cycle_manager/)                 | This package contains the manager for the app life cycle.                                                                |         |
 | [act_aws_iot_core](act_aws_iot_core/)                                     | Package to interact with aws iot core using amplify credentials                                                          |         |
+| [act_barcode](act_barcode/)                                               | This package contains widgets linked to barcodes, QR codes included                                                      |         |
 | [act_ble_manager](act_ble_manager/)                                       | This package contains the base for Bluetooth Low Energy                                                                  |         |
 | [act_ble_manager_ui](act_ble_manager_ui/)                                 | This contains ui elements to complete the ACT BLE manager                                                                |         |
 | [act_config_manager](act_config_manager/)                                 | This package contains methods to manage config variables.                                                                |         |
@@ -90,10 +91,10 @@ To install it globally, you have to call:
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                            |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |
+| [act_oauth2_keycloak](act_oauth2_keycloak/)                               | This package contains the needed elements to connect to a OAuth 2.0 Client through a Keycloak Identity Provider.         |         |
 | [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
-| [act_qr_code](act_qr_code/)                                               | This package contains widgets linked to QR code                                                                          |         |
 | [act_remote_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act remote localized and versioned file manager.                                                                         |         |
 | [act_remote_storage_manager](act_remote_storage_manager/)                 | This package contains the remote storage manager, which can be used to get files from a remote server.                   |         |
 | [act_remote_storage_ui](act_remote_storage_ui/)                           | Contains helpful widgets to work with act_remote_storage_manager                                                         |         |
@@ -102,6 +103,8 @@ To install it globally, you have to call:
 | [act_shared_auth_local_storage](act_shared_auth_local_storage/)           | This contains services to store ids from the authentication services to act secure local storage.                        |         |
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
 | [act_splash_screen_manager](act_splash_screen_manager/)                   | Keeps the splash screen of the platform displayed until the application is ready                                         |         |
+| [act_tb_extender_auth](act_tb_extender_auth/)                             | Signs a user in with Keycloak and exchanges the token for ThingsBoard tokens through the tb-extender broker.             |         |
+| [act_tb_extender_client](act_tb_extender_client/)                         | Speaks to the tb-extender broker: exchanges an identity provider token for ThingsBoard tokens, claims and frees devices. |         |
 | [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |
@@ -123,23 +126,19 @@ This will print a markdown table to copy/paste here each time we add or remove a
 
 ## How to use the packages in your project
 
-To use the libraries in your project, we recommend you to bind this repo as a /actlibs git submodule
-in your project.
-
-In the `pubspec.yaml` you will have to link them like this:
+Add this repository as a git submodule of the project, by default in an `actlibs/` folder at its
+root, and reference each package by its local path in `pubspec.yaml`:
 
 ```yaml
 act_life_cycle:
-  git:
-    path: actlibs/act_life_cycle
+  path: actlibs/act_life_cycle
 ```
 
-For each project which includes those libs, you have to create a branch in this repository and point
-on it. This way, you are independent of the others projects but can get improvements or bugs
-corrections from others.
+A fresh clone of the project fetches the submodule with `git submodule update --init`.
 
-Because, this code isn't reviewed if no merge request is done to the master branch, it's recommended
-to oftenly create merge requests from the project branch to master.
+The submodule points at `master`. A change a project needs gets its own issue here, independent of
+the project; while that change is under review, the submodule of the project may point at its
+branch, then returns to `master` once it is merged.
 
 ## Tests
 

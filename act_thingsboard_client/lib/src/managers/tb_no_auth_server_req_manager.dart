@@ -62,9 +62,8 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
   /// Class constructor
   TbNoAuthServerReqManager({
     required MixinAuthStorageService? Function()? storageServiceGetter,
-    required MixinThingsboardConf Function() confGetter,
-  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter),
-       _confGetter = confGetter;
+    required this._confGetter,
+  }) : _tbStorage = ActTbStorage(storageServiceGetter: storageServiceGetter);
 
   /// Init the service
   @override
@@ -117,5 +116,49 @@ class TbNoAuthServerReqManager extends AbsWithLifeCycle {
     }
 
     return TbRequestResponse<T>(status: status, requestResponse: result);
+  }
+
+  /// Refresh the tokens of the user with [refreshToken], against Thingsboard.
+  ///
+  /// The client is what keeps the tokens the refresh minted; therefore, they are read back from it
+  /// rather than from the answer.
+  ///
+  /// Return null when Thingsboard refused the refresh token, or when what it minted can't be read.
+  Future<AuthTokens?> refreshTokens(String refreshToken) async {
+    final response = await request<void>(
+      (tbClient) async => tbClient.refreshJwtToken(refreshToken: refreshToken),
+    );
+
+    if (!response.isOk) {
+      return null;
+    }
+
+    return readTokensFromClient();
+  }
+
+  /// Read the tokens the client holds.
+  ///
+  /// Return null when there is no access token to read, or when one of the two isn't a JWT.
+  AuthTokens? readTokensFromClient() {
+    final accessStrToken = tbClient.getJwtToken();
+    final refreshStrToken = tbClient.getRefreshToken();
+    if (accessStrToken == null) {
+      return null;
+    }
+
+    final accessToken = AuthToken.fromJwtToken(accessStrToken);
+    if (accessToken == null) {
+      return null;
+    }
+
+    AuthToken? refreshToken;
+    if (refreshStrToken != null) {
+      refreshToken = AuthToken.fromJwtToken(refreshStrToken);
+      if (refreshToken == null) {
+        return null;
+      }
+    }
+
+    return AuthTokens(accessToken: accessToken, refreshToken: refreshToken);
   }
 }

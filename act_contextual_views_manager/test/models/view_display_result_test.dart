@@ -63,10 +63,10 @@ void main() {
 
   group("ViewDisplayStatus", () {
     test("says which answers of a view are the ones which go further", () {
-      expect(
-        ViewDisplayStatus.values.where((status) => status.isPositiveResult),
-        [ViewDisplayStatus.ok, ViewDisplayStatus.yes],
-      );
+      expect(ViewDisplayStatus.values.where((status) => status.isPositiveResult), [
+        ViewDisplayStatus.ok,
+        ViewDisplayStatus.yes,
+      ]);
     });
   });
 }

@@ -74,9 +74,8 @@ void main() {
     });
 
     test("names the categories the message belongs to in front of it", () async {
-      aLogger(
-        level: LogsLevel.warn,
-      ).log(message: "a message", level: LogsLevel.warn, categories: ["app", "feature"]);
+      aLogger(level: LogsLevel.warn)
+          .log(message: "a message", level: LogsLevel.warn, categories: ["app", "feature"]);
       await pumpEventQueue();
 
       expect(crashlytics.logs, ["[app/feature]: a message"]);

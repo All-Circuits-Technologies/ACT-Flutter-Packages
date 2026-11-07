@@ -24,9 +24,8 @@ void main() {
     await authManager.initLifeCycle();
     globalGetIt().registerSingleton<TbNoAuthServerReqManager>(noAuthManager);
 
-    when(
-      () => noAuthManager.client.setUserFromJwtToken(any(), any(), any()),
-    ).thenAnswer((_) async {});
+    when(() => noAuthManager.client.setUserFromJwtToken(any(), any(), any()))
+        .thenAnswer((_) async {});
   });
 
   tearDown(() async {
@@ -54,11 +53,7 @@ void main() {
     test("depends on the logger, on the manager without a user and on the authentication", () {
       final builder = TbStdAuthServerReqBuilder<FakeTbAuthManager>();
 
-      expect(builder.dependsOn(), [
-        LoggerManager,
-        TbNoAuthServerReqManager,
-        FakeTbAuthManager,
-      ]);
+      expect(builder.dependsOn(), [LoggerManager, TbNoAuthServerReqManager, FakeTbAuthManager]);
     });
   });
 
@@ -73,6 +68,36 @@ void main() {
       final manager = await aManager();
 
       expect(manager.devicesService, isNotNull);
+    });
+  });
+
+  group("TbStdAuthServerReqManager on the user leaving", () {
+    test("forgets the devices watched so far when the user signs out", () async {
+      final manager = await aManager();
+      addTearDown(manager.disposeLifeCycle);
+      final first = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await first.add(tsKeys: ["temp"]);
+
+      authManager.service.updateStatus(AuthStatus.signedOut);
+      await pumpEventQueue();
+      authManager.service.updateStatus(AuthStatus.signedIn);
+      final second = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await second.add(tsKeys: ["temp"]);
+
+      // The values of the device were rebuilt: the second handler subscribed anew
+      expect(noAuthManager.client.telemetryService.subscribed.length, 2);
+    });
+
+    test("keeps the devices while the user stays", () async {
+      final manager = await aManager();
+      addTearDown(manager.disposeLifeCycle);
+      final handler = manager.devicesService.createTelemetryHandler(aDeviceId);
+      await handler.add(tsKeys: ["temp"]);
+
+      authManager.service.updateStatus(AuthStatus.signedIn);
+      await pumpEventQueue();
+
+      expect(noAuthManager.client.telemetryService.current, isNotNull);
     });
   });
 
@@ -91,9 +116,8 @@ void main() {
 
       await manager.request((tbClient) async => "an answer");
 
-      verify(
-        () => noAuthManager.client.setUserFromJwtToken("a token", "a refresh token", null),
-      ).called(1);
+      verify(() => noAuthManager.client.setUserFromJwtToken("a token", "a refresh token", null))
+          .called(1);
     });
 
     test("answers a login error when the user has no token", () async {

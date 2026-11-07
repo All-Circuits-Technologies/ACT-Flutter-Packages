@@ -12,46 +12,46 @@ void main() {
     test("expects no value unless the caller says how many it awaits", () {
       final result = HaloRequestResult(
         requestId: FakeRequestId.readTemperature,
-        result: HaloPayloadPacket(),
-        error: HaloErrorType.noError,
+        status: HaloErrorType.noError,
+        value: HaloPayloadPacket(),
       );
 
       expect(result.nbValues, 0);
     });
 
-    test("equals another result which carries the same request, payload, error and count", () {
+    test("equals another result which carries the same request, payload, status and count", () {
       final payload = HaloPayloadPacket();
 
       expect(
         HaloRequestResult(
           requestId: FakeRequestId.readTemperature,
-          result: payload,
-          error: HaloErrorType.noError,
+          status: HaloErrorType.noError,
+          value: payload,
           nbValues: 1,
         ),
         HaloRequestResult(
           requestId: FakeRequestId.readTemperature,
-          result: payload,
-          error: HaloErrorType.noError,
+          status: HaloErrorType.noError,
+          value: payload,
           nbValues: 1,
         ),
       );
     });
 
-    test("differs from a result which carries another error", () {
+    test("differs from a result which carries another status", () {
       final payload = HaloPayloadPacket();
 
       expect(
         HaloRequestResult(
           requestId: FakeRequestId.readTemperature,
-          result: payload,
-          error: HaloErrorType.noError,
+          status: HaloErrorType.noError,
+          value: payload,
         ),
         isNot(
           HaloRequestResult(
             requestId: FakeRequestId.readTemperature,
-            result: payload,
-            error: HaloErrorType.commError,
+            status: HaloErrorType.commError,
+            value: payload,
           ),
         ),
       );
@@ -59,14 +59,14 @@ void main() {
   });
 
   group("HaloRequestResult.error", () {
-    test("carries the error and no result", () {
+    test("carries the status and no value", () {
       const result = HaloRequestResult.error(
         requestId: FakeRequestId.readTemperature,
-        error: HaloErrorType.commError,
+        status: HaloErrorType.commError,
       );
 
-      expect(result.error, HaloErrorType.commError);
-      expect(result.result, isNull);
+      expect(result.status, HaloErrorType.commError);
+      expect(result.value, isNull);
       expect(result.nbValues, 0);
     });
   });

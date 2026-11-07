@@ -35,10 +35,10 @@ void main() {
       final result = read(anAck(requestId: FakeHaloRequestId.aFunction, nbValues: 2));
 
       expect(result?.cmdId, HaloCmdId.ack);
-      expect(result?.error, HaloErrorType.noError);
+      expect(result?.status, HaloErrorType.noError);
       expect(result?.requestId, FakeHaloRequestId.aFunction);
       expect(result?.nbValues, 2);
-      expect(result?.result, isNull);
+      expect(result?.value, isNull);
     });
 
     test("reads the error a device answers", () {
@@ -46,7 +46,7 @@ void main() {
         anAck(requestId: FakeHaloRequestId.aFunction, error: HaloErrorType.commError),
       );
 
-      expect(result?.error, HaloErrorType.commError);
+      expect(result?.status, HaloErrorType.commError);
     });
 
     test("says nothing of an answer which is not of the size the protocol says", () {
@@ -64,13 +64,13 @@ void main() {
       final result = read(const [0xEE, 0x00, 0x00, 0x01]);
 
       expect(result?.cmdId, HaloCmdId.unknown);
-      expect(result?.error, HaloErrorType.noError);
+      expect(result?.status, HaloErrorType.noError);
     });
 
     test("reads an answer whose error the protocol does not know", () {
       final result = read(const [0x06, 0xEE, 0x00, 0x01]);
 
-      expect(result?.error, HaloErrorType.unknown);
+      expect(result?.status, HaloErrorType.unknown);
     });
   });
 
@@ -78,32 +78,32 @@ void main() {
     test("says that a request which went through was acknowledged", () {
       const result = HaloBleRequestResult.success(
         requestId: FakeHaloRequestId.aFunction,
-        result: null,
+        value: null,
       );
 
       expect(result.cmdId, HaloCmdId.ack);
-      expect(result.error, HaloErrorType.noError);
+      expect(result.status, HaloErrorType.noError);
       expect(result.nbValues, 0);
     });
 
     test("says that a request which failed was acknowledged by nothing", () {
       const result = HaloBleRequestResult.error(
         requestId: FakeHaloRequestId.aFunction,
-        error: HaloErrorType.commError,
+        status: HaloErrorType.commError,
       );
 
       expect(result.cmdId, HaloCmdId.unknown);
-      expect(result.error, HaloErrorType.commError);
+      expect(result.status, HaloErrorType.commError);
     });
 
     test("tells two answers of the same request apart by their command", () {
       const success = HaloBleRequestResult.success(
         requestId: FakeHaloRequestId.aFunction,
-        result: null,
+        value: null,
       );
       const failure = HaloBleRequestResult.error(
         requestId: FakeHaloRequestId.aFunction,
-        error: HaloErrorType.noError,
+        status: HaloErrorType.noError,
       );
 
       expect(success, isNot(failure));

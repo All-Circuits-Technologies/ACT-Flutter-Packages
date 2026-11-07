@@ -99,10 +99,7 @@ void main() {
       await theServerAnswersTheStates();
 
       expect(mqtt.lastPublishedOn(aTopicName(ShadowTopicsEnum.get)), "");
-      expect(
-        mqtt.lastPublishedOn(aTopicName(ShadowTopicsEnum.get, shadow: FakeShadow.spare)),
-        "",
-      );
+      expect(mqtt.lastPublishedOn(aTopicName(ShadowTopicsEnum.get, shadow: FakeShadow.spare)), "");
     });
 
     test("follows the shadows of a device it already follows only once", () async {

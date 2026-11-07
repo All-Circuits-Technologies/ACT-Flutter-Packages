@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/src/hardware_layer/abstract_halo_component_hardware.dart';
 import 'package:act_halo_abstract/src/models/halo_data_id.dart';
 import 'package:act_halo_abstract/src/models/halo_packet.dart';
@@ -24,14 +25,16 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
 
   /// Class constructor
   AbstractHaloAttributeHardware()
-      : _attributeNewValueCtrl = StreamController<HaloPacket>.broadcast();
+    : _attributeNewValueCtrl = StreamController<HaloPacket>.broadcast();
 
   /// This method allows to write a specific attribute value to the device
   Future<HaloErrorType> writeAttribute({required HaloPacket packet});
 
   /// This method allows to read a specific attribute value from the device and thanks to the
   /// [HaloDataId] given
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId});
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  });
 
   /// This method allows to subscribe to the modification of a specific attribute thanks to the
   /// [HaloDataId] given
@@ -49,9 +52,7 @@ abstract class AbstractHaloAttributeHardware extends AbstractHaloComponentHardwa
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _attributeNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_attributeNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

@@ -8,7 +8,7 @@ import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_themes_manager/act_themes_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The colors an application adds to the ones of a color scheme.
 class FakeSpecificColors extends AbsAppSpecificColors<FakeSpecificColors> {
@@ -68,13 +68,11 @@ class FakeThemesConfig extends AbstractConfigManager with MixinThemesConfig {
   }
 
   /// Class constructor
-  FakeThemesConfig({Environment env = Environment.development})
-    : _env = env,
-      super(logger: const SilentLogger());
+  FakeThemesConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }
 
 /// The properties of the application under test.
-class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties {}
+class FakeThemesProperties extends AbstractPropertiesManager with MixinThemesProperties;
 
 /// The state of the page of the application under test.
 class FakeThemesState extends BlocStateForMixin<FakeThemesState>

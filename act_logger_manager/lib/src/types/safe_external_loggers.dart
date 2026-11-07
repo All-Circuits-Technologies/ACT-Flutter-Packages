@@ -22,5 +22,6 @@ enum SafeExternalLoggers {
   /// function.
   static Map<Enum, MixinExternalLogger> toExternalLoggersMap() =>
       Map<Enum, MixinExternalLogger>.fromEntries(
-          SafeExternalLoggers.values.map((logger) => MapEntry(logger, logger.loggerFactory())));
+        SafeExternalLoggers.values.map((logger) => MapEntry(logger, logger.loggerFactory())),
+      );
 }

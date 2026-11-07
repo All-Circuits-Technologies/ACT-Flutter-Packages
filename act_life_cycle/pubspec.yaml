@@ -22,8 +22,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.11.1
-  flutter: ">=3.29.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 # Project dependencies
 dependencies:

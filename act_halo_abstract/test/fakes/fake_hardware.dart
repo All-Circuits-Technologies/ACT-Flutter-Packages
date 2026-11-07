@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/act_halo_abstract.dart';
 
 /// The attributes of a device which answers whatever the test asks it to.
@@ -13,19 +14,18 @@ class FakeAttributeHardware extends AbstractHaloAttributeHardware {
   void pushNewValue(HaloPacket packet) => attributeNewValueCtrl.add(packet);
 
   @override
-  Future<HaloErrorType> writeAttribute({required HaloPacket packet}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> writeAttribute({required HaloPacket packet}) async => HaloErrorType.noError;
 
   @override
-  Future<(HaloErrorType, HaloPacket?)> readAttribute({required HaloDataId dataId}) async =>
-      (HaloErrorType.noError, null);
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readAttribute({
+    required HaloDataId dataId,
+  }) async => const ResultWithRequiredValue(status: HaloErrorType.commError);
 
   @override
   Future<HaloErrorType> subAttribute({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
-  Future<HaloErrorType> unSubAttribute({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> unSubAttribute({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
   Future<void> close() async {
@@ -48,12 +48,12 @@ class FakeInstantDataHardware extends AbstractHaloInstantDataHardware {
       HaloErrorType.noError;
 
   @override
-  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId}) async =>
-      (HaloErrorType.noError, null);
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({
+    required HaloDataId dataId,
+  }) async => const ResultWithRequiredValue(status: HaloErrorType.commError);
 
   @override
-  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async =>
-      HaloErrorType.noError;
+  Future<HaloErrorType> subInstantData({required HaloDataId dataId}) async => HaloErrorType.noError;
 
   @override
   Future<HaloErrorType> unSubInstantData({required HaloDataId dataId}) async =>
@@ -89,14 +89,15 @@ class FakeRecordDataHardware extends AbstractHaloRecordDataHardware {
       HaloErrorType.noError;
 
   @override
-  Future<(HaloErrorType, HaloRecordPacket?)> readRecordData({
+  Future<ResultWithRequiredValue<HaloErrorType, HaloRecordPacket>> readRecordData({
     required HaloRecordKey recordKey,
-  }) async => (HaloErrorType.noError, null);
+  }) async => const ResultWithRequiredValue(status: HaloErrorType.commError);
 
   @override
-  Future<(HaloErrorType, List<HaloRecordKey>?)> getAllRecordDataKeys({
+  Future<ResultWithRequiredValue<HaloErrorType, List<HaloRecordKey>>> getAllRecordDataKeys({
     required HaloDataId dataId,
-  }) async => (HaloErrorType.noError, const <HaloRecordKey>[]);
+  }) async =>
+      const ResultWithRequiredValue(status: HaloErrorType.noError, value: <HaloRecordKey>[]);
 
   @override
   Future<HaloErrorType> ackRecordData({required HaloRecordKey recordKey}) async =>
@@ -154,8 +155,8 @@ class FakeRequestToDeviceHardware extends AbstractHaloRequestToDeviceHardware {
     return functionResult ??
         HaloRequestResult(
           requestId: request.requestId,
-          result: HaloPayloadPacket(),
-          error: HaloErrorType.noError,
+          status: HaloErrorType.noError,
+          value: HaloPayloadPacket(),
         );
   }
 

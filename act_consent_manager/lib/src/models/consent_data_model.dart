@@ -17,27 +17,18 @@ class ConsentDataModel<T extends MixinConsentOptions> extends Equatable {
   final String? version;
 
   /// Class constructor
-  const ConsentDataModel({
-    required this.version,
-    required this.options,
-  });
+  const ConsentDataModel({required this.version, required this.options});
 
   /// Class constructor which init the option map with the given [values] to the status not
   /// accepted.
-  ConsentDataModel.init({
-    required List<T> values,
-  })  : version = null,
-        options = ConsentOptionsModel<T>.fromKeys(
-          values,
-          ConsentStateEnum.notAccepted,
-        );
+  ConsentDataModel.init({required List<T> values})
+    : version = null,
+      options = ConsentOptionsModel<T>.fromKeys(values, ConsentStateEnum.notAccepted);
 
   /// Merge the current consent data with another one
   /// If an option present in [other] is not present in the current consent data,
   /// it will be ignored.
-  ConsentDataModel<T> merge({
-    required ConsentDataModel<T>? other,
-  }) {
+  ConsentDataModel<T> merge({required ConsentDataModel<T>? other}) {
     if (other == null) {
       return this;
     }
@@ -50,8 +41,5 @@ class ConsentDataModel<T extends MixinConsentOptions> extends Equatable {
 
   /// Get the properties of the class
   @override
-  List<Object?> get props => [
-        version,
-        options,
-      ];
+  List<Object?> get props => [version, options];
 }

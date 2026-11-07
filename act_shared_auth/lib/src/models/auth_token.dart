@@ -24,17 +24,10 @@ class AuthToken extends Equatable {
   final DateTime? expiration;
 
   /// Class constructor
-  const AuthToken({
-    required this.raw,
-    this.expiration,
-  });
+  const AuthToken({required this.raw, this.expiration});
 
   /// Copy the current object and update some elements with the given parameters
-  AuthToken copyWith({
-    String? raw,
-    DateTime? expiration,
-    bool forceExpirationValue = false,
-  }) =>
+  AuthToken copyWith({String? raw, DateTime? expiration, bool forceExpirationValue = false}) =>
       AuthToken(
         raw: raw ?? this.raw,
         expiration: expiration ?? (forceExpirationValue ? null : this.expiration),
@@ -42,9 +35,9 @@ class AuthToken extends Equatable {
 
   /// Transform the element to a JSON object
   Map<String, dynamic> toJson() => {
-        _rawKey: raw,
-        if (expiration != null) _expirationKey: expiration?.millisecondsSinceEpoch,
-      };
+    _rawKey: raw,
+    if (expiration != null) _expirationKey: expiration?.millisecondsSinceEpoch,
+  };
 
   /// Check if the token is valid or not
   ///
@@ -88,10 +81,7 @@ class AuthToken extends Equatable {
       return null;
     }
 
-    return AuthToken(
-      raw: raw,
-      expiration: expirationResult.value,
-    );
+    return AuthToken(raw: raw, expiration: expirationResult.value);
   }
 
   /// Parse the [token] as JWT and get the info from it.

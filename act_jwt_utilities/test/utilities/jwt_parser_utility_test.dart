@@ -63,10 +63,10 @@ void main() {
       final expiration = DateTime.utc(2030, 5, 17, 10, 30);
       final jwt = JWT.decode(_sign({"exp": expiration.millisecondsSinceEpoch}));
 
-      expect(
-        JwtParserUtility.getExpiration(jwt: jwt, isTsInSeconds: false),
-        (isOk: true, exp: expiration),
-      );
+      expect(JwtParserUtility.getExpiration(jwt: jwt, isTsInSeconds: false), (
+        isOk: true,
+        exp: expiration,
+      ));
     });
 
     test("accepts a token which carries no expiration", () {
@@ -163,17 +163,14 @@ void main() {
     test("returns the expiration the token carries", () {
       final expiration = DateTime.utc(2030, 5, 17, 10, 30);
 
-      expect(
-        JwtParserUtility.getExpirationFromString(_signExpiringAt(expiration)),
-        (isOk: true, exp: expiration),
-      );
+      expect(JwtParserUtility.getExpirationFromString(_signExpiringAt(expiration)), (
+        isOk: true,
+        exp: expiration,
+      ));
     });
 
     test("refuses a string which is not a token", () {
-      expect(
-        JwtParserUtility.getExpirationFromString("not a token"),
-        (isOk: false, exp: null),
-      );
+      expect(JwtParserUtility.getExpirationFromString("not a token"), (isOk: false, exp: null));
     });
   });
 

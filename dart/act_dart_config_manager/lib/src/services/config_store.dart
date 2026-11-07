@@ -54,7 +54,7 @@ class ConfigStore {
   }
 
   /// Private class constructor
-  ConfigStore._({required this.logger, required Map<String, dynamic> configs}) : _configs = configs;
+  ConfigStore._({required this.logger, required this._configs});
 
   /// Load value from config variable.
   ///

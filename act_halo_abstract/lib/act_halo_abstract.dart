@@ -5,6 +5,7 @@
 library;
 
 export 'src/abstract_halo_hardware.dart';
+export 'src/extensions/halo_timestamped_result_extension.dart';
 export 'src/halo_constants.dart';
 export 'src/hardware_layer/abstract_halo_attribute_hardware.dart';
 export 'src/hardware_layer/abstract_halo_component_hardware.dart';
@@ -22,6 +23,7 @@ export 'src/models/halo_record_key.dart';
 export 'src/models/halo_record_packet.dart';
 export 'src/models/halo_request_params_packet.dart';
 export 'src/models/halo_request_result.dart';
+export 'src/models/halo_timestamped_value.dart';
 export 'src/models/interface_halo_packet_to_send.dart';
 export 'src/types/halo_category_type.dart';
 export 'src/types/halo_cmd_id.dart';

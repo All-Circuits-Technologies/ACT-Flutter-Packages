@@ -23,11 +23,7 @@ class PermissionsBuilder extends AbsLifeCycleFactory<PermissionsManager> {
 
   /// List of manager dependence
   @override
-  Iterable<Type> dependsOn() => [
-        LoggerManager,
-        AppLifeCycleManager,
-        PlatformManager,
-      ];
+  Iterable<Type> dependsOn() => [LoggerManager, AppLifeCycleManager, PlatformManager];
 }
 
 /// The WiFi manager allows to manage the WiFi features of the mobile
@@ -53,9 +49,7 @@ class PermissionsManager extends AbsWithLifeCycle {
   }
 
   /// Has the user already denied the request
-  Future<bool> shouldShowRationale(
-    PermissionElement permElem,
-  ) async {
+  Future<bool> shouldShowRationale(PermissionElement permElem) async {
     for (final permission in permElem.permissions) {
       final shouldShowRationale = await permission.shouldShowRequestRationale;
       if (shouldShowRationale) {
@@ -94,8 +88,8 @@ class PermissionsManager extends AbsWithLifeCycle {
       }
 
       var idx = 0;
-      while (
-          tmpStatus == permission_handler.PermissionStatus.denied && idx < deniedRequestMaxTryNb) {
+      while (tmpStatus == permission_handler.PermissionStatus.denied &&
+          idx < deniedRequestMaxTryNb) {
         // For some permissions the lib doesn't return right away the correct answer from the
         // request. Therefore, We have to get the status again to have the right answer.
         await Future.delayed(deniedRequestGetStatusDuration);
@@ -129,9 +123,7 @@ class PermissionsManager extends AbsWithLifeCycle {
   }
 
   /// Return the current status of the permission
-  Future<permission_handler.PermissionStatus> getPermission(
-    PermissionElement permElem,
-  ) async {
+  Future<permission_handler.PermissionStatus> getPermission(PermissionElement permElem) async {
     var status = permission_handler.PermissionStatus.granted;
 
     for (final permission in permElem.permissions) {
@@ -156,9 +148,7 @@ class PermissionsManager extends AbsWithLifeCycle {
   PermissionHandler getAHandler(PermissionElement element) => _watchers[element]!.generateHandler();
 
   /// Init and create a watcher for each element of the [PermissionElement] enum
-  static Map<PermissionElement, PermissionWatcher> _initWatchers(
-    PermissionsManager manager,
-  ) {
+  static Map<PermissionElement, PermissionWatcher> _initWatchers(PermissionsManager manager) {
     final map = <PermissionElement, PermissionWatcher>{};
 
     for (final element in PermissionElement.values) {

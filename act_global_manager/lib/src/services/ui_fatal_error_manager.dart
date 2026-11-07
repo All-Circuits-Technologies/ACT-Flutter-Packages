@@ -43,9 +43,8 @@ class UiFatalErrorManager extends AbsWithLifeCycleAndUi {
   final Set<FatalErrorWillShowHandler> _fatalErrorWillShowHandlers;
 
   /// Class constructor
-  UiFatalErrorManager({required FatalErrorPageBuilder buildFatalErrorPage})
+  UiFatalErrorManager({required this._buildFatalErrorPage})
     : _fatalErrorNotifier = ValueNotifier<Object?>(null),
-      _buildFatalErrorPage = buildFatalErrorPage,
       _fatalErrorWillShowHandlers = {},
       _hasFatalError = false;
 

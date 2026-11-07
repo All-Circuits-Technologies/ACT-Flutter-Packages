@@ -9,10 +9,10 @@ import 'package:act_shared_auth/act_shared_auth.dart';
 extension RequestStatusExtAuth on RequestStatus {
   /// Return a [AuthSignInStatus] status linked to the current [RequestStatus]
   AuthSignInStatus get signInStatus => switch (this) {
-        RequestStatus.success => AuthSignInStatus.done,
-        RequestStatus.loginError => AuthSignInStatus.sessionExpired,
-        RequestStatus.failedToFetchError => AuthSignInStatus.genericError,
-        RequestStatus.timeoutError => AuthSignInStatus.genericError,
-        RequestStatus.globalError => AuthSignInStatus.genericError,
-      };
+    RequestStatus.success => AuthSignInStatus.done,
+    RequestStatus.loginError => AuthSignInStatus.sessionExpired,
+    RequestStatus.failedToFetchError => AuthSignInStatus.genericError,
+    RequestStatus.timeoutError => AuthSignInStatus.genericError,
+    RequestStatus.globalError => AuthSignInStatus.genericError,
+  };
 }

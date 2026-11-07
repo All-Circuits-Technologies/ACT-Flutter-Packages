@@ -42,24 +42,17 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   Stream<AwsIotMqttSubEvent> get onEventStream => _onSubscriptionEventController.stream;
 
   /// Class contrusctor
-  AwsIotMqttSubWatcher({
-    required String topic,
-    required AwsIotMqttService awsIotMqttService,
-  })
-      : _topic = topic,
-        _awsIotMqttService = awsIotMqttService,
-        _onMsgController = StreamController.broadcast(),
-        _onSubscriptionEventController = StreamController.broadcast(),
-        _subCompleter = Completer(),
-        _unsubCompleter = Completer();
+  AwsIotMqttSubWatcher({required this._topic, required this._awsIotMqttService})
+    : _onMsgController = StreamController.broadcast(),
+      _onSubscriptionEventController = StreamController.broadcast(),
+      _subCompleter = Completer(),
+      _unsubCompleter = Completer();
 
   /// Get the subscription completer
   ///
   /// If the completer is not completed and [defaultValue] is not null, this will return the
   /// [defaultValue] instead of waiting the completion.
-  Future<bool> isSubscribed({
-    bool? defaultValue,
-  }) async {
+  Future<bool> isSubscribed({bool? defaultValue}) async {
     if (_subCompleter.isCompleted || defaultValue == null) {
       return _subCompleter.future;
     }
@@ -71,9 +64,7 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   ///
   /// If the completer is not completed and [defaultValue] is not null, this will return the
   /// [defaultValue] instead of waiting the completion.
-  Future<bool> isUnsubscribed({
-    bool? defaultValue,
-  }) async {
+  Future<bool> isUnsubscribed({bool? defaultValue}) async {
     if (_unsubCompleter.isCompleted || defaultValue == null) {
       return _unsubCompleter.future;
     }
@@ -85,21 +76,13 @@ class AwsIotMqttSubWatcher extends SharedWatcher<AwsIotMqttSubHandler> {
   @Deprecated("Use getHandler instead, this method won't work as expected.")
   @override
   AwsIotMqttSubHandler generateHandler() =>
-      AwsIotMqttSubHandler(
-        onMsgCb: (_) => {},
-        sharedWatcher: this,
-      );
+      AwsIotMqttSubHandler(onMsgCb: (_) => {}, sharedWatcher: this);
 
   /// This method generates a handler for the subscription watcher.
   AwsIotMqttSubHandler getHandler({
     required Function(String) onMsgCb,
     Function(AwsIotMqttSubEvent)? onEventCb,
-  }) =>
-      AwsIotMqttSubHandler(
-        sharedWatcher: this,
-        onMsgCb: onMsgCb,
-        onEventCb: onEventCb,
-      );
+  }) => AwsIotMqttSubHandler(sharedWatcher: this, onMsgCb: onMsgCb, onEventCb: onEventCb);
 
   /// Subscribe to the topic when the watcher wakes up.
   @override
@@ -213,11 +196,9 @@ class AwsIotMqttSubHandler extends SharedHandler {
     required AwsIotMqttSubWatcher sharedWatcher,
     required Function(String) onMsgCb,
     Function(AwsIotMqttSubEvent)? onEventCb,
-  })
-      : _onMsgStreamSub = sharedWatcher.onMsgStream.listen(onMsgCb),
-        _onEventStreamSub =
-        onEventCb == null ? null : sharedWatcher.onEventStream.listen(onEventCb),
-        super(sharedWatcher);
+  }) : _onMsgStreamSub = sharedWatcher.onMsgStream.listen(onMsgCb),
+       _onEventStreamSub = onEventCb == null ? null : sharedWatcher.onEventStream.listen(onEventCb),
+       super(sharedWatcher);
 
   /// Call this method to close the handler.
   @override

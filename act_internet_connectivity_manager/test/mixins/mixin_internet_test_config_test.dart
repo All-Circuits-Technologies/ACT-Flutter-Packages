@@ -16,9 +16,7 @@ void main() {
 
   /// Builds the configuration of an application, with the section the test decides.
   Future<FakeInternetConfig> aConfig([String? section]) async {
-    FakeAssets.serve({
-      "${configPath}default.yaml": section ?? "logs:\n  level: warning",
-    });
+    FakeAssets.serve({"${configPath}default.yaml": section ?? "logs:\n  level: warning"});
     final config = FakeInternetConfig();
     await config.initLifeCycle();
     addTearDown(config.disposeLifeCycle);
@@ -32,9 +30,7 @@ void main() {
     });
 
     test("reads the server to test from the configuration", () async {
-      final config = await aConfig(
-        "internetConnectivity:\n  serverUriToTest: https://example.com",
-      );
+      final config = await aConfig("internetConnectivity:\n  serverUriToTest: https://example.com");
 
       expect(config.serverUriToTest.load(), Uri.parse("https://example.com"));
     });

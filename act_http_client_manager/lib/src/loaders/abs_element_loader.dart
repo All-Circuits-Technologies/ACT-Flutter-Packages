@@ -42,10 +42,9 @@ abstract class AbsElementLoader<T> {
   bool get isAllLoaded => _isAllLoaded;
 
   /// Class constructor
-  AbsElementLoader({
-    this.preventLoadingFewElements = true,
-  })  : loadedElements = [],
-        _isAllLoaded = false;
+  AbsElementLoader({this.preventLoadingFewElements = true})
+    : loadedElements = [],
+      _isAllLoaded = false;
 
   /// Load elements from [loadedElements], and ask more elements from provider, if needed.
   ///
@@ -61,10 +60,7 @@ abstract class AbsElementLoader<T> {
   /// If the method returns an empty list or a list with a length smaller than the [limit], it means
   /// that all the data have been loaded and no more are available.
   @mustCallSuper
-  Future<List<T>?> load({
-    required int offset,
-    required int limit,
-  }) async {
+  Future<List<T>?> load({required int offset, required int limit}) async {
     var offsetToGet = offset;
     var limitToGet = limit;
     final loadedElementsLength = loadedElements.length;
@@ -87,8 +83,10 @@ abstract class AbsElementLoader<T> {
 
       final tmpElements = await loadFromProvider(offset: offsetToGet, limit: limitToGet);
       if (tmpElements == null) {
-        appLogger().w("A problem occurred when tried to get elements with offset: $offsetToGet, "
-            "limit: $limitToGet");
+        appLogger().w(
+          "A problem occurred when tried to get elements with offset: $offsetToGet, "
+          "limit: $limitToGet",
+        );
         return null;
       }
 
@@ -116,10 +114,7 @@ abstract class AbsElementLoader<T> {
   /// If the method returns an empty list or a list with a length smaller than the [limit], it means
   /// that all the data have been loaded and no more are available.
   @protected
-  Future<List<T>?> loadFromProvider({
-    required int offset,
-    required int limit,
-  });
+  Future<List<T>?> loadFromProvider({required int offset, required int limit});
 
   /// {@template act_http_client_manager.abs_server_item_loader.clearLoadedElements}
   /// Remove the loaded server items from memory
@@ -137,10 +132,7 @@ abstract class AbsElementLoader<T> {
   /// [test] is used to say if the tested element is the one we want to update.
   /// [copyFrom] is used to return a new server item model thanks to the current one
   @mustCallSuper
-  void updatedElement(
-    bool Function(T item) test,
-    T Function(T current) copyFrom,
-  ) {
+  void updatedElement(bool Function(T item) test, T Function(T current) copyFrom) {
     final idx = loadedElements.indexWhere((element) => test(element));
     if (idx < 0) {
       // Nothing to do

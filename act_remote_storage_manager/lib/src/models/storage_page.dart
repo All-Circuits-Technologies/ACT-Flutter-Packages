@@ -19,12 +19,9 @@ class StoragePage extends Equatable {
   final bool hasNextPage;
 
   /// Constructor for [StoragePage]
-  StoragePage({
-    required List<StorageFile> items,
-    this.nextPageToken,
-    this.hasNextPage = false,
-  })  : items = List.from(items),
-        super();
+  StoragePage({required List<StorageFile> items, this.nextPageToken, this.hasNextPage = false})
+    : items = List.from(items),
+      super();
 
   /// This method prepends the previous page items and creates a new object.
   ///
@@ -37,18 +34,10 @@ class StoragePage extends Equatable {
 
     final tmpItems = List<StorageFile>.from(previousPage.items)..addAll(items);
 
-    return StoragePage(
-      items: tmpItems,
-      nextPageToken: nextPageToken,
-      hasNextPage: hasNextPage,
-    );
+    return StoragePage(items: tmpItems, nextPageToken: nextPageToken, hasNextPage: hasNextPage);
   }
 
   /// Get the properties of the object.
   @override
-  List<Object?> get props => [
-        items,
-        nextPageToken,
-        hasNextPage,
-      ];
+  List<Object?> get props => [items, nextPageToken, hasNextPage];
 }

@@ -72,9 +72,8 @@ class FakeTelemetryService implements TelemetryService {
   final List<TelemetrySubscriber> unsubscribed = [];
 
   /// The subscriber which is currently listening the attributes of [scope], if there is one.
-  TelemetrySubscriber? attributesOf(AttributeScope scope) => _lastListening(
-    (command) => command is AttributesSubscriptionCmd && command.scope == scope,
-  );
+  TelemetrySubscriber? attributesOf(AttributeScope scope) =>
+      _lastListening((command) => command is AttributesSubscriptionCmd && command.scope == scope);
 
   /// The subscriber which is currently listening the time series, if there is one.
   TelemetrySubscriber? get timeSeries =>
@@ -166,29 +165,29 @@ class FakeTbReqManager extends AbsTbServerReqManager {
 }
 
 /// An update of the telemetry of a device, as the websocket of the server sends it.
-SubscriptionUpdate anUpdate(Map<String, (int, String?)> values) =>
-    SubscriptionUpdate.fromJson({
-      "subscriptionId": 1,
-      "errorCode": 0,
-      "data": values.map((key, value) => MapEntry(key, [
-        [value.$1, value.$2],
-      ])),
-    });
+SubscriptionUpdate anUpdate(Map<String, (int, String?)> values) => SubscriptionUpdate.fromJson({
+  "subscriptionId": 1,
+  "errorCode": 0,
+  "data": values.map(
+    (key, value) => MapEntry(key, [
+      [value.$1, value.$2],
+    ]),
+  ),
+});
 
 /// A device of a customer, as the server answers it.
-DeviceInfo aDeviceInfo({String id = aDeviceId, String name = "a device"}) =>
-    DeviceInfo.fromJson({
-      "id": {"entityType": "DEVICE", "id": id},
-      "createdTime": 0,
-      "tenantId": {"entityType": "TENANT", "id": "a-tenant"},
-      "name": name,
-      "type": "a-type",
-      "deviceProfileId": {"entityType": "DEVICE_PROFILE", "id": "a-profile"},
-      "deviceData": {
-        "configuration": {"type": "DEFAULT"},
-        "transportConfiguration": {"type": "DEFAULT"},
-      },
-    });
+DeviceInfo aDeviceInfo({String id = aDeviceId, String name = "a device"}) => DeviceInfo.fromJson({
+  "id": {"entityType": "DEVICE", "id": id},
+  "createdTime": 0,
+  "tenantId": {"entityType": "TENANT", "id": "a-tenant"},
+  "name": name,
+  "type": "a-type",
+  "deviceProfileId": {"entityType": "DEVICE_PROFILE", "id": "a-profile"},
+  "deviceData": {
+    "configuration": {"type": "DEFAULT"},
+    "transportConfiguration": {"type": "DEFAULT"},
+  },
+});
 
 /// A device of a customer whose identifier the server did not answer.
 DeviceInfo aDeviceWithoutId() => DeviceInfo.fromJson({

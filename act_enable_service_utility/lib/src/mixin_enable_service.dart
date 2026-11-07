@@ -119,13 +119,14 @@ mixin MEnableService on AbsWithLifeCycle {
     }
 
     return globalGetIt().get<ContextualViewsManager>().display(
-          context: overrideContext ??
-              EnableServiceViewContext(
-                element: getElement(),
-                isAcceptanceCompulsory: isAcceptanceCompulsory,
-              ),
-          doAction: manageEnabling,
-        );
+      context:
+          overrideContext ??
+          EnableServiceViewContext(
+            element: getElement(),
+            isAcceptanceCompulsory: isAcceptanceCompulsory,
+          ),
+      doAction: manageEnabling,
+    );
   }
 
   /// Opens the application wanted setting [settingsType] and wait for the status to be updated
@@ -145,22 +146,21 @@ mixin MEnableService on AbsWithLifeCycle {
     required Stream<T> statusEmitter,
     required AppSettingsType settingsType,
     Duration timeout = defaultWaitForStatusAfterOpenSetting,
-  }) async =>
-      WaitUtility.waitForStatus<T>(
-        isExpectedStatus: isExpectedStatus,
-        valueGetter: valueGetter,
-        statusEmitter: statusEmitter,
-        doAction: () async {
-          await globalGetIt().get<AppLifeCycleManager>().waitForegroundApp(
-            leaveTheApp: () async {
-              await AppSettings.openAppSettings(type: settingsType);
-              return true;
-            },
-          );
+  }) async => WaitUtility.waitForStatus<T>(
+    isExpectedStatus: isExpectedStatus,
+    valueGetter: valueGetter,
+    statusEmitter: statusEmitter,
+    doAction: () async {
+      await globalGetIt().get<AppLifeCycleManager>().waitForegroundApp(
+        leaveTheApp: () async {
+          await AppSettings.openAppSettings(type: settingsType);
           return true;
         },
-        timeout: timeout,
       );
+      return true;
+    },
+    timeout: timeout,
+  );
 
   /// Get the element linked to this service
   @protected

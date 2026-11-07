@@ -18,10 +18,20 @@ void main() {
     });
 
     test("says that the only answer which is not an error is the success", () {
+      expect(OcsigenWiFiConnectStatus.values.where((status) => status.isSuccess), [
+        OcsigenWiFiConnectStatus.success,
+      ]);
       expect(
-        OcsigenWiFiConnectStatus.values.where((status) => !status.isError),
-        [OcsigenWiFiConnectStatus.success],
+        OcsigenWiFiConnectStatus.values.where((status) => status.isError),
+        isNot(contains(OcsigenWiFiConnectStatus.success)),
       );
+    });
+
+    test("says that a wrong password and an unknown error are not worth a retry", () {
+      expect(OcsigenWiFiConnectStatus.values.where((status) => !status.canBeRetried), [
+        OcsigenWiFiConnectStatus.wrongPasswordError,
+        OcsigenWiFiConnectStatus.unknownError,
+      ]);
     });
   });
 }

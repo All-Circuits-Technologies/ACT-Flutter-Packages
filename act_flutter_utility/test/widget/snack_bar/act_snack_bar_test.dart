@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The time a snack bar stays on the page when the user does not have to acknowledge it.
 const _snackBarDuration = Duration(milliseconds: 3500);

@@ -141,10 +141,7 @@ void main() {
 
     /// Builds the service of an application which reads a pair from the library.
     NativeEvent2UintListenerService<FakeResult, String> aService({
-      FakeResult Function(
-        ffi.Pointer<ffi.UnsignedInt> first,
-        ffi.Pointer<ffi.UnsignedInt> second,
-      )?
+      FakeResult Function(ffi.Pointer<ffi.UnsignedInt> first, ffi.Pointer<ffi.UnsignedInt> second)?
       valueGetter,
     }) => NativeEvent2UintListenerService<FakeResult, String>(
       logsCategory: "pair",

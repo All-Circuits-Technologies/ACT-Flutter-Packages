@@ -65,7 +65,8 @@ void main() {
     });
 
     test("answers how the storage failed on the variant which was tried first", () async {
-      final storage = FakeStorage(root: root)..missingFileResult = StorageRequestResult.accessDenied;
+      final storage = FakeStorage(root: root)
+        ..missingFileResult = StorageRequestResult.accessDenied;
 
       final result = await aSearch(files: const {}, storage: storage);
 

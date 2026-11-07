@@ -16,10 +16,7 @@ mixin MixinHaloRequestId on MixinHaloType {
   ///
   /// This function is useful to return an id unique to all the request types
   int get uniqueId => ByteUtility.unsafeConvertFromLsb(
-        lsbNumber: Uint8List.fromList([
-          type.rawValue,
-          rawValue,
-        ]),
-        isSigned: false,
-      );
+    lsbNumber: Uint8List.fromList([type.rawValue, rawValue]),
+    isSigned: false,
+  );
 }

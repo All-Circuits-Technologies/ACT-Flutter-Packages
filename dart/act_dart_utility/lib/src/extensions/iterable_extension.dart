@@ -22,9 +22,7 @@ extension ActIterableExtension<T> on Iterable<T> {
       IterableUtility.copyWithoutValues(this, values);
 
   /// Test if at least one element of [atLeastOne] collection is contained in the current collection
-  bool testIfAtLeastOneIsInCollection(
-    Iterable<T> atLeastOne,
-  ) =>
+  bool testIfAtLeastOneIsInCollection(Iterable<T> atLeastOne) =>
       IterableUtility.testIfAtLeastOneIsInCollection(atLeastOne, this);
 
   /// Test if all the elements of [mustBeIn] collection are in the current collection

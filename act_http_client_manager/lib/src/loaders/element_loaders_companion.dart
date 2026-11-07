@@ -26,10 +26,11 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
   ///
   /// The constructor will create the [ElementLoader] thanks to the given [config].callbacks
   ElementLoadersCompanion(this.config)
-      : _loaderModels =
-            config.callbacks.map((callback) => ElementLoader(callback: callback)).toList(),
-        _loadingMutex = Mutex(),
-        super(preventLoadingFewElements: false);
+    : _loaderModels = config.callbacks
+          .map((callback) => ElementLoader(callback: callback))
+          .toList(),
+      _loadingMutex = Mutex(),
+      super(preventLoadingFewElements: false);
 
   /// Load elements from [loadedElements], and ask more elements from provider, if needed.
   /// The method is protected by a mutex.
@@ -44,14 +45,8 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
   /// If the method returns an empty list or a list with a length smaller than the [limit], it means
   /// that all the date has been loaded and no more are available.
   @override
-  Future<List<T>?> load({
-    required int offset,
-    required int limit,
-  }) =>
-      _loadingMutex.protect(() async => super.load(
-            offset: offset,
-            limit: limit,
-          ));
+  Future<List<T>?> load({required int offset, required int limit}) =>
+      _loadingMutex.protect(() async => super.load(offset: offset, limit: limit));
 
   /// Load the elements from provider.
   ///
@@ -62,10 +57,7 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
   /// If the method returns an empty list or a list with a length smaller than the [limit], it means
   /// that all the date has been loaded and no more are available.
   @override
-  Future<List<T>?> loadFromProvider({
-    required int offset,
-    required int limit,
-  }) async {
+  Future<List<T>?> loadFromProvider({required int offset, required int limit}) async {
     final filteredElements = <T>[];
     final elementsRetrieved = <ElementLoader<T>, List<T>>{};
     for (final loader in _loaderModels) {
@@ -81,14 +73,13 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
       // it has nothing more to get and nothing left to give
       while ((!loader.isAllLoaded || tmpOffset < loader.loadedElements.length) &&
           (filteredElements.length - previousFilteredElementsLength) < limit) {
-        final loaderElements = await loader.load(
-          offset: tmpOffset,
-          limit: limit,
-        );
+        final loaderElements = await loader.load(offset: tmpOffset, limit: limit);
 
         if (loaderElements == null) {
-          appLogger().w("We failed to get the elements from the server, with offset: $offset, "
-              "limit: $limit");
+          appLogger().w(
+            "We failed to get the elements from the server, with offset: $offset, "
+            "limit: $limit",
+          );
           return null;
         }
 
@@ -131,9 +122,9 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
   /// {@macro act_http_client_manager.abs_server_item_loader.clearLoadedElements}
   @override
   Future<void> clearLoadedElements() => _loadingMutex.protect(() async {
-        await Future.wait(_loaderModels.map((loader) => loader.clearLoadedElements()));
-        return super.clearLoadedElements();
-      });
+    await Future.wait(_loaderModels.map((loader) => loader.clearLoadedElements()));
+    return super.clearLoadedElements();
+  });
 
   /// Call to update an element contains in the [loadedElements] list.
   ///
@@ -142,10 +133,7 @@ class ElementLoadersCompanion<T> extends AbsElementLoader<T> {
   ///
   /// It also updates the server items of the linked [_loaderModels]
   @override
-  void updatedElement(
-    bool Function(T item) test,
-    T Function(T current) copyFrom,
-  ) {
+  void updatedElement(bool Function(T item) test, T Function(T current) copyFrom) {
     for (final loader in _loaderModels) {
       loader.updatedElement(test, copyFrom);
     }

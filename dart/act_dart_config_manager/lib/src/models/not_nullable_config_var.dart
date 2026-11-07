@@ -17,17 +17,11 @@ class NotNullableConfigVar<T> extends AbsConfigVar<T> {
 
   /// Class constructor
   /// When null is retrieved from config, the [defaultValue] is returned.
-  const NotNullableConfigVar(
-    super.key, {
-    required T this.defaultValue,
-  });
+  const NotNullableConfigVar(super.key, {required T this.defaultValue});
 
   /// Class constructor
   /// When null is retried from config, the [ActConfigNullValueError] is thrown.
-  const NotNullableConfigVar.crashIfNull(
-    super.key,
-  )   : defaultValue = null,
-        super();
+  const NotNullableConfigVar.crashIfNull(super.key) : defaultValue = null, super();
 
   /// Load value from config variable.
   ///

@@ -60,17 +60,15 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
 
   /// Class constructor
   AmplifyCognitoService()
-      : _authStatus = AuthStatus.signedOut,
-        _authStatusCtrl = StreamController.broadcast(),
-        _cognitoStreamSubs = [],
-        super();
+    : _authStatus = AuthStatus.signedOut,
+      _authStatusCtrl = StreamController.broadcast(),
+      _cognitoStreamSubs = [],
+      super();
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   /// {@macro act_amplify_core.AbsAmplifyService.initLifeCycle}
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  }) async {
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper}) async {
     await super.initLifeCycle();
     _logsHelper = AbsAmplifyService.createLogsHelper(
       logCategory: _logsCategory,
@@ -78,10 +76,9 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
     );
 
     // Listen on Amplify Auth Hub event to get the known information
-    _cognitoStreamSubs.add(Amplify.Hub.listen<AuthUser, AuthHubEvent>(
-      HubChannel.Auth,
-      _onAuthEvent,
-    ));
+    _cognitoStreamSubs.add(
+      Amplify.Hub.listen<AuthUser, AuthHubEvent>(HubChannel.Auth, _onAuthEvent),
+    );
 
     _signUpService = CognitoSignUpService(logsHelper: _logsHelper);
     _signInService = CognitoSignInService(logsHelper: _logsHelper);
@@ -129,9 +126,8 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
 
   /// Get the current session of the user
   Future<CognitoAuthSession> getAwsAuthSession() async =>
-      Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey).fetchAuthSession(
-        options: const FetchAuthSessionOptions(forceRefresh: true),
-      );
+      Amplify.Auth.getPlugin(AmplifyAuthCognito.pluginKey)
+          .fetchAuthSession(options: const FetchAuthSessionOptions(forceRefresh: true));
 
   /// Sign an url with the AWS signature V4
   Uri signUrl({
@@ -143,23 +139,13 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
     required String urlPath,
     required String scheme,
   }) {
-    final signer = AWSSigV4Signer(
-      credentialsProvider: AWSCredentialsProvider(creds),
-    );
+    final signer = AWSSigV4Signer(credentialsProvider: AWSCredentialsProvider(creds));
 
-    final scope = AWSCredentialScope(
-      region: region,
-      service: service,
-    );
+    final scope = AWSCredentialScope(region: region, service: service);
 
-    final request = AWSHttpRequest(
-      method: AWSHttpMethod.get,
-      uri: Uri.https(endpoint, urlPath),
-    );
+    final request = AWSHttpRequest(method: AWSHttpMethod.get, uri: Uri.https(endpoint, urlPath));
 
-    final serviceConfiguration = const BaseServiceConfiguration(
-      omitSessionToken: true,
-    );
+    final serviceConfiguration = const BaseServiceConfiguration(omitSessionToken: true);
 
     final signed = signer.presignSync(
       request,
@@ -227,8 +213,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
     required String accountId,
     required String password,
     String? email,
-  }) =>
-      _signUpService.signUp(accountId: accountId, password: password, email: email);
+  }) => _signUpService.signUp(accountId: accountId, password: password, email: email);
 
   /// User self-registration second half
   ///
@@ -238,14 +223,8 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   /// [accountId] identifies account to confirm.
   /// [code] is the code sent to user by [signUp] procedure (likely into its mailbox)
   @override
-  Future<AuthSignUpResult> confirmSignUp({
-    required String accountId,
-    required String code,
-  }) =>
-      _signUpService.confirmSignUp(
-        accountId: accountId,
-        code: code,
-      );
+  Future<AuthSignUpResult> confirmSignUp({required String accountId, required String code}) =>
+      _signUpService.confirmSignUp(accountId: accountId, code: code);
 
   /// Re-ask a sign-up confirmation code
   ///
@@ -254,21 +233,13 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   ///
   /// [accountId] identifies account to confirm. Some services may also accept user email or phone.
   @override
-  Future<AuthSignUpResult> resendSignUpCode({
-    required String accountId,
-  }) =>
+  Future<AuthSignUpResult> resendSignUpCode({required String accountId}) =>
       _signUpService.resendSignUpCode(accountId: accountId);
 
   /// Sign the user in the application
   @override
-  Future<AuthSignInResult> signInUser({
-    required String username,
-    required String password,
-  }) async =>
-      _signInService.signInUser(
-        username: username,
-        password: password,
-      );
+  Future<AuthSignInResult> signInUser({required String username, required String password}) async =>
+      _signInService.signInUser(username: username, password: password);
 
   /// Log out the user from the application
   @override
@@ -282,9 +253,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   ///
   /// By default, we don't include the region in the returned id
   @override
-  Future<String?> getCurrentUserId() => _userService.getCurrentUserId(
-        includeRegion: false,
-      );
+  Future<String?> getCurrentUserId() => _userService.getCurrentUserId(includeRegion: false);
 
   /// {@macro act_shared_auth.MixinAuthService.getTokens}
   @override
@@ -294,16 +263,12 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   /// In case, an admin creates an user with a temporary password, this method is used to send the
   /// new password.
   @override
-  Future<AuthSignInResult> confirmSignIn({
-    required String confirmationValue,
-  }) async =>
+  Future<AuthSignInResult> confirmSignIn({required String confirmationValue}) async =>
       _signInService.confirmSignIn(confirmationValue: confirmationValue);
 
   /// This method fires the password resets. A confirmation code should be sent.
   @override
-  Future<AuthResetPwdResult> resetPassword({
-    required String username,
-  }) async =>
+  Future<AuthResetPwdResult> resetPassword({required String username}) async =>
       _pwdService.resetPassword(username: username);
 
   /// Confirm the password resetting. The [confirmationCode] is the one received by mail, SMS, etc.
@@ -312,12 +277,11 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
     required String username,
     required String newPassword,
     required String confirmationCode,
-  }) async =>
-      _pwdService.confirmResetPassword(
-        username: username,
-        newPassword: newPassword,
-        confirmationCode: confirmationCode,
-      );
+  }) async => _pwdService.confirmResetPassword(
+    username: username,
+    newPassword: newPassword,
+    confirmationCode: confirmationCode,
+  );
 
   /// Allows to update the user password.
   ///
@@ -326,11 +290,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   Future<AuthResetPwdResult> updatePassword({
     required String oldPassword,
     required String newPassword,
-  }) async =>
-      _pwdService.updatePassword(
-        oldPassword: oldPassword,
-        newPassword: newPassword,
-      );
+  }) async => _pwdService.updatePassword(oldPassword: oldPassword, newPassword: newPassword);
 
   /// Get email address of currently logged user
   ///
@@ -365,10 +325,7 @@ class AmplifyCognitoService extends AbsAmplifyService with MixinAuthService {
   /// Return known cognito exceptions announcing non transient authentication issues
   ///
   /// An app may want to show user a sign in page when it catches one of those exceptions somewhere.
-  Set<Type> getNonTransientAuthFailureTypes() => {
-        UserNotFoundException,
-        SignedOutException,
-      };
+  Set<Type> getNonTransientAuthFailureTypes() => {UserNotFoundException, SignedOutException};
 
   @override
   Future<void> disposeLifeCycle() async {

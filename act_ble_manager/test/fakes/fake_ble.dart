@@ -120,9 +120,7 @@ class FakePermissionsPlatform extends PermissionHandlerPlatform {
       statuses[permission] ?? PermissionStatus.granted;
 
   @override
-  Future<Map<Permission, PermissionStatus>> requestPermissions(
-    List<Permission> permissions,
-  ) async {
+  Future<Map<Permission, PermissionStatus>> requestPermissions(List<Permission> permissions) async {
     for (final permission in permissions) {
       statuses[permission] = answerToRequest;
     }
@@ -210,6 +208,9 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   /// The devices which were connected to, in the order they were.
   final List<String> connected = [];
 
+  /// The number of scans which were running each time a device was connected to.
+  final List<int> scansRunningOnConnect = [];
+
   /// The devices which were disconnected from, in the order they were.
   final List<String> disconnected = [];
 
@@ -240,6 +241,7 @@ class FakeBlePlatform extends ReactiveBlePlatform {
   void reset() {
     scans.clear();
     connected.clear();
+    scansRunningOnConnect.clear();
     disconnected.clear();
     written.clear();
     subscribed.clear();
@@ -293,7 +295,9 @@ class FakeBlePlatform extends ReactiveBlePlatform {
           characteristicInstanceId: "0",
           serviceInstanceId: "0",
         ),
-        result: const Result<List<int>, GenericFailure<CharacteristicValueUpdateError>?>.success([]),
+        result: const Result<List<int>, GenericFailure<CharacteristicValueUpdateError>?>.success(
+          [],
+        ),
       ),
     );
 
@@ -339,8 +343,11 @@ class FakeBlePlatform extends ReactiveBlePlatform {
     Duration? connectionTimeout,
   ) {
     connected.add(id);
+    scansRunningOnConnect.add(runningScans);
 
-    return const Stream<void>.empty();
+    // The plugin reads the states of the device on the stream of the connections, and only once
+    // the connecting itself was answered: this one event is what opens that reading.
+    return Stream<void>.value(null);
   }
 
   @override
@@ -389,7 +396,11 @@ class FakeBlePlatform extends ReactiveBlePlatform {
       throw error!;
     }
 
-    written.add((characteristic: characteristic.characteristicId, value: value, withResponse: true));
+    written.add((
+      characteristic: characteristic.characteristicId,
+      value: value,
+      withResponse: true,
+    ));
 
     return WriteCharacteristicInfo(
       characteristic: characteristic,

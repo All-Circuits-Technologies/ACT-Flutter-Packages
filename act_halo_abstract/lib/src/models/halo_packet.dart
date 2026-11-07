@@ -15,10 +15,7 @@ class HaloPacket extends Equatable {
   final HaloPayloadPacket payload;
 
   /// Class constructor
-  const HaloPacket({
-    required this.dataId,
-    required this.payload,
-  }) : super();
+  const HaloPacket({required this.dataId, required this.payload}) : super();
 
   /// This is the class properties
   @override

@@ -4,7 +4,7 @@
 
 import 'package:act_remote_storage_ui/src/image/storage_manager_image_provider.dart';
 import 'package:act_remote_storage_ui/src/mixins/mixin_image_cache_service.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This displays an image from the [MixinImageCacheService] storage manager.
 ///

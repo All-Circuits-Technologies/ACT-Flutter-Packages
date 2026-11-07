@@ -9,10 +9,7 @@ import 'package:flutter/widgets.dart';
 /// Contains useful methods to work with widgets
 class WidgetUtility {
   /// Add an '*' to the label, if needed
-  static String formatInputLabelText({
-    required String? labelText,
-    required bool inputRequired,
-  }) {
+  static String formatInputLabelText({required String? labelText, required bool inputRequired}) {
     if (labelText == null) {
       return '*';
     }
@@ -32,10 +29,7 @@ class WidgetUtility {
   /// with a percent applied on it.
   ///
   /// [percentOfSizeElem] is a percent, so its value has to be positive
-  static double getSizeWithPercent(
-    double sizeElement,
-    double percentOfSizeElem,
-  ) =>
+  static double getSizeWithPercent(double sizeElement, double percentOfSizeElem) =>
       sizeElement * (percentOfSizeElem / 100.0);
 
   /// [getSizeWithPercent] allows to easily get the real size of an element
@@ -56,9 +50,10 @@ class WidgetUtility {
     double? minSizeElem,
   }) {
     assert(
-        minSizeElem == null || maxSizeElem == null || (minSizeElem <= maxSizeElem),
-        "If minWidth and maxWidth are given, min width value can't greater than the max width "
-        "value");
+      minSizeElem == null || maxSizeElem == null || (minSizeElem <= maxSizeElem),
+      "If minWidth and maxWidth are given, min width value can't greater than the max width "
+      "value",
+    );
 
     final realSize = getSizeWithPercent(sizeElem, percentToApplyOnSize);
 
@@ -86,9 +81,10 @@ class WidgetUtility {
     double? minHeight,
   }) {
     assert(
-        minHeight == null || maxHeight == null || (minHeight <= maxHeight),
-        "If minWidth and maxWidth are given, min width value can't greater than the max width "
-        "value");
+      minHeight == null || maxHeight == null || (minHeight <= maxHeight),
+      "If minWidth and maxWidth are given, min width value can't greater than the max width "
+      "value",
+    );
     var tmpMaxHeight = maxHeight;
     var tmpMinHeight = minHeight;
 
@@ -106,10 +102,12 @@ class WidgetUtility {
       tmpMaxHeight = parentHeight;
     }
 
-    return getSizeElem(parentHeight,
-        percentToApplyOnSize: percentToApplyOnParent,
-        maxSizeElem: tmpMaxHeight,
-        minSizeElem: tmpMinHeight);
+    return getSizeElem(
+      parentHeight,
+      percentToApplyOnSize: percentToApplyOnParent,
+      maxSizeElem: tmpMaxHeight,
+      minSizeElem: tmpMinHeight,
+    );
   }
 
   /// [getWidthElemFromParent] is useful to easily get a widget width based on
@@ -125,9 +123,10 @@ class WidgetUtility {
     double? minWidth,
   }) {
     assert(
-        minWidth == null || maxWidth == null || (minWidth <= maxWidth),
-        "If minWidth and maxWidth are given, min width value can't greater than the max width "
-        "value");
+      minWidth == null || maxWidth == null || (minWidth <= maxWidth),
+      "If minWidth and maxWidth are given, min width value can't greater than the max width "
+      "value",
+    );
     var tmpMaxWidth = maxWidth;
     var tmpMinWidth = minWidth;
 
@@ -145,10 +144,12 @@ class WidgetUtility {
       tmpMaxWidth = parentWidth;
     }
 
-    return getSizeElem(parentWidth,
-        percentToApplyOnSize: percentToApplyOnParent,
-        maxSizeElem: tmpMaxWidth,
-        minSizeElem: tmpMinWidth);
+    return getSizeElem(
+      parentWidth,
+      percentToApplyOnSize: percentToApplyOnParent,
+      maxSizeElem: tmpMaxWidth,
+      minSizeElem: tmpMinWidth,
+    );
   }
 
   /// Get a widget to display an icon from the [IconData] given
@@ -156,12 +157,7 @@ class WidgetUtility {
     required IconData icon,
     required double size,
     required Color color,
-  }) =>
-      Icon(
-        icon,
-        size: size,
-        color: color,
-      );
+  }) => Icon(icon, size: size, color: color);
 
   /// Get a widget which contain an icon from an image asset, with the [iconAsset] given
   ///
@@ -170,13 +166,7 @@ class WidgetUtility {
     required String iconAsset,
     required double size,
     Color? color,
-  }) =>
-      Image.asset(
-        iconAsset,
-        height: size,
-        fit: BoxFit.contain,
-        color: color,
-      );
+  }) => Image.asset(iconAsset, height: size, fit: BoxFit.contain, color: color);
 
   /// Tells if a global position falls over a given widget area.
   ///
@@ -206,10 +196,7 @@ class WidgetUtility {
   /// Helpful method to add conditionally a single child scroll view between two widgets
   ///
   /// If [addCondition] is equals to true, it will add a [SingleChildScrollView] before the [child]
-  static Widget addSingleChildScrollView({
-    required Widget child,
-    required bool addCondition,
-  }) {
+  static Widget addSingleChildScrollView({required Widget child, required bool addCondition}) {
     if (!addCondition) {
       return child;
     }

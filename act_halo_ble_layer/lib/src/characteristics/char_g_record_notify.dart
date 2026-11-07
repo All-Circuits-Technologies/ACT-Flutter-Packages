@@ -9,17 +9,11 @@ import 'package:act_halo_ble_layer/src/characteristics/abstract_halo_characteris
 import 'package:act_halo_ble_layer/src/characteristics/mix_char_notification.dart';
 
 /// The HALO characteristic G for record data notification exchange
-class CharGRecordNotify extends AbstractHaloCharacteristic
-    with MixCharNotification {
+class CharGRecordNotify extends AbstractHaloCharacteristic with MixCharNotification {
   /// The characteristic name
   static const characteristicName = "record_data_notification";
 
   /// Class constructor
-  CharGRecordNotify({
-    required super.uuid,
-  }) : super(
-          name: characteristicName,
-          scope: CharacteristicScope.readOnly,
-          receiveType: Uint8List,
-        );
+  CharGRecordNotify({required super.uuid})
+    : super(name: characteristicName, scope: CharacteristicScope.readOnly, receiveType: Uint8List);
 }

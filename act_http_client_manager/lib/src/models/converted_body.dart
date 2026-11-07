@@ -14,10 +14,7 @@ class ConvertedBody extends Equatable {
   final HttpMimeTypes contentType;
 
   /// Default class constructor
-  const ConvertedBody({
-    required this.body,
-    required this.contentType,
-  });
+  const ConvertedBody({required this.body, required this.contentType});
 
   @override
   List<Object?> get props => [body, contentType];

@@ -31,8 +31,11 @@ import 'package:mutex/mutex.dart';
 /// It will also publish the topics that were subscribed to, unsubscribed from and the messages
 /// received on the corresponding streams: AwsIotMqttService.onSubEventStream,
 /// AwsIotMqttService.onUnsubscribedStream, [AwsIotMqttService.onMessageReceivedStream].
-class AwsIotMqttService<AuthManager extends AbsAuthManager,
-    AmplifyManager extends AbsAmplifyManager> extends AbsAwsIotService {
+class AwsIotMqttService<
+  AuthManager extends AbsAuthManager,
+  AmplifyManager extends AbsAmplifyManager
+>
+    extends AbsAwsIotService {
   /// This is the base period for the reconnect timer.
   static const _reconnectTimerBasePeriod = Duration(seconds: 1);
 
@@ -124,23 +127,19 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     required LogsHelper iotManagerLogsHelper,
     required this.config,
     List<StreamObserver> extraStreamObservers = const [],
-    bool autoReconnect = true,
-  })  : _observerSubscriptions = <StreamSubscription>[],
-        _observerUtilities = [
-          InternetStreamObserver(),
-          AuthStreamObserver<AuthManager>(),
-          ...extraStreamObservers,
-        ],
-        _autoReconnect = autoReconnect,
-        _connectionStatusController = StreamController.broadcast(),
-        _onSubEventController = StreamController.broadcast(),
-        _onMessageReceivedController = StreamController.broadcast(),
-        _mqttClientMutex = Mutex(),
-        _isDisconnectingFlag = false,
-        super(
-          logsCategory: _logCategory,
-          iotManagerLogsHelper: iotManagerLogsHelper,
-        ) {
+    this._autoReconnect = true,
+  }) : _observerSubscriptions = <StreamSubscription>[],
+       _observerUtilities = [
+         InternetStreamObserver(),
+         AuthStreamObserver<AuthManager>(),
+         ...extraStreamObservers,
+       ],
+       _connectionStatusController = StreamController.broadcast(),
+       _onSubEventController = StreamController.broadcast(),
+       _onMessageReceivedController = StreamController.broadcast(),
+       _mqttClientMutex = Mutex(),
+       _isDisconnectingFlag = false,
+       super(logsCategory: _logCategory, iotManagerLogsHelper: iotManagerLogsHelper) {
     // Create the reconnect timer. We can't create it before because it needs to call the _connect
     // method which is not available before the object is fully created.
     _reconnectTimer = ProgressingRestartableTimer.expFactor(
@@ -219,17 +218,11 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
       _mqttSubcriptionService.getWatcher(topic);
 
   /// Protected version of [_unsafePublish]
-  Future<bool> publish(
-    String topic,
-    String payload,
-  ) async =>
+  Future<bool> publish(String topic, String payload) async =>
       _mqttClientMutex.protect(() => _unsafePublish(topic, payload));
 
   /// Publish a message to a topic with the given payload
-  Future<bool> _unsafePublish(
-    String topic,
-    String payload,
-  ) async {
+  Future<bool> _unsafePublish(String topic, String payload) async {
     if (_mqttClient == null) {
       logsHelper.d('Failed to publish. Not connected to server');
       return false;
@@ -343,9 +336,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
     }
 
     if (mqttStatus?.returnCode != MqttConnectReturnCode.connectionAccepted) {
-      logsHelper.e(
-        'Connection refused with return code ${mqttStatus?.returnCode}',
-      );
+      logsHelper.e('Connection refused with return code ${mqttStatus?.returnCode}');
       return null;
     }
 
@@ -390,38 +381,34 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   }
 
   /// Handle the mqtt client disconnection event
-  Future<void> _onDisconnected() => _mqttClientMutex.protect(
-        () async {
-          await _mqttClientUpdatesSubscription?.cancel();
-          _mqttClient = null;
+  Future<void> _onDisconnected() => _mqttClientMutex.protect(() async {
+    await _mqttClientUpdatesSubscription?.cancel();
+    _mqttClient = null;
 
-          // Notify that we are disconnected
-          _connectionStatusController.add(false);
+    // Notify that we are disconnected
+    _connectionStatusController.add(false);
 
-          // If a disconnection was requested, we should not try to reconnect
-          if (_isDisconnectingFlag) {
-            _isDisconnectingFlag = false;
-            logsHelper.d('Successfully disconnected from the mqtt server');
-            return;
-          }
+    // If a disconnection was requested, we should not try to reconnect
+    if (_isDisconnectingFlag) {
+      _isDisconnectingFlag = false;
+      logsHelper.d('Successfully disconnected from the mqtt server');
+      return;
+    }
 
-          // If the connection was lost abrutly and if we are allowed to auto reconnect, then we
-          // should try to reconnect to the mqtt server.
-          if (_autoReconnect) {
-            final isAllSubscribed = await _mqttSubcriptionService.isAllSubscribed();
-            if (isAllSubscribed) {
-              // If we were subscribed to all the topics, this means that the connection has
-              // correctly succeeded; therefore we can reset the restartableTimer
-              _reconnectTimer.reset();
-            }
+    // If the connection was lost abrutly and if we are allowed to auto reconnect, then we
+    // should try to reconnect to the mqtt server.
+    if (_autoReconnect) {
+      final isAllSubscribed = await _mqttSubcriptionService.isAllSubscribed();
+      if (isAllSubscribed) {
+        // If we were subscribed to all the topics, this means that the connection has
+        // correctly succeeded; therefore we can reset the restartableTimer
+        _reconnectTimer.reset();
+      }
 
-            logsHelper.d(
-              'Connection lost abruptly. Auto reconnect is enabled, trying to reconnect...',
-            );
-            _reconnectTimer.restart();
-          }
-        },
-      );
+      logsHelper.d('Connection lost abruptly. Auto reconnect is enabled, trying to reconnect...');
+      _reconnectTimer.restart();
+    }
+  });
 
   /// Handle the mqtt client failed connection event
   void _onFailedConnectionAttempt(int attemptNumber) {
@@ -430,18 +417,12 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
 
   /// Forward the mqtt client subscription event on the [onSubEventStream]
   void _onSubscribed(String topic) {
-    _onSubEventController.add((
-      topic: topic,
-      evt: AwsIotMqttSubEvent.subscribed,
-    ));
+    _onSubEventController.add((topic: topic, evt: AwsIotMqttSubEvent.subscribed));
   }
 
   /// Handle the mqtt client topic subscription failed event
   void _onSubscribeFailed(String topic) {
-    _onSubEventController.add((
-      topic: topic,
-      evt: AwsIotMqttSubEvent.subscriptionFailed,
-    ));
+    _onSubEventController.add((topic: topic, evt: AwsIotMqttSubEvent.subscriptionFailed));
   }
 
   /// Handle the mqtt client onUnsubscribed event
@@ -451,10 +432,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
       return;
     }
 
-    _onSubEventController.add((
-      topic: topic,
-      evt: AwsIotMqttSubEvent.unsubscribed,
-    ));
+    _onSubEventController.add((topic: topic, evt: AwsIotMqttSubEvent.unsubscribed));
   }
 
   /// Handle the mqtt client message received event
@@ -472,11 +450,7 @@ class AwsIotMqttService<AuthManager extends AbsAuthManager,
   /// Create an mqtt client with the given url and client id
   MqttServerClient _createMqttClient(String url, String clientId) {
     // Create the mqtt client
-    final client = MqttServerClient.withPort(
-      url,
-      clientId,
-      config.mqttPort,
-    );
+    final client = MqttServerClient.withPort(url, clientId, config.mqttPort);
 
     // Configure the mqtt client
     client.setProtocolV311(); // Required by AWS IoT

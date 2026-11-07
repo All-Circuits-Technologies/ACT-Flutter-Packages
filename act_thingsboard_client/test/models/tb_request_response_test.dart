@@ -42,7 +42,10 @@ void main() {
     test("is the same as a response which holds the same status and answer", () {
       const response = TbRequestResponse<int>(status: RequestStatus.success, requestResponse: 1);
 
-      expect(response, const TbRequestResponse<int>(status: RequestStatus.success, requestResponse: 1));
+      expect(
+        response,
+        const TbRequestResponse<int>(status: RequestStatus.success, requestResponse: 1),
+      );
     });
 
     test("is not the same as a response which holds another status", () {

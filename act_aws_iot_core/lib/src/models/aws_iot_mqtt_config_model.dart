@@ -71,11 +71,5 @@ class AwsIotMqttConfigModel extends Equatable {
 
   /// Properties of the model
   @override
-  List<Object?> get props => [
-        region,
-        endpoint,
-        cognitoService,
-        signerValidityDuration,
-        mqttPort,
-      ];
+  List<Object?> get props => [region, endpoint, cognitoService, signerValidityDuration, mqttPort];
 }

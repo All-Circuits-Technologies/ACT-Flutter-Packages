@@ -11,15 +11,13 @@ import 'package:act_dart_utility/act_dart_utility.dart';
 class UpdatedUniqueModelEvent<M extends MixinUniqueModel> extends UpdatedModelEvent<M, String> {
   /// Used as constructor when an object is created
   const UpdatedUniqueModelEvent.newObjectCreated({required super.current})
-      : super.newObjectCreated();
+    : super.newObjectCreated();
 
   /// Used as constructor when an object is updated
-  UpdatedUniqueModelEvent.objectUpdated({
-    required super.current,
-  }) : super.objectUpdated(previousUniqueId: current.uniqueId);
+  UpdatedUniqueModelEvent.objectUpdated({required super.current})
+    : super.objectUpdated(previousUniqueId: current.uniqueId);
 
   /// Used as constructor when an object is deleted
-  const UpdatedUniqueModelEvent.objectDeleted({
-    required super.previousUniqueId,
-  }) : super.objectDeleted();
+  const UpdatedUniqueModelEvent.objectDeleted({required super.previousUniqueId})
+    : super.objectDeleted();
 }

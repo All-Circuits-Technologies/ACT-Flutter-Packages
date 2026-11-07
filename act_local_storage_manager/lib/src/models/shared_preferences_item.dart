@@ -26,8 +26,8 @@ class SharedPreferencesItem<T> extends AbsStorageItem<T> {
   /// Only `AbstractPropertiesManager` creates instances of this helper class.
   /// Other actors uses them.
   SharedPreferencesItem(String key)
-      : _updateStreamController = StreamController.broadcast(),
-        super(key: key);
+    : _updateStreamController = StreamController.broadcast(),
+      super(key: key);
 
   /// {@macro act_local_storage_manager.AbsStorageItem.load}
   @override

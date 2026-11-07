@@ -114,12 +114,11 @@ void main() {
 
   group("SharedPrefsItemWithParser", () {
     /// Builds an item which keeps a theme as the name it goes by.
-    SharedPrefsItemWithParser<_Theme, String> anItem() =>
-        SharedPrefsItemWithParser<_Theme, String>(
-          "theme",
-          parser: _Theme.parse,
-          castTo: (theme) => theme.name,
-        );
+    SharedPrefsItemWithParser<_Theme, String> anItem() => SharedPrefsItemWithParser<_Theme, String>(
+      "theme",
+      parser: _Theme.parse,
+      castTo: (theme) => theme.name,
+    );
 
     test("returns the value it parses from what was stored", () async {
       final item = anItem();

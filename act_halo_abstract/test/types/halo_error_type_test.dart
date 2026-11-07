@@ -7,28 +7,43 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group("HaloErrorType", () {
-    test("says it makes sense to retry after a transient error", () {
+    test("can be retried after a transient error", () {
       expect(
         [
           HaloErrorType.serviceBusyError,
           HaloErrorType.commError,
           HaloErrorType.genericError,
-        ].map((error) => error.isMakingSensToRetry),
+        ].map((error) => error.canBeRetried),
         everyElement(isTrue),
       );
     });
 
-    test("says it makes no sense to retry after an error which would happen again", () {
+    test("can be retried after a success, like the other result statuses", () {
+      expect(HaloErrorType.noError.canBeRetried, isTrue);
+    });
+
+    test("can't be retried after an error which would happen again", () {
       expect(
         [
-          HaloErrorType.noError,
           HaloErrorType.formatError,
           HaloErrorType.protocolError,
           HaloErrorType.notImplementedYet,
           HaloErrorType.unknown,
-        ].map((error) => error.isMakingSensToRetry),
+        ].map((error) => error.canBeRetried),
         everyElement(isFalse),
       );
+    });
+
+    test("is a success only for noError", () {
+      expect(HaloErrorType.noError.isSuccess, isTrue);
+      expect(HaloErrorType.noError.isError, isFalse);
+    });
+
+    test("is an error for every value except noError", () {
+      final errors = HaloErrorType.values.where((error) => error != HaloErrorType.noError);
+
+      expect(errors.map((error) => error.isError), everyElement(isTrue));
+      expect(errors.map((error) => error.isSuccess), everyElement(isFalse));
     });
 
     test("gives a distinct raw value to each error", () {

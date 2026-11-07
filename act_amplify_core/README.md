@@ -132,8 +132,10 @@ class AppAmplifyBuilder extends AbsAmplifyBuilder<AppAmplifyManager, AppConfigMa
 }
 ```
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(AppAmplifyBuilder());
+registerManagerAsync(AppAmplifyBuilder());
 ```
 
 `amplifyconfig` is the constant of the file the tools of Amplify generate, which the next section

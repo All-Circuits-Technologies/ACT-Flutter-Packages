@@ -4,11 +4,9 @@
 
 import 'package:act_intl_ui/act_intl_ui.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../fakes/fake_intl_ui.dart';
 
@@ -85,15 +83,13 @@ void main() {
     });
 
     testWidgets("lets the user scroll a text which is longer than the page", (tester) async {
-      FakeAssets.serve({
-        "assets/texts/terms_fr_FR.html": "<p>${"les conditions " * 500}</p>",
-      });
+      FakeAssets.serve({"assets/texts/terms_fr_FR.html": "<p>${"les conditions " * 500}</p>"});
 
       await aPage(tester);
       await tester.pumpAndSettle();
 
       expect(find.byType(SingleChildScrollView), findsOneWidget);
-      expect(find.byType(CupertinoScrollbar), findsOneWidget);
+      expect(find.byType(Scrollbar), findsOneWidget);
     });
   });
 }

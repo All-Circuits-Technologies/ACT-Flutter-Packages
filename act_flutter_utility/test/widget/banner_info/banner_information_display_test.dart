@@ -5,8 +5,8 @@
 import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_internet_connectivity_manager/act_internet_connectivity_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../fakes/fake_internet_connectivity_manager.dart';
 

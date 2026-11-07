@@ -5,9 +5,9 @@
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_intl/act_intl.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The path of the text the page reads, without the locale it is translated in.
 const _path = "assets/texts/readme.md";

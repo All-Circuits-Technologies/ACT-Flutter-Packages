@@ -13,8 +13,8 @@ import 'package:act_router_manager/src/routes_helper_companion.dart';
 import 'package:act_router_manager/src/types/mixin_route.dart';
 import 'package:act_router_manager/src/types/pop_until_predicate.dart';
 import 'package:act_router_manager/src/types/push_and_remove_until_predicate.dart';
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This function allows to register router redirection
 /// If the function returns null, it means that there is nothing to do
@@ -24,8 +24,11 @@ import 'package:go_router/go_router.dart';
 ///     built and displayed),
 ///   - this method will be recalled with the new view we ask (so be careful to not create
 ///     infinite redirection)
-typedef RouterRedirect<T extends MixinRoute> =
-    Future<T?> Function(BuildContext context, T route, GoRouterState state);
+typedef RouterRedirect<T extends MixinRoute> = Future<T?> Function(
+  BuildContext context,
+  T route,
+  GoRouterState state,
+);
 
 /// Builder for creating the AbstractGorouterManager
 class AbstractRouterBuilder<M extends AbstractRouterManager> extends AbsLifeCycleFactory<M> {

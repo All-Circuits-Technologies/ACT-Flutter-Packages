@@ -17,8 +17,7 @@ class ActTbStorage extends TbStorage<String> {
   final MixinAuthStorageService? Function()? _storageServiceGetter;
 
   /// Class constructor
-  ActTbStorage({required MixinAuthStorageService? Function()? storageServiceGetter})
-      : _storageServiceGetter = storageServiceGetter;
+  ActTbStorage({required this._storageServiceGetter});
 
   /// Called to delete the content of an item
   @override

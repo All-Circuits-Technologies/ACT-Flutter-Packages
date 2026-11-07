@@ -30,10 +30,7 @@ abstract class AbstractJwtHandler {
   bool get canSignAndVerify => _privateKey != null && _publicKey != null;
 
   /// Class constructor
-  AbstractJwtHandler({
-    required this.name,
-    required this.logsHelper,
-  });
+  AbstractJwtHandler({required this.name, required this.logsHelper});
 
   /// This method is called to init the JWT handler.
   ///
@@ -118,8 +115,10 @@ abstract class AbstractJwtHandler {
     if (_jwtOptions.issuer == null ||
         _jwtOptions.expirationTime == null ||
         _jwtOptions.audience == null) {
-      logsHelper.w("Can't sign a JWT token, the issuer, expiration time and audience information "
-          "haven't been given");
+      logsHelper.w(
+        "Can't sign a JWT token, the issuer, expiration time and audience information "
+        "haven't been given",
+      );
       return null;
     }
 

@@ -55,10 +55,7 @@ sealed class StringIntervalUtility {
   /// interval: [ "ber" ]
   ///
   /// Empty key is ignored, otherwise it would create too much intervals.
-  static Map<String, List<StringInterval>> findIntervals(
-    String text,
-    List<String> keys,
-  ) {
+  static Map<String, List<StringInterval>> findIntervals(String text, List<String> keys) {
     final textIntervals = <String, List<StringInterval>>{};
 
     for (final key in keys) {
@@ -76,11 +73,7 @@ sealed class StringIntervalUtility {
         idx = text.indexOf(key, idx);
 
         if (idx != -1) {
-          textIntervals[key]!.add(StringInterval(
-            key: key,
-            startIdx: idx,
-            length: length,
-          ));
+          textIntervals[key]!.add(StringInterval(key: key, startIdx: idx, length: length));
 
           // To avoid to find always the same element
           idx++;
@@ -139,11 +132,13 @@ sealed class StringIntervalUtility {
 
       if (currentKey != keyFound) {
         if (index != 0) {
-          flattenTextIntervals.add(StringInterval.withEndIdx(
-            key: currentKey,
-            startIdx: idxWithoutChange,
-            endIdx: index - 1,
-          ));
+          flattenTextIntervals.add(
+            StringInterval.withEndIdx(
+              key: currentKey,
+              startIdx: idxWithoutChange,
+              endIdx: index - 1,
+            ),
+          );
         }
 
         currentKey = keyFound;
@@ -152,11 +147,9 @@ sealed class StringIntervalUtility {
 
       if (index == text.length - 1) {
         // Add the last interval
-        flattenTextIntervals.add(StringInterval.withEndIdx(
-          key: currentKey,
-          startIdx: idxWithoutChange,
-          endIdx: index,
-        ));
+        flattenTextIntervals.add(
+          StringInterval.withEndIdx(key: currentKey, startIdx: idxWithoutChange, endIdx: index),
+        );
       }
     }
 

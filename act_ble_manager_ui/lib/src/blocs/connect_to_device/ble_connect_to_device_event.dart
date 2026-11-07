@@ -23,16 +23,11 @@ class ChooseDeviceToConnectToEvent extends BleConnectToDeviceEvent {
   final BleScannedDevice deviceToConnectTo;
 
   /// Class constructor
-  const ChooseDeviceToConnectToEvent({
-    required this.deviceToConnectTo,
-  });
+  const ChooseDeviceToConnectToEvent({required this.deviceToConnectTo});
 
   /// Properties list of the event
   @override
-  List<Object?> get props => [
-        ...super.props,
-        deviceToConnectTo,
-      ];
+  List<Object?> get props => [...super.props, deviceToConnectTo];
 }
 
 /// Emitted when the bond state and/or the connection state have been updated
@@ -46,18 +41,11 @@ class NewDeviceStateEvent extends BleConnectToDeviceEvent {
   final DeviceConnectionState? connectionState;
 
   /// Class constructor
-  const NewDeviceStateEvent({
-    this.bondState,
-    this.connectionState,
-  });
+  const NewDeviceStateEvent({this.bondState, this.connectionState});
 
   /// Properties list of the event
   @override
-  List<Object?> get props => [
-        ...super.props,
-        bondState,
-        connectionState,
-      ];
+  List<Object?> get props => [...super.props, bondState, connectionState];
 }
 
 /// Emitted when the user wants to disconnect from the currently connected BleDevice

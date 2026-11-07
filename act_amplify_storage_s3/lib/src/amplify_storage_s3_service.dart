@@ -55,9 +55,7 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
         options: StorageListOptions(
           pageSize: pageSize ?? MixinStorageService.defaultPageSize,
           nextToken: nextToken,
-          pluginOptions: S3ListPluginOptions(
-            excludeSubPaths: !recursiveSearch,
-          ),
+          pluginOptions: S3ListPluginOptions(excludeSubPaths: !recursiveSearch),
         ),
       ).result;
     } on Exception catch (e) {
@@ -67,12 +65,14 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
 
     // Create a list of StorageFile from the list of StorageItem
     final storageFiles = listResult.items
-        .map((item) => StorageFile(
-              path: item.path,
-              lastModified: item.lastModified,
-              size: item.size,
-              eTag: item.eTag,
-            ))
+        .map(
+          (item) => StorageFile(
+            path: item.path,
+            lastModified: item.lastModified,
+            size: item.size,
+            eTag: item.eTag,
+          ),
+        )
         .toList();
 
     final storagePage = StoragePage(
@@ -113,11 +113,13 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
       final amplifyOnProgress = onProgress == null
           ? null
           : (StorageTransferProgress progress) {
-              onProgress(TransferProgress(
-                totalBytes: progress.totalBytes,
-                bytesTransferred: progress.transferredBytes,
-                transferStatus: _adaptTransferState(progress.state),
-              ));
+              onProgress(
+                TransferProgress(
+                  totalBytes: progress.totalBytes,
+                  bytesTransferred: progress.transferredBytes,
+                  transferStatus: _adaptTransferState(progress.state),
+                ),
+              );
             };
 
       // Download the file
@@ -139,20 +141,19 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
   /// Get a download URL for a file. The path of the file must be given from the root
   /// of the bucket.
   @override
-  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(
-    String fileId,
-  ) async {
+  Future<({StorageRequestResult result, String? downloadUrl})> getDownloadUrl(String fileId) async {
     StorageGetUrlResult urlResult;
 
     try {
       urlResult = await Amplify.Storage.getUrl(
-          path: StoragePath.fromString(fileId),
-          options: const StorageGetUrlOptions(
-            pluginOptions: S3GetUrlPluginOptions(
-              expiresIn: Duration(minutes: 5),
-              validateObjectExistence: true,
-            ),
-          )).result;
+        path: StoragePath.fromString(fileId),
+        options: const StorageGetUrlOptions(
+          pluginOptions: S3GetUrlPluginOptions(
+            expiresIn: Duration(minutes: 5),
+            validateObjectExistence: true,
+          ),
+        ),
+      ).result;
     } on Exception catch (e) {
       _logsHelper.e('Error while getting a download URL for file $fileId: $e');
       return (result: _parseException(e), downloadUrl: null);
@@ -202,7 +203,5 @@ class AmplifyStorageS3Service extends AbsAmplifyService with MixinStorageService
   /// the server). But, if needed, this method can be overridden by a derived class in the project
   /// if needed to set a particular configuration to the plugin.
   @override
-  Future<List<AmplifyPluginInterface>> getLinkedPluginsList() async => [
-        AmplifyStorageS3(),
-      ];
+  Future<List<AmplifyPluginInterface>> getLinkedPluginsList() async => [AmplifyStorageS3()];
 }

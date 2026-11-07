@@ -16,19 +16,11 @@ mixin MixinGetWantedLocaleState<S extends MixinGetWantedLocaleState<S>> on BlocS
   /// {@template act_intl_ui.MixinGetWantedLocaleState.copyGetWantedLocaleState}
   /// This is the copyWith method for the mixin
   /// {@endtemplate}
-  S copyGetWantedLocaleState({
-    Locale? wantedLocale,
-    bool forceWantedLocaleValue = false,
-  });
+  S copyGetWantedLocaleState({Locale? wantedLocale, bool forceWantedLocaleValue = false});
 
   /// This method is used to copy the state with a new wanted locale
-  S copyToNewLocaleWantedByUserState({
-    required Locale? wantedLocale,
-  }) =>
-      copyGetWantedLocaleState(
-        wantedLocale: wantedLocale,
-        forceWantedLocaleValue: true,
-      );
+  S copyToNewLocaleWantedByUserState({required Locale? wantedLocale}) =>
+      copyGetWantedLocaleState(wantedLocale: wantedLocale, forceWantedLocaleValue: true);
 
   /// {@macro act_flutter_utility.BlocStateForMixin.props}
   @override

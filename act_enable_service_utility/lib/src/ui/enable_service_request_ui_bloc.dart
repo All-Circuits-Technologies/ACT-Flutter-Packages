@@ -12,11 +12,6 @@ class EnableServiceRequestUiBloc<T extends MEnableService>
   /// Class constructor
   ///
   /// [manager] is the service linked to this view request.
-  EnableServiceRequestUiBloc({
-    required super.config,
-    required T manager,
-  }) : super(
-          isOkCallback: () => manager.isEnabled,
-          isOkStream: manager.enabledStream,
-        );
+  EnableServiceRequestUiBloc({required super.config, required T manager})
+    : super(isOkCallback: () => manager.isEnabled, isOkStream: manager.enabledStream);
 }

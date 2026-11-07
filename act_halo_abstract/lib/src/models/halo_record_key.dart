@@ -19,18 +19,15 @@ class HaloRecordKey<T> extends Equatable {
   final int uniqueIndex;
 
   /// Class constructor
-  const HaloRecordKey({
-    required this.dataId,
-    required this.uniqueIndex,
-  }) : assert(
-            0 <= uniqueIndex && uniqueIndex <= ByteUtility.maxUInt8,
-            "The expected format of the unique index is an UInt8, the value given overflows the "
-            "min and max: $uniqueIndex");
+  const HaloRecordKey({required this.dataId, required this.uniqueIndex})
+    : assert(
+        0 <= uniqueIndex && uniqueIndex <= ByteUtility.maxUInt8,
+        "The expected format of the unique index is an UInt8, the value given overflows the "
+        "min and max: $uniqueIndex",
+      );
 
   /// Defines a [HaloRecordKey] to get them all
-  const HaloRecordKey.getAll({
-    required this.dataId,
-  }) : uniqueIndex = getAllUniqueIndex;
+  const HaloRecordKey.getAll({required this.dataId}) : uniqueIndex = getAllUniqueIndex;
 
   @override
   List<Object?> get props => [dataId, uniqueIndex];

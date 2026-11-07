@@ -16,8 +16,8 @@ platforms:
   windows:
 
 environment:
-  sdk: ^3.11.1
-  flutter: ">=3.29.0"
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
 
 dependencies:
   flutter:
@@ -34,6 +34,10 @@ dependencies:
 
   act_ble_manager:
     path: ../act_ble_manager
+
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
 
   # Extend Dart functionalities
   act_dart_utility:

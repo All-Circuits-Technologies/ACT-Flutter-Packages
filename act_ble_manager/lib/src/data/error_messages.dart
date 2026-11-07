@@ -25,7 +25,8 @@ const String bluetoothDisabled = "Bluetooth disabled";
 const String scanThrottle = "Undocumented scan throttle";
 
 /// This error is raised when a problem occurred and fire the disconnection of device
-const String gattSuccessDisconnectedError = "Disconnected from MAC='XX:XX:XX:XX:XX:XX' with "
+const String gattSuccessDisconnectedError =
+    "Disconnected from MAC='XX:XX:XX:XX:XX:XX' with "
     "status 0 (GATT_SUCCESS)";
 
 /// This error occurred when we haven't enough authorization to act with a characteristic

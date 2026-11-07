@@ -5,7 +5,7 @@
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_themes_manager/act_themes_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';

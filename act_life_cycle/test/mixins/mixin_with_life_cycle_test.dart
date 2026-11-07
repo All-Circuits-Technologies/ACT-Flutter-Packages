@@ -7,7 +7,7 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A class which only takes the default life cycle of the mixin.
-class _PlainService with MixinWithLifeCycleDispose, MixinWithLifeCycle {}
+class _PlainService with MixinWithLifeCycleDispose, MixinWithLifeCycle;
 
 /// A class which records the order of the steps it and the mixin run.
 class _RecordingService with MixinWithLifeCycleDispose, MixinWithLifeCycle {

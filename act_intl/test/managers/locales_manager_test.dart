@@ -6,7 +6,7 @@ import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_intl/act_intl.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
@@ -176,6 +176,22 @@ void main() {
     });
   });
 
+  group("LocalesManager.currentLocale", () {
+    testWidgets("shows the locale it wants before the view is shown", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+
+      expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("shows the locale of the device before the view is shown when it wants none", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(manager.currentLocale, _deviceLocale);
+    });
+  });
+
   group("LocalesManager.initAfterView", () {
     testWidgets("shows the application in the locale it wants", (tester) async {
       final manager = await aManager(defaultWantedLocale: "fr-FR");
@@ -203,6 +219,18 @@ void main() {
       await theViewIsShown(tester, manager, withObserver: false);
 
       expect(manager.currentLocale, const Locale("fr", "FR"));
+    });
+
+    testWidgets("tells the application about the locale it resolved", (tester) async {
+      final manager = await aManager(defaultWantedLocale: "fr-FR");
+      final locales = <Locale>[];
+      final subscription = manager.currentLocaleStream.listen(locales.add);
+      addTearDown(subscription.cancel);
+
+      await theViewIsShown(tester, manager);
+      await tester.pump();
+
+      expect(locales, const [Locale("fr", "FR")]);
     });
   });
 
@@ -306,6 +334,14 @@ void main() {
       manager.wantedLocale = const Locale("fr", "FR");
 
       expect(manager.currentLocaleStrForDateFormat, "fr_FR");
+    });
+
+    testWidgets("gives the date formatting a locale it accepts before the view is shown", (
+      tester,
+    ) async {
+      final manager = await aManager();
+
+      expect(() => DateFormat.jm(manager.currentLocaleStrForDateFormat), returnsNormally);
     });
   });
 

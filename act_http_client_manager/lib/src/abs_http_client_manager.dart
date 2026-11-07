@@ -19,7 +19,7 @@ import 'package:act_http_client_manager/src/utilities/url_format_utility.dart';
 import 'package:act_http_core/act_http_core.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart';
 
 /// Builder of the [AbsHttpClientManager] manager

@@ -40,8 +40,10 @@ abstract class AbstractHaloManager<HardwareType> extends AbsWithLifeCycle {
     haloManagerConfig = await initHaloManagerConfig();
 
     if (haloManagerConfig == null) {
-      appLogger().w("A problem occurred when initializing the HALO manager and trying to get the "
-          "configuration");
+      appLogger().w(
+        "A problem occurred when initializing the HALO manager and trying to get the "
+        "configuration",
+      );
       return;
     }
 
@@ -60,10 +62,7 @@ abstract class AbstractHaloManager<HardwareType> extends AbsWithLifeCycle {
   @protected
   Future<HaloRequestToDeviceFeature<HardwareType>> createRequestToDeviceFeature({
     required HaloManagerConfig<HardwareType> haloManagerConfig,
-  }) async =>
-      HaloRequestToDeviceFeature<HardwareType>(
-        haloManagerConfig: haloManagerConfig,
-      );
+  }) async => HaloRequestToDeviceFeature<HardwareType>(haloManagerConfig: haloManagerConfig);
 
   /// To call to dispose the manager
   @override

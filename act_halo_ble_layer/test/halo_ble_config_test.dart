@@ -15,10 +15,7 @@ void main() {
       final config = aHaloConfig();
 
       expect(config.allHaloCharacteristics.length, 13);
-      expect(
-        config.allHaloCharacteristics.map((char) => char.uuid),
-        haloCharUuids,
-      );
+      expect(config.allHaloCharacteristics.map((char) => char.uuid), haloCharUuids);
     });
 
     test("names each characteristic after what is exchanged over it", () {
@@ -34,21 +31,18 @@ void main() {
     test("says which characteristics the device notifies over", () {
       final config = aHaloConfig();
 
-      expect(
-        config.notifiableHaloCharacteristics.map((char) => char.name),
-        [
-          "attribute_notification",
-          "attribute_command_and_result",
-          "instant_data_notification",
-          "instant_data_command_and_result",
-          "record_data_notification",
-          "record_data_command_and_result",
-          "request_to_device_command_and_result",
-          "request_to_device_exchange_zone",
-          "request_to_client_command_and_result",
-          "request_to_client_exchange_zone",
-        ],
-      );
+      expect(config.notifiableHaloCharacteristics.map((char) => char.name), [
+        "attribute_notification",
+        "attribute_command_and_result",
+        "instant_data_notification",
+        "instant_data_command_and_result",
+        "record_data_notification",
+        "record_data_command_and_result",
+        "request_to_device_command_and_result",
+        "request_to_device_exchange_zone",
+        "request_to_client_command_and_result",
+        "request_to_client_exchange_zone",
+      ]);
     });
 
     test("says that the exchange zones of the attributes and of the data notify nothing", () {

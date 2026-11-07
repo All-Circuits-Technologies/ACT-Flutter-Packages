@@ -27,11 +27,7 @@ class SharedPrefsItemWithParser<ParsedType, StoredType> extends SharedPreference
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  SharedPrefsItemWithParser(
-    super.key, {
-    required this.parser,
-    required this.castTo,
-  });
+  SharedPrefsItemWithParser(super.key, {required this.parser, required this.castTo});
 
   /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
   @override

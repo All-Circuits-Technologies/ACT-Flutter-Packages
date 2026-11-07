@@ -43,9 +43,11 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
     this.maxWidth,
     this.maxHeight,
     this.devicePixelRatio,
-  })  : _storageManager = globalGetIt().get<S>(),
-        assert(maxWidth == null && maxHeight == null || devicePixelRatio != null,
-            "When using maxWidth or maxHeight, the devicePixelRatio must be given");
+  }) : _storageManager = globalGetIt().get<S>(),
+       assert(
+         maxWidth == null && maxHeight == null || devicePixelRatio != null,
+         "When using maxWidth or maxHeight, the devicePixelRatio must be given",
+       );
 
   /// This method returns the key to load the image thanks to the given [configuration]
   @override
@@ -62,13 +64,14 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
   @override
   ImageStreamCompleter loadImage(String key, ImageDecoderCallback decode) =>
       OneFrameImageStreamCompleter(
-          // Here, we get the future return as a value and pass it to the class
-          // ignore: discarded_futures
-          _getImage(key, decode),
-          informationCollector: () => <DiagnosticsNode>[
-                DiagnosticsProperty<ImageProvider>('Image provider', this),
-                DiagnosticsProperty<String>('fileId', fileId),
-              ]);
+        // Here, we get the future return as a value and pass it to the class
+        // ignore: discarded_futures
+        _getImage(key, decode),
+        informationCollector: () => <DiagnosticsNode>[
+          DiagnosticsProperty<ImageProvider>('Image provider', this),
+          DiagnosticsProperty<String>('fileId', fileId),
+        ],
+      );
 
   /// Get the right device pixel size
   int? _getDevicePixelSize(double? size) {
@@ -103,17 +106,16 @@ class StorageManagerImageProvider<S extends MixinImageCacheService> extends Imag
 
     final fileImage = FileImage(fileResult.file!);
     final tmpImage = (tmpWidth != null || tmpHeight != null)
-        ? ResizeImage(
-            fileImage,
-            width: tmpWidth,
-            height: tmpHeight,
-            policy: ResizeImagePolicy.fit,
-          )
+        ? ResizeImage(fileImage, width: tmpWidth, height: tmpHeight, policy: ResizeImagePolicy.fit)
         : fileImage as ImageProvider;
     final completer = Completer<ui.Image>();
-    tmpImage.resolve(ImageConfiguration.empty).addListener(ImageStreamListener((info, _) {
-      completer.complete(info.image);
-    }));
+    tmpImage
+        .resolve(ImageConfiguration.empty)
+        .addListener(
+          ImageStreamListener((info, _) {
+            completer.complete(info.image);
+          }),
+        );
     final image = await completer.future;
     await tmpImage.evict();
     return ImageInfo(image: image);

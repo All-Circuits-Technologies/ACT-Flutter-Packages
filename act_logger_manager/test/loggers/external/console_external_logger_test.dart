@@ -17,9 +17,7 @@ List<String> _consoleLines(void Function() body) {
 
   runZoned(
     body,
-    zoneSpecification: ZoneSpecification(
-      print: (self, parent, zone, line) => lines.add(line),
-    ),
+    zoneSpecification: ZoneSpecification(print: (self, parent, zone, line) => lines.add(line)),
   );
 
   return lines;
@@ -36,10 +34,7 @@ void main() {
     });
 
     test("keeps the minimum level it is given", () {
-      expect(
-        ConsoleExternalLogger.withMinLevel(minLevel: LogsLevel.warn).minLevel,
-        LogsLevel.warn,
-      );
+      expect(ConsoleExternalLogger.withMinLevel(minLevel: LogsLevel.warn).minLevel, LogsLevel.warn);
     });
   });
 
@@ -132,9 +127,7 @@ void main() {
     test("writes nothing for a message below its minimum level", () {
       final logger = ConsoleExternalLogger.withMinLevel(minLevel: LogsLevel.error);
 
-      final lines = _consoleLines(
-        () => logger.log(message: "a message", level: LogsLevel.info),
-      );
+      final lines = _consoleLines(() => logger.log(message: "a message", level: LogsLevel.info));
 
       expect(lines, isEmpty);
     });
@@ -167,10 +160,7 @@ void main() {
 
       await logger.disposeLifeCycle();
 
-      expect(
-        () => logger.log(message: "a message", level: LogsLevel.warn),
-        throwsArgumentError,
-      );
+      expect(() => logger.log(message: "a message", level: LogsLevel.warn), throwsArgumentError);
     });
   });
 }

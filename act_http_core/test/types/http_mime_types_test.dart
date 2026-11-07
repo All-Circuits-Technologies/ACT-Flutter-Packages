@@ -11,6 +11,7 @@ void main() {
       expect(HttpMimeTypes.json.stringValue, "application/json");
       expect(HttpMimeTypes.plainText.stringValue, "text/plain");
       expect(HttpMimeTypes.formUrlEncoded.stringValue, "application/x-www-form-urlencoded");
+      expect(HttpMimeTypes.zip.stringValue, "application/zip");
     });
 
     test("gives an empty value to the absence of a mime type", () {
@@ -24,6 +25,7 @@ void main() {
       expect(HttpMimeTypes.json.bodyType, HttpBodyTypes.json);
       expect(HttpMimeTypes.plainText.bodyType, HttpBodyTypes.string);
       expect(HttpMimeTypes.gzip.bodyType, HttpBodyTypes.binary);
+      expect(HttpMimeTypes.zip.bodyType, HttpBodyTypes.binary);
       expect(HttpMimeTypes.formUrlEncoded.bodyType, HttpBodyTypes.mapStringString);
     });
   });

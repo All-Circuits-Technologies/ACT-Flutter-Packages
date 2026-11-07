@@ -20,11 +20,7 @@ class RoutePageDetails extends Equatable {
   final Widget widget;
 
   /// Class constructor
-  const RoutePageDetails({
-    required this.widget,
-    this.transition,
-    this.screenOrientation,
-  }) : super();
+  const RoutePageDetails({required this.widget, this.transition, this.screenOrientation}) : super();
 
   @override
   List<Object?> get props => [transition, screenOrientation, widget];

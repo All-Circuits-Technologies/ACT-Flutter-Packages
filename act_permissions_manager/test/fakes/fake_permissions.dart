@@ -122,9 +122,7 @@ class FakePermissionsPlatform extends PermissionHandlerPlatform {
   }
 
   @override
-  Future<Map<Permission, PermissionStatus>> requestPermissions(
-    List<Permission> permissions,
-  ) async {
+  Future<Map<Permission, PermissionStatus>> requestPermissions(List<Permission> permissions) async {
     final answers = <Permission, PermissionStatus>{};
 
     for (final permission in permissions) {
@@ -184,8 +182,9 @@ class FakePermRouterManager extends AbstractRouterManager<FakePermRoute> {
 }
 
 /// What a view of the application answers when a permission is asked of the user.
-typedef PermissionViewAnswer =
-    Future<ViewDisplayResult<PermissionStatus>> Function(DoActionDisplayCallback? doAction);
+typedef PermissionViewAnswer = Future<ViewDisplayResult<PermissionStatus>> Function(
+  DoActionDisplayCallback? doAction,
+);
 
 /// The views an application under test displays when a permission is asked of the user.
 class FakePermViewBuilder extends AbstractViewBuilder {
@@ -234,8 +233,8 @@ class FakePermViewBuilder extends AbstractViewBuilder {
   };
 
   /// The view the user leaves without answering.
-  static PermissionViewAnswer theUserLeaves() => (doAction) async =>
-      const ViewDisplayResult<PermissionStatus>(status: ViewDisplayStatus.no);
+  static PermissionViewAnswer theUserLeaves() =>
+      (doAction) async => const ViewDisplayResult<PermissionStatus>(status: ViewDisplayStatus.no);
 }
 
 /// A service of an application which needs the permissions of [configs].

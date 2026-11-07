@@ -19,10 +19,9 @@ sealed class VariantFileUtility {
   /// Get a file from [storage], whose path may vary among [variants] values and is computed using
   /// [variantToFilePath]. Fetched file is cached locally if [useCache] is true (storage feature).
   static Future<
-      ({
-        StorageRequestResult result,
-        ({String variant, String filePath, File file})? data,
-      })> getVariantFile({
+    ({StorageRequestResult result, ({String variant, String filePath, File file})? data})
+  >
+  getVariantFile({
     required AbsRemoteStorageManager storage,
     required Iterable<String> variants,
     required String Function(String) variantToFilePath,
@@ -40,11 +39,7 @@ sealed class VariantFileUtility {
         // File found, no need to go further
         return (
           result: fetchResult.result,
-          data: (
-            variant: variant,
-            filePath: variantPath,
-            file: fetchResult.file!,
-          ),
+          data: (variant: variant, filePath: variantPath, file: fetchResult.file!),
         );
       }
 
@@ -55,9 +50,6 @@ sealed class VariantFileUtility {
 
     // Failed to find file from any variant
     logsHelper.w("Failed to find any '${variantToFilePath("<variant>")}' file");
-    return (
-      result: firstError ?? StorageRequestResult.genericError,
-      data: null,
-    );
+    return (result: firstError ?? StorageRequestResult.genericError, data: null);
   }
 }

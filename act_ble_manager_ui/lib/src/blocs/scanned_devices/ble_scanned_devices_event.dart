@@ -47,9 +47,7 @@ class BleScanUpdateStatusEvent extends BleScannedDevicesEvent {
   final BleScanUpdateStatus scanUpdateStatus;
 
   /// Class constructor
-  const BleScanUpdateStatusEvent({
-    required this.scanUpdateStatus,
-  });
+  const BleScanUpdateStatusEvent({required this.scanUpdateStatus});
 
   /// Event properties
   @override
@@ -62,9 +60,7 @@ class BluetoothEnableStatusEvent extends BleScannedDevicesEvent {
   final bool isBluetoothActive;
 
   /// Class constructor
-  const BluetoothEnableStatusEvent({
-    required this.isBluetoothActive,
-  });
+  const BluetoothEnableStatusEvent({required this.isBluetoothActive});
 
   /// Event properties
   @override

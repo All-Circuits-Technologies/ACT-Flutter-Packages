@@ -4,6 +4,7 @@
 
 import 'dart:async';
 
+import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_halo_abstract/src/hardware_layer/abstract_halo_component_hardware.dart';
 import 'package:act_halo_abstract/src/models/halo_data_id.dart';
 import 'package:act_halo_abstract/src/models/halo_packet.dart';
@@ -24,14 +25,16 @@ abstract class AbstractHaloInstantDataHardware extends AbstractHaloComponentHard
 
   /// Class constructor
   AbstractHaloInstantDataHardware()
-      : _instantDataNewValueCtrl = StreamController<HaloPacket>.broadcast();
+    : _instantDataNewValueCtrl = StreamController<HaloPacket>.broadcast();
 
   /// This method allows to write a specific instant data value to the device
   Future<HaloErrorType> writeInstantData({required HaloPacket packet});
 
   /// This method allows to read a specific instant data value from the device and thanks to the
   /// [HaloDataId] given
-  Future<(HaloErrorType, HaloPacket?)> readInstantData({required HaloDataId dataId});
+  Future<ResultWithRequiredValue<HaloErrorType, HaloPacket>> readInstantData({
+    required HaloDataId dataId,
+  });
 
   /// This method allows to subscribe to the modification of a specific instant data thanks to the
   /// [HaloDataId] given
@@ -49,9 +52,7 @@ abstract class AbstractHaloInstantDataHardware extends AbstractHaloComponentHard
   /// Need to be called by the owner of the class
   @override
   Future<void> close() async {
-    final futures = <Future>[
-      _instantDataNewValueCtrl.close(),
-    ];
+    final futures = <Future>[_instantDataNewValueCtrl.close()];
 
     await Future.wait(futures);
   }

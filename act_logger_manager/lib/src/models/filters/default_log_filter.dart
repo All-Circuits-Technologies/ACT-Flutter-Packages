@@ -26,10 +26,7 @@ class DefaultLogFilter extends LogFilter {
   set minLevel(LogsLevel value) => level = value.toLoggerLevel;
 
   /// Class constructor
-  DefaultLogFilter({
-    this.printLogInRelease = false,
-    LogsLevel minLevel = LogsLevel.all,
-  }) : super() {
+  DefaultLogFilter({this.printLogInRelease = false, LogsLevel minLevel = LogsLevel.all}) : super() {
     level = minLevel.toLoggerLevel;
   }
 

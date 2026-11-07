@@ -31,24 +31,20 @@ class HaloBleRequestResult extends HaloRequestResult {
   const HaloBleRequestResult({
     required this.cmdId,
     required super.requestId,
-    required super.result,
-    required super.error,
+    required super.status,
+    super.value,
     super.nbValues,
   });
 
   /// Helpful constructor to manage success request result
-  const HaloBleRequestResult.success({
-    required super.requestId,
-    required super.result,
-  })  : cmdId = HaloCmdId.ack,
-        super(error: HaloErrorType.noError, nbValues: 0);
+  const HaloBleRequestResult.success({required super.requestId, required super.value})
+    : cmdId = HaloCmdId.ack,
+      super(status: HaloErrorType.noError, nbValues: 0);
 
   /// Helpful constructor to manager error in the request result
-  const HaloBleRequestResult.error({
-    required super.error,
-    required super.requestId,
-  })  : cmdId = HaloCmdId.unknown,
-        super.error();
+  const HaloBleRequestResult.error({required super.requestId, required super.status})
+    : cmdId = HaloCmdId.unknown,
+      super.error();
 
   /// Parse the result received from device and create [HaloBleRequestResult] from it
   static HaloBleRequestResult? parseResultFromDevice({
@@ -56,8 +52,10 @@ class HaloBleRequestResult extends HaloRequestResult {
     required Uint8List deviceResult,
   }) {
     if (deviceResult.length != fixedNumberOfBytesInDataReceived) {
-      appLogger().w("The size of the response received (after an HALO request) isn't equal of what "
-          "we expect: $fixedNumberOfBytesInDataReceived");
+      appLogger().w(
+        "The size of the response received (after an HALO request) isn't equal of what "
+        "we expect: $fixedNumberOfBytesInDataReceived",
+      );
       return null;
     }
 
@@ -72,16 +70,17 @@ class HaloBleRequestResult extends HaloRequestResult {
     }
 
     if (requestId.rawValue != deviceResult[requestIdIdx]) {
-      appLogger().w("We expect an answer to the request: $requestId, but we received a result for "
-          "the request: ${deviceResult[requestIdIdx]}, can't proceed");
+      appLogger().w(
+        "We expect an answer to the request: $requestId, but we received a result for "
+        "the request: ${deviceResult[requestIdIdx]}, can't proceed",
+      );
       return null;
     }
 
     return HaloBleRequestResult(
-      error: error,
+      status: error,
       requestId: requestId,
       cmdId: cmdId,
-      result: null,
       nbValues: deviceResult[valueNbIdx],
     );
   }

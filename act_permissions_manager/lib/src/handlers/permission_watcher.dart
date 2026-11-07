@@ -60,23 +60,23 @@ class PermissionWatcher extends SharedWatcher<PermissionHandler> {
 
   /// Get the current [permission_handler.PermissionStatus]
   Future<permission_handler.PermissionStatus> get status => _permissionMutex.protectRead(() async {
-        if (_currentStatus == null) {
-          await _checkPermissionAndSetStatus();
-        }
+    if (_currentStatus == null) {
+      await _checkPermissionAndSetStatus();
+    }
 
-        // Check permission set the current status to a value (it can't be null);
-        // therefore at this step _currentStatus can't be null
-        return _currentStatus!;
-      });
+    // Check permission set the current status to a value (it can't be null);
+    // therefore at this step _currentStatus can't be null
+    return _currentStatus!;
+  });
 
   /// Class constructor
   PermissionWatcher(PermissionsManager permissionsManager, this.element)
-      : _currentStatusCtrl = StreamController.broadcast(),
-        _permissionsManager = permissionsManager,
-        _permissionMutex = ReadWriteMutex(),
-        _isInsideApp = true,
-        _isInsideAppCtrl = StreamController<bool>.broadcast(),
-        super();
+    : _currentStatusCtrl = StreamController.broadcast(),
+      _permissionsManager = permissionsManager,
+      _permissionMutex = ReadWriteMutex(),
+      _isInsideApp = true,
+      _isInsideAppCtrl = StreamController<bool>.broadcast(),
+      super();
 
   void _setInsideApp(bool newValue) {
     if (_isInsideApp != newValue) {
@@ -104,8 +104,9 @@ class PermissionWatcher extends SharedWatcher<PermissionHandler> {
   /// Called when there is no handler and one is created
   @override
   Future<void> atFirstHandler() async {
-    _lifeCycleSub =
-        globalGetIt().get<AppLifeCycleManager>().lifeCycleStream.listen(_onLifeCycleStateUpdate);
+    _lifeCycleSub = globalGetIt().get<AppLifeCycleManager>().lifeCycleStream.listen(
+      _onLifeCycleStateUpdate,
+    );
 
     return _checkPermissionAndSetStatus();
   }
@@ -120,27 +121,24 @@ class PermissionWatcher extends SharedWatcher<PermissionHandler> {
   }
 
   /// Check if user has already denied request or not
-  Future<bool> shouldShowRationale() => _permissionMutex.protectWrite(() async =>
-      // The set to current status is already done in the request permission
-      // method
-      _permissionsManager.shouldShowRationale(element));
+  Future<bool> shouldShowRationale() => _permissionMutex.protectWrite(
+    () async =>
+        // The set to current status is already done in the request permission
+        // method
+        _permissionsManager.shouldShowRationale(element),
+  );
 
   /// Call to request the permission
-  Future<permission_handler.PermissionStatus> requestPermission({
-    bool checkRationale = false,
-  }) =>
-      _permissionMutex.protectWrite(() async =>
-          // The set to current status is already done in the request permission
-          // method
-          _permissionsManager.requestPermission(
-            element,
-            checkRationale: checkRationale,
-          ));
+  Future<permission_handler.PermissionStatus> requestPermission({bool checkRationale = false}) =>
+      _permissionMutex.protectWrite(
+        () async =>
+            // The set to current status is already done in the request permission
+            // method
+            _permissionsManager.requestPermission(element, checkRationale: checkRationale),
+      );
 
   /// Get the current permission status and set the current status
-  Future<void> _checkPermissionAndSetStatus({
-    bool hasLeavedTheApp = false,
-  }) async {
+  Future<void> _checkPermissionAndSetStatus({bool hasLeavedTheApp = false}) async {
     var perm = await _permissionsManager.getPermission(element);
 
     if (hasLeavedTheApp) {

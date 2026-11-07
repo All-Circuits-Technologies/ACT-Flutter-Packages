@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
+import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_music_player_manager/act_music_player_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
@@ -22,9 +23,7 @@ class _SoundHelper extends AbstractMusicSoundHelper<_Sound> {
   /// Class constructor
   _SoundHelper()
     : super(
-        musicSounds: const {
-          _Sound.click: MusicSound(value: _Sound.click, filePath: "click.mp3"),
-        },
+        musicSounds: const {_Sound.click: MusicSound(value: _Sound.click, filePath: "click.mp3")},
       );
 }
 
@@ -59,6 +58,16 @@ void main() {
       ).factory();
 
       expect(built.audioFilePrefix, "assets/sounds/");
+    });
+
+    test("is a factory of the manager of its sounds, the type the manager is registered with", () {
+      expect(
+        MusicPlayerBuilder<_Sound>(
+          audioFilePrefix: "assets/sounds/",
+          musicSoundsHelper: _SoundHelper(),
+        ),
+        isA<AbsLifeCycleFactory<MusicPlayerManager<_Sound>>>(),
+      );
     });
   });
 

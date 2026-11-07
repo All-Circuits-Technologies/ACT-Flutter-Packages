@@ -12,7 +12,7 @@ import 'package:act_ble_manager/src/gatt/ble_gatt_find_device_service.dart';
 import 'package:act_ble_manager/src/models/ble_device.dart';
 import 'package:act_ble_manager/src/types/characteristics_error.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:mutex/mutex.dart';
 
@@ -38,10 +38,8 @@ class BleGattService extends AbsWithLifeCycle {
   Stream<BleDevice?> get lastConnectedDeviceStream => _connectService.lastConnectedDeviceStream;
 
   /// Class constructor
-  BleGattService({
-    required FlutterReactiveBle flutterReactiveBle,
-    required BleManager bleManager,
-  }) : _bleMutex = Mutex() {
+  BleGattService({required FlutterReactiveBle flutterReactiveBle, required BleManager bleManager})
+    : _bleMutex = Mutex() {
     _connectService = BleGattConnectService(
       flutterReactiveBle: flutterReactiveBle,
       bleManager: bleManager,
@@ -67,10 +65,7 @@ class BleGattService extends AbsWithLifeCycle {
   }
 
   /// {@macro act_ble_manager.BleGattConnectService.connect}
-  Future<bool> connect(
-    BleDevice device, {
-    VoidCallback? onLowLevelConnect,
-  }) =>
+  Future<bool> connect(BleDevice device, {VoidCallback? onLowLevelConnect}) =>
       _connectService.connect(device, onLowLevelConnect: onLowLevelConnect);
 
   /// {@macro act_ble_manager.BleGattConnectService.disconnect}
@@ -91,27 +86,22 @@ class BleGattService extends AbsWithLifeCycle {
     String uuid,
     List<int> values, {
     bool withoutResponse = false,
-  }) =>
-      _characteristicService.writeBleCharacteristic(
-        device,
-        uuid,
-        values,
-        withoutResponse: withoutResponse,
-      );
+  }) => _characteristicService.writeBleCharacteristic(
+    device,
+    uuid,
+    values,
+    withoutResponse: withoutResponse,
+  );
 
   /// {@macro act_ble_manager.BleGattCharacteristicService.readBleCharacteristic}
-  Future<(CharacteristicsError, List<int>?)> readBleCharacteristic(
-    BleDevice device,
-    String uuid,
-  ) =>
+  Future<(CharacteristicsError, List<int>?)> readBleCharacteristic(BleDevice device, String uuid) =>
       _characteristicService.readBleCharacteristic(device, uuid);
 
   /// {@macro act_ble_manager.BleGattCharacteristicService.subscribeBleNotification}
   Future<(CharacteristicsError, Stream<List<int>>?)> subscribeBleNotification(
     BleDevice device,
     String uuid,
-  ) =>
-      _characteristicService.subscribeBleNotification(device, uuid);
+  ) => _characteristicService.subscribeBleNotification(device, uuid);
 
   /// Manage the disposing of the service
   @override

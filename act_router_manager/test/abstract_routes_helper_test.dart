@@ -109,19 +109,13 @@ void main() {
     });
 
     test("throws when the state carries no extra", () {
-      expect(
-        () => helper.extraOf(_aState(FakeRoute.home)),
-        throwsA(isA<AssertionError>()),
-      );
+      expect(() => helper.extraOf(_aState(FakeRoute.home)), throwsA(isA<AssertionError>()));
     });
   });
 
   group("AbstractRoutesHelper.checkAndCastNullableExtra", () {
     test("returns the extra of the state", () {
-      expect(
-        helper.nullableExtraOf(_aState(FakeRoute.home, extra: "an argument")),
-        "an argument",
-      );
+      expect(helper.nullableExtraOf(_aState(FakeRoute.home, extra: "an argument")), "an argument");
     });
 
     test("returns null when the state carries no extra", () {

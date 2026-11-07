@@ -3,8 +3,8 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// The number of items the page shows, enough for the page to be taller than the screen.
 const _itemCount = 40;
@@ -21,7 +21,7 @@ void main() {
     final list = ScrollableReorderableListView(
       parentScrollController: controller,
       scrollable: scrollable,
-      onReorder: (oldIndex, newIndex) {},
+      onReorderItem: (oldIndex, newIndex) {},
       children: [
         for (var index = 0; index < _itemCount; index++)
           SizedBox(key: ValueKey(index), height: _itemHeight, child: Text("item $index")),

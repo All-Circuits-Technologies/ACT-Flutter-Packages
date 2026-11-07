@@ -28,9 +28,7 @@ void main() {
     });
 
     test("converts the nested lists as well", () {
-      final converted = YamlToStandardObj.fromYamlMap(
-        loadYaml("items:\n  - 1\n  - 2") as YamlMap,
-      );
+      final converted = YamlToStandardObj.fromYamlMap(loadYaml("items:\n  - 1\n  - 2") as YamlMap);
 
       expect(converted["items"], isA<List<dynamic>>());
       expect(converted, {

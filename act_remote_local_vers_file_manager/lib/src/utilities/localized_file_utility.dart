@@ -32,10 +32,9 @@ sealed class LocalizedFileUtility {
   /// That is, find first [dirId]/$locale/[fileName] based on sorted [locales],
   /// with $locale in "en_us" format (underscore, lowercase).
   static Future<
-      ({
-        StorageRequestResult result,
-        ({Locale locale, String filePath, File file})? data,
-      })> getLocalizedFile({
+    ({StorageRequestResult result, ({Locale locale, String filePath, File file})? data})
+  >
+  getLocalizedFile({
     required AbsRemoteStorageManager storage,
     required String dirId,
     required String fileName,

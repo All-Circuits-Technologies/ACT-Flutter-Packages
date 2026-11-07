@@ -39,12 +39,12 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
 
   /// Factory initializer
   TbTelemetriesUiState.init()
-      : device = null,
-        telemetryLoading = true,
-        genericError = TbTelemetriesUiError.noError,
-        tsValues = {},
-        attributesValues = {},
-        super();
+    : device = null,
+      telemetryLoading = true,
+      genericError = TbTelemetriesUiError.noError,
+      tsValues = {},
+      attributesValues = {},
+      super();
 
   /// {@macro act_flutter_utility.BlocStateForMixin.copyWith}
   @override
@@ -56,14 +56,13 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
     Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
     DateTime? dateTime,
-  }) =>
-      TbTelemetriesUiState(
-        device: device ?? (forceDeviceValue ? null : this.device),
-        telemetryLoading: telemetryLoading ?? this.telemetryLoading,
-        genericError: genericError ?? this.genericError,
-        tsValues: tsValues ?? this.tsValues,
-        attributesValues: attributesValues ?? this.attributesValues,
-      );
+  }) => TbTelemetriesUiState(
+    device: device ?? (forceDeviceValue ? null : this.device),
+    telemetryLoading: telemetryLoading ?? this.telemetryLoading,
+    genericError: genericError ?? this.genericError,
+    tsValues: tsValues ?? this.tsValues,
+    attributesValues: attributesValues ?? this.attributesValues,
+  );
 
   /// {@macro act_thingsboard_client_ui.MixinTbTelemetriesUiState.copyWithTbTelemetriesState}
   @override
@@ -75,14 +74,13 @@ class TbTelemetriesUiState extends BlocStateForMixin<TbTelemetriesUiState>
     Map<String, TbTsValue>? tsValues,
     Map<String, TbExtAttributeData>? attributesValues,
     DateTime? dateTime,
-  }) =>
-      copyWith(
-        device: device,
-        forceDeviceValue: forceDeviceValue,
-        telemetryLoading: telemetryLoading,
-        genericError: genericError,
-        tsValues: tsValues,
-        attributesValues: attributesValues,
-        dateTime: dateTime,
-      );
+  }) => copyWith(
+    device: device,
+    forceDeviceValue: forceDeviceValue,
+    telemetryLoading: telemetryLoading,
+    genericError: genericError,
+    tsValues: tsValues,
+    attributesValues: attributesValues,
+    dateTime: dateTime,
+  );
 }

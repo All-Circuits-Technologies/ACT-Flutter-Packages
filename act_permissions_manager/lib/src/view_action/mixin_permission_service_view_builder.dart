@@ -14,26 +14,18 @@ mixin MixinPermissionServiceViewBuilder on AbstractViewBuilder {
     required MixinRoute route,
     required PermissionElement permElement,
     required PermissionViewAction permAction,
-  }) =>
-      onContextualPage(
-        context: PermissionViewContext(
-          element: permElement,
-          action: permAction,
-        ),
-        route: route,
-      );
+  }) => onContextualPage(
+    context: PermissionViewContext(element: permElement, action: permAction),
+    route: route,
+  );
 
   /// This allows to register a dialog to display when a permission is asked to user
   void onPermissionDialog({
     required PermissionElement permElement,
     required PermissionViewAction permAction,
     required DisplayDialog<PermissionViewContext> displayDialog,
-  }) =>
-      onContextualDialog(
-        context: PermissionViewContext(
-          element: permElement,
-          action: permAction,
-        ),
-        displayDialog: displayDialog,
-      );
+  }) => onContextualDialog(
+    context: PermissionViewContext(element: permElement, action: permAction),
+    displayDialog: displayDialog,
+  );
 }

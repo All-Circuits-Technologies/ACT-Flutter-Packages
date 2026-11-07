@@ -12,10 +12,7 @@ sealed class UrlFormatUtility {
   static const urlPathSeparator = "/";
 
   /// Format the full URL thanks the [RequestParam] and [ServerUrls] given
-  static Uri formatFullUrl({
-    required RequestParam requestParam,
-    required ServerUrls serverUrls,
-  }) {
+  static Uri formatFullUrl({required RequestParam requestParam, required ServerUrls serverUrls}) {
     var relRoutePath = requestParam.relativeRoute;
     final urlBase = serverUrls.byRelRoute[relRoutePath] ?? serverUrls.defaultUrl;
 

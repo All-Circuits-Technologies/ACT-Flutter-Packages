@@ -10,9 +10,7 @@ class BannerInfoInternetUpdateEvent extends BlocEventForMixin {
   final bool isInternetOk;
 
   /// Class constructor
-  const BannerInfoInternetUpdateEvent({
-    required this.isInternetOk,
-  });
+  const BannerInfoInternetUpdateEvent({required this.isInternetOk});
 
   /// This is the event properties
   @override

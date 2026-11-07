@@ -16,7 +16,7 @@
 /// Therefore, think carefully before adding a new type definition in this file.
 library;
 
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 /// This is a builder function which uses the [BuildContext] to build a type.
 ///
@@ -33,5 +33,7 @@ typedef IndexedGenericWidgetBuilder<T extends Widget> = T Function(BuildContext 
 /// may return null.
 ///
 /// Copy from [NullableIndexedWidgetBuilder] for a more generic version of it.
-typedef NullableIndexedGenericWidgetBuilder<T extends Widget> =
-    T? Function(BuildContext context, int index);
+typedef NullableIndexedGenericWidgetBuilder<T extends Widget> = T? Function(
+  BuildContext context,
+  int index,
+);

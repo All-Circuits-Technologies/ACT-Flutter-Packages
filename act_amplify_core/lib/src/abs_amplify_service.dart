@@ -5,7 +5,7 @@
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 /// This is the abstract skeleton for the amplify services
 abstract class AbsAmplifyService extends AbsWithLifeCycle {
@@ -14,9 +14,7 @@ abstract class AbsAmplifyService extends AbsWithLifeCycle {
   /// {@endtemplate}
   @mustCallSuper
   @override
-  Future<void> initLifeCycle({
-    LogsHelper? parentLogsHelper,
-  });
+  Future<void> initLifeCycle({LogsHelper? parentLogsHelper});
 
   /// The service may need to extend the amplify configuration
   ///
@@ -29,12 +27,7 @@ abstract class AbsAmplifyService extends AbsWithLifeCycle {
   /// Create a logs helper from a parent logs helper if one is given or from start if
   /// [parentLogsHelper] is null.
   @protected
-  static LogsHelper createLogsHelper({
-    required String logCategory,
-    LogsHelper? parentLogsHelper,
-  }) =>
+  static LogsHelper createLogsHelper({required String logCategory, LogsHelper? parentLogsHelper}) =>
       parentLogsHelper?.createSubLogger(subCategory: logCategory) ??
-      LogsHelper(
-        category: logCategory,
-      );
+      LogsHelper(category: logCategory);
 }

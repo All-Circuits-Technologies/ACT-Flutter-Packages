@@ -8,10 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   group("RequestStatus.isOk", () {
     test("says that a request which succeeded is the only one which is ok", () {
-      expect(
-        RequestStatus.values.where((status) => status.isOk),
-        [RequestStatus.success],
-      );
+      expect(RequestStatus.values.where((status) => status.isOk), [RequestStatus.success]);
     });
   });
 }

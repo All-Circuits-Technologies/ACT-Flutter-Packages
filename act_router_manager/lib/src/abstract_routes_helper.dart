@@ -10,12 +10,14 @@ import 'package:act_router_manager/src/transitions/route_transition.dart';
 import 'package:act_router_manager/src/types/mixin_route.dart';
 import 'package:act_router_manager/src/types/screen_orientation_option.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 
 /// This callback is used to create pages when needed.
-typedef CreatePageCallback<T extends MixinRoute> =
-    RoutePageDetails Function(BuildContext context, GoRouterState state);
+typedef CreatePageCallback<T extends MixinRoute> = RoutePageDetails Function(
+  BuildContext context,
+  GoRouterState state,
+);
 
 /// Utility methods to manage [MixinRoute] enum
 abstract class AbstractRoutesHelper<T extends MixinRoute> extends Equatable {

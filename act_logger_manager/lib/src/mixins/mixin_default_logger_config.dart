@@ -7,4 +7,4 @@ import 'package:act_logger_manager/src/mixins/mixin_logger_config.dart';
 
 /// This mixin is used to combine the [MixinLoggerConfig] and the [MixinCslLoggerConfig] mixins, to
 /// have a default logger config.
-mixin MixinDefaultLoggerConfig on MixinLoggerConfig, MixinCslLoggerConfig {}
+mixin MixinDefaultLoggerConfig on MixinLoggerConfig, MixinCslLoggerConfig;

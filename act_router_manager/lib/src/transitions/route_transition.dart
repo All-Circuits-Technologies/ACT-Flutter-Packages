@@ -15,5 +15,5 @@ enum RouteTransition {
   slide,
 
   /// The transition to the next page is a vertical slide
-  verticalSlide;
+  verticalSlide,
 }

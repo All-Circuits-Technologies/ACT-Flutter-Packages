@@ -13,16 +13,15 @@ sealed class HttpResponseUtility {
   /// Try to decode the body of the response
   ///
   /// If a problem occurred, the method returns null
-  static String? tryDecodeBody(
-    AWSHttpResponse response, {
-    Encoding encoding = utf8,
-  }) {
+  static String? tryDecodeBody(AWSHttpResponse response, {Encoding encoding = utf8}) {
     String decoded;
     try {
       decoded = response.decodeBody(encoding: encoding);
     } catch (error) {
-      appLogger().w("An error occurred when tried to decode a response received from AWS server: "
-          "$error");
+      appLogger().w(
+        "An error occurred when tried to decode a response received from AWS server: "
+        "$error",
+      );
       return null;
     }
 

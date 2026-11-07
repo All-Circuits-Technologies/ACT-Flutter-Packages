@@ -12,11 +12,6 @@ class PermissionRequestUiBloc<T extends MPermissionsService>
   /// Class constructor
   ///
   /// [manager] is the service linked to this view request.
-  PermissionRequestUiBloc({
-    required super.config,
-    required T manager,
-  }) : super(
-          isOkCallback: () => manager.hasPermissions,
-          isOkStream: manager.permissionsStream,
-        );
+  PermissionRequestUiBloc({required super.config, required T manager})
+    : super(isOkCallback: () => manager.hasPermissions, isOkStream: manager.permissionsStream);
 }

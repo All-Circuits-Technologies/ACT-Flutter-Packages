@@ -11,10 +11,9 @@ mixin MixinGoogleOAuth2Conf on AbstractConfigManager {
   /// This is the configuration to communicate with the OAuth2 Google provider
   final oauthClientConf = ParserConfigVar<DefaultOAuth2Conf, Map<String, dynamic>>(
     "auth.oauth2.google.config",
-    parser:
-        (value) => DefaultOAuth2Conf.tryToParseFromJson(
-          value,
-          defaultIssuer: google_url_constants.googleIssuerUrl,
-        ),
+    parser: (value) => DefaultOAuth2Conf.tryToParseFromJson(
+      value,
+      defaultIssuer: google_url_constants.googleIssuerUrl,
+    ),
   );
 }

@@ -6,7 +6,7 @@ import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A manager which takes the merged life cycle as it comes.
-class _UiManager extends AbsWithLifeCycleAndUi {}
+class _UiManager extends AbsWithLifeCycleAndUi;
 
 void main() {
   group("AbsWithLifeCycleAndUi", () {

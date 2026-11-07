@@ -21,6 +21,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Register the manager](#register-the-manager)
   - [Show the theme in the application](#show-the-theme-in-the-application)
   - [Let the user choose](#let-the-user-choose)
+  - [Application with a single theme](#application-with-a-single-theme)
 - [Configuration](#configuration)
 - [Testing](#testing)
 
@@ -160,8 +161,10 @@ class AppPropertiesManager extends AbstractPropertiesManager with MixinThemesPro
 
 ### Register the manager
 
+Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+
 ```dart
-GlobalManager.instance.register(
+registerManagerAsync(
   ActThemesBuilder<AppConfigManager, AppPropertiesManager>(appThemes: AppThemes.values),
 );
 ```
@@ -190,6 +193,16 @@ context.read<AppBloc>().add(const AskToUpdateBrightnessEvent(newBrightness: Brig
 // Follow the device again
 context.read<AppBloc>().add(const AskToUpdateBrightnessEvent(newBrightness: null));
 ```
+
+### Application with a single theme
+
+An application painted with one theme, which the user does not choose, needs neither the manager
+nor its configuration and properties: it declares one `ActThemeModel`, as in
+[Declare the themes of an application](#declare-the-themes-of-an-application), and gives its
+`lightThemeData` and `darkThemeData` to the `theme` and `darkTheme` of its `MaterialApp`.
+
+The manager is for an application which lets the user choose its theme or its brightness, or which
+forces them from the configuration.
 
 ## Configuration
 

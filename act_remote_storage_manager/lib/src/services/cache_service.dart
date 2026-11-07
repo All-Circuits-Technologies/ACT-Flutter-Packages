@@ -38,9 +38,7 @@ class CacheService extends AbsWithLifeCycle {
     final logsHelper = parentLogger.createSubLogger(subCategory: _logsCategory);
 
     // Create a the httpFileService that will use the method implemented in the storageService.
-    final httpFileService = StorageHttpFileService(
-      storageService: storageService,
-    );
+    final httpFileService = StorageHttpFileService(storageService: storageService);
 
     // Create the actual cache manager with the provided parameters and the httpFileService.
     final cacheManager = CacheWithImagesManager(
@@ -52,19 +50,11 @@ class CacheService extends AbsWithLifeCycle {
       ),
     );
 
-    return CacheService._(
-      cacheManager: cacheManager,
-      logsHelper: logsHelper,
-    );
+    return CacheService._(cacheManager: cacheManager, logsHelper: logsHelper);
   }
 
   /// Constructor for [CacheService].
-  CacheService._({
-    required CacheWithImagesManager cacheManager,
-    required LogsHelper logsHelper,
-  })  : _cacheManager = cacheManager,
-        _logsHelper = logsHelper,
-        super();
+  CacheService._({required this._cacheManager, required this._logsHelper}) : super();
 
   /// Init the service
   @override
@@ -107,11 +97,7 @@ class CacheService extends AbsWithLifeCycle {
     FileResponse fileResponse;
     try {
       fileResponse = await _cacheManager
-          .getImageFile(
-            fileId,
-            maxHeight: maxHeight,
-            maxWidth: maxWidth,
-          )
+          .getImageFile(fileId, maxHeight: maxHeight, maxWidth: maxWidth)
           .last;
     } catch (e) {
       return (result: StorageRequestResult.genericError, file: null);

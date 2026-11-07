@@ -2,6 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:async';
+
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_http_client_manager/act_http_client_manager.dart';
 import 'package:act_shared_auth/act_shared_auth.dart';
@@ -14,9 +16,7 @@ class TbStdAuthServerReqBuilder<A extends AbsAuthManager>
     extends AbsTbServerReqBuilder<TbStdAuthServerReqManager> {
   /// Class constructor
   TbStdAuthServerReqBuilder()
-      : super(() => TbStdAuthServerReqManager(
-              authGetter: globalGetIt().get<A>,
-            ));
+    : super(() => TbStdAuthServerReqManager(authGetter: globalGetIt().get<A>));
 
   /// {@macro act_life_cycle.AbsLifeCycleFactory.dependsOn}
   @override
@@ -27,6 +27,9 @@ class TbStdAuthServerReqBuilder<A extends AbsAuthManager>
 ///
 /// We expect that `TbStdAuthService` is used as auth provider.
 ///
+/// The manager watches the status of the user: when the user leaves, the values of the devices
+/// watched so far are forgotten, so that nothing of an account reaches the next one.
+///
 /// {@macro act_thingsboard_client.AbsTbServerReqManager.details}
 class TbStdAuthServerReqManager extends AbsTbServerReqManager {
   /// This is the log category of the [TbStdAuthServerReqManager]
@@ -35,11 +38,32 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
   /// Getter to access the [AbsAuthManager]
   final AbsAuthManager Function() _authGetter;
 
+  /// The observer of the status of the user
+  late final AuthStreamObserver _signedIn;
+
+  /// The subscription to the observer, which clears the devices when the user leaves
+  late final StreamSubscription<bool> _signedInSub;
+
   /// Class constructor
-  TbStdAuthServerReqManager({
-    required AbsAuthManager Function() authGetter,
-  })  : _authGetter = authGetter,
-        super(logCategory: _stdAuthTbLogsCategory);
+  TbStdAuthServerReqManager({required this._authGetter})
+    : super(logCategory: _stdAuthTbLogsCategory);
+
+  /// {@macro act_life_cycle.AbsWithLifeCycle.initLifeCycle}
+  @override
+  Future<void> initLifeCycle() async {
+    await super.initLifeCycle();
+
+    _signedIn = AuthStreamObserver.ofService(_authGetter().authService);
+    _signedInSub = _signedIn.stream.listen(_onSignedInChanged);
+  }
+
+  /// Forget the values of the devices watched so far when the user leaves, so that nothing of an
+  /// account reaches the next one
+  Future<void> _onSignedInChanged(bool signedIn) async {
+    if (!signedIn) {
+      await devicesService.clear();
+    }
+  }
 
   /// This encapsulates the Thingsboard request and allow to do multiple retry request if fails but
   /// also reconnect the user to its account if the tokens are no more valid
@@ -57,13 +81,25 @@ class TbStdAuthServerReqManager extends AbsTbServerReqManager {
       }
 
       // After having get the tokens from the auth service we set it in the Thingsboard client
-      await noAuthManager.tbClient
-          .setUserFromJwtToken(tokens.accessToken?.raw, tokens.refreshToken?.raw, null);
+      await noAuthManager.tbClient.setUserFromJwtToken(
+        tokens.accessToken?.raw,
+        tokens.refreshToken?.raw,
+        null,
+      );
 
       result = await noAuthManager.request(requestToCall);
       triedNb++;
     } while (result.status == RequestStatus.loginError && triedNb <= 1);
 
     return result;
+  }
+
+  /// {@macro act_life_cycle.AbsWithLifeCycle.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await _signedInSub.cancel();
+    await _signedIn.dispose();
+
+    await super.disposeLifeCycle();
   }
 }

@@ -133,11 +133,14 @@ dependencies:
 
 ### Register the manager
 
-The manager reads its level from the config manager, so it depends on it:
+The manager reads its level from the config manager, so it depends on it. Register the manager in
+`registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
-GlobalManager.instance.register(
-  DefaultLoggerBuilder<AppConfigManager>(loggerConfigGetter: globalGetIt().get<AppConfigManager>),
+registerManagerAsync(
+  DefaultLoggerBuilder<AppConfigManager>(
+    loggerConfigGetter: globalGetIt().get<AppConfigManager>,
+  ),
 );
 ```
 

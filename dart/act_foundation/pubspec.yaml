@@ -8,7 +8,7 @@ description: This package provides foundational classes and interfaces for the A
 publish_to: none
 
 environment:
-  sdk: ^3.11.1
+  sdk: ^3.13.0
 
 dependencies:
   meta: ^1.17.0

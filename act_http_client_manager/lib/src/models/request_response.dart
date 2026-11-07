@@ -18,11 +18,7 @@ class RequestResponse<Body> extends Equatable {
   final Body? castedBody;
 
   /// Class constructor
-  const RequestResponse({
-    required this.status,
-    this.response,
-    this.castedBody,
-  });
+  const RequestResponse({required this.status, this.response, this.castedBody});
 
   /// Export the class members to a pattern
   (RequestStatus, Response?, Body?) toPatterns() => (status, response, castedBody);

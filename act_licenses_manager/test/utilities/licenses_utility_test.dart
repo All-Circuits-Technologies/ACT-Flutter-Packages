@@ -124,10 +124,7 @@ licenses:
         assets: {"actlibs/LICENSES/MIT.txt": "the text of the MIT license"},
       );
 
-      expect(
-        (packages.single as AssetLicensePackages).licensePath,
-        "actlibs/LICENSES/MIT.txt",
-      );
+      expect((packages.single as AssetLicensePackages).licensePath, "actlibs/LICENSES/MIT.txt");
     });
 
     test("stops at the first folder which has the license file", () async {

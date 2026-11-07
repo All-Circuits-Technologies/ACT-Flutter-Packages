@@ -28,27 +28,21 @@ class PermissionViewContext extends AbstractViewContext with MixinCompulsoryAcce
     required this.action,
     this.isAcceptanceCompulsory = false,
   }) : super(
-          uniqueKey: PermissionViewContext._createUniqueKey(
-            element: element,
-            action: action,
-          ),
-        );
+         uniqueKey: PermissionViewContext._createUniqueKey(element: element, action: action),
+       );
 
   /// Class constructor for managing the ask permission action
   factory PermissionViewContext.askPermission({
     required PermissionElement element,
     bool isAcceptanceCompulsory = false,
-  }) =>
-      _createPermission(
-        action: PermissionViewAction.askPermission,
-        element: element,
-        isAcceptanceCompulsory: isAcceptanceCompulsory,
-      );
+  }) => _createPermission(
+    action: PermissionViewAction.askPermission,
+    element: element,
+    isAcceptanceCompulsory: isAcceptanceCompulsory,
+  );
 
   /// Class constructor for managing the inform permanently denied
-  factory PermissionViewContext.informPermanentlyDenied({
-    required PermissionElement element,
-  }) =>
+  factory PermissionViewContext.informPermanentlyDenied({required PermissionElement element}) =>
       _createPermission(
         action: PermissionViewAction.informPermanentlyDenied,
         element: element,
@@ -60,17 +54,15 @@ class PermissionViewContext extends AbstractViewContext with MixinCompulsoryAcce
     required PermissionViewAction action,
     required PermissionElement element,
     required bool isAcceptanceCompulsory,
-  }) =>
-      PermissionViewContext(
-        element: element,
-        action: action,
-        isAcceptanceCompulsory: isAcceptanceCompulsory,
-      );
+  }) => PermissionViewContext(
+    element: element,
+    action: action,
+    isAcceptanceCompulsory: isAcceptanceCompulsory,
+  );
 
   /// Create the unique key linked to the permission view context
   static String _createUniqueKey({
     required PermissionElement element,
     required PermissionViewAction action,
-  }) =>
-      "$_globalPermKey:$element:$action";
+  }) => "$_globalPermKey:$element:$action";
 }

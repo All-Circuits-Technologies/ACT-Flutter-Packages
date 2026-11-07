@@ -17,6 +17,12 @@ const Duration connectTimeout = Duration(seconds: 20);
 /// Low level maximum time to connect
 const Duration lowLevelConnectTimeout = Duration(seconds: 10);
 
+/// Pause kept between two low level connection attempts
+///
+/// Android answers a transient GATT_ERROR 133 more often than not on the first attempt; a short
+/// pause before the next one is enough.
+const Duration lowLevelConnectRetryDelay = Duration(seconds: 2);
+
 /// Timer after which popup disconnect is sent
 const Duration disconnectPopupTimeout = Duration(milliseconds: 5000);
 

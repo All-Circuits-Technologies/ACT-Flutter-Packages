@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_flutter_utility/src/widget/tab_bars/abs_simple_tab_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 /// This mixin is used to define useful methods for the state of the [AbsSimpleTabBar] widget.
 mixin MixinSimpleTabBarState<T extends AbsSimpleTabBar<T>> on State<T> {
@@ -41,22 +41,22 @@ mixin MixinSimpleTabBarState<T extends AbsSimpleTabBar<T>> on State<T> {
 
   @override
   Widget build(BuildContext context) => DefaultTabController(
-        initialIndex: widget.initialIndex,
-        length: widget.tabBarConfigs.length,
-        animationDuration: widget.animationDuration,
-        child: Builder(
-          builder: (context) {
-            if ((widget.onTabIdxUpdated != null || rebuildViewIfIndexIsUpdated) &&
-                _defaultTabController == null) {
-              // We get the current [DefaultTabController] and adds a listener on it
-              _defaultTabController = DefaultTabController.maybeOf(context);
-              _defaultTabController!.addListener(_onControllerUpdated);
-            }
+    initialIndex: widget.initialIndex,
+    length: widget.tabBarConfigs.length,
+    animationDuration: widget.animationDuration,
+    child: Builder(
+      builder: (context) {
+        if ((widget.onTabIdxUpdated != null || rebuildViewIfIndexIsUpdated) &&
+            _defaultTabController == null) {
+          // We get the current [DefaultTabController] and adds a listener on it
+          _defaultTabController = DefaultTabController.maybeOf(context);
+          _defaultTabController!.addListener(_onControllerUpdated);
+        }
 
-            return buildTabElements(context);
-          },
-        ),
-      );
+        return buildTabElements(context);
+      },
+    ),
+  );
 
   /// Called each time the [_defaultTabController] is modified, and update the [_currentKnownIndex]
   ///

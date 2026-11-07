@@ -43,9 +43,7 @@ void main() {
     test("differs from options which carry another expiration time", () {
       expect(
         const JwtOptions(algorithm: JWTAlgorithm.HS256, expirationTime: Duration(hours: 1)),
-        isNot(
-          const JwtOptions(algorithm: JWTAlgorithm.HS256, expirationTime: Duration(hours: 2)),
-        ),
+        isNot(const JwtOptions(algorithm: JWTAlgorithm.HS256, expirationTime: Duration(hours: 2))),
       );
     });
   });

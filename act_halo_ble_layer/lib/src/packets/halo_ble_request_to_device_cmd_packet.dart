@@ -34,14 +34,14 @@ class HaloBleRequestToDeviceCmdPacket extends Equatable with InterfaceHaloPacket
   static HaloBleRequestToDeviceCmdPacket _createOtherCmd({
     required HaloCmdId cmdId,
     required MixinHaloRequestId requestId,
-  }) =>
-      HaloBleRequestToDeviceCmdPacket._(
-          cmdId: cmdId,
-          packetToSend: HaloRequestParamsPacket(
-            requestId: requestId,
-            nbValues: const [],
-            parameters: HaloPayloadPacket(),
-          ));
+  }) => HaloBleRequestToDeviceCmdPacket._(
+    cmdId: cmdId,
+    packetToSend: HaloRequestParamsPacket(
+      requestId: requestId,
+      nbValues: const [],
+      parameters: HaloPayloadPacket(),
+    ),
+  );
 
   /// This method transforms the payload as a packet ready to be sent to the device.
   @override

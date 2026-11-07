@@ -9,4 +9,4 @@ import 'package:act_life_cycle/src/services/abs_with_life_cycle.dart';
 ///
 /// This is used to simplify the extension of the [AbsWithLifeCycle] and the mixin
 /// [MixinUiLifeCycle] by merging them together in one class.
-abstract class AbsWithLifeCycleAndUi extends AbsWithLifeCycle with MixinUiLifeCycle {}
+abstract class AbsWithLifeCycleAndUi extends AbsWithLifeCycle with MixinUiLifeCycle;

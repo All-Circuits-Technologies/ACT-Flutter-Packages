@@ -216,9 +216,7 @@ class FakeAuthPlugin extends AuthPluginInterface {
   }
 
   @override
-  Future<List<AuthUserAttribute>> fetchUserAttributes({
-    FetchUserAttributesOptions? options,
-  }) async {
+  Future<List<AuthUserAttribute>> fetchUserAttributes({FetchUserAttributesOptions? options}) async {
     _record("fetchUserAttributes");
 
     return attributes;

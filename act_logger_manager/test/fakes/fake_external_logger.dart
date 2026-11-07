@@ -38,7 +38,8 @@ class FakeExternalLogRecord extends Equatable {
   });
 
   @override
-  String toString() => "FakeExternalLogRecord(level: $level, categories: $categories, "
+  String toString() =>
+      "FakeExternalLogRecord(level: $level, categories: $categories, "
       "message: $message, error: $error)";
 
   @override

@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:act_global_manager/act_global_manager.dart';
@@ -13,11 +14,11 @@ sealed class RuntimeStringUtility {
   ///
   /// [maxLength] is the maximum number of elements in the array (i.e. the
   /// compile-time size of the C `char[]` field).
-  static String charArrayToString({
-    required Array<Char> array,
-    required int maxLength,
-  }) {
-    final codeUnits = <int>[];
+  ///
+  /// The bytes are decoded as UTF-8. A multi-byte character which [maxLength] cuts in the middle
+  /// is replaced by the replacement character U+FFFD.
+  static String charArrayToUtf8String({required Array<Char> array, required int maxLength}) {
+    final bytes = <int>[];
     for (var idx = 0; idx < maxLength; idx++) {
       final charValue = array[idx];
       if (charValue == 0) {
@@ -25,10 +26,11 @@ sealed class RuntimeStringUtility {
         break;
       }
 
-      codeUnits.add(charValue);
+      // Dart FFI reads a `Char` as a signed byte: get back its unsigned value
+      bytes.add(charValue & 0xFF);
     }
 
-    return String.fromCharCodes(codeUnits);
+    return utf8.decode(bytes, allowMalformed: true);
   }
 
   /// Convert a `Pointer<Char>` buffer to a Dart [String], returning null if the pointer equals
@@ -44,9 +46,7 @@ sealed class RuntimeStringUtility {
     try {
       value = buffer.cast<Utf8>().toDartString();
     } catch (error) {
-      appLogger().w(
-        "Failed to convert Pointer<Char> to Utf8 String: $error. Returning null.",
-      );
+      appLogger().w("Failed to convert Pointer<Char> to Utf8 String: $error. Returning null.");
     }
 
     return value;

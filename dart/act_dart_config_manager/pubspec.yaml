@@ -10,7 +10,7 @@ description: This package contains pure Dart helpers to manage config variables 
 publish_to: none
 
 environment:
-  sdk: ^3.11.1
+  sdk: ^3.13.0
 
 # Project dependencies
 dependencies:

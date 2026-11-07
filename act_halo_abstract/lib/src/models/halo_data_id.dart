@@ -16,13 +16,12 @@ class HaloDataId<T> extends Equatable {
   /// Class constructor
   ///
   /// The [id] is an INT8
-  const HaloDataId({
-    required this.id,
-    required this.value,
-  }) : assert(
-            0 <= id && id <= ByteUtility.maxUInt8,
-            "The expected format of the id is an UInt8, the value given overflows the min and "
-            "max: $id");
+  const HaloDataId({required this.id, required this.value})
+    : assert(
+        0 <= id && id <= ByteUtility.maxUInt8,
+        "The expected format of the id is an UInt8, the value given overflows the min and "
+        "max: $id",
+      );
 
   @override
   List<Object?> get props => [value, id];
@@ -34,7 +33,5 @@ abstract class AbstractHaloDataIdHelper<T> {
   final Map<T, HaloDataId<T>> dataIds;
 
   /// Class constructor
-  AbstractHaloDataIdHelper({
-    required this.dataIds,
-  });
+  AbstractHaloDataIdHelper({required this.dataIds});
 }

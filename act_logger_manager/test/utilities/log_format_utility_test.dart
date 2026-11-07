@@ -50,17 +50,15 @@ void main() {
     });
 
     test("writes the level alone when it is the only context", () {
-      expect(
-        LogFormatUtility.formatLogMessages(message: "a message", level: LogsLevel.warn),
-        ["[warn]: a message"],
-      );
+      expect(LogFormatUtility.formatLogMessages(message: "a message", level: LogsLevel.warn), [
+        "[warn]: a message",
+      ]);
     });
 
     test("writes the categories alone when they are the only context", () {
-      expect(
-        LogFormatUtility.formatLogMessages(message: "a message", categories: ["conf"]),
-        ["[conf]: a message"],
-      );
+      expect(LogFormatUtility.formatLogMessages(message: "a message", categories: ["conf"]), [
+        "[conf]: a message",
+      ]);
     });
 
     test("keeps the separator between the time and the level", () {
@@ -76,29 +74,21 @@ void main() {
 
     test("keeps the separator between the time and the categories", () {
       expect(
-        LogFormatUtility.formatLogMessages(
-          message: "a message",
-          categories: ["conf"],
-          time: _time,
-        ),
+        LogFormatUtility.formatLogMessages(message: "a message", categories: ["conf"], time: _time),
         ["$_writtenTime-[conf]: a message"],
       );
     });
 
     test("writes the time in the universal time zone", () {
-      final lines = LogFormatUtility.formatLogMessages(
-        message: "a message",
-        time: _time.toLocal(),
-      );
+      final lines = LogFormatUtility.formatLogMessages(message: "a message", time: _time.toLocal());
 
       expect(lines, ["$_writtenTime: a message"]);
     });
 
     test("writes the level in lower case", () {
-      expect(
-        LogFormatUtility.formatLogMessages(message: "a message", level: LogsLevel.error),
-        ["[error]: a message"],
-      );
+      expect(LogFormatUtility.formatLogMessages(message: "a message", level: LogsLevel.error), [
+        "[error]: a message",
+      ]);
     });
 
     test("writes the exception on its own line, with the same prefix", () {

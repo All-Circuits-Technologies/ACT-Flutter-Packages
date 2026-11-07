@@ -30,9 +30,5 @@ class TransferProgress extends Equatable {
 
   /// Get the properties of the object
   @override
-  List<Object?> get props => [
-        totalBytes,
-        bytesTransferred,
-        transferStatus,
-      ];
+  List<Object?> get props => [totalBytes, bytesTransferred, transferStatus];
 }

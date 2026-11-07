@@ -4,7 +4,7 @@
 
 import 'package:act_router_manager/act_router_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -94,16 +94,11 @@ class _RedirectService with MixinRedirectService<FakeRoute> {
   Future<void> stop() => closeRedirectService();
 
   /// {@macro act_router_manager.MixinRedirectService.onRedirect}
-  Future<FakeRoute?> redirect(FakeRoute route) =>
-      onRedirect(_FakeContext(), route, _aState(route));
+  Future<FakeRoute?> redirect(FakeRoute route) => onRedirect(_FakeContext(), route, _aState(route));
 
   /// {@macro act_router_manager.MixinRedirectService.onRedirect}
   @override
-  Future<FakeRoute?> onRedirect(
-    BuildContext context,
-    FakeRoute route,
-    GoRouterState state,
-  ) async {
+  Future<FakeRoute?> onRedirect(BuildContext context, FakeRoute route, GoRouterState state) async {
     await super.onRedirect(context, route, state);
 
     return (route == redirectTo) ? null : redirectTo;

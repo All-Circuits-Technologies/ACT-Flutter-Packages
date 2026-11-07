@@ -15,15 +15,9 @@ class ActTabBarConfig extends Equatable {
   final Widget child;
 
   /// Class constructor
-  const ActTabBarConfig({
-    required this.title,
-    required this.child,
-  });
+  const ActTabBarConfig({required this.title, required this.child});
 
   /// Class properties
   @override
-  List<Object?> get props => [
-        title,
-        child,
-      ];
+  List<Object?> get props => [title, child];
 }

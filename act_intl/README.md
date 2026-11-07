@@ -20,6 +20,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Register the manager](#register-the-manager)
   - [Let the user choose a locale](#let-the-user-choose-a-locale)
+  - [Application with a single locale](#application-with-a-single-locale)
 - [Configuration](#configuration)
 - [Testing](#testing)
 
@@ -108,10 +109,11 @@ dependencies:
 ### Register the manager
 
 The configuration of the application takes `MixinLocaleConfig` and its properties take
-`MixinLocaleProperties`, then the manager is registered with both:
+`MixinLocaleProperties`, then the manager is registered with both in `registerManagers` of
+the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
-globalManager.registerManagerAsync<LocalesManager>(
+registerManagerAsync(
   LocalesManagerBuilder<AppConfigManager, AppPropertiesManager>(
     getSupportedLocales: () => AppLocalizations.supportedLocales,
   ),
@@ -139,6 +141,15 @@ globalGetIt().get<LocalesManager>().wantedLocale = const Locale("fr", "FR");
 
 The application is told through `wantedLocaleStream` and `currentLocaleStream`, and the choice is
 remembered for the next start.
+
+### Application with a single locale
+
+An application translated in one locale needs neither the manager nor its configuration and
+properties: it gives its locale to the `locale` and `supportedLocales` of its `MaterialApp`, and the
+utilities of this package work without the manager.
+
+The manager stays required by the packages which read it: `act_intl_ui`, whose blocs read and set
+the wanted locale, and `act_consent_manager`, which depends on it.
 
 ## Configuration
 
