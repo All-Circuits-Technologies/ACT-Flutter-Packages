@@ -23,6 +23,9 @@ dependencies:
   act_dart_utility:
     path: ../dart/act_dart_utility
 
+  act_flutter_utility:
+    path: ../act_flutter_utility
+
   act_foundation:
     path: ../dart/act_foundation
 
