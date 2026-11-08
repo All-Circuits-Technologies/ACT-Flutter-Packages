@@ -5,7 +5,6 @@
 import 'dart:convert';
 
 import 'package:act_flutter_utility/act_flutter_utility.dart';
-import 'package:act_flutter_utility/src/types/assets_bundle_result.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter/services.dart';

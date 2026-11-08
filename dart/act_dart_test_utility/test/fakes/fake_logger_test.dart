@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_foundation/act_foundation.dart';
 import 'package:act_dart_test_utility/act_dart_test_utility.dart';
+import 'package:act_foundation/act_foundation.dart';
 import 'package:test/test.dart';
 
 void main() {

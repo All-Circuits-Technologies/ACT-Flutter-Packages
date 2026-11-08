@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_foundation/act_foundation.dart';
 import 'package:act_dart_test_utility/src/fakes/fake_logger.dart';
+import 'package:act_foundation/act_foundation.dart';
 
 /// A logger which drops every message.
 ///
