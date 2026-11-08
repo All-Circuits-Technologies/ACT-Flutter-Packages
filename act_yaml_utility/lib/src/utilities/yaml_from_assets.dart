@@ -5,6 +5,7 @@
 import 'package:act_dart_result/act_dart_result.dart';
 import 'package:act_dart_yaml_utility/act_dart_yaml_utility.dart';
 import 'package:act_flutter_utility/act_flutter_utility.dart';
+import 'package:yaml/yaml.dart' as yaml;
 
 /// This class contains methods used to load yaml files from assets
 ///
@@ -59,9 +60,12 @@ sealed class YamlFromAssets {
       return const ResultWithStatus(status: AssetsBundleResult.ok);
     }
 
-    final jsonContent = YamlFromString.fromYaml(result.value!);
-
-    if (jsonContent == null) {
+    // An empty file parses to null: only a parsing error is reported as a generic error.
+    dynamic jsonContent;
+    try {
+      final yamlContent = yaml.loadYaml(result.value!);
+      jsonContent = YamlToStandardObj.fromYamlValue(yamlContent);
+    } catch (error) {
       return const ResultWithStatus(status: AssetsBundleResult.genericError);
     }
 
