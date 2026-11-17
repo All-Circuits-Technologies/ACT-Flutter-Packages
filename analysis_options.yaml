@@ -79,6 +79,11 @@ linter:
     # Don't implement classes that override ==.
     avoid_implementing_value_types: true
 
+    # Avoid integer literals which JavaScript cannot represent exactly (beyond 2^53). Although
+    # this targets the web, the analyzer does not know the build target: the rule applies to
+    # every package, whatever its platforms. Write such a constant with BigInt.
+    avoid_js_rounded_ints: true
+
     # Don't declare multiple variables on a single line.
     avoid_multiple_declarations_per_line: true
 
