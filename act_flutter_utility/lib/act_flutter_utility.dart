@@ -42,3 +42,4 @@ export 'src/widget/scroll_view/single_expandable_child_scroll_view.dart';
 export 'src/widget/snack_bar/act_snack_bar.dart';
 export 'src/widget/tab_bars/abs_simple_tab_bar.dart';
 export 'src/widget/tab_bars/mixin_simple_tab_bar_state.dart';
+export 'src/widget/tab_bars/shrink_wrap_tab_bar_view.dart';
