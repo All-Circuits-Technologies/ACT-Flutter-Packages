@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2022 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
-# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023, 2026 Anthony Loiseau <anthony.loiseau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -273,9 +273,6 @@ linter:
 
     # Future results in async function bodies must be awaited or marked unawaited using dart:async.
     unawaited_futures: true
-
-    # Unnecessary await keyword in return.
-    unnecessary_await_in_return: true
 
     # Don't create a lambda when a tear-off will do.
     unnecessary_lambdas: true
