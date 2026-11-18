@@ -143,6 +143,10 @@ near an edge.
 page. Following the tabs costs a listener, so it is only installed when the page asked for the
 index or asked to be built again when it changes.
 
+`ShrinkWrapTabBarView` is a `TabBarView` as high as its current tab, for the tabs laid out in a
+scrollable page, where a `TabBarView` has no height to fill. It keeps the gestures and the animation
+of the `TabBarView`, and its height follows the move from a tab to another.
+
 ### The utilities
 
 - `ColorsUtility` lightens and darkens a color while keeping its shade: a channel which overflows
@@ -249,8 +253,8 @@ platform side of the url launcher are answered by the tests.
 
 They cover the life cycle of a bloc and of the state it holds, the asynchronous initialization,
 the three kinds of graphical assets, the weighing of the banners, the three ways of scrolling a
-page, and every branch of the utilities, including the colors which overflow a channel and the
-words which contain one another.
+page, the height of a tab bar view sized to its tabs, and every branch of the utilities, including
+the colors which overflow a channel and the words which contain one another.
 
 ```console
 > flutter test
