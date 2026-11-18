@@ -1,5 +1,5 @@
 # SPDX-FileCopyrightText: 2022 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
-# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023, 2026 Anthony Loiseau <anthony.loiseau@allcircuits.com>
 #
 # SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -78,6 +78,11 @@ linter:
 
     # Don't implement classes that override ==.
     avoid_implementing_value_types: true
+
+    # Avoid integer literals which JavaScript cannot represent exactly (beyond 2^53). Although
+    # this targets the web, the analyzer does not know the build target: the rule applies to
+    # every package, whatever its platforms. Write such a constant with BigInt.
+    avoid_js_rounded_ints: true
 
     # Don't declare multiple variables on a single line.
     avoid_multiple_declarations_per_line: true
@@ -273,9 +278,6 @@ linter:
 
     # Future results in async function bodies must be awaited or marked unawaited using dart:async.
     unawaited_futures: true
-
-    # Unnecessary await keyword in return.
-    unnecessary_await_in_return: true
 
     # Don't create a lambda when a tear-off will do.
     unnecessary_lambdas: true
