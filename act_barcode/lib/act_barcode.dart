@@ -20,5 +20,7 @@ export 'package:mobile_scanner/mobile_scanner.dart'
 
 export 'src/types/barcode_scanner_status.dart';
 export 'src/types/barcode_scanner_text.dart';
+export 'src/types/qr_code_data_wifi_security.dart';
 export 'src/ui/qr_code_widget.dart';
 export 'src/ui/scanner/barcode_scanner_widget.dart';
+export 'src/utilities/barcode_content_utilities.dart';
