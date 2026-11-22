@@ -5,7 +5,7 @@
 import 'dart:convert';
 
 import 'package:act_http_core/act_http_core.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   group("AuthFormatUtility.formatBasicAuthentication", () {

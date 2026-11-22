@@ -99,7 +99,7 @@ Add the package to the `dependencies` of your package:
 ```yaml
 dependencies:
   act_http_core:
-    path: ../act_http_core
+    path: ../dart/act_http_core
 ```
 
 ### Decide what to do with a response
