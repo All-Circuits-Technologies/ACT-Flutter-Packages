@@ -37,6 +37,10 @@ dependencies:
   # Read the barcodes with the camera
   mobile_scanner: ^7.4.2
 
+  # Dart utility functions used by this package
+  act_dart_utility:
+    path: ../dart/act_dart_utility
+
   # Bloc base classes, which the scanner state is built on
   act_flutter_utility:
     path: ../act_flutter_utility
@@ -74,3 +78,7 @@ dev_dependencies:
   # Fakes shared by the tests of the ACT packages
   act_test_utility:
     path: ../act_test_utility
+
+  # Log levels the tests assert on
+  act_foundation:
+    path: ../dart/act_foundation

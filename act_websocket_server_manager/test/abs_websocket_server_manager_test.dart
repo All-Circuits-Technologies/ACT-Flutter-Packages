@@ -29,6 +29,24 @@ int _portOf(FakeHttpLogging logging) {
   return int.parse(started.split(":").last);
 }
 
+/// The time a test waits at most for the server to see what a client did.
+const _serverTimeout = Duration(seconds: 5);
+
+/// The time between two checks of what the server saw.
+const _serverPollPeriod = Duration(milliseconds: 10);
+
+/// Waits until [condition] is true, or until [_serverTimeout] elapsed.
+///
+/// What a client does travels through a real socket before the server sees it, which takes an
+/// unknown number of turns of the event loop. The caller checks the [condition] again afterwards,
+/// so that a timeout fails the test with the matcher message.
+Future<void> _untilServerSees(bool Function() condition) async {
+  final stopwatch = Stopwatch()..start();
+  while (!condition() && stopwatch.elapsed < _serverTimeout) {
+    await Future<void>.delayed(_serverPollPeriod);
+  }
+}
+
 void main() {
   late FakeHttpLogging logging;
 
@@ -198,7 +216,7 @@ void main() {
       final client = await aClient();
 
       await client.sink.close();
-      await pumpEventQueue();
+      await _untilServerSees(() => service.channelServices.isEmpty);
 
       expect(service.channelServices, isEmpty);
     });
@@ -242,10 +260,13 @@ void main() {
       await aServer(service: service);
       final client = await aClient();
 
-      await client.sink.close();
-      await pumpEventQueue();
+      bool stoppedListening() =>
+          logging.messages.any((message) => message.contains("stop listening"));
 
-      expect(logging.messages.any((message) => message.contains("stop listening")), isTrue);
+      await client.sink.close();
+      await _untilServerSees(stoppedListening);
+
+      expect(stoppedListening(), isTrue);
     });
 
     test("writes the messages which travel in the logs of the server", () async {
