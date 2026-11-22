@@ -87,7 +87,8 @@ flowchart LR
 
 `FakeGlobalManager` is the global manager of the application in a test. A class which reaches its
 logger or its managers through the shortcuts of `act_global_manager` needs one to exist, and this
-manager gives the test one which holds only what the test registers.
+manager gives the test one which holds only what the test registers. It does not need Flutter, so
+it lives in `act_dart_test_utility` and is reached from here through the re-export.
 
 `FakeAssets` serves the files a test needs in place of the ones of the application bundle. It
 answers on the platform channel the asset bundle reads through, so the class under test keeps
@@ -224,9 +225,8 @@ await globalManager.allReady();
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
 to the sub loggers, the filtering done by the minimum level, the contents served, replaced and
-stopped by the fake assets, the installation, the logger and the managers of the fake global
-manager, and the recording done by the fake external logger and by the helpers it builds. To run
-them:
+stopped by the fake assets, and the recording done by the fake external logger and by the helpers
+it builds. To run them:
 
 ```console
 > flutter test

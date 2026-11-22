@@ -3,11 +3,11 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_dart_test_utility/act_dart_test_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:test/test.dart';
 
 import '../fakes/fake_app_config_manager.dart';
-import '../fakes/fake_global_managers.dart';
 
 void main() {
   late FakeAppConfigManager config;
@@ -17,7 +17,7 @@ void main() {
   /// Registers the config manager of the application and the global manager the builder reads it
   /// through.
   Future<void> registerConfig() async {
-    FakeGlobalManager();
+    FakeGlobalManager.install();
     config = await FakeAppConfigManager.withConfigs({
       "logs": {"level": "trace"},
     });

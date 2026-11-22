@@ -38,18 +38,6 @@ dependencies:
   act_dart_test_utility:
     path: ../dart/act_dart_test_utility
 
-  act_foundation:
-    path: ../dart/act_foundation
-
-  act_global_manager:
-    path: ../act_global_manager
-
-  act_life_cycle:
-    path: ../act_life_cycle
-
-  act_logger_manager:
-    path: ../dart/act_logger_manager
-
 # This package is only meant to be used as a dev dependency. Keep its dependencies limited to the
 # ACT packages whose interfaces are faked here. Those packages use this one in their own tests:
 # pub resolves this cycle because this package is only ever a dev dependency.

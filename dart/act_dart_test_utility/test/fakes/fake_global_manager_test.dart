@@ -2,11 +2,11 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
+import 'package:act_dart_test_utility/act_dart_test_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
-import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 void main() {
   group("FakeGlobalManager", () {
