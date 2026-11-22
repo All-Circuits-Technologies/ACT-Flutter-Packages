@@ -17,11 +17,6 @@ class FakeAppConfig extends AbstractConfigManager {
   @override
   Environment get env => _env;
 
-  @override
-  set env(Environment value) {
-    // The environment of the build is dropped: the test decides which one the application runs in.
-  }
-
   /// Class constructor
   FakeAppConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }

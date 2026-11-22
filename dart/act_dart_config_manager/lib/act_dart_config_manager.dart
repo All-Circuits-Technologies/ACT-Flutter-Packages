@@ -9,6 +9,7 @@ library;
 export 'src/errors/act_config_load_exception.dart';
 export 'src/errors/act_config_mapping_format_exception.dart';
 export 'src/errors/act_config_null_value_error.dart';
+export 'src/managers/abs_core_config_manager.dart';
 export 'src/models/config_var.dart';
 export 'src/models/config_var_list.dart';
 export 'src/models/env_config_mapping_model.dart';

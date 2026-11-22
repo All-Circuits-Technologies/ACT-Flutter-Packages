@@ -115,4 +115,57 @@ void main() {
       expect(store.tryToGet<String>("logs.level"), "error");
     });
   });
+
+  group("FileConfigLoader.loadConfigs", () {
+    test("returns the merged configuration without creating the store", () async {
+      writeFile("default.yaml", "logs:\n  level: warning\n  logsNb: 3");
+      writeFile("production.yaml", "logs:\n  level: error");
+
+      final configs = await FileConfigLoader.loadConfigs(
+        logger: const SilentLogger(),
+        env: Environment.production,
+        configDir: directory.path,
+      );
+
+      expect(configs, {
+        "logs": {"level": "error", "logsNb": 3},
+      });
+      expect(ConfigStore.instanceOrNull, isNull);
+    });
+
+    test("returns an empty map when the directory has no file", () async {
+      final configs = await FileConfigLoader.loadConfigs(
+        logger: const SilentLogger(),
+        env: Environment.production,
+        configDir: directory.path,
+      );
+
+      expect(configs, isEmpty);
+    });
+
+    test("lets the environment variables override the config files", () async {
+      writeFile("default.yaml", "logs:\n  level: warning");
+      writeFile("env_config_mapping.yaml", "logs:\n  level: ACT_TEST_LOGS_LEVEL");
+      writeFile(".env", "ACT_TEST_LOGS_LEVEL=error");
+
+      final configs = await FileConfigLoader.loadConfigs(
+        logger: const SilentLogger(),
+        env: Environment.production,
+        configDir: directory.path,
+      );
+
+      expect(configs, {
+        "logs": {"level": "error"},
+      });
+    });
+  });
+
+  group("FileConfigLoader.resolveEnvironment", () {
+    test("returns an environment, the development one when the process chooses none", () {
+      expect(
+        FileConfigLoader.resolveEnvironment(),
+        Environment.fromString(Platform.environment[Environment.envType] ?? ""),
+      );
+    });
+  });
 }

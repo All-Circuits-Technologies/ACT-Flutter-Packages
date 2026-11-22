@@ -20,6 +20,10 @@ dependencies:
   # Annotations (@protected, ...) without pulling any framework
   meta: ^1.16.0
 
+  # Pure Dart life cycle of the managers
+  act_dart_life_cycle:
+    path: ../act_dart_life_cycle
+
   # Contains utilities for Dart
   act_dart_utility:
     path: ../act_dart_utility

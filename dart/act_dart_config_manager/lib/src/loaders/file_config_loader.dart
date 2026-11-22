@@ -37,37 +37,68 @@ sealed class FileConfigLoader {
 
   /// Load the configuration from the file system and create the [ConfigStore].
   ///
-  /// The directory the files are read from is [configDir] when it's given, else the value of the
-  /// [configDirEnvKey] environment variable, else [defaultConfigDir].
-  ///
-  /// The environment is [env] when it's given, else the one the [Environment.envType] environment
-  /// variable targets, else [Environment.development].
-  ///
-  /// The precedence of the config files is (from the less to the most important): the default file,
-  /// the file of the chosen environment, the local file. The environment variables override the
-  /// config files.
+  /// The directory, the environment and the precedence are the ones of [loadConfigs]: [configDir]
+  /// and [env] are used when they're given, else [resolveEnvironment] chooses the environment.
   static Future<ConfigStore> load({
     required MixinActLogger logger,
     String? configDir,
     Environment? env,
   }) async {
     final subLogger = logger.createAbsSubLogger(subCategory: _loggerCategory);
-    final processEnv = Platform.environment;
+    final chosenEnv = env ?? resolveEnvironment();
 
-    final directory = configDir ?? processEnv[configDirEnvKey] ?? defaultConfigDir;
-    final chosenEnv = env ?? Environment.fromString(processEnv[Environment.envType] ?? "");
-
-    final fileConfig = await _parseFromConfigFiles(directory, chosenEnv);
-    final envConfig = await _parseFromEnv(directory, processEnv);
-
-    final finalValue = JsonUtility.mergeJson(baseJson: fileConfig, jsonToOverrideWith: envConfig);
+    final finalValue = await loadConfigs(logger: subLogger, env: chosenEnv, configDir: configDir);
 
     final store = ConfigStore.create(logger: subLogger, configs: finalValue);
 
-    subLogger.i("Config store loaded from the directory '$directory' with environment: $chosenEnv");
+    subLogger.i(
+      "Config store loaded from the directory '${_resolveDirectory(configDir)}' with "
+      "environment: $chosenEnv",
+    );
 
     return store;
   }
+
+  /// Load the configuration from the file system and return it merged, without creating the
+  /// [ConfigStore].
+  ///
+  /// The directory the files are read from is [configDir] when it's given, else the value of the
+  /// [configDirEnvKey] environment variable, else [defaultConfigDir].
+  ///
+  /// The files read are the ones of the chosen [env].
+  ///
+  /// The precedence of the config files is (from the less to the most important): the default file,
+  /// the file of the chosen environment, the local file. The environment variables override the
+  /// config files.
+  ///
+  /// The method throws when a file can't be parsed: the configuration is loaded at startup and the
+  /// host can't work without it.
+  static Future<Map<String, dynamic>> loadConfigs({
+    required MixinActLogger logger,
+    required Environment env,
+    String? configDir,
+  }) async {
+    final directory = _resolveDirectory(configDir);
+
+    final fileConfig = await _parseFromConfigFiles(directory, env);
+    final envConfig = await _parseFromEnv(directory, Platform.environment);
+
+    final result = JsonUtility.mergeJson(baseJson: fileConfig, jsonToOverrideWith: envConfig);
+
+    logger.d("Config loaded from the directory '$directory' with environment: $env");
+
+    return result;
+  }
+
+  /// Get the environment targeted by the [Environment.envType] environment variable of the
+  /// process, or [Environment.development] when it's absent or unknown.
+  static Environment resolveEnvironment() =>
+      Environment.fromString(Platform.environment[Environment.envType] ?? "");
+
+  /// Get the directory the configuration is read from: the given [configDir], else the
+  /// [configDirEnvKey] environment variable, else [defaultConfigDir].
+  static String _resolveDirectory(String? configDir) =>
+      configDir ?? Platform.environment[configDirEnvKey] ?? defaultConfigDir;
 
   /// Parse the config files of the [directory] and merge them following their precedence.
   static Future<Map<String, dynamic>> _parseFromConfigFiles(

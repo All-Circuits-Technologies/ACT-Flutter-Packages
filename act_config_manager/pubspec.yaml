@@ -46,13 +46,6 @@ dependencies:
   act_flutter_utility:
     path: ../act_flutter_utility
 
-  act_foundation:
-    path: ../dart/act_foundation
-
-  # Easily create managers
-  act_life_cycle:
-    path: ../act_life_cycle
-
   act_platform_manager:
     path: ../act_platform_manager
 
@@ -64,6 +57,14 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  # Logger interface the tests give to the manager
+  act_foundation:
+    path: ../dart/act_foundation
+
+  # Life cycle base class the tests check the manager against
+  act_life_cycle:
+    path: ../act_life_cycle
 
   # Fakes and helpers shared by the tests of the ACT packages
   act_test_utility:

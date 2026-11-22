@@ -71,8 +71,22 @@ right of the flow overrides the one found on its left.
 
 ### The manager and the singleton
 
-`AbstractConfigManager` is the manager an application derives from to declare its variables. It is
-registered like any other manager, with an `AbstractConfigBuilder`, and it depends on none of them.
+`AbstractConfigManager` is the manager a Flutter application derives from to declare its variables.
+It is registered like any other manager, with an `AbstractConfigBuilder`, and it depends on none of
+them.
+
+It derives from `AbsCoreConfigManager`, the pure Dart base class of the
+[`act_dart_config_manager`](../dart/act_dart_config_manager/README.md) package, which holds the
+environment, creates the singleton from the configuration the derived class loads, and releases it.
+`AbstractConfigManager` loads that configuration from the assets of the application. Which class to
+use:
+
+- a Flutter application derives `AbstractConfigManager` (or `AbsUsualConfigManager` of
+  `act_global_manager`, which adds the config variables of the logger);
+- a pure Dart application (a server, a script) derives `AbsFileConfigManager`, which reads the
+  configuration from the file system;
+- `AbsCoreConfigManager` is the shared base: a package which declares its variables in a mixin
+  targets it, so the mixin works with both managers.
 
 `ConfigSingleton` holds the merged configuration. The config variables read from it, rather than
 from the manager, because a variable is declared as a field of the derived manager and cannot reach
@@ -135,8 +149,9 @@ class AppConfigManager extends AbstractConfigManager {
 }
 ```
 
-A package which needs its own variables declares them in a mixin on `AbstractConfigManager`, and the
-application mixes it into its manager. That way the package says what it reads without knowing the
+A package which needs its own variables declares them in a mixin on `AbsCoreConfigManager` (or on
+`AbstractConfigManager` when it is a Flutter package), and the application mixes it into its
+manager. That way the package says what it reads without knowing the
 manager of the application.
 
 ### Register the manager

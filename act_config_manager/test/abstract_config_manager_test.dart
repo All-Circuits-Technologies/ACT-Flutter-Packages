@@ -44,6 +44,10 @@ void main() {
       expect(_TestConfigManager(logger: const SilentLogger()), isA<AbsWithLifeCycle>());
     });
 
+    test("is a core config manager", () {
+      expect(_TestConfigManager(logger: const SilentLogger()), isA<AbsCoreConfigManager>());
+    });
+
     test("reads the configuration from the assets folder by default", () {
       final manager = _TestConfigManager(logger: const SilentLogger());
 
