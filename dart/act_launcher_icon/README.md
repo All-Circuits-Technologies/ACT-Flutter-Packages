@@ -49,7 +49,7 @@ This package has no need to be added in the `dependencies` of your project but h
 ```yaml
 dev_dependencies:
   act_launcher_icon:
-    path: ../act_launcher_icon
+    path: ../dart/act_launcher_icon
 ```
 
 ### Create the images

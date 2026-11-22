@@ -41,7 +41,6 @@ on:
       - "act_intl/**"
       - "act_intl_ui/**"
       - "act_jwt_utilities/**"
-      - "act_launcher_icon/**"
       - "act_licenses_manager/**"
       - "act_life_cycle/**"
       - "act_local_storage_manager/**"
@@ -84,6 +83,7 @@ on:
       - "dart/act_entity/**"
       - "dart/act_foundation/**"
       - "dart/act_http_core/**"
+      - "dart/act_launcher_icon/**"
       - "!**/*.md"
   pull_request:
     paths:
@@ -122,7 +122,6 @@ on:
       - "act_intl/**"
       - "act_intl_ui/**"
       - "act_jwt_utilities/**"
-      - "act_launcher_icon/**"
       - "act_licenses_manager/**"
       - "act_life_cycle/**"
       - "act_local_storage_manager/**"
@@ -165,6 +164,7 @@ on:
       - "dart/act_entity/**"
       - "dart/act_foundation/**"
       - "dart/act_http_core/**"
+      - "dart/act_launcher_icon/**"
       - "!**/*.md"
 defaults:
   run:
@@ -201,16 +201,16 @@ jobs:
       - name: mono_repo self validate
         run: dart pub global run mono_repo generate --validate
   job_002:
-    name: "analyze; Dart 3.13.7; PKGS: act_launcher_icon, dart/act_dart_config_manager, dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core; `dart analyze --fatal-infos .`"
+    name: "analyze; Dart 3.13.7; PKGS: dart/act_dart_config_manager, dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core, dart/act_launcher_icon; `dart analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:act_launcher_icon-dart/act_dart_config_manager-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core;commands:analyze_1"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_config_manager-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon;commands:analyze_1"
           restore-keys: |-
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:act_launcher_icon-dart/act_dart_config_manager-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_config_manager-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon
             os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -223,15 +223,6 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - id: act_launcher_icon_pub_upgrade
-        name: act_launcher_icon; dart pub upgrade
-        run: dart pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: act_launcher_icon
-      - name: "act_launcher_icon; dart analyze --fatal-infos ."
-        run: dart analyze --fatal-infos .
-        if: "always() && steps.act_launcher_icon_pub_upgrade.conclusion == 'success'"
-        working-directory: act_launcher_icon
       - id: dart_act_dart_config_manager_pub_upgrade
         name: dart/act_dart_config_manager; dart pub upgrade
         run: dart pub upgrade
@@ -322,6 +313,15 @@ jobs:
         run: dart analyze --fatal-infos .
         if: "always() && steps.dart_act_http_core_pub_upgrade.conclusion == 'success'"
         working-directory: dart/act_http_core
+      - id: dart_act_launcher_icon_pub_upgrade
+        name: dart/act_launcher_icon; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_launcher_icon
+      - name: "dart/act_launcher_icon; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_launcher_icon_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_launcher_icon
   job_003:
     name: "analyze; Flutter 3.47.9; PKGS: act_abs_peripherals_manager, act_amplify_api, act_amplify_cognito, act_amplify_core, act_amplify_storage_s3, act_app_life_cycle_manager, act_aws_iot_core, act_barcode, act_ble_manager, act_ble_manager_ui, act_config_manager, act_consent_manager, act_contextual_views_manager, act_enable_service_utility, act_ffi_utility, act_file_transfer_manager, act_firebase_core, act_firebase_crash, act_flutter_utility, act_global_manager, act_halo_abstract, act_halo_ble_layer, act_halo_manager, act_http_client_jwt_auth, act_http_client_manager, act_http_logging_manager, act_http_server_manager, act_internet_connectivity_manager, act_intl, act_intl_ui, act_jwt_utilities, act_licenses_manager, act_life_cycle, act_local_storage_manager, act_location_manager, act_logger_manager, act_music_player_manager, act_oauth2_core, act_oauth2_google, act_oauth2_keycloak, act_ocsigen_halo_manager, act_permissions_manager, act_platform_manager, act_remote_local_vers_file_manager, act_remote_storage_manager, act_remote_storage_ui, act_router_manager, act_shared_auth, act_shared_auth_local_storage, act_shared_auth_ui, act_splash_screen_manager, act_tb_extender_auth, act_tb_extender_client, act_test_utility, act_themes_manager, act_thingsboard_client, act_thingsboard_client_ui, act_tic_manager, act_web_local_storage_manager, act_websocket_client_manager, act_websocket_core, act_websocket_server_manager, act_yaml_utility; `flutter analyze --fatal-infos .`"
     runs-on: ubuntu-latest
