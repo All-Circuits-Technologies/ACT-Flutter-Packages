@@ -6,8 +6,7 @@
 
 library;
 
+export 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
+
 export 'src/mixins/mixin_ui_life_cycle.dart';
-export 'src/mixins/mixin_with_life_cycle.dart';
-export 'src/services/abs_life_cycle_factory.dart';
-export 'src/services/abs_with_life_cycle.dart';
 export 'src/services/abs_with_life_cycle_and_ui.dart';

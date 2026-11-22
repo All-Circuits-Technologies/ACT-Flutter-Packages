@@ -35,6 +35,11 @@ The package only defines the steps and the contract which comes with them. It ru
 not build the managers, does not order them and does not call their steps. That orchestration
 belongs to `act_global_manager`.
 
+The part which does not need Flutter (`MixinWithLifeCycle`, `AbsWithLifeCycle` and
+`AbsLifeCycleFactory`) lives in the pure Dart package `act_dart_life_cycle`. This package depends on
+it and exports it, so a Flutter package only imports `act_life_cycle`. What stays here is what
+needs the widget tree: `MixinUiLifeCycle` and `AbsWithLifeCycleAndUi`.
+
 ## Architecture
 
 ```mermaid
@@ -50,7 +55,7 @@ flowchart TB
 
 | Step                             | Comes from                  | Meaning                                 |
 | -------------------------------- | --------------------------- | --------------------------------------- |
-| `initLifeCycle`                  | `MixinWithLifeCycle`        | Asynchronous initialisation             |
+| `initLifeCycle`                  | `MixinWithLifeCycle` (core) | Asynchronous initialisation             |
 | `initAfterManagersAndBeforeViews`| `MixinUiLifeCycle`          | Every manager is up, no view exists yet |
 | `initAfterView`                  | `MixinUiLifeCycle`          | The first view is built                 |
 | `disposeLifeCycle`               | `MixinWithLifeCycleDispose` | Clean up                                |

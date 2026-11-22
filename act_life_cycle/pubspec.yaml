@@ -31,8 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
 
-  act_foundation:
-    path: ../dart/act_foundation
+  act_dart_life_cycle:
+    path: ../dart/act_dart_life_cycle
 
 # Dependencies used by developer
 dev_dependencies:
