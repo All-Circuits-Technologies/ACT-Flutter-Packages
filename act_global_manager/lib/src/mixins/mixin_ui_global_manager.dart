@@ -4,16 +4,25 @@
 
 import 'dart:async';
 
-import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_global_manager/src/types/global_manager_state.dart';
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_global_manager/src/services/ui_fatal_error_manager.dart';
 import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter/widgets.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 /// This mixin is used to add methods to the global manager linked to the UI life cycle
 ///
 /// Add this when you need to create an UI Application
 mixin MixinUiGlobalManager on AbsGlobalManager {
+  /// The information contained in the pubspec.yaml of the mobile application
+  late final PackageInfo _packageInfo;
+
+  /// Get the app package info
+  ///
+  /// It is available once [initLifeCycle] has loaded it.
+  PackageInfo get packageInfo => _packageInfo;
+
   /// {@macro act_global_manager.AbsGlobalManager.getGlobalManagerStates}
   @override
   List<Enum> getGlobalManagerStates() => GlobalManagerUiState.getAllColumns();
@@ -30,6 +39,8 @@ mixin MixinUiGlobalManager on AbsGlobalManager {
       // further
       return;
     }
+
+    _packageInfo = await PackageInfo.fromPlatform();
 
     await callUiMethodFollowingOrder(
       method: (manager) async => manager.initAfterManagersAndBeforeViews(),

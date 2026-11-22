@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
-import 'package:act_global_manager/src/types/global_manager_state.dart';
 
 /// This enum represents the state of the global manager related to the UI
 enum GlobalManagerUiState with MixinExtendsEnum {

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 
 /// A class representing additional information for a manager.
 class ManagerExtraInfo {
