@@ -4,11 +4,13 @@
 
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_firebase_crash/act_firebase_crash.dart';
+import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_core_platform_interface/test.dart';
 import 'package:firebase_crashlytics_platform_interface/firebase_crashlytics_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 /// The channel Crashlytics reads the constants of the application from.
@@ -201,4 +203,43 @@ class FakeCrashConfig extends AbstractConfigManager with MixinFirebaseCrashConf,
 class FakeLoggerManager extends LoggerManager {
   /// Class constructor
   FakeLoggerManager({required FakeCrashConfig config}) : super(loggerConfigGetter: (() => config));
+}
+
+/// The global manager of an application with a view, which keeps the handlers of the errors of
+/// Flutter it is given.
+///
+/// The hooks which give the errors of Flutter to those handlers are installed when the application
+/// runs, which a test of the crash service doesn't do: the test gives the errors to the handlers
+/// itself.
+class FakeCrashGlobalManager extends AbsGlobalManager with MixinUiGlobalManager {
+  /// The handlers of the errors of Flutter, in the order they were added.
+  final List<FlutterExceptionHandler> flutterExceptionHandlers = [];
+
+  /// Class constructor
+  ///
+  /// The manager sets itself as the instance of the application.
+  FakeCrashGlobalManager() : super.create() {
+    AbsGlobalManager.setInstance = this;
+  }
+
+  /// Give [details] to the handlers, the way the hook of Flutter does.
+  void reportFlutterError(FlutterErrorDetails details) {
+    for (final handler in flutterExceptionHandlers.toList()) {
+      handler(details);
+    }
+  }
+
+  /// Keep the [handler] to give it the errors later.
+  @override
+  void addFlutterExceptionHandler(FlutterExceptionHandler handler) =>
+      flutterExceptionHandlers.add(handler);
+
+  /// Forget the [handler].
+  @override
+  void removeFlutterExceptionHandler(FlutterExceptionHandler handler) =>
+      flutterExceptionHandlers.remove(handler);
+
+  /// {@macro act_global_manager.AbsGlobalManager.registerManagers}
+  @override
+  Future<void> registerManagers() async {}
 }

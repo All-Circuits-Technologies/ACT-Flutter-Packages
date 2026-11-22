@@ -100,14 +100,15 @@ class FirebaseCrashService extends AbsFirebaseService {
   /// The method doesn't test if the updating has already be done (therefore it's better to do tests
   /// before calling it).
   Future<void> _updateEnableDataCollection() async {
+    final globalManager = AbsGlobalManager.instance! as MixinUiGlobalManager;
     final loggerManager = globalGetIt().get<LoggerManager>();
     final crashlytics = FirebaseCrashlytics.instance;
 
     if (_enableDataCollection) {
-      loggerManager.addFlutterExceptionHandler(crashlytics.recordFlutterFatalError);
+      globalManager.addFlutterExceptionHandler(crashlytics.recordFlutterFatalError);
       loggerManager.addPlatformErrorCallback(_recordErrorCrash);
     } else {
-      loggerManager.removeFlutterExceptionHandler(crashlytics.recordFlutterFatalError);
+      globalManager.removeFlutterExceptionHandler(crashlytics.recordFlutterFatalError);
       loggerManager.removePlatformErrorCallback(_recordErrorCrash);
 
       // We don't want to manage crash data collection any more; therefore we delete the unsent

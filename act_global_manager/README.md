@@ -97,7 +97,8 @@ an application with a view needs:
   once they are all initialized and before the first view is built,
 - `initInFirstView` gives them the context of the first view, without waiting for them: the first
   view is displayed rather than held back,
-- `runActApp` initializes the managers and then runs the application,
+- `runActApp` installs the hooks which catch the uncaught errors, initializes the managers and then
+  runs the application,
 - `packageInfo` gives the information of the application package (name, version, build number),
   read with `package_info_plus` while the global manager initializes, so it is only available once
   `initLifeCycle` has run. The pure Dart global manager has no such information, because the plugin
@@ -105,6 +106,28 @@ an application with a view needs:
 
 Only the managers which derive `AbsWithLifeCycleAndUi` take part in those two steps; the others are
 left alone.
+
+### The uncaught errors
+
+`runActApp` sets `FlutterError.onError` and `PlatformDispatcher.instance.onError` right after
+initializing the Flutter binding, before the managers are initialized, so the errors of the start of
+the application are caught too:
+
+- an error reported by Flutter is logged at the error level with `appLogger()`, then given to the
+  handlers added with `addFlutterExceptionHandler`,
+- an uncaught error of the platform is given to `LoggerManager.logUncaughtError` when the logger
+  manager is registered and ready, which logs it and calls the callbacks added with
+  `addPlatformErrorCallback`; otherwise it is logged with `appLogger()`. It is always reported as
+  handled.
+
+```dart
+final globalManager = AbsGlobalManager.instance! as MixinUiGlobalManager;
+globalManager.addFlutterExceptionHandler(myHandler);
+// ...
+globalManager.removeFlutterExceptionHandler(myHandler);
+```
+
+An application which doesn't start with `runActApp` has no such hooks.
 
 ### The fatal error page
 
