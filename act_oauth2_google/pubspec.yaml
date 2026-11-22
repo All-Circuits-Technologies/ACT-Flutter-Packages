@@ -42,7 +42,7 @@ dependencies:
 
   # Logger manager
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../dart/act_logger_manager
 
   # Core library for OAuth 2.0
   act_oauth2_core:

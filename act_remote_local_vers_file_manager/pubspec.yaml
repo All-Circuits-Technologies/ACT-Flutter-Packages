@@ -48,7 +48,7 @@ dependencies:
 
   # Loggers
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../dart/act_logger_manager
 
   # Help fetching remotely stored files
   act_remote_storage_manager:

@@ -52,7 +52,7 @@ dev_dependencies:
 
   # The logger the router of the tests is handed
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../dart/act_logger_manager
 
   # The router the contextual views of the tests are displayed through
   act_router_manager:

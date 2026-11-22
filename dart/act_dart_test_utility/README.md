@@ -15,6 +15,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
+  - [Give an external logger to a logs helper](#give-an-external-logger-to-a-logs-helper)
 - [Testing](#testing)
 
 ## Presentation
@@ -66,6 +67,7 @@ flowchart LR
     subgraph act_dart_test_utility
         FakeLogger --> FakeLogRecord
         SilentLogger
+        FakeExternalLogger --> FakeLogRecord
     end
 
     FakeLogger -.implements.-> MixinActLogger
@@ -125,6 +127,17 @@ shared without any set up or tear down:
 
 ```dart
 final manager = MyManager(logger: const SilentLogger());
+```
+
+### Give an external logger to a logs helper
+
+A class which owns a `LogsHelper` of `act_logger_manager`, rather than a `MixinActLogger`, cannot be
+given a `FakeLogger`: what the helper writes to is an external logger. Build the helper from a
+`FakeExternalLogger`, which records the messages as `FakeLogRecord`s:
+
+```dart
+final external = FakeExternalLogger();
+final manager = MyManager(logsHelper: external.buildHelper(category: "myManager"));
 ```
 
 ## Testing

@@ -68,7 +68,7 @@ dependencies:
 
   # Contains the logger manager
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../dart/act_logger_manager
 
   # Shared auth classes. For the ObserverAuth
   act_shared_auth:

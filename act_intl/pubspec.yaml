@@ -49,7 +49,7 @@ dependencies:
     path: ../act_local_storage_manager
 
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../dart/act_logger_manager
 
 # Dependencies used by developer
 dev_dependencies:
