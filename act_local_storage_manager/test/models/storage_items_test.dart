@@ -99,6 +99,17 @@ void main() {
       await pushed;
     });
 
+    test("pushes the value with the type of the item", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = <int>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store(42);
+      await pumpEventQueue();
+
+      expect(pushed, [42]);
+    });
+
     test("pushes nothing when the value is deleted", () async {
       final item = SharedPreferencesItem<int>("aKey");
       final pushed = <Object?>[];
@@ -151,6 +162,17 @@ void main() {
       await item.store(null);
 
       expect(await item.load(), isNull);
+    });
+
+    test("pushes the parsed value with its type", () async {
+      final item = anItem();
+      final pushed = <_Theme>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store(_Theme.dark);
+      await pumpEventQueue();
+
+      expect(pushed, [_Theme.dark]);
     });
 
     test("refuses to store a value which cannot be cast", () async {

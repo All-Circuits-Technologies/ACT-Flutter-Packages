@@ -19,7 +19,7 @@ class SharedPreferencesItem<T> extends AbsStorageItem<T> {
   final StreamController<T> _updateStreamController;
 
   /// With this stream you can subscribe to data update
-  Stream get updateStream => _updateStreamController.stream;
+  Stream<T> get updateStream => _updateStreamController.stream;
 
   /// Create a SharedPreferences wrapper for key [key] of type T.
   ///
