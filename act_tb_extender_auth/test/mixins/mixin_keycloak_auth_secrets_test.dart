@@ -34,5 +34,14 @@ void main() {
 
       expect(secrets.keycloakTokens.doNotMigrate, isTrue);
     });
+
+    test("ends the stream of the Keycloak tokens once the secrets are disposed", () async {
+      final secrets = await someSecrets();
+      final ended = expectLater(secrets.keycloakTokens.updateStream, emitsDone);
+
+      await secrets.disposeLifeCycle();
+
+      await ended;
+    });
   });
 }

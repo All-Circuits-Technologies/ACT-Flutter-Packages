@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
 // SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2023, 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -61,6 +61,15 @@ abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
       // We keep isFirstStart true so app can say we are currently in the first start
       await _isFirstStart.store(false);
     }
+  }
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  ///
+  /// A derived manager disposes the items it declares, then calls this method.
+  @override
+  Future<void> disposeLifeCycle() async {
+    await _isFirstStart.disposeLifeCycle();
+    return super.disposeLifeCycle();
   }
 
   /// {@template act_local_storage_manager.AbstractPropertiesManager.deleteAll}

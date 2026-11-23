@@ -155,6 +155,12 @@ class AppSecretsManager extends AbstractSecretsManager with MixinAuthSecrets {
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
     doNotMigrate: true,
   );
+
+  @override
+  Future<void> disposeLifeCycle() async {
+    await idpTokens.disposeLifeCycle();
+    return super.disposeLifeCycle();
+  }
 }
 
 final idpStorage = SecureLocalAuthStorage<AppConfigManager, AppSecretsManager>(

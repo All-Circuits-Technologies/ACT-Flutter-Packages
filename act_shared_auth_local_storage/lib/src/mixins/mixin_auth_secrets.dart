@@ -25,4 +25,11 @@ mixin MixinAuthSecrets on AbstractSecretsManager {
     parser: MemoryStorageUtility.convertAuthUserIdsFromStorage,
     castTo: MemoryStorageUtility.convertAuthUserIdsForStorage,
   );
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await Future.wait([authTokens.disposeLifeCycle(), authIds.disposeLifeCycle()]);
+    return super.disposeLifeCycle();
+  }
 }

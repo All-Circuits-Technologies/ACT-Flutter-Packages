@@ -34,4 +34,11 @@ class FakeAuthSecrets extends AbstractSecretsManager with MixinAuthSecrets {
 
   /// Class constructor
   FakeAuthSecrets({required super.propertiesGetter, required super.confGetter});
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await idpTokens.disposeLifeCycle();
+    return super.disposeLifeCycle();
+  }
 }

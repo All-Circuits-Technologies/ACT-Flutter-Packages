@@ -75,5 +75,14 @@ void main() {
 
       expect(pushed, ["a value", null]);
     });
+
+    test("ends its stream once it is disposed", () async {
+      final item = CookieSessionItem<String>("aDisposedText");
+      final ended = expectLater(item.updateStream, emitsDone);
+
+      await item.disposeLifeCycle();
+
+      await ended;
+    });
   });
 }

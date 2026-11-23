@@ -39,5 +39,17 @@ void main() {
       expect(await properties.currentTheme.load(), isNull);
       expect(await properties.currentThemeLightMode.load(), isNull);
     });
+
+    test("ends the streams of its items once the properties are disposed", () async {
+      final disposed = FakeThemesProperties();
+      final ended = Future.wait([
+        expectLater(disposed.currentTheme.updateStream, emitsDone),
+        expectLater(disposed.currentThemeLightMode.updateStream, emitsDone),
+      ]);
+
+      await disposed.disposeLifeCycle();
+
+      await ended;
+    });
   });
 }

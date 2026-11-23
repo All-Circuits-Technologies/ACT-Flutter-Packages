@@ -44,5 +44,13 @@ void main() {
 
       expect(await properties.wantedLocale.load(), isNull);
     });
+
+    test("ends its stream once the properties are disposed", () async {
+      final ended = expectLater(properties.wantedLocale.updateStream, emitsDone);
+
+      await properties.disposeLifeCycle();
+
+      await ended;
+    });
   });
 }

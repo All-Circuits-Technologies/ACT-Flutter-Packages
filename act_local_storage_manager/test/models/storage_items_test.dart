@@ -151,6 +151,27 @@ void main() {
       expect(pushed, [null]);
     });
 
+    test("ends its stream once it is disposed", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final ended = expectLater(item.updateStream, emitsDone);
+
+      await item.disposeLifeCycle();
+
+      await ended;
+    });
+
+    test("still stores, but pushes nothing, once it is disposed", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = _listen(item);
+      await item.disposeLifeCycle();
+
+      await item.store(42);
+      await pumpEventQueue();
+
+      expect(await item.load(), 42);
+      expect(pushed, isEmpty);
+    });
+
     test("pushes nothing which is stored through another item", () async {
       final item = SharedPreferencesItem<int>("aKey");
       final pushed = _listen(item);
@@ -298,6 +319,15 @@ void main() {
       await pumpEventQueue();
 
       expect(pushed, ["a value"]);
+    });
+
+    test("ends its stream once it is disposed", () async {
+      final item = SecretItem<String>("aKey");
+      final ended = expectLater(item.updateStream, emitsDone);
+
+      await item.disposeLifeCycle();
+
+      await ended;
     });
 
     test("pushes null when the secret is deleted", () async {

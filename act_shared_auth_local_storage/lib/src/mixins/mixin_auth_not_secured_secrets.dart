@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -14,4 +14,11 @@ mixin MixinAuthNotSecuredSecrets on AbstractPropertiesManager {
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
   );
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await authTokens.disposeLifeCycle();
+    return super.disposeLifeCycle();
+  }
 }

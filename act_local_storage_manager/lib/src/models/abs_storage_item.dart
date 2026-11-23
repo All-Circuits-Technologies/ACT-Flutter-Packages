@@ -4,13 +4,14 @@
 
 import 'dart:async';
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 
 /// This abstract class is the base class for all storage items.
 ///
-/// The item pushes on [updateStream] each value written through it.
-abstract class AbsStorageItem<T> extends Equatable {
+/// The item pushes on [updateStream] each value written through it, until it is disposed.
+abstract class AbsStorageItem<T> extends Equatable with MixinWithLifeCycleDispose {
   /// The key used to access wrapped data inside SharedPreferences.
   final String key;
 
@@ -25,6 +26,9 @@ abstract class AbsStorageItem<T> extends Equatable {
   ///
   /// It only pushes the writes made through this item instance: a value stored through another
   /// item with the same key is not pushed.
+  ///
+  /// The stream is closed when the item is disposed: a value stored afterwards is still written,
+  /// but no longer pushed.
   /// {@endtemplate}
   Stream<T?> get updateStream => _updateStreamController.stream;
 
@@ -82,6 +86,15 @@ abstract class AbsStorageItem<T> extends Equatable {
   /// {@endtemplate}
   @protected
   Future<void> deleteImpl();
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  ///
+  /// Closes [updateStream].
+  @override
+  Future<void> disposeLifeCycle() async {
+    await _updateStreamController.close();
+    return super.disposeLifeCycle();
+  }
 
   /// Push [value] on [updateStream], unless the stream is closed
   void _emit(T? value) {

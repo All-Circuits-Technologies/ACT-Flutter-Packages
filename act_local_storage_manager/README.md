@@ -81,6 +81,10 @@ through the same item instance, not the ones made through another item with the 
 An item implements `storeImpl` and `deleteImpl` to reach its storage; `store` and `delete` are
 those of `AbsStorageItem`, which push on the stream.
 
+An item closes its stream when it is disposed; a value stored afterwards is still written, but no
+longer pushed. The manager or the mixin which declares an item disposes it in its own
+`disposeLifeCycle`, before calling the one of its parent.
+
 The storages are reached through two singletons rather than through the managers, because an item
 is declared as a member of a manager which is abstract: it could not find its own manager back.
 Those singletons are internal to the package.
@@ -122,12 +126,24 @@ class AppPropertiesManager extends AbstractPropertiesManager {
     parser: AppTheme.parse,
     castTo: (theme) => theme.name,
   );
+
+  @override
+  Future<void> disposeLifeCycle() async {
+    await Future.wait([lastOpenedPage.disposeLifeCycle(), theme.disposeLifeCycle()]);
+    return super.disposeLifeCycle();
+  }
 }
 
 class AppSecretsManager extends AbstractSecretsManager {
   AppSecretsManager({required super.propertiesGetter, required super.confGetter});
 
   final refreshToken = SecretItem<String>("refreshToken", doNotMigrate: true);
+
+  @override
+  Future<void> disposeLifeCycle() async {
+    await refreshToken.disposeLifeCycle();
+    return super.disposeLifeCycle();
+  }
 }
 ```
 
@@ -202,7 +218,8 @@ neither storage knows how to keep them.
 
 The items with a parser are covered on the value they parse back, on the value which cannot be
 parsed and comes back as null, and on the cast which refuses a value. The stream of every kind of
-item is covered on the value it pushes, once per write, and on the `null` the deletion pushes.
+item is covered on the value it pushes, once per write, on the `null` the deletion pushes, and on
+its end once the item is disposed.
 
 The managers are driven through their initialization: the first start which is announced once and
 not the next time, the secrets which are cleared on that first start, and the ones which are kept

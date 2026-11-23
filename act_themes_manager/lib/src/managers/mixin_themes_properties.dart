@@ -12,4 +12,11 @@ mixin MixinThemesProperties on AbstractPropertiesManager {
   /// This is the key used to store if the current theme is in light mode or not in the local
   /// storage.
   final currentThemeLightMode = SharedPreferencesItem<bool>("CURRENT_THEME_LIGHT_MODE");
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await Future.wait([currentTheme.disposeLifeCycle(), currentThemeLightMode.disposeLifeCycle()]);
+    return super.disposeLifeCycle();
+  }
 }

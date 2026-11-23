@@ -22,4 +22,11 @@ mixin MixinKeycloakAuthSecrets on MixinAuthSecrets {
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
     doNotMigrate: true,
   );
+
+  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
+  @override
+  Future<void> disposeLifeCycle() async {
+    await keycloakTokens.disposeLifeCycle();
+    return super.disposeLifeCycle();
+  }
 }
