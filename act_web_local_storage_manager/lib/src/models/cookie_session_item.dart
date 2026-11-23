@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -14,18 +14,18 @@ import 'package:act_web_local_storage_manager/src/services/cookie_session_single
 /// If you want to support another type, please use `CookieSessionItemWithParser` object.
 class CookieSessionItem<T> extends AbsStorageItem<T> {
   /// Class constructor
-  const CookieSessionItem(String key) : super(key: key);
+  CookieSessionItem(String key) : super(key: key);
 
   /// {@macro act_local_storage_manager.AbsStorageItem.load}
   @override
   Future<T?> load() async => CookieSessionSingleton.instance.load<T>(key: key);
 
-  /// {@macro act_local_storage_manager.AbsStorageItem.store}
+  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
   @override
-  Future<bool> store(T? value) async =>
+  Future<bool> storeImpl(T value) async =>
       CookieSessionSingleton.instance.store<T>(key: key, value: value);
 
-  /// {@macro act_local_storage_manager.AbsStorageItem.delete}
+  /// {@macro act_local_storage_manager.AbsStorageItem.deleteImpl}
   @override
-  Future<void> delete() async => CookieSessionSingleton.instance.delete(key: key);
+  Future<void> deleteImpl() async => CookieSessionSingleton.instance.delete(key: key);
 }

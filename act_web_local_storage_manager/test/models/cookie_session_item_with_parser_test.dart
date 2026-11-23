@@ -41,7 +41,7 @@ void main() {
       await item.store(_aMoment);
 
       expect(
-        await const CookieSessionItem<int>("aStoredMoment").load(),
+        await CookieSessionItem<int>("aStoredMoment").load(),
         _aMoment.millisecondsSinceEpoch,
       );
     });

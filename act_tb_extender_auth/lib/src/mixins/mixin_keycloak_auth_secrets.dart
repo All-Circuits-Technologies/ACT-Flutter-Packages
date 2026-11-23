@@ -16,7 +16,7 @@ import 'package:act_shared_auth_local_storage/act_shared_auth_local_storage.dart
 mixin MixinKeycloakAuthSecrets on MixinAuthSecrets {
   /// This is the pair of Keycloak tokens of the current user, which the identity provider minted
   /// and the broker is called with.
-  final keycloakTokens = const SecretItemWithParser<AuthTokens, String>(
+  final keycloakTokens = SecretItemWithParser<AuthTokens, String>(
     "KC_AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,

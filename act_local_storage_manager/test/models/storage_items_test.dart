@@ -24,6 +24,13 @@ enum _Theme {
       _Theme.values.where((theme) => theme.name == value).firstOrNull;
 }
 
+/// Collects the values [item] pushes on its update stream.
+List<T?> _listen<T>(AbsStorageItem<T> item) {
+  final pushed = <T?>[];
+  item.updateStream.listen(pushed.add);
+  return pushed;
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -38,17 +45,17 @@ void main() {
 
   group("AbsStorageItem", () {
     test("equals another item which watches the same key", () {
-      expect(const SecretItem<String>("aKey"), const SecretItem<String>("aKey"));
+      expect(SecretItem<String>("aKey"), SecretItem<String>("aKey"));
     });
 
     test("differs from an item which watches another key", () {
-      expect(const SecretItem<String>("aKey"), isNot(const SecretItem<String>("anotherKey")));
+      expect(SecretItem<String>("aKey"), isNot(SecretItem<String>("anotherKey")));
     });
 
     test("differs from a secret which is not migrated to a new device", () {
       expect(
-        const SecretItem<String>("aKey"),
-        isNot(const SecretItem<String>("aKey", doNotMigrate: true)),
+        SecretItem<String>("aKey"),
+        isNot(SecretItem<String>("aKey", doNotMigrate: true)),
       );
     });
   });
@@ -90,18 +97,9 @@ void main() {
       expect(await item.load(), isNull);
     });
 
-    test("pushes the value it stores on its stream", () async {
+    test("pushes the value it stores, with the type of the item", () async {
       final item = SharedPreferencesItem<int>("aKey");
-      final pushed = expectLater(item.updateStream, emits(42));
-
-      await item.store(42);
-
-      await pushed;
-    });
-
-    test("pushes the value with the type of the item", () async {
-      final item = SharedPreferencesItem<int>("aKey");
-      final pushed = <int>[];
+      final pushed = <int?>[];
       item.updateStream.listen(pushed.add);
 
       await item.store(42);
@@ -110,16 +108,57 @@ void main() {
       expect(pushed, [42]);
     });
 
-    test("pushes nothing when the value is deleted", () async {
+    test("pushes the value again when the same value is stored again", () async {
       final item = SharedPreferencesItem<int>("aKey");
-      final pushed = <Object?>[];
-      item.updateStream.listen(pushed.add);
+      final pushed = _listen(item);
+
+      await item.store(42);
+      await item.store(42);
+      await pumpEventQueue();
+
+      expect(pushed, [42, 42]);
+    });
+
+    test("pushes null when the value is deleted", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = _listen(item);
       await item.store(42);
 
       await item.delete();
       await pumpEventQueue();
 
-      expect(pushed, [42]);
+      expect(pushed, [42, null]);
+    });
+
+    test("pushes null when the value is stored as null", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = _listen(item);
+      await item.store(42);
+
+      await item.store(null);
+      await pumpEventQueue();
+
+      expect(pushed, [42, null]);
+    });
+
+    test("pushes null when nothing was stored before the deletion", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = _listen(item);
+
+      await item.delete();
+      await pumpEventQueue();
+
+      expect(pushed, [null]);
+    });
+
+    test("pushes nothing which is stored through another item", () async {
+      final item = SharedPreferencesItem<int>("aKey");
+      final pushed = _listen(item);
+
+      await SharedPreferencesItem<int>("aKey").store(42);
+      await pumpEventQueue();
+
+      expect(pushed, isEmpty);
     });
   });
 
@@ -164,15 +203,26 @@ void main() {
       expect(await item.load(), isNull);
     });
 
-    test("pushes the parsed value with its type", () async {
+    test("pushes the parsed value once, with its type", () async {
       final item = anItem();
-      final pushed = <_Theme>[];
+      final pushed = <_Theme?>[];
       item.updateStream.listen(pushed.add);
 
       await item.store(_Theme.dark);
       await pumpEventQueue();
 
       expect(pushed, [_Theme.dark]);
+    });
+
+    test("pushes null when the value is stored as null", () async {
+      final item = anItem();
+      final pushed = _listen(item);
+      await item.store(_Theme.dark);
+
+      await item.store(null);
+      await pumpEventQueue();
+
+      expect(pushed, [_Theme.dark, null]);
     });
 
     test("refuses to store a value which cannot be cast", () async {
@@ -184,15 +234,29 @@ void main() {
 
       expect(await item.store(_Theme.dark), isFalse);
     });
+
+    test("pushes nothing when the value cannot be cast", () async {
+      final item = SharedPrefsItemWithParser<_Theme, String>(
+        "theme",
+        parser: _Theme.parse,
+        castTo: (theme) => null,
+      );
+      final pushed = _listen(item);
+
+      await item.store(_Theme.dark);
+      await pumpEventQueue();
+
+      expect(pushed, isEmpty);
+    });
   });
 
   group("SecretItem", () {
     test("returns null before anything has been stored", () async {
-      expect(await const SecretItem<String>("aKey").load(), isNull);
+      expect(await SecretItem<String>("aKey").load(), isNull);
     });
 
     test("returns the secret which has been stored", () async {
-      const item = SecretItem<String>("aKey");
+      final item = SecretItem<String>("aKey");
 
       await item.store("a value");
 
@@ -200,7 +264,7 @@ void main() {
     });
 
     test("keeps a boolean as a secret", () async {
-      const item = SecretItem<bool>("aKey");
+      final item = SecretItem<bool>("aKey");
 
       await item.store(true);
 
@@ -208,7 +272,7 @@ void main() {
     });
 
     test("forgets the secret when it is deleted", () async {
-      const item = SecretItem<String>("aKey");
+      final item = SecretItem<String>("aKey");
       await item.store("a value");
 
       await item.delete();
@@ -217,12 +281,34 @@ void main() {
     });
 
     test("forgets the secret when it is stored as null", () async {
-      const item = SecretItem<String>("aKey");
+      final item = SecretItem<String>("aKey");
       await item.store("a value");
 
       await item.store(null);
 
       expect(await item.load(), isNull);
+    });
+
+    test("pushes the secret it stores, with the type of the item", () async {
+      final item = SecretItem<String>("aKey");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store("a value");
+      await pumpEventQueue();
+
+      expect(pushed, ["a value"]);
+    });
+
+    test("pushes null when the secret is deleted", () async {
+      final item = SecretItem<String>("aKey");
+      final pushed = _listen(item);
+      await item.store("a value");
+
+      await item.delete();
+      await pumpEventQueue();
+
+      expect(pushed, ["a value", null]);
     });
   });
 
@@ -245,13 +331,49 @@ void main() {
     test("stores the value the way the caller casts it", () async {
       await anItem().store(_Theme.dark);
 
-      expect(await const SecretItem<String>("theme").load(), "dark");
+      expect(await SecretItem<String>("theme").load(), "dark");
     });
 
     test("returns null when what was stored cannot be parsed", () async {
-      await const SecretItem<String>("theme").store("purple");
+      await SecretItem<String>("theme").store("purple");
 
       expect(await anItem().load(), isNull);
+    });
+
+    test("pushes the parsed value once, with its type", () async {
+      final item = anItem();
+      final pushed = <_Theme?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store(_Theme.dark);
+      await pumpEventQueue();
+
+      expect(pushed, [_Theme.dark]);
+    });
+
+    test("pushes null when the value is deleted", () async {
+      final item = anItem();
+      final pushed = _listen(item);
+      await item.store(_Theme.dark);
+
+      await item.delete();
+      await pumpEventQueue();
+
+      expect(pushed, [_Theme.dark, null]);
+    });
+
+    test("pushes nothing when the value cannot be cast", () async {
+      final item = SecretItemWithParser<_Theme, String>(
+        "theme",
+        parser: _Theme.parse,
+        castTo: (theme) => null,
+      );
+      final pushed = _listen(item);
+
+      await item.store(_Theme.dark);
+      await pumpEventQueue();
+
+      expect(pushed, isEmpty);
     });
   });
 }

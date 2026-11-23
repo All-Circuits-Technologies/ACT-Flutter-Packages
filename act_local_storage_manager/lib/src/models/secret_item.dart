@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -20,22 +20,22 @@ class SecretItem<T> extends AbsStorageItem<T> {
   final bool doNotMigrate;
 
   /// Create a FlutterSecureStorage wrapper for key [key] of type T.
-  const SecretItem(String key, {this.doNotMigrate = false}) : super(key: key);
+  SecretItem(String key, {this.doNotMigrate = false}) : super(key: key);
 
   /// {@macro act_local_storage_manager.AbsStorageItem.load}
   @override
   Future<T?> load() async => SecretsSingleton.instance.load<T>(key: key);
 
-  /// {@macro act_local_storage_manager.AbsStorageItem.store}
+  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
   @override
-  Future<bool> store(T? value) async =>
+  Future<bool> storeImpl(T value) async =>
       SecretsSingleton.instance.store(key: key, value: value, doNotMigrate: doNotMigrate);
 
   /// Delete a value stored in secure storage.
   ///
   /// {@macro act_local_storage_manager.SecretsSingleton.exceptions}
   @override
-  Future<void> delete() async => SecretsSingleton.instance.delete(key: key);
+  Future<void> deleteImpl() async => SecretsSingleton.instance.delete(key: key);
 
   /// Class properties
   @override

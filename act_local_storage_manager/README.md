@@ -72,8 +72,14 @@ The two items with a parser are for the values which are not of a type the stora
 application gives the two functions which turn its value into a stored one and back. Storing a null
 value deletes the key, in every kind of item.
 
-A `SharedPreferencesItem` also pushes on a stream every value written through it, so a part of an
-application can follow a property it does not own. Nothing is pushed when the value is deleted.
+Every item also pushes on its `updateStream` each value written through it, so a part of an
+application can follow a value it does not own. A deletion, or a null value stored, pushes `null`.
+The stream reports each write, not each change: storing the value already stored pushes it again,
+and a listener which wants the changes only uses `distinct()`. It only reports the writes made
+through the same item instance, not the ones made through another item with the same key.
+
+An item implements `storeImpl` and `deleteImpl` to reach its storage; `store` and `delete` are
+those of `AbsStorageItem`, which push on the stream.
 
 The storages are reached through two singletons rather than through the managers, because an item
 is declared as a member of a manager which is abstract: it could not find its own manager back.
@@ -119,9 +125,9 @@ class AppPropertiesManager extends AbstractPropertiesManager {
 }
 
 class AppSecretsManager extends AbstractSecretsManager {
-  const AppSecretsManager({required super.propertiesGetter, required super.confGetter});
+  AppSecretsManager({required super.propertiesGetter, required super.confGetter});
 
-  final refreshToken = const SecretItem<String>("refreshToken", doNotMigrate: true);
+  final refreshToken = SecretItem<String>("refreshToken", doNotMigrate: true);
 }
 ```
 
@@ -195,8 +201,8 @@ is forgotten because it was deleted or stored as null, and the types which are r
 neither storage knows how to keep them.
 
 The items with a parser are covered on the value they parse back, on the value which cannot be
-parsed and comes back as null, and on the cast which refuses a value. The stream of a property is
-covered on what it pushes and on the deletion, which pushes nothing.
+parsed and comes back as null, and on the cast which refuses a value. The stream of every kind of
+item is covered on the value it pushes, once per write, and on the `null` the deletion pushes.
 
 The managers are driven through their initialization: the first start which is announced once and
 not the next time, the secrets which are cleared on that first start, and the ones which are kept

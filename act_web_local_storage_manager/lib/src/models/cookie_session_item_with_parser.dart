@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -24,7 +24,7 @@ class CookieSessionItemWithParser<ParsedType, StoredType> extends CookieSessionI
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  const CookieSessionItemWithParser(super.key, {required this.parser, required this.castTo});
+  CookieSessionItemWithParser(super.key, {required this.parser, required this.castTo});
 
   /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
   @override

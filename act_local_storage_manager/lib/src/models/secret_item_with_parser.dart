@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -27,7 +27,7 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  const SecretItemWithParser(
+  SecretItemWithParser(
     super.key, {
     required this.parser,
     required this.castTo,

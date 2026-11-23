@@ -17,7 +17,7 @@ void main() {
 
   group("CookieSessionItem", () {
     test("keeps the value of its key for as long as the session lasts", () async {
-      const item = CookieSessionItem<String>("aText");
+      final item = CookieSessionItem<String>("aText");
 
       await item.store("a value");
 
@@ -25,7 +25,7 @@ void main() {
     });
 
     test("keeps a number as well as a text", () async {
-      const item = CookieSessionItem<int>("aNumber");
+      final item = CookieSessionItem<int>("aNumber");
 
       await item.store(42);
 
@@ -33,11 +33,11 @@ void main() {
     });
 
     test("reads nothing before anything was written under its key", () async {
-      expect(await const CookieSessionItem<String>("nothingHere").load(), isNull);
+      expect(await CookieSessionItem<String>("nothingHere").load(), isNull);
     });
 
     test("reads nothing once it was deleted", () async {
-      const item = CookieSessionItem<String>("aDeletedText");
+      final item = CookieSessionItem<String>("aDeletedText");
       await item.store("a value");
 
       await item.delete();
@@ -46,11 +46,34 @@ void main() {
     });
 
     test("reads what another item of the same key wrote", () async {
-      const written = CookieSessionItem<String>("aSharedKey");
-      const read = CookieSessionItem<String>("aSharedKey");
+      final written = CookieSessionItem<String>("aSharedKey");
+      final read = CookieSessionItem<String>("aSharedKey");
       await written.store("a value");
 
       expect(await read.load(), "a value");
+    });
+
+    test("pushes the value it writes, with the type of the item", () async {
+      final item = CookieSessionItem<String>("aPushedText");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store("a value");
+      await pumpEventQueue();
+
+      expect(pushed, ["a value"]);
+    });
+
+    test("pushes null once it was deleted", () async {
+      final item = CookieSessionItem<String>("aPushedDeletedText");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+      await item.store("a value");
+
+      await item.delete();
+      await pumpEventQueue();
+
+      expect(pushed, ["a value", null]);
     });
   });
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -36,14 +36,11 @@ mixin MixinParserStorageItem<ParsedType, StoredType> on AbsStorageItem<ParsedTyp
     return parser(storedValue);
   }
 
-  /// {@macro act_local_storage_manager.AbsStorageItem.store}
+  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
+  ///
+  /// Returns false, and stores nothing, when [castTo] cannot cast the [value].
   @override
-  Future<bool> store(ParsedType? value) async {
-    if (value == null) {
-      await delete();
-      return true;
-    }
-
+  Future<bool> storeImpl(ParsedType value) async {
     final toStoreResult = castTo(value);
     if (toStoreResult == null) {
       return false;

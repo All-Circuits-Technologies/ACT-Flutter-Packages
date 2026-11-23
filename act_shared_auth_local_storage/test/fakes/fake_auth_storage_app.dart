@@ -25,7 +25,7 @@ class FakeAuthProperties extends AbstractPropertiesManager with MixinAuthNotSecu
 class FakeAuthSecrets extends AbstractSecretsManager with MixinAuthSecrets {
   /// The tokens of the second identity provider the application under test talks to, kept beside
   /// the ones of its own authentication.
-  final idpTokens = const SecretItemWithParser<AuthTokens, String>(
+  final idpTokens = SecretItemWithParser<AuthTokens, String>(
     "IDP_AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,

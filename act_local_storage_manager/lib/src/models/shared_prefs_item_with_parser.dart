@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -38,16 +38,4 @@ class SharedPrefsItemWithParser<ParsedType, StoredType> extends SharedPreference
   @override
   Future<bool> storeToStorage(StoredType value) async =>
       PropertiesSingleton.instance.store<StoredType>(key: key, value: value);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.store}
-  @override
-  Future<bool> store(ParsedType? value) async {
-    final success = await super.store(value);
-    if (!success) {
-      return false;
-    }
-
-    emitEventIfNecessary(value);
-    return true;
-  }
 }
