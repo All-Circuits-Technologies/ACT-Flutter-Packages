@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -99,14 +99,9 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
     }
   }
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.store}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.storeImpl}
   @override
-  Future<bool> store<T>({required String key, required T? value, Object? extra}) async {
-    if (value == null) {
-      await delete(key: key);
-      return true;
-    }
-
+  Future<bool> storeImpl<T>({required String key, required T value, Object? extra}) async {
     var success = false;
 
     switch (T) {
@@ -147,13 +142,16 @@ class PropertiesSingleton extends AbsWithLifeCycle with MixinStorageSingleton {
     return success;
   }
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteImpl}
   @override
-  Future<void> delete({required String key, Object? extra}) async => _prefs.remove(key);
+  Future<void> deleteImpl({required String key, Object? extra}) async => _prefs.remove(key);
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAll}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAllImpl}
   @override
-  Future<void> deleteAll({Object? extra}) async => _prefs.clear();
+  Future<bool> deleteAllImpl({Object? extra}) async {
+    await _prefs.clear();
+    return true;
+  }
 
   /// Useful method to get an element from memory
   ///

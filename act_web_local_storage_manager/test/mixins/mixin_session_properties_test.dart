@@ -18,7 +18,7 @@ class _Properties extends AbstractPropertiesManager with MixinSessionProperties 
   final aSessionValue = const CookieSessionItem<String>("aSessionValue");
 
   /// The value the application keeps from one session to the next.
-  final aStoredValue = SharedPreferencesItem<String>("aStoredValue");
+  final aStoredValue = const SharedPreferencesItem<String>("aStoredValue");
 }
 
 void main() {

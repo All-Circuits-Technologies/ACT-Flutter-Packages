@@ -72,12 +72,23 @@ The two items with a parser are for the values which are not of a type the stora
 application gives the two functions which turn its value into a stored one and back. Storing a null
 value deletes the key, in every kind of item.
 
-A `SharedPreferencesItem` also pushes on a stream every value written through it, so a part of an
-application can follow a property it does not own. Nothing is pushed when the value is deleted.
-
 The storages are reached through two singletons rather than through the managers, because an item
 is declared as a member of a manager which is abstract: it could not find its own manager back.
-Those singletons are internal to the package.
+Those singletons are internal to the package. An item reads and writes through the singleton it
+names with `storage`, which is all a kind of item has to tell.
+
+Each singleton emits every write made to it on its `eventStream`: a value stored or deleted under a
+key, or the whole storage cleared. The `updateStream` of an item pushes those of its key, as `load`
+would read them back, so a part of an application can follow a value it does not own:
+
+- the value of each write, even when it does not change: a listener which wants the changes only
+  uses `distinct()`,
+- `null` once the key is deleted or the storage cleared,
+- `null` for a value which cannot be read as the type of the item: written by an item of another
+  type, or refused by its parser.
+
+Every item of a key sees what any of them writes. Only the writes made through the singletons, in
+the running process, are seen.
 
 ### The managers
 
@@ -109,7 +120,7 @@ dependencies:
 
 ```dart
 class AppPropertiesManager extends AbstractPropertiesManager {
-  final lastOpenedPage = SharedPreferencesItem<String>("lastOpenedPage");
+  final lastOpenedPage = const SharedPreferencesItem<String>("lastOpenedPage");
 
   final theme = SharedPrefsItemWithParser<AppTheme, String>(
     "theme",
@@ -195,8 +206,10 @@ is forgotten because it was deleted or stored as null, and the types which are r
 neither storage knows how to keep them.
 
 The items with a parser are covered on the value they parse back, on the value which cannot be
-parsed and comes back as null, and on the cast which refuses a value. The stream of a property is
-covered on what it pushes and on the deletion, which pushes nothing.
+parsed and comes back as null, and on the cast which refuses a value. The streams are covered
+on what the singletons emit for a value stored, a key deleted and a storage cleared, and on what an
+item pushes of them: its own type, the value parsed, the writes of another item of the same key,
+and the value its type or its parser cannot read.
 
 The managers are driven through their initialization: the first start which is announced once and
 not the next time, the secrets which are cleared on that first start, and the ones which are kept
