@@ -271,15 +271,18 @@ Then, you will have to call the next command to regenerate the GitHub Actions co
 
 ## Update the GitHub Actions Flutter version
 
-`mono_repo` does not support a global Flutter version, so the version is set in each
-`mono_pkg.yaml` file and persisted in `tool/.flutter_version`. Use the script:
+`mono_repo` does not support a global SDK version, so the version is set in each
+`mono_pkg.yaml` file. The Flutter packages take the Flutter version, persisted in
+`tool/.flutter_version`. The pure Dart packages, under `dart/`, take the Dart version, persisted in
+`tool/.dart_version`: their CI jobs set up a Dart SDK, not a Flutter one. Update both together,
+with the Dart version the Flutter version embeds (`flutter --version` shows it):
 
 ```console
-> tool/mono_repo_generate.sh --flutter-version <version>
+> tool/mono_repo_generate.sh --flutter-version <flutter version> --dart-version <dart version>
 ```
 
-Where `<version>` is the Flutter version to target, for example `3.41.9`. It may also be a
-channel, for example `stable` or `beta`.
+For example, Flutter `3.47.9` embeds Dart `3.13.7`. The Flutter version may also be a channel,
+for example `stable` or `beta`.
 
-This command updates all `mono_pkg.yaml` files, saves the version to `tool/.flutter_version`,
-and regenerates the CI configuration with the appropriate workflow patch.
+This command updates the `mono_pkg.yaml` files, saves the versions to `tool/.flutter_version` and
+`tool/.dart_version`, and regenerates the CI configuration with the appropriate workflow patch.
