@@ -69,5 +69,16 @@ void main() {
 
       expect(await item.load(), isNull);
     });
+
+    test("pushes the value it writes, in the type of the application", () async {
+      final item = _aMomentItem("aPushedMoment");
+      final pushed = <DateTime?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store(_aMoment);
+      await pumpEventQueue();
+
+      expect(pushed, [_aMoment]);
+    });
   });
 }

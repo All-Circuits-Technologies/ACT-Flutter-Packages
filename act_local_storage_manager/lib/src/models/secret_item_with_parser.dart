@@ -1,10 +1,9 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_local_storage_manager/src/mixins/mixin_parser_storage_item.dart';
 import 'package:act_local_storage_manager/src/models/secret_item.dart';
-import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
 
 /// [SecretItemWithParser] wraps a single secret of type T, providing strongly-typed read
 /// and write helpers.
@@ -33,16 +32,4 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
     required this.castTo,
     super.doNotMigrate,
   });
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
-  @override
-  Future<StoredType?> loadFromStorage() => SecretsSingleton.instance.load<StoredType>(key: key);
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.storeToStorage}
-  @override
-  Future<bool> storeToStorage(StoredType value) => SecretsSingleton.instance.store<StoredType>(
-    key: key,
-    value: value,
-    doNotMigrate: doNotMigrate,
-  );
 }

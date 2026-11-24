@@ -1,4 +1,5 @@
 // SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+// SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -15,3 +16,4 @@ export 'src/models/secret_item.dart';
 export 'src/models/secret_item_with_parser.dart';
 export 'src/models/shared_preferences_item.dart';
 export 'src/models/shared_prefs_item_with_parser.dart';
+export 'src/models/storage_write_event.dart';

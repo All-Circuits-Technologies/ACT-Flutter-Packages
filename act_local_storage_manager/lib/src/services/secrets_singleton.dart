@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -65,24 +65,17 @@ class SecretsSingleton extends AbsWithLifeCycle
   /// Private constructor
   SecretsSingleton._({required this._secureStorage});
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.store}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteImpl}
   @override
-  Future<bool> store<T>({
-    required String key,
-    required T? value,
-    bool doNotMigrate = false,
-    Object? extra,
-  }) async => super.store(key: key, value: value, extra: doNotMigrate);
-
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
-  @override
-  Future<void> delete({required String key, Object? extra}) async =>
+  Future<void> deleteImpl({required String key, Object? extra}) async =>
       _secureStorage.delete(key: key, iOptions: deleteIOSOptions);
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAll}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAllImpl}
   @override
-  Future<void> deleteAll({Object? extra}) async =>
-      _secureStorage.deleteAll(iOptions: deleteIOSOptions);
+  Future<bool> deleteAllImpl({Object? extra}) async {
+    await _secureStorage.deleteAll(iOptions: deleteIOSOptions);
+    return true;
+  }
 
   /// {@macro act_local_storage_manager.MixinStringStorageSingleton.readValueFromExternalService}
   @override
@@ -91,19 +84,20 @@ class SecretsSingleton extends AbsWithLifeCycle
 
   /// {@macro act_local_storage_manager.MixinStringStorageSingleton.writeValueToExternalService}
   ///
-  /// Because we override [store] and set the doNotMigrate value in extra, we know that we get
-  /// a not null and boolean extra value
+  /// [extra] tells whether the secret is kept on this device only, and not migrated to a new
+  /// one: see `SecretItem.doNotMigrate`. It is false when [extra] is null.
   @override
   Future<bool> writeValueToExternalService({
     required String key,
     required String value,
     Object? extra,
   }) async {
+    final doNotMigrate = (extra as bool?) ?? false;
     await _secureStorage.write(
       key: key,
       value: value,
       iOptions: IOSOptions(
-        accessibility: (extra! as bool)
+        accessibility: doNotMigrate
             ? KeychainAccessibility.first_unlock_this_device
             : KeychainAccessibility.first_unlock,
       ),

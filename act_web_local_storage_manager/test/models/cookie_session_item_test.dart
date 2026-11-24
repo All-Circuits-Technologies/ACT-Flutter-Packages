@@ -52,5 +52,38 @@ void main() {
 
       expect(await read.load(), "a value");
     });
+
+    test("pushes the value it writes, with the type of the item", () async {
+      const item = CookieSessionItem<String>("aPushedText");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store("a value");
+      await pumpEventQueue();
+
+      expect(pushed, ["a value"]);
+    });
+
+    test("pushes null once it was deleted", () async {
+      const item = CookieSessionItem<String>("aPushedDeletedText");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.delete();
+      await pumpEventQueue();
+
+      expect(pushed, [null]);
+    });
+
+    test("pushes what another item of the same key wrote", () async {
+      const item = CookieSessionItem<String>("aPushedSharedKey");
+      final pushed = <String?>[];
+      item.updateStream.listen(pushed.add);
+
+      await const CookieSessionItem<String>("aPushedSharedKey").store("a value");
+      await pumpEventQueue();
+
+      expect(pushed, ["a value"]);
+    });
   });
 }

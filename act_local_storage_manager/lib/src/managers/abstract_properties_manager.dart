@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
 // SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
-// SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2023, 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -32,7 +32,9 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// {@macro act_local_storage_manager.PropertiesSingleton.details}
 abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   /// Tell if it's the first start of the app after install
-  final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");
+  final SharedPreferencesItem<bool> _isFirstStart = const SharedPreferencesItem<bool>(
+    "isFirstStart",
+  );
 
   /// True if it's the first start of the application
   bool isFirstStart;

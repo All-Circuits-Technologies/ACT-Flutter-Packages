@@ -5,6 +5,7 @@
 library;
 
 import 'package:act_foundation/act_foundation.dart';
+import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:act_web_local_storage_manager/src/services/cookie_session_singleton.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -141,6 +142,43 @@ void main() {
       await cookies.deleteAll();
 
       expect(logger.recordsAtLevel(LogsLevel.warn), hasLength(1));
+    });
+
+    test("emits nothing, since it clears nothing", () async {
+      final cookies = CookieSessionSingleton.createInstance();
+      final events = <StorageWriteEvent>[];
+      cookies.eventStream.listen(events.add);
+
+      await cookies.deleteAll();
+      await pumpEventQueue();
+
+      expect(events, isEmpty);
+    });
+  });
+
+  group("CookieSessionSingleton.eventStream", () {
+    test("emits the value it writes, under its key", () async {
+      final cookies = CookieSessionSingleton.createInstance();
+      final key = aKey();
+      final events = <StorageWriteEvent>[];
+      cookies.eventStream.listen(events.add);
+
+      await cookies.store<String>(key: key, value: "a value");
+      await pumpEventQueue();
+
+      expect(events, [StorageValueEvent(key: key, value: "a value")]);
+    });
+
+    test("emits a null value when the key is deleted", () async {
+      final cookies = CookieSessionSingleton.createInstance();
+      final key = aKey();
+      final events = <StorageWriteEvent>[];
+      cookies.eventStream.listen(events.add);
+
+      await cookies.delete(key: key);
+      await pumpEventQueue();
+
+      expect(events, [StorageValueEvent(key: key, value: null)]);
     });
   });
 }

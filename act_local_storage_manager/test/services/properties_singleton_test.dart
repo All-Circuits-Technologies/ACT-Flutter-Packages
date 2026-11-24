@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
+import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -127,6 +128,76 @@ void main() {
 
       expect(await properties.load<int>(key: "aKey"), isNull);
       expect(await properties.load<String>(key: "anotherKey"), isNull);
+    });
+  });
+
+  group("PropertiesSingleton.eventStream", () {
+    /// Collects the events the singleton emits from now on.
+    List<StorageWriteEvent> listen() {
+      final events = <StorageWriteEvent>[];
+      properties.eventStream.listen(events.add);
+      return events;
+    }
+
+    test("emits the value it stores, under its key", () async {
+      final events = listen();
+
+      await properties.store<int>(key: "aKey", value: 42);
+      await pumpEventQueue();
+
+      expect(events, [const StorageValueEvent(key: "aKey", value: 42)]);
+    });
+
+    test("emits the value again when the same value is stored again", () async {
+      final events = listen();
+
+      await properties.store<int>(key: "aKey", value: 42);
+      await properties.store<int>(key: "aKey", value: 42);
+      await pumpEventQueue();
+
+      expect(events, [
+        const StorageValueEvent(key: "aKey", value: 42),
+        const StorageValueEvent(key: "aKey", value: 42),
+      ]);
+    });
+
+    test("emits a null value when the key is deleted", () async {
+      final events = listen();
+
+      await properties.delete(key: "aKey");
+      await pumpEventQueue();
+
+      expect(events, [const StorageValueEvent(key: "aKey", value: null)]);
+    });
+
+    test("emits a single null value when it is given none", () async {
+      final events = listen();
+
+      await properties.store<int>(key: "aKey", value: null);
+      await pumpEventQueue();
+
+      expect(events, [const StorageValueEvent(key: "aKey", value: null)]);
+    });
+
+    test("emits nothing when it refuses the type of the value", () async {
+      final events = listen();
+
+      await expectLater(
+        () => properties.store<Duration>(key: "aKey", value: Duration.zero),
+        throwsA(isA<ActUnsupportedTypeError<Duration>>()),
+      );
+      await pumpEventQueue();
+
+      expect(events, isEmpty);
+    });
+
+    test("emits that the storage is cleared", () async {
+      final events = listen();
+
+      await properties.deleteAll();
+      await pumpEventQueue();
+
+      expect(events, [const StorageClearedEvent()]);
     });
   });
 }

@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
+import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
 import 'package:act_test_utility/act_test_utility.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -119,6 +120,42 @@ void main() {
 
       expect(await secrets.load<String>(key: "aKey"), isNull);
       expect(await secrets.load<int>(key: "anotherKey"), isNull);
+    });
+  });
+
+  group("SecretsSingleton.eventStream", () {
+    /// Collects the events the singleton emits from now on.
+    List<StorageWriteEvent> listen() {
+      final events = <StorageWriteEvent>[];
+      secrets.eventStream.listen(events.add);
+      return events;
+    }
+
+    test("emits the secret it stores, under its key, as it was given", () async {
+      final events = listen();
+
+      await secrets.store<bool>(key: "aKey", value: true, extra: true);
+      await pumpEventQueue();
+
+      expect(events, [const StorageValueEvent(key: "aKey", value: true)]);
+    });
+
+    test("emits a null value when the secret is deleted", () async {
+      final events = listen();
+
+      await secrets.delete(key: "aKey");
+      await pumpEventQueue();
+
+      expect(events, [const StorageValueEvent(key: "aKey", value: null)]);
+    });
+
+    test("emits that the storage is cleared", () async {
+      final events = listen();
+
+      await secrets.deleteAll();
+      await pumpEventQueue();
+
+      expect(events, [const StorageClearedEvent()]);
     });
   });
 }
