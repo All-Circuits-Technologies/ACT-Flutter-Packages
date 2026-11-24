@@ -29,7 +29,7 @@ class SecretItem<T> extends AbsStorageItem<T> {
   /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
   @override
   Future<bool> storeImpl(T value) async =>
-      SecretsSingleton.instance.store(key: key, value: value, doNotMigrate: doNotMigrate);
+      SecretsSingleton.instance.store(key: key, value: value, extra: doNotMigrate);
 
   /// Delete a value stored in secure storage.
   ///

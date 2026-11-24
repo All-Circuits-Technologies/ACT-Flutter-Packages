@@ -27,12 +27,7 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  SecretItemWithParser(
-    super.key, {
-    required this.parser,
-    required this.castTo,
-    super.doNotMigrate,
-  });
+  SecretItemWithParser(super.key, {required this.parser, required this.castTo, super.doNotMigrate});
 
   /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
   @override
@@ -40,9 +35,6 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
 
   /// {@macro act_local_storage_manager.AbsParserStorageItem.storeToStorage}
   @override
-  Future<bool> storeToStorage(StoredType value) => SecretsSingleton.instance.store<StoredType>(
-    key: key,
-    value: value,
-    doNotMigrate: doNotMigrate,
-  );
+  Future<bool> storeToStorage(StoredType value) =>
+      SecretsSingleton.instance.store<StoredType>(key: key, value: value, extra: doNotMigrate);
 }

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -55,19 +55,22 @@ class CookieSessionSingleton extends AbsWithLifeCycle
       // We know that the super isReadValue tests for nullity
       super.isReadValueValid(value: value) && value!.isNotEmpty;
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.delete}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteImpl}
   @override
-  Future<void> delete({required String key, Object? extra}) async {
+  Future<void> deleteImpl({required String key, Object? extra}) async {
     // We set an empty value
     _setCookieValue(name: key, value: "");
   }
 
-  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAll}
+  /// {@macro act_local_storage_manager.MixinStorageSingleton.deleteAllImpl}
+  ///
+  /// The cookies are not cleared: this returns false.
   @override
-  Future<void> deleteAll({Object? extra}) async {
+  Future<bool> deleteAllImpl({Object? extra}) async {
     // We don't know to update cookies we don't manage; therefore, we don't do anything in this
     // method
     appLogger().w("The delete all for cookie session doesn't work, don't use it");
+    return false;
   }
 
   /// {@macro act_local_storage_manager.MixinStringStorageSingleton.readValueFromExternalService}
