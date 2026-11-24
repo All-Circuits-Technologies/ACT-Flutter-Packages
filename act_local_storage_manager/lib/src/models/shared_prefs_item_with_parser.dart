@@ -4,7 +4,6 @@
 
 import 'package:act_local_storage_manager/src/mixins/mixin_parser_storage_item.dart';
 import 'package:act_local_storage_manager/src/models/shared_preferences_item.dart';
-import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 
 /// [SharedPrefsItemWithParser] wraps a single secret of type T, providing strongly-typed read
 /// and write helpers.
@@ -27,15 +26,5 @@ class SharedPrefsItemWithParser<ParsedType, StoredType> extends SharedPreference
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  SharedPrefsItemWithParser(super.key, {required this.parser, required this.castTo});
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
-  @override
-  Future<StoredType?> loadFromStorage() async =>
-      PropertiesSingleton.instance.load<StoredType>(key: key);
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.storeToStorage}
-  @override
-  Future<bool> storeToStorage(StoredType value) async =>
-      PropertiesSingleton.instance.store<StoredType>(key: key, value: value);
+  const SharedPrefsItemWithParser(super.key, {required this.parser, required this.castTo});
 }

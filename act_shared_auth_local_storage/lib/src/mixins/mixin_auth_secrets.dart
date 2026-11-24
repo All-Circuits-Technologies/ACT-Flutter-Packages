@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 - 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+// SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
@@ -10,7 +10,7 @@ import "package:act_shared_auth_local_storage/src/utilities/memory_storage_utili
 /// This mixin adds secret items to storage the auth tokens and ids (username + password)
 mixin MixinAuthSecrets on AbstractSecretsManager {
   /// This is the tokens of the current user used to contact the server
-  final authTokens = SecretItemWithParser<AuthTokens, String>(
+  final authTokens = const SecretItemWithParser<AuthTokens, String>(
     "AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
@@ -20,16 +20,9 @@ mixin MixinAuthSecrets on AbstractSecretsManager {
   /// This is the ids of the current user used to get the tokens on the server
   ///
   /// This element is only used if we approve the storage of user ids.
-  final authIds = SecretItemWithParser<AuthUserIds, String>(
+  final authIds = const SecretItemWithParser<AuthUserIds, String>(
     "AUTH_IDS",
     parser: MemoryStorageUtility.convertAuthUserIdsFromStorage,
     castTo: MemoryStorageUtility.convertAuthUserIdsForStorage,
   );
-
-  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
-  @override
-  Future<void> disposeLifeCycle() async {
-    await Future.wait([authTokens.disposeLifeCycle(), authIds.disposeLifeCycle()]);
-    return super.disposeLifeCycle();
-  }
 }

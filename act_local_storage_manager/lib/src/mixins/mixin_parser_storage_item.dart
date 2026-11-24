@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_local_storage_manager/src/models/abs_storage_item.dart';
-import 'package:flutter/foundation.dart';
 
 /// This class allows to access an item value from storage which needs to be parsed before being
 /// retrieved.
@@ -28,7 +27,7 @@ mixin MixinParserStorageItem<ParsedType, StoredType> on AbsStorageItem<ParsedTyp
   /// {@macro act_local_storage_manager.AbsStorageItem.load}
   @override
   Future<ParsedType?> load() async {
-    final storedValue = await loadFromStorage();
+    final storedValue = await storage.load<StoredType>(key: key, extra: storageExtra);
     if (storedValue == null) {
       return null;
     }
@@ -36,30 +35,35 @@ mixin MixinParserStorageItem<ParsedType, StoredType> on AbsStorageItem<ParsedTyp
     return parser(storedValue);
   }
 
-  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
+  /// {@macro act_local_storage_manager.AbsStorageItem.store}
   ///
   /// Returns false, and stores nothing, when [castTo] cannot cast the [value].
   @override
-  Future<bool> storeImpl(ParsedType value) async {
+  Future<bool> store(ParsedType? value) async {
+    if (value == null) {
+      await delete();
+      return true;
+    }
+
     final toStoreResult = castTo(value);
     if (toStoreResult == null) {
       return false;
     }
 
-    return storeToStorage(toStoreResult);
+    return storage.store<StoredType>(key: key, value: toStoreResult, extra: storageExtra);
   }
 
-  /// {@template act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
-  /// This is used to load value from storage.
-  /// {@endtemplate}
-  @protected
-  Future<StoredType?> loadFromStorage();
+  /// {@macro act_local_storage_manager.AbsStorageItem.convertStoredValue}
+  ///
+  /// The [value] is parsed with [parser] when it is a StoredType.
+  @override
+  ParsedType? convertStoredValue(Object? value) {
+    if (value is! StoredType) {
+      return null;
+    }
 
-  /// {@template act_local_storage_manager.AbsParserStorageItem.storeToStorage}
-  /// Store value to storage.
-  /// {@endtemplate}
-  @protected
-  Future<bool> storeToStorage(StoredType value);
+    return parser(value);
+  }
 
   /// {@macro act_local_storage_manager.AbsStorageItem.props}
   @override

@@ -13,19 +13,10 @@ import 'package:act_web_local_storage_manager/src/services/cookie_session_single
 ///
 /// If you want to support another type, please use `CookieSessionItemWithParser` object.
 class CookieSessionItem<T> extends AbsStorageItem<T> {
+  /// {@macro act_local_storage_manager.AbsStorageItem.storage}
+  @override
+  MixinStorageSingleton get storage => CookieSessionSingleton.instance;
+
   /// Class constructor
-  CookieSessionItem(String key) : super(key: key);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.load}
-  @override
-  Future<T?> load() async => CookieSessionSingleton.instance.load<T>(key: key);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
-  @override
-  Future<bool> storeImpl(T value) async =>
-      CookieSessionSingleton.instance.store<T>(key: key, value: value);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.deleteImpl}
-  @override
-  Future<void> deleteImpl() async => CookieSessionSingleton.instance.delete(key: key);
+  const CookieSessionItem(String key) : super(key: key);
 }

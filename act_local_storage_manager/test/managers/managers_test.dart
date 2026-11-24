@@ -130,14 +130,14 @@ void main() {
       final properties = _PropertiesManager();
       await properties.initLifeCycle();
       final config = await aConfig(cleanWhenReInstall: true);
-      await SecretItem<String>("aKey").store("a value");
+      await const SecretItem<String>("aKey").store("a value");
 
       await _SecretsManager(
         propertiesGetter: () => properties,
         confGetter: () => config,
       ).initLifeCycle();
 
-      expect(await SecretItem<String>("aKey").load(), isNull);
+      expect(await const SecretItem<String>("aKey").load(), isNull);
     });
 
     test("keeps the secrets when the application has already been started", () async {
@@ -145,28 +145,28 @@ void main() {
       final properties = _PropertiesManager();
       await properties.initLifeCycle();
       final config = await aConfig(cleanWhenReInstall: true);
-      await SecretItem<String>("aKey").store("a value");
+      await const SecretItem<String>("aKey").store("a value");
 
       await _SecretsManager(
         propertiesGetter: () => properties,
         confGetter: () => config,
       ).initLifeCycle();
 
-      expect(await SecretItem<String>("aKey").load(), "a value");
+      expect(await const SecretItem<String>("aKey").load(), "a value");
     });
 
     test("keeps the secrets when the configuration asks it to", () async {
       final properties = _PropertiesManager();
       await properties.initLifeCycle();
       final config = await aConfig(cleanWhenReInstall: false);
-      await SecretItem<String>("aKey").store("a value");
+      await const SecretItem<String>("aKey").store("a value");
 
       await _SecretsManager(
         propertiesGetter: () => properties,
         confGetter: () => config,
       ).initLifeCycle();
 
-      expect(await SecretItem<String>("aKey").load(), "a value");
+      expect(await const SecretItem<String>("aKey").load(), "a value");
     });
 
     test("forgets every secret when it is asked to", () async {
@@ -175,11 +175,11 @@ void main() {
       final config = await aConfig(cleanWhenReInstall: false);
       final manager = _SecretsManager(propertiesGetter: () => properties, confGetter: () => config);
       await manager.initLifeCycle();
-      await SecretItem<String>("aKey").store("a value");
+      await const SecretItem<String>("aKey").store("a value");
 
       await manager.deleteAll();
 
-      expect(await SecretItem<String>("aKey").load(), isNull);
+      expect(await const SecretItem<String>("aKey").load(), isNull);
     });
   });
 

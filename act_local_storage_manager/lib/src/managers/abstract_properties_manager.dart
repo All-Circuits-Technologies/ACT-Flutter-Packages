@@ -32,7 +32,9 @@ abstract class AbstractPropertiesBuilder<T extends AbstractPropertiesManager>
 /// {@macro act_local_storage_manager.PropertiesSingleton.details}
 abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
   /// Tell if it's the first start of the app after install
-  final SharedPreferencesItem<bool> _isFirstStart = SharedPreferencesItem<bool>("isFirstStart");
+  final SharedPreferencesItem<bool> _isFirstStart = const SharedPreferencesItem<bool>(
+    "isFirstStart",
+  );
 
   /// True if it's the first start of the application
   bool isFirstStart;
@@ -61,15 +63,6 @@ abstract class AbstractPropertiesManager extends AbsWithLifeCycle {
       // We keep isFirstStart true so app can say we are currently in the first start
       await _isFirstStart.store(false);
     }
-  }
-
-  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
-  ///
-  /// A derived manager disposes the items it declares, then calls this method.
-  @override
-  Future<void> disposeLifeCycle() async {
-    await _isFirstStart.disposeLifeCycle();
-    return super.disposeLifeCycle();
   }
 
   /// {@template act_local_storage_manager.AbstractPropertiesManager.deleteAll}

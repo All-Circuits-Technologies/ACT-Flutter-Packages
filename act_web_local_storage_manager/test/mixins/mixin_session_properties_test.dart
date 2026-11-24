@@ -15,10 +15,10 @@ import 'package:shared_preferences_platform_interface/shared_preferences_async_p
 /// The properties of an application which keeps some of them in the cookies of the session.
 class _Properties extends AbstractPropertiesManager with MixinSessionProperties {
   /// The value the application keeps for as long as the session lasts.
-  final aSessionValue = CookieSessionItem<String>("aSessionValue");
+  final aSessionValue = const CookieSessionItem<String>("aSessionValue");
 
   /// The value the application keeps from one session to the next.
-  final aStoredValue = SharedPreferencesItem<String>("aStoredValue");
+  final aStoredValue = const SharedPreferencesItem<String>("aStoredValue");
 }
 
 void main() {

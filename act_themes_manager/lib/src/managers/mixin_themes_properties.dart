@@ -7,16 +7,9 @@ import 'package:act_local_storage_manager/act_local_storage_manager.dart';
 /// This mixin is used to manage themes related properties
 mixin MixinThemesProperties on AbstractPropertiesManager {
   /// This is the key used to store the current theme in the local storage.
-  final currentTheme = SharedPreferencesItem<String>("CURRENT_THEME");
+  final currentTheme = const SharedPreferencesItem<String>("CURRENT_THEME");
 
   /// This is the key used to store if the current theme is in light mode or not in the local
   /// storage.
-  final currentThemeLightMode = SharedPreferencesItem<bool>("CURRENT_THEME_LIGHT_MODE");
-
-  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
-  @override
-  Future<void> disposeLifeCycle() async {
-    await Future.wait([currentTheme.disposeLifeCycle(), currentThemeLightMode.disposeLifeCycle()]);
-    return super.disposeLifeCycle();
-  }
+  final currentThemeLightMode = const SharedPreferencesItem<bool>("CURRENT_THEME_LIGHT_MODE");
 }

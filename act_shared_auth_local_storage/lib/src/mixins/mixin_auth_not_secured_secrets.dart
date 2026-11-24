@@ -9,16 +9,9 @@ import 'package:act_shared_auth_local_storage/src/utilities/memory_storage_utili
 /// The mixin add secret items to a not secured storage. It only adds the auth tokens.
 mixin MixinAuthNotSecuredSecrets on AbstractPropertiesManager {
   /// This is the tokens of the current user used to contact the server
-  final authTokens = SharedPrefsItemWithParser<AuthTokens, String>(
+  final authTokens = const SharedPrefsItemWithParser<AuthTokens, String>(
     "NOT_SECURED_AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
   );
-
-  /// {@macro act_foundation.MixinWithLifeCycleDispose.disposeLifeCycle}
-  @override
-  Future<void> disposeLifeCycle() async {
-    await authTokens.disposeLifeCycle();
-    return super.disposeLifeCycle();
-  }
 }

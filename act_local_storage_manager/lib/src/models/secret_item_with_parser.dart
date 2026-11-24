@@ -4,7 +4,6 @@
 
 import 'package:act_local_storage_manager/src/mixins/mixin_parser_storage_item.dart';
 import 'package:act_local_storage_manager/src/models/secret_item.dart';
-import 'package:act_local_storage_manager/src/services/secrets_singleton.dart';
 
 /// [SecretItemWithParser] wraps a single secret of type T, providing strongly-typed read
 /// and write helpers.
@@ -27,14 +26,10 @@ class SecretItemWithParser<ParsedType, StoredType> extends SecretItem<ParsedType
   final StoredType? Function(ParsedType value) castTo;
 
   /// Class constructor
-  SecretItemWithParser(super.key, {required this.parser, required this.castTo, super.doNotMigrate});
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.loadFromStorage}
-  @override
-  Future<StoredType?> loadFromStorage() => SecretsSingleton.instance.load<StoredType>(key: key);
-
-  /// {@macro act_local_storage_manager.AbsParserStorageItem.storeToStorage}
-  @override
-  Future<bool> storeToStorage(StoredType value) =>
-      SecretsSingleton.instance.store<StoredType>(key: key, value: value, extra: doNotMigrate);
+  const SecretItemWithParser(
+    super.key, {
+    required this.parser,
+    required this.castTo,
+    super.doNotMigrate,
+  });
 }

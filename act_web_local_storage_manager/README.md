@@ -77,19 +77,13 @@ dependencies:
 
 ```dart
 class AppPropertiesManager extends AbstractPropertiesManager with MixinSessionProperties {
-  final currentPage = CookieSessionItem<String>("CURRENT_PAGE");
+  final currentPage = const CookieSessionItem<String>("CURRENT_PAGE");
 
   final lastVisit = CookieSessionItemWithParser<DateTime, int>(
     "LAST_VISIT",
     parser: (value) => DateTime.fromMillisecondsSinceEpoch(value, isUtc: true),
     castTo: (value) => value.millisecondsSinceEpoch,
   );
-
-  @override
-  Future<void> disposeLifeCycle() async {
-    await Future.wait([currentPage.disposeLifeCycle(), lastVisit.disposeLifeCycle()]);
-    return super.disposeLifeCycle();
-  }
 }
 
 await globalGetIt().get<AppPropertiesManager>().currentPage.store("the home page");
@@ -99,8 +93,8 @@ await globalGetIt().get<AppPropertiesManager>().currentPage.store("the home page
 
 The tests run in a browser, because the package builds for nothing else. They write real cookies
 on the page of the test and read them back: the types the storage holds, the value which holds the
-separator of a cookie, the keys told apart, the key which was deleted, the values the item pushes
-on its stream and its end once disposed, and the clearing which keeps the cookies of the page.
+separator of a cookie, the keys told apart, the key which was deleted, the values an item pushes
+on its stream, and the clearing which keeps the cookies of the page and emits nothing.
 
 The tests of a package which only runs in a browser are named next to its test task, and both the
 CI and `tool/test_all.sh` read them from there:

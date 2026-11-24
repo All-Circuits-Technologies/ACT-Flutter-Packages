@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_local_storage_manager/src/mixins/mixin_storage_singleton.dart';
 import 'package:act_local_storage_manager/src/models/abs_storage_item.dart';
 import 'package:act_local_storage_manager/src/services/properties_singleton.dart';
 
@@ -13,22 +14,13 @@ import 'package:act_local_storage_manager/src/services/properties_singleton.dart
 ///
 /// {@macro act_local_storage_manager.PropertiesSingleton.supportedTypes}
 class SharedPreferencesItem<T> extends AbsStorageItem<T> {
+  /// {@macro act_local_storage_manager.AbsStorageItem.storage}
+  @override
+  MixinStorageSingleton get storage => PropertiesSingleton.instance;
+
   /// Create a SharedPreferences wrapper for key [key] of type T.
   ///
   /// Only `AbstractPropertiesManager` creates instances of this helper class.
   /// Other actors uses them.
-  SharedPreferencesItem(String key) : super(key: key);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.load}
-  @override
-  Future<T?> load() async => PropertiesSingleton.instance.load<T>(key: key);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.storeImpl}
-  @override
-  Future<bool> storeImpl(T value) async =>
-      PropertiesSingleton.instance.store<T>(key: key, value: value);
-
-  /// {@macro act_local_storage_manager.AbsStorageItem.deleteImpl}
-  @override
-  Future<void> deleteImpl() async => PropertiesSingleton.instance.delete(key: key);
+  const SharedPreferencesItem(String key) : super(key: key);
 }

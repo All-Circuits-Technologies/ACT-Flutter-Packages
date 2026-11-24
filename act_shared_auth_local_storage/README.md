@@ -149,18 +149,12 @@ the ones of its server, declares a second item in its secrets and hands it to a 
 
 ```dart
 class AppSecretsManager extends AbstractSecretsManager with MixinAuthSecrets {
-  final idpTokens = SecretItemWithParser<AuthTokens, String>(
+  final idpTokens = const SecretItemWithParser<AuthTokens, String>(
     "IDP_AUTH_TOKENS",
     parser: MemoryStorageUtility.convertAuthTokensFromStorage,
     castTo: MemoryStorageUtility.convertAuthTokensForStorage,
     doNotMigrate: true,
   );
-
-  @override
-  Future<void> disposeLifeCycle() async {
-    await idpTokens.disposeLifeCycle();
-    return super.disposeLifeCycle();
-  }
 }
 
 final idpStorage = SecureLocalAuthStorage<AppConfigManager, AppSecretsManager>(

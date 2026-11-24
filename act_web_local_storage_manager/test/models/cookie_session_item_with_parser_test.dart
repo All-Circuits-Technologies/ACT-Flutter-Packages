@@ -41,7 +41,7 @@ void main() {
       await item.store(_aMoment);
 
       expect(
-        await CookieSessionItem<int>("aStoredMoment").load(),
+        await const CookieSessionItem<int>("aStoredMoment").load(),
         _aMoment.millisecondsSinceEpoch,
       );
     });
@@ -68,6 +68,17 @@ void main() {
       await item.delete();
 
       expect(await item.load(), isNull);
+    });
+
+    test("pushes the value it writes, in the type of the application", () async {
+      final item = _aMomentItem("aPushedMoment");
+      final pushed = <DateTime?>[];
+      item.updateStream.listen(pushed.add);
+
+      await item.store(_aMoment);
+      await pumpEventQueue();
+
+      expect(pushed, [_aMoment]);
     });
   });
 }
