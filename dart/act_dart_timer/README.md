@@ -169,5 +169,5 @@ an asynchronous callback adds, the four factors and the duration they lead to, t
 maximum duration and the return to the initial duration on a reset.
 
 ```console
-> flutter test
+> dart test
 ```

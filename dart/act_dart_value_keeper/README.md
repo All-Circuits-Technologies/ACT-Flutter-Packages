@@ -195,5 +195,5 @@ the parser returning `null`, the initial listened value including an asynchronou
 a stream to another one, and what the dispose closes and cancels.
 
 ```console
-> flutter test
+> dart test
 ```

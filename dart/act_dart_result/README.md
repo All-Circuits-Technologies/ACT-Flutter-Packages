@@ -194,5 +194,5 @@ a value, the constructors which infer the status, every transition of `AsyncCall
 the forced drop of the result, and the value equality of all of them.
 
 ```console
-> flutter test
+> dart test
 ```

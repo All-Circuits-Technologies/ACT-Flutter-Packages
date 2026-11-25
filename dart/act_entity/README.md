@@ -98,5 +98,5 @@ gets when it does not override it, and the round trip between `toJson` and an ov
 `parseFromJson`.
 
 ```console
-> flutter test
+> dart test
 ```

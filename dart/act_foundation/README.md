@@ -184,5 +184,5 @@ The package cannot use the shared test utilities, because they depend on it, so 
 their own fakes. To run them:
 
 ```console
-> flutter test
+> dart test
 ```

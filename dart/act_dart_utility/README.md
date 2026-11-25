@@ -250,5 +250,5 @@ warnings it writes when it is given a logger. The tests which involve time run u
 so they never wait on a real delay.
 
 ```console
-> flutter test
+> dart test
 ```
