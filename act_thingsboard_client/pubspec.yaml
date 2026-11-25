@@ -48,7 +48,7 @@ dependencies:
     path: ../act_global_manager
 
   act_http_client_manager:
-    path: ../act_http_client_manager
+    path: ../dart/act_http_client_manager
 
   # Flutter AC Technologies dependencies
   act_life_cycle:
