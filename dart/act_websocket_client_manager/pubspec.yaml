@@ -1,0 +1,56 @@
+# SPDX-FileCopyrightText: 2025 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_websocket_client_manager
+description: This package contains the WebSocket client manager
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  equatable: ^2.0.7
+
+  meta: ^1.17.0
+
+  mutex: ^3.1.0
+
+  web_socket_channel: ^3.0.3
+
+  act_dart_config_manager:
+    path: ../act_dart_config_manager
+
+  act_dart_global_manager:
+    path: ../act_dart_global_manager
+
+  act_dart_life_cycle:
+    path: ../act_dart_life_cycle
+
+  act_dart_timer:
+    path: ../act_dart_timer
+
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_logger_manager:
+    path: ../act_logger_manager
+
+  act_websocket_core:
+    path: ../act_websocket_core
+
+dev_dependencies:
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_dart_test_utility:
+    path: ../act_dart_test_utility
+
+  # Pure Dart helpers to parse YAML content, used by the config fake of the tests
+  act_dart_yaml_utility:
+    path: ../act_dart_yaml_utility

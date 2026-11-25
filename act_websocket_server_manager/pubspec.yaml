@@ -46,7 +46,7 @@ dependencies:
     path: ../dart/act_http_logging_manager
 
   act_http_server_manager:
-    path: ../act_http_server_manager
+    path: ../dart/act_http_server_manager
 
   act_life_cycle:
     path: ../act_life_cycle
