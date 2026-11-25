@@ -48,7 +48,7 @@ dependencies:
     path: ../dart/act_logger_manager
 
   act_websocket_core:
-    path: ../act_websocket_core
+    path: ../dart/act_websocket_core
 
 dev_dependencies:
   flutter_test:
