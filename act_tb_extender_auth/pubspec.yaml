@@ -67,7 +67,7 @@ dependencies:
 
   # The client of the broker, its models and its errors, re-exported by this package
   act_tb_extender_client:
-    path: ../act_tb_extender_client
+    path: ../dart/act_tb_extender_client
 
   # The ThingsBoard client the tokens are refreshed against
   act_thingsboard_client:
