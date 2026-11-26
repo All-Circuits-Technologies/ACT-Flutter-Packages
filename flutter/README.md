@@ -32,8 +32,6 @@ explains the split.
 | [act_flutter_utility](act_flutter_utility/)                               | This package contains useful methods and classes which extends flutter functionality.                                    |         |
 | [act_global_manager](act_global_manager/)                                 | This package contains the default global_manager which has to be extended in the app.                                    |         |
 | [act_halo_ble_layer](act_halo_ble_layer/)                                 | This is the BLE hardware layer for the HALO protocol                                                                     |         |
-| [act_http_client_jwt_auth](act_http_client_jwt_auth/)                     | Contains specific server authentication to work with JWT                                                                 |         |
-| [act_http_client_manager](act_http_client_manager/)                       | Useful to request third HTTP servers                                                                                     |         |
 | [act_internet_connectivity_manager](act_internet_connectivity_manager/)   | The package contains the internet connectivity manager to know when we are connected to internet, or not.                |         |
 | [act_intl](act_intl/)                                                     | This package contains non-graphical utilities classes linked to translations.                                            |         |
 | [act_intl_ui](act_intl_ui/)                                               | This package contains graphical helpers linked to translations.                                                          |         |
@@ -45,7 +43,6 @@ explains the split.
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |
 | [act_oauth2_keycloak](act_oauth2_keycloak/)                               | This package contains the needed elements to connect to a OAuth 2.0 Client through a Keycloak Identity Provider.         |         |
-| [act_ocsigen_halo_manager](act_ocsigen_halo_manager/)                     | This is the manager for the OCSIGEN implementation of HALO                                                               |         |
 | [act_permissions_manager](act_permissions_manager/)                       | Useful classes to manager permissions                                                                                    |         |
 | [act_platform_manager](act_platform_manager/)                             | Useful class to manage platform                                                                                          |         |
 | [act_remote_local_vers_file_manager](act_remote_local_vers_file_manager/) | Act remote localized and versioned file manager.                                                                         |         |
@@ -56,11 +53,9 @@ explains the split.
 | [act_shared_auth_ui](act_shared_auth_ui/)                                 | This package completes the act_shared_auth and offers widgets, blocs, page, etc.                                         |         |
 | [act_splash_screen_manager](act_splash_screen_manager/)                   | Keeps the splash screen of the platform displayed until the application is ready                                         |         |
 | [act_tb_extender_auth](act_tb_extender_auth/)                             | Signs a user in with Keycloak and exchanges the token for ThingsBoard tokens through the tb-extender broker.             |         |
-| [act_tb_extender_client](act_tb_extender_client/)                         | Speaks to the tb-extender broker: exchanges an identity provider token for ThingsBoard tokens, claims and frees devices. |         |
 | [act_test_utility](act_test_utility/)                                     | This package contains shared fakes and helpers to write the unit tests of the ACT packages.                              |         |
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers.           |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                                      |         |
-| [act_websocket_server_manager](act_websocket_server_manager/)             | This package contains the WebSocket server manager                                                                       |         |
 | [act_yaml_utility](act_yaml_utility/)                                     | This contains utility classes to manage YAML                                                                             |         |

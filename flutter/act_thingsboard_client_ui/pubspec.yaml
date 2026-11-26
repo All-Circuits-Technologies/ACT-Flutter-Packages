@@ -66,7 +66,7 @@ dev_dependencies:
 
   # The status a request to the server answers
   act_http_client_manager:
-    path: ../act_http_client_manager
+    path: ../../dart/act_http_client_manager
 
   # The managers the tests register in the global manager
   act_life_cycle:

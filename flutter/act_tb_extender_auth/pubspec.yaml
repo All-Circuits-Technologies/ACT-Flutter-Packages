@@ -24,9 +24,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # The library which speaks OAuth 2.0 to the provider
-  flutter_appauth: ^9.0.1
-
   # Guards the public entry points of the auth service
   mutex: ^3.1.0
 
@@ -67,7 +64,7 @@ dependencies:
 
   # The client of the broker, its models and its errors, re-exported by this package
   act_tb_extender_client:
-    path: ../act_tb_extender_client
+    path: ../../dart/act_tb_extender_client
 
   # The ThingsBoard client the tokens are refreshed against
   act_thingsboard_client:

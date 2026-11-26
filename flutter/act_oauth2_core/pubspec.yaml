@@ -41,9 +41,6 @@ dependencies:
   act_life_cycle:
     path: ../act_life_cycle
 
-  act_local_storage_manager:
-    path: ../act_local_storage_manager
-
   # Logger manager
   act_logger_manager:
     path: ../../dart/act_logger_manager
