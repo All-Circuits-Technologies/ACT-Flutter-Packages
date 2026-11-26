@@ -37,6 +37,10 @@ dependencies:
   # Equatable for value equality in Dart objects
   equatable: ^2.0.8
 
+  # The fakes which do not need Flutter, re-exported by this package
+  act_dart_test_utility:
+    path: ../../dart/act_dart_test_utility
+
   act_foundation:
     path: ../../dart/act_foundation
 
