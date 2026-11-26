@@ -39,7 +39,7 @@ dependencies:
     path: ../act_dart_utility
 
   act_foundation:
-    path: ../act_foundation
+    path: ../../dart/act_foundation
 
   # Easily create managers
   act_life_cycle:

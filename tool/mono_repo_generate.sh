@@ -6,11 +6,19 @@
 
 ## This script wraps `dart pub global run mono_repo generate` to also patch
 ## the generated workflow files (flutter-version fix for semver values) and
-## optionally update the Flutter SDK version across all mono_pkg.yaml files.
+## optionally update the SDK versions across the mono_pkg.yaml files.
 ##
-## The active version is persisted in tool/.flutter_version so that
-## subsequent calls without --flutter-version (e.g. after adding a new package)
-## can re-run generate + patch without re-specifying the version.
+## The Flutter packages and the pure Dart packages (under dart/) take a
+## different SDK version: the Flutter version for the first ones, the Dart
+## version for the second ones, because the CI sets up a Dart SDK only for
+## the pure Dart packages. Change both together: a Flutter release embeds a
+## Dart release (`flutter --version` shows it), for example Flutter 3.47.9
+## embeds Dart 3.13.7.
+##
+## The active versions are persisted in tool/.flutter_version and
+## tool/.dart_version so that subsequent calls without options (e.g. after
+## adding a new package) can re-run generate + patch without re-specifying
+## the versions.
 ##
 ## Usage:
 ##  $0 [options]
@@ -18,10 +26,15 @@
 ## Options:
 ##  --help                     Show this help
 ##  --dry-run                  Print what would be done without changing any file
-##  --flutter-version <value>  Set and persist a new Flutter SDK version before
+##  --flutter-version <value>  Set and persist a new Flutter SDK version in the
+##                             mono_pkg.yaml files outside dart/ before
 ##                             generating (e.g. "stable", "beta", "3.22.0").
 ##                             If omitted, the version from tool/.flutter_version
-##                             is used and mono_pkg.yaml files are not changed.
+##                             is used and those files are not changed.
+##  --dart-version <value>     Set and persist a new Dart SDK version in the
+##                             mono_pkg.yaml files under dart/ before generating
+##                             (e.g. "3.13.7"). If omitted, those files are not
+##                             changed.
 
 set -e  # Die if a line ends in error
 set -u  # Accessing an unknown variable is an error
@@ -29,11 +42,15 @@ set -u  # Accessing an unknown variable is an error
 # shellcheck disable=SC3040
 set -o pipefail
 
-VERSION=""
+VERSION=""  # The Flutter SDK version
+DART_VERSION=""
 DRY_RUN=false
-GENERATE_ONLY=false  # true when version is read from the stored file
 
 FLUTTER_VERSION_FILE="tool/.flutter_version"
+DART_VERSION_FILE="tool/.dart_version"
+
+# The folder of the pure Dart packages, whose mono_pkg.yaml files take the Dart SDK version
+PURE_DART_DIR="dart"
 
 # Small helpers --------------------------------------------------------
 
@@ -46,11 +63,13 @@ print_help() {
     grep "^##" "$0" | sed 's/^## \?//' | sed "s,\$0,$0,"
 }
 
-# Replaces the sdk block in a single mono_pkg.yaml file.
+# Replaces the sdk block of the mono_pkg.yaml file given as first argument with
+# the version given as second argument.
 # Only the first encountered sdk block is rewritten; extra version entries
 # (multiple `- x` lines under sdk:) are collapsed into the single new version.
 update_sdk_in_file() {
     local file="$1"
+    local version="$2"
 
     if "${DRY_RUN}"; then
         echo "[dry-run] Would update: ${file}"
@@ -60,7 +79,7 @@ update_sdk_in_file() {
     local tmp_file
     tmp_file="$(mktemp)"
 
-    awk -v version="${VERSION}" '
+    awk -v version="${version}" '
         /^sdk:/ {
             in_sdk = 1
             replaced = 0
@@ -85,22 +104,41 @@ update_sdk_in_file() {
     echo "Updated: ${file}"
 }
 
-# Persists the current VERSION to FLUTTER_VERSION_FILE.
+# Persists the version given as first argument to the file given as second argument.
 save_version() {
+    local version="$1"
+    local version_file="$2"
+
     if "${DRY_RUN}"; then
-        echo "[dry-run] Would save version '${VERSION}' to ${FLUTTER_VERSION_FILE}"
+        echo "[dry-run] Would save version '${version}' to ${version_file}"
         return
     fi
-    printf '%s' "${VERSION}" > "${FLUTTER_VERSION_FILE}"
-    echo "Saved version '${VERSION}' to ${FLUTTER_VERSION_FILE}"
+    printf '%s' "${version}" > "${version_file}"
+    echo "Saved version '${version}' to ${version_file}"
 }
 
-# Iterates over every mono_pkg.yaml tracked by git and updates the sdk block.
-update_all_packages() {
+# Updates the sdk block of every mono_pkg.yaml tracked by git with the version
+# given as first argument: the ones under PURE_DART_DIR when the second argument
+# is "dart", the other ones when it is "flutter".
+update_packages() {
+    local version="$1"
+    local kind="$2"
     local count=0
 
     while IFS= read -r pkg_file; do
-        update_sdk_in_file "${pkg_file}"
+        local is_pure_dart=false
+        if [[ "${pkg_file}" == "${PURE_DART_DIR}/"* ]]; then
+            is_pure_dart=true
+        fi
+
+        if [ "${kind}" = "dart" ] && ! "${is_pure_dart}"; then
+            continue
+        fi
+        if [ "${kind}" = "flutter" ] && "${is_pure_dart}"; then
+            continue
+        fi
+
+        update_sdk_in_file "${pkg_file}" "${version}"
         count=$((count + 1))
     done < <(git ls-files --recurse-submodules "*/mono_pkg.yaml")
 
@@ -221,6 +259,16 @@ main() {
             VERSION="$2"
             shift 2
             ;;
+        --dart-version)
+            if [ -z "${2:-}" ]; then
+                die "Option --dart-version requires a value."
+            fi
+            if [ -n "${DART_VERSION}" ]; then
+                die "--dart-version specified more than once."
+            fi
+            DART_VERSION="$2"
+            shift 2
+            ;;
         -*)
             die "Unknown option: ${OPT}"
             ;;
@@ -237,25 +285,35 @@ main() {
     repo_root="$(cd "${script_dir}/.." && pwd)"
     cd "${repo_root}"
 
-    # If no version was given on the command line, read the stored one.
+    # If no Flutter version was given on the command line, read the stored one: the workflow
+    # patches need it.
     if [ -z "${VERSION}" ]; then
         if [ ! -f "${FLUTTER_VERSION_FILE}" ]; then
             die "Error: no version specified and ${FLUTTER_VERSION_FILE} not found.\nRun '$0 --flutter-version <version>' at least once to set and persist the version."
         fi
         VERSION=$(cat "${FLUTTER_VERSION_FILE}")
-        GENERATE_ONLY=true
-        echo "No version argument given — using stored version '${VERSION}' (generate + patch only)."
+        echo "No Flutter version argument given — using stored version '${VERSION}'."
+    else
+        echo "Setting Flutter SDK version to '${VERSION}' in the mono_pkg.yaml files outside ${PURE_DART_DIR}/..."
+        echo ""
+        update_packages "${VERSION}" flutter
+        save_version "${VERSION}" "${FLUTTER_VERSION_FILE}"
+
+        if [ -z "${DART_VERSION}" ]; then
+            echo ""
+            echo "Warning: the Dart SDK version of the ${PURE_DART_DIR}/ packages has not changed. Give the Dart version this Flutter version embeds with --dart-version."
+        fi
     fi
 
-    if "${GENERATE_ONLY}"; then
-        run_mono_repo_generate
-    else
-        echo "Setting Flutter SDK version to '${VERSION}' in all mono_pkg.yaml files..."
+    if [ -n "${DART_VERSION}" ]; then
         echo ""
-        update_all_packages
-        save_version
-        run_mono_repo_generate
+        echo "Setting Dart SDK version to '${DART_VERSION}' in the mono_pkg.yaml files under ${PURE_DART_DIR}/..."
+        echo ""
+        update_packages "${DART_VERSION}" dart
+        save_version "${DART_VERSION}" "${DART_VERSION_FILE}"
     fi
+
+    run_mono_repo_generate
 }
 
 main "$@"

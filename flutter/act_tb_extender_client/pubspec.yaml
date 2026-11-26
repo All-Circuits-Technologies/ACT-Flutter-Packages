@@ -37,7 +37,7 @@ dependencies:
 
   # The exception thrown when the base URL of the broker isn't configured
   act_foundation:
-    path: ../act_foundation
+    path: ../../dart/act_foundation
 
   # The application logger the models report a malformed payload to
   act_global_manager:

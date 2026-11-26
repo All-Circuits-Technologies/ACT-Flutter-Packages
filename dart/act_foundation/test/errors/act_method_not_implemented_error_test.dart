@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// A caller whose type name is used to build the message of the error.
 class _Caller;
@@ -38,7 +38,7 @@ void main() {
       // disabled.
       expect(
         () => ActMethodNotImplementedError.crash(caller: _Caller(), method: "doSomething"),
-        throwsAssertionError,
+        throwsA(isA<AssertionError>()),
       );
     });
 

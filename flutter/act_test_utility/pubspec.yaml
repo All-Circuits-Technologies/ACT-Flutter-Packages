@@ -38,7 +38,7 @@ dependencies:
   equatable: ^2.0.8
 
   act_foundation:
-    path: ../act_foundation
+    path: ../../dart/act_foundation
 
   act_global_manager:
     path: ../act_global_manager

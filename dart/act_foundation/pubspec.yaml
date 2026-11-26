@@ -9,11 +9,9 @@ publish_to: none
 
 environment:
   sdk: ^3.13.0
-  flutter: ">=3.47.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
+  meta: ^1.17.0
 
 # Because this package is used by all the other ACT packages, we want to limit the dependencies,
 # even external ones. Therefore, think twice before adding a dependency to this package.
@@ -21,6 +19,9 @@ dependencies:
 # DO NOT ADD DEPENDENCIES TO ACT PACKAGES IN THIS FILE.
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
   flutter_lints: ^6.0.0

@@ -85,7 +85,7 @@ dev_dependencies:
 
   # The exception the broker client throws when its URL isn't configured
   act_foundation:
-    path: ../act_foundation
+    path: ../../dart/act_foundation
 
   # Fakes shared by the tests of the ACT packages
   act_test_utility:

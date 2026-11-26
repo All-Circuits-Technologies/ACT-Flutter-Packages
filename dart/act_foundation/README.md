@@ -121,7 +121,7 @@ Add the package to the `dependencies` of your package:
 ```yaml
 dependencies:
   act_foundation:
-    path: ../act_foundation
+    path: ../../dart/act_foundation
 ```
 
 ### Raise an ACT error or exception
@@ -184,5 +184,5 @@ The package cannot use the shared test utilities, because they depend on it, so 
 their own fakes. To run them:
 
 ```console
-> flutter test
+> dart test
 ```

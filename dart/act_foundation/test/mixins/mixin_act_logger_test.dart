@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// What a call to one of the shortcut methods of [MixinActLogger] forwarded to `log`.
 class _LoggedCall {

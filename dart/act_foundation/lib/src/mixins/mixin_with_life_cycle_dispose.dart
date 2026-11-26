@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// This mixin is used to add a default dispose method to classes that do not need any
 /// initialization.

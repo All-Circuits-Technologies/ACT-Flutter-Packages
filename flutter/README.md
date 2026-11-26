@@ -6,8 +6,9 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 # Flutter packages
 
-The packages of this folder depend on Flutter. The [main README](../README.md) explains how to use
-them in a project.
+The packages of this folder depend on Flutter. A Flutter application uses them together with the
+pure Dart packages of the [`dart/`](../dart/README.md) folder: the [main README](../README.md)
+explains the split.
 
 | Package                                                                   | Description                                                                                                              | Version |
 | ------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------- |
@@ -35,7 +36,6 @@ them in a project.
 | [act_firebase_core](act_firebase_core/)                                   | This is the main package to manage firebase with our ACT libs                                                            |         |
 | [act_firebase_crash](act_firebase_crash/)                                 | Reports the crashes and the logs of an application to Firebase Crashlytics.                                              |         |
 | [act_flutter_utility](act_flutter_utility/)                               | This package contains useful methods and classes which extends flutter functionality.                                    |         |
-| [act_foundation](act_foundation/)                                         | This package provides foundational classes and interfaces for the ACT packages, such as the logger interface and errors. |         |
 | [act_global_manager](act_global_manager/)                                 | This package contains the default global_manager which has to be extended in the app.                                    |         |
 | [act_halo_abstract](act_halo_abstract/)                                   | Contains the abstract and shared elements to manager the HALO protocol                                                   |         |
 | [act_halo_ble_layer](act_halo_ble_layer/)                                 | This is the BLE hardware layer for the HALO protocol                                                                     |         |

@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// A minimal concrete error, to exercise the behaviour [ActError] gives to its derived classes.
 class _TestError extends ActError {
