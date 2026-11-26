@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:act_logger_manager/act_logger_manager.dart';
 import 'package:act_logger_manager/src/services/logger_singleton.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fakes/fake_logger_config_manager.dart';
@@ -28,12 +27,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late FakeLoggerConfigManager config;
-  late FlutterExceptionHandler? initialFlutterHandler;
-
-  setUp(() => initialFlutterHandler = FlutterError.onError);
 
   tearDown(() async {
-    FlutterError.onError = initialFlutterHandler;
     await LoggerSingleton.instanceOrNull?.externalLogger.clearExternalLoggers();
     await config.disposeLifeCycle();
     FakeAssets.stop();

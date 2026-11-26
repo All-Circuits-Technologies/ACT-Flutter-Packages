@@ -113,11 +113,19 @@ stack trace are written on their own line, with the same prefix as the message.
 
 ### The errors nobody caught
 
-When it is initialized, the manager takes over `FlutterError.onError` and the error callback of the
-platform dispatcher: an error which no `try`/`catch` handled is logged at the error level instead of
-being lost. An application which wants to do more with those errors, such as showing a screen or
-reporting them, adds a handler or a callback to the manager rather than replacing those two
-callbacks.
+The manager doesn't catch the errors no `try`/`catch` handled by itself: it offers `logUncaughtError`
+to the code which does. The method logs the error at the error level instead of letting it be lost,
+then gives it to the callbacks added with `addPlatformErrorCallback`, such as the one of a crash
+reporting service. It returns `true`, which tells the caller that the error is handled.
+
+In a Flutter application, `runActApp` of `act_global_manager` installs the hooks of the framework
+(`FlutterError.onError` and the error callback of the platform dispatcher) and hands the errors to
+the manager: nothing has to be done by the application. A pure Dart host, such as a server or a
+script, calls the method where it catches the errors, for instance from `runZonedGuarded`:
+
+```dart
+runZonedGuarded(main, globalGetIt().get<LoggerManager>().logUncaughtError);
+```
 
 ## How to use
 

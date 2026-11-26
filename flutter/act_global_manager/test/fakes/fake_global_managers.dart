@@ -2,6 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_foundation/act_foundation.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:flutter/widgets.dart';
@@ -51,9 +52,22 @@ class FakeUiGlobalManager extends AbsUiGlobalManager {
   /// displayed.
   final Widget? fatalErrorPage;
 
+  /// The logger the test reads the messages of the application from.
+  ///
+  /// When null, the manager keeps the default logger of the application.
+  final MixinActLogger? _logger;
+
+  /// The logger the shortcut of the application returns.
+  @override
+  MixinActLogger get defaultLogger => _logger ?? super.defaultLogger;
+
   /// Class constructor
-  FakeUiGlobalManager({this.onRegisterManagers, this.fatalErrorPage, super.defaultMinLevel})
-    : super.create() {
+  FakeUiGlobalManager({
+    this.onRegisterManagers,
+    this.fatalErrorPage,
+    this._logger,
+    super.defaultMinLevel,
+  }) : super.create() {
     AbsGlobalManager.setInstance = this;
   }
 

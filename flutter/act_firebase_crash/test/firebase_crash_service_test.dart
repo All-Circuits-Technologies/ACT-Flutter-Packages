@@ -2,8 +2,6 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'dart:ui';
-
 import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_firebase_crash/act_firebase_crash.dart';
 import 'package:act_firebase_crash/src/types/crashlytics_logger_types.dart';
@@ -45,30 +43,24 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   late FakeCrashlytics crashlytics;
-  late FakeGlobalManager globalManager;
+  late FakeCrashGlobalManager globalManager;
   late FakeExternalLogger logs;
   late FakeCrashConfig config;
   late FakeLoggerManager loggerManager;
-  late FlutterExceptionHandler? initialFlutterHandler;
-  late ErrorCallback? initialPlatformHandler;
 
   setUpAll(() async => crashlytics = await FakeCrashlytics.install());
 
   setUp(() {
     crashlytics.reset();
     logs = FakeExternalLogger();
-    globalManager = FakeGlobalManager.install();
-    initialFlutterHandler = FlutterError.onError;
-    initialPlatformHandler = PlatformDispatcher.instance.onError;
+    globalManager = FakeCrashGlobalManager();
   });
 
   tearDown(() async {
-    FlutterError.onError = initialFlutterHandler;
-    PlatformDispatcher.instance.onError = initialPlatformHandler;
     // The loggers live in the logger of the application, which the whole test file shares, so the
     // one a session added has to go before the next test opens another one
     await loggerManager.removeExternalLogger(CrashlyticsLoggerType.crash);
-    await globalManager.reset();
+    await globalManager.managers.reset();
     await config.disposeLifeCycle();
     FakeAssets.stop();
   });
@@ -94,9 +86,8 @@ void main() {
     return service;
   }
 
-  /// Reports an error of the platform the way the framework does when nothing caught it.
-  void aPlatformError() =>
-      PlatformDispatcher.instance.onError!(Exception("a failure"), StackTrace.empty);
+  /// Reports an error of the platform the way the global manager does when nothing caught it.
+  void aPlatformError() => loggerManager.logUncaughtError(Exception("a failure"), StackTrace.empty);
 
   group("FirebaseCrashService.initLifeCycle", () {
     test("leaves the crashes on the device of an application which says nothing of them", () async {
@@ -153,7 +144,7 @@ void main() {
     test("records the errors of Flutter which nothing caught", () async {
       await aService(content: _collectingConf);
 
-      FlutterError.onError!(FlutterErrorDetails(exception: Exception("a failure")));
+      globalManager.reportFlutterError(FlutterErrorDetails(exception: Exception("a failure")));
       await pumpEventQueue();
 
       expect(crashlytics.errors, isNotEmpty);

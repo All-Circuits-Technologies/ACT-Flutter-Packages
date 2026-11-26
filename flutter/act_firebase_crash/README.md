@@ -68,10 +68,12 @@ stateDiagram-v2
 
 ### What is reported
 
-The service hangs on the logger manager rather than on the framework: it registers a handler for
-the errors of Flutter and a callback for the errors of the platform, and the logger manager is what
-calls them. Both are reported as fatal ones. An error an application caught and logged itself is
-not reported: it went through the logger, not through the handlers.
+The service hangs on the global manager and the logger manager rather than on the framework: it
+registers a handler for the errors of Flutter on the global manager (`addFlutterExceptionHandler` of
+`MixinUiGlobalManager`) and a callback for the errors of the platform on the logger manager
+(`addPlatformErrorCallback`). `runActApp` installs the hooks which call them, so an application has
+to start with it. Both are reported as fatal ones. An error an application caught and logged itself
+is not reported: it went through the logger, not through the handlers.
 
 ### The debug session
 
@@ -126,7 +128,8 @@ class AppFirebaseManager extends AbsFirebaseManager {
 ```
 
 The service reads the logger manager of the application out of the global manager, so it needs one
-registered.
+registered, and the global manager has to be the one of an application with a view
+(`AbsUiGlobalManager`).
 
 ### Open a debug session
 

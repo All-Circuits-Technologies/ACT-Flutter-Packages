@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
@@ -12,7 +11,6 @@ import 'package:act_logger_manager/src/types/safe_external_loggers.dart';
 // The external logger this package defines is the one under test, so its own fake is the one to
 // drive here, not the shared one which stands in for it elsewhere
 import 'package:act_test_utility/act_test_utility.dart' hide FakeExternalLogger;
-import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../fakes/fake_external_logger.dart';
@@ -49,18 +47,10 @@ void main() {
 
   late FakeLoggerConfigManager config;
   late FakeExternalLogger fake;
-  late FlutterExceptionHandler? initialFlutterHandler;
-  late ErrorCallback? initialPlatformHandler;
 
-  setUp(() {
-    fake = FakeExternalLogger();
-    initialFlutterHandler = FlutterError.onError;
-    initialPlatformHandler = PlatformDispatcher.instance.onError;
-  });
+  setUp(() => fake = FakeExternalLogger());
 
   tearDown(() async {
-    FlutterError.onError = initialFlutterHandler;
-    PlatformDispatcher.instance.onError = initialPlatformHandler;
     await LoggerSingleton.instanceOrNull?.externalLogger.clearExternalLoggers();
     await config.disposeLifeCycle();
     FakeAssets.stop();
@@ -210,60 +200,39 @@ void main() {
     });
   });
 
-  group("LoggerManager and the errors of the framework", () {
-    test("logs the errors of the framework", () async {
+  group("LoggerManager.logUncaughtError", () {
+    test("logs the error at the error level", () async {
       final manager = await initManager();
+      final error = Exception("a failure");
+      final stackTrace = StackTrace.current;
 
-      FlutterError.onError!(FlutterErrorDetails(exception: Exception("a failure")));
+      manager.logUncaughtError(error, stackTrace);
 
       expect(fake.records.length, 1);
       expect(fake.records.first.level, LogsLevel.error);
-      expect(manager.wouldBeLogged(LogsLevel.error), isTrue);
+      expect(fake.records.first.error, error);
+      expect(fake.records.first.stackTrace, stackTrace);
     });
 
-    test("gives the errors of the framework to the handlers it is given", () async {
+    test("reports the error as handled", () async {
       final manager = await initManager();
-      final handled = <FlutterErrorDetails>[];
-      manager.addFlutterExceptionHandler(handled.add);
 
-      FlutterError.onError!(FlutterErrorDetails(exception: Exception("a failure")));
-
-      expect(handled.length, 1);
+      expect(manager.logUncaughtError(Exception("a failure"), StackTrace.empty), isTrue);
     });
 
-    test("stops giving the errors to a handler which has been removed", () async {
-      final manager = await initManager();
-      final handled = <FlutterErrorDetails>[];
-      manager
-        ..addFlutterExceptionHandler(handled.add)
-        ..removeFlutterExceptionHandler(handled.add);
-
-      FlutterError.onError!(FlutterErrorDetails(exception: Exception("a failure")));
-
-      expect(handled, isEmpty);
-    });
-
-    test("logs the errors of the platform and reports them as handled", () async {
-      await initManager();
-
-      final handled = PlatformDispatcher.instance.onError!(
-        Exception("a failure"),
-        StackTrace.empty,
-      );
-
-      expect(handled, isTrue);
-      expect(fake.records.length, 1);
-      expect(fake.records.first.level, LogsLevel.error);
-    });
-
-    test("gives the errors of the platform to the callbacks it is given", () async {
+    test("gives the error to every callback it is given", () async {
       final manager = await initManager();
       final handled = <Object>[];
-      manager.addPlatformErrorCallback((exception, stackTrace) => handled.add(exception));
+      final otherHandled = <Object>[];
+      final error = Exception("a failure");
+      manager
+        ..addPlatformErrorCallback((exception, stackTrace) => handled.add(exception))
+        ..addPlatformErrorCallback((exception, stackTrace) => otherHandled.add(exception));
 
-      PlatformDispatcher.instance.onError!(Exception("a failure"), StackTrace.empty);
+      manager.logUncaughtError(error, StackTrace.empty);
 
-      expect(handled.length, 1);
+      expect(handled, [error]);
+      expect(otherHandled, [error]);
     });
 
     test("stops giving the errors to a callback which has been removed", () async {
@@ -274,7 +243,7 @@ void main() {
         ..addPlatformErrorCallback(callback)
         ..removePlatformErrorCallback(callback);
 
-      PlatformDispatcher.instance.onError!(Exception("a failure"), StackTrace.empty);
+      manager.logUncaughtError(Exception("a failure"), StackTrace.empty);
 
       expect(handled, isEmpty);
     });

@@ -20,10 +20,8 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   /// This is the logger of the logger manager
   late final LogsHelper _logger;
 
-  /// Handlers to manage flutter exceptions; those not already managed by try/catch
-  final Set<FlutterExceptionHandler> _flutterExceptionHandler;
-
-  /// Callback used to manager platform exceptions; those not managed by the flutter exceptions
+  /// Callbacks called when an uncaught error is logged with [logUncaughtError]; those errors are
+  /// not managed by try/catch
   final Set<ActLogsErrorCallback> _platformErrorCallback;
 
   /// Used to get the logger configuration.
@@ -34,9 +32,7 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   MixinLoggerConfig Function() get loggerConfigGetter => _loggerConfigGetter;
 
   /// Class constructor
-  LoggerManager({required this._loggerConfigGetter})
-    : _flutterExceptionHandler = {},
-      _platformErrorCallback = {};
+  LoggerManager({required this._loggerConfigGetter}) : _platformErrorCallback = {};
 
   /// {@macro act_life_cycle.MixinWithLifeCycle.initLifeCycle}
   @override
@@ -50,12 +46,6 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
     await instance.externalLogger.initLifeCycle();
 
     _logger = LogsHelper.withExternalLogger(externalLogger: instance.externalLogger);
-
-    FlutterError.onError = _onFlutterError;
-
-    // Pass all uncaught asynchronous errors that aren't handled by the Flutter framework to
-    // third parties.
-    PlatformDispatcher.instance.onError = _onPlatformError;
 
     final externalLoggers = await buildExternalLoggersToReplaceSafeLogger();
     if (externalLoggers.isNotEmpty) {
@@ -103,22 +93,12 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   @override
   bool wouldBeLogged(LogsLevel level) => _logger.wouldBeLogged(level);
 
-  /// Add a handler to listen for Flutter exceptions
-  void addFlutterExceptionHandler(FlutterExceptionHandler handler) {
-    _flutterExceptionHandler.add(handler);
-  }
-
-  /// Remove the handler linked to the listen of Flutter exceptions
-  void removeFlutterExceptionHandler(FlutterExceptionHandler handler) {
-    _flutterExceptionHandler.remove(handler);
-  }
-
-  /// Add a callback to listen for platform errors
+  /// Add a callback to listen for uncaught errors, given to [logUncaughtError]
   void addPlatformErrorCallback(ActLogsErrorCallback callback) {
     _platformErrorCallback.add(callback);
   }
 
-  /// Remove the callback which listen platform errors
+  /// Remove the callback which listen uncaught errors
   void removePlatformErrorCallback(ActLogsErrorCallback callback) {
     _platformErrorCallback.remove(callback);
   }
@@ -141,6 +121,26 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
   Future<void> removeExternalLogger(Enum loggerKey) async =>
       LoggerSingleton.instance.externalLogger.removeExternalLogger(loggerKey);
 
+  /// Log an uncaught error and give it to the callbacks added with [addPlatformErrorCallback].
+  ///
+  /// This is the entry point of the errors which no `try`/`catch` handled: the error is logged at
+  /// the error level, then each registered callback is called with it.
+  ///
+  /// The manager doesn't catch uncaught errors by itself: the caller has to wire this method to the
+  /// source of those errors. In a Flutter application, `runActApp` of `act_global_manager` does it.
+  /// A pure Dart host can call it where it catches the errors, for instance from the `onError`
+  /// callback of `runZonedGuarded`.
+  ///
+  /// Always returns true, which tells the caller (for instance the `onError` callback of Flutter's
+  /// `PlatformDispatcher`) that the error has been handled.
+  bool logUncaughtError(Object exception, StackTrace stackTrace) {
+    e(exception, exception, stackTrace);
+    for (final callback in _platformErrorCallback) {
+      callback(exception, stackTrace);
+    }
+    return true;
+  }
+
   /// This method is used to replace the safe logger with the external loggers provided in the
   /// [externalLoggers] parameter. The safe logger is the logger that is used before the manager is
   /// initialized, and that is created with the [SafeExternalLoggers] enum.
@@ -151,23 +151,6 @@ abstract class LoggerManager extends AbsWithLifeCycle with MixinActLogger {
       await externalLogger.addExternalLogger(logger.key, logger.value);
     }
     await externalLogger.removeExternalLogger(SafeExternalLoggers.console);
-  }
-
-  /// Called when a flutter error is thrown
-  void _onFlutterError(FlutterErrorDetails details) {
-    e(details.exceptionAsString(), details.exception, details.stack);
-    for (final handler in _flutterExceptionHandler) {
-      handler(details);
-    }
-  }
-
-  /// Called when a platform error is thrown
-  bool _onPlatformError(Object exception, StackTrace stackTrace) {
-    e(exception, exception, stackTrace);
-    for (final callback in _platformErrorCallback) {
-      callback(exception, stackTrace);
-    }
-    return true;
   }
 
   /// Get the default logger of the app, which is always ready to be used, even before the manager
