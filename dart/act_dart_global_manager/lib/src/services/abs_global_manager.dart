@@ -6,17 +6,16 @@
 
 import 'dart:async';
 
+import 'package:act_dart_global_manager/src/errors/act_manager_already_created_error.dart';
+import 'package:act_dart_global_manager/src/errors/act_manager_registering_dead_loop_error.dart';
+import 'package:act_dart_global_manager/src/models/manager_extra_info.dart';
+import 'package:act_dart_global_manager/src/types/global_manager_state.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
 import 'package:act_foundation/act_foundation.dart';
-import 'package:act_global_manager/src/errors/act_manager_already_created_error.dart';
-import 'package:act_global_manager/src/errors/act_manager_registering_dead_loop_error.dart';
-import 'package:act_global_manager/src/models/manager_extra_info.dart';
-import 'package:act_global_manager/src/types/global_manager_state.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:meta/meta.dart';
 
 /// The [globalGetIt] function is used to shortcut access to the managers
 GetIt globalGetIt() => AbsGlobalManager.instance!.managers;
@@ -57,7 +56,12 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
   final Map<Type, ManagerExtraInfo> _managersInfo;
 
   /// This returns true if the app is in release mode
-  final isReleaseMode = kReleaseMode;
+  ///
+  /// This is the definition of Flutter's `kReleaseMode`, written with the environment so that this
+  /// package doesn't depend on Flutter.
+  // We explicitly use the environment here, to not depend on Flutter
+  // ignore: do_not_use_environment
+  final isReleaseMode = const bool.fromEnvironment("dart.vm.product");
 
   /// This is the default logger to use in the app
   final MixinActLogger defaultLogger;
@@ -69,12 +73,6 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
 
   /// This is the current state of the global manager
   Enum _currentState = GlobalManagerState.notCreated;
-
-  /// The information contained in the pubspec.yaml of the mobile application
-  late PackageInfo _packageInfo;
-
-  /// Get the app package info
-  PackageInfo get packageInfo => _packageInfo;
 
   /// This is the list of managers registered in the app
   @protected
@@ -109,10 +107,6 @@ abstract class AbsGlobalManager extends AbsWithLifeCycle {
     _registerAllManagers();
 
     await managers.allReady();
-
-    // Add here what's to be called after that all managers have been loaded
-    // and before the views are loaded and displayed
-    _packageInfo = await PackageInfo.fromPlatform();
 
     tryAdvanceToState(GlobalManagerState.allReady);
   }

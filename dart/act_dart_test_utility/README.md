@@ -16,6 +16,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
   - [Give an external logger to a logs helper](#give-an-external-logger-to-a-logs-helper)
+  - [Give the class under test a global manager](#give-the-class-under-test-a-global-manager)
 - [Testing](#testing)
 
 ## Presentation
@@ -73,6 +74,11 @@ flowchart LR
     FakeLogger -.implements.-> MixinActLogger
     SilentLogger -.implements.-> MixinActLogger
 ```
+
+`FakeGlobalManager` is the global manager of the application in a test. A class which reaches its
+logger or its managers through the shortcuts of `act_dart_global_manager` (`appLogger`,
+`globalGetIt`) needs one to exist, and this manager gives the test one which holds only what the
+test registers.
 
 ## How to use
 
@@ -140,11 +146,43 @@ final external = FakeExternalLogger();
 final manager = MyManager(logsHelper: external.buildHelper(category: "myManager"));
 ```
 
+### Give the class under test a global manager
+
+Install the manager before the class under test is built, and forget the managers it holds once the
+test is over:
+
+```dart
+void main() {
+  late FakeGlobalManager globalManager;
+
+  setUp(() => globalManager = FakeGlobalManager.install());
+  tearDown(() => globalManager.reset());
+
+  test("logs a warning when the packet is empty", () {
+    final logger = FakeLogger();
+    globalManager = FakeGlobalManager.install(logger: logger);
+
+    MyParser.parse(Uint8List(0));
+
+    expect(logger.recordsAtLevel(LogsLevel.warn).length, 1);
+  });
+}
+```
+
+Without a logger, the manager is silent, which is what a test which only needs the shortcuts to
+answer wants. The managers a test needs are registered on it the way an application registers
+them:
+
+```dart
+globalManager.register(MyManagerBuilder());
+await globalManager.allReady();
+```
+
 ## Testing
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
 to the sub loggers, the filtering done by the minimum level, the value equality of the records, and
-the recording done by the fake external logger and by the helpers it builds.
+the installation, the logger and the managers of the fake global manager.
 To run them:
 
 ```console

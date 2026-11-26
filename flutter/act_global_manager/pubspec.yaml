@@ -31,10 +31,6 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Decouple the interface from concrete implementation and
-  # access the concrete implementation from everywhere in your App
-  get_it: ^8.0.3
-
   # Query information about the application package
   package_info_plus: ^8.3.0
 
@@ -42,8 +38,9 @@ dependencies:
   act_config_manager:
     path: ../act_config_manager
 
-  act_foundation:
-    path: ../../dart/act_foundation
+  # Pure Dart global manager, which this package extends with what needs Flutter
+  act_dart_global_manager:
+    path: ../../dart/act_dart_global_manager
 
   # Contains utilities for Dart
   act_dart_utility:
@@ -65,6 +62,9 @@ dev_dependencies:
 
   # Recommended lints for Flutter apps
   flutter_lints: ^6.0.0
+
+  act_foundation:
+    path: ../../dart/act_foundation
 
   # Fakes and helpers shared by the tests of the ACT packages
   act_test_utility:

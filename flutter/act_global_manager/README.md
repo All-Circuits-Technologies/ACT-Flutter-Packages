@@ -39,6 +39,13 @@ The package holds no business logic and knows nothing about the managers it init
 build a widget either, apart from running the one the application gives it and, if the
 initialization fails, the page that application wants to display instead.
 
+The global manager itself, which does not need Flutter, lives in the pure Dart package
+[`act_dart_global_manager`](../../dart/act_dart_global_manager/README.md): this package depends on it
+and exports it, so an application imports everything from `act_global_manager`. The states, the
+order of initialization, the shortcuts, `ExtDefaultLoggerBuilder` and the errors are described in
+its README; this package adds what needs Flutter (the view, the fatal error page, `runActApp`) and
+the information of the application package.
+
 ## Architecture
 
 ### The states of an application
@@ -91,7 +98,11 @@ an application with a view needs:
 - `initInFirstView` gives them the context of the first view, without waiting for them: the first
   view is displayed rather than held back,
 - `runActApp` installs the hooks which catch the uncaught errors, initializes the managers and then
-  runs the application.
+  runs the application,
+- `packageInfo` gives the information of the application package (name, version, build number),
+  read with `package_info_plus` while the global manager initializes, so it is only available once
+  `initLifeCycle` has run. The pure Dart global manager has no such information, because the plugin
+  needs Flutter.
 
 Only the managers which derive `AbsWithLifeCycleAndUi` take part in those two steps; the others are
 left alone.
@@ -159,6 +170,10 @@ Two hooks let the rest of the application react to the page being shown:
 reads, and `ExtDefaultLoggerBuilder` builds the default logger manager from the config manager
 registered in the application. Together they are the shortest way to a working pair of config and
 logger managers; an application which needs more derives `AbstractConfigManager` itself.
+
+`AbsUsualConfigManager` loads the config from the assets of the application. The pure Dart
+counterpart, which reads it from the file system, is `AbsUsualFileConfigManager` in
+[`act_dart_global_manager`](../../dart/act_dart_global_manager/README.md).
 
 ## How to use
 
@@ -273,9 +288,10 @@ final ticManager = globalGetIt().get<TicManager>();
 
 ### Test an application
 
-Once the managers are ready, the global manager reads the information of the application package
-with `package_info_plus`, which has no implementation under `flutter test`: a test which starts the
-global manager without mocking it never completes, and fails once it times out. Add
+While it initializes, the global manager of an application with a view reads the information of the
+application package with `package_info_plus`, which has no implementation under `flutter test`: a
+test which starts the global manager without mocking it never completes, and fails once it times
+out. Add
 `package_info_plus` to the `dev_dependencies` of the application and mock its values before
 starting the global manager:
 
@@ -296,10 +312,9 @@ setUp(
 The tests drive a global manager which registers the managers a test asks for, and fake managers
 which record the steps of their life cycle they have been through.
 
-They cover the initialization of the registered managers and the order it follows, the registration
-which is refused when a dependency is missing, the second initialization which does nothing, the
-information of the package the manager reads, the states which are refused because they have been
-reached or because they are not the ones of the application, and the disposal of the managers.
+The tests of the pure Dart global manager (the initialization and its order, the registration which
+is refused, the states, the disposal) are in `act_dart_global_manager`. Here, they cover the states
+an application with a view adds to them, and the information of the package the manager reads.
 
 For an application with a view, they run the widgets of the test binding to cover the two
 initializations which need the managers and the context, the first view which only counts once, the

@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:act_global_manager/src/services/abs_global_manager.dart';
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
 import 'package:act_global_manager/src/types/fatal_error_page_types.dart';
 import 'package:act_global_manager/src/ui/fatal_error_wrapper_widget.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';

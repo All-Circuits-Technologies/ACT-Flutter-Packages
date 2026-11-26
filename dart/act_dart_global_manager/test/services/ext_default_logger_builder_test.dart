@@ -2,36 +2,25 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_global_manager/act_global_manager.dart';
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_dart_test_utility/act_dart_test_utility.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
-// The global manager this package defines is the one under test, so its own fake is the one to
-// drive here, not the shared one which stands in for it elsewhere
-import 'package:act_test_utility/act_test_utility.dart' hide FakeGlobalManager;
-import 'package:flutter/foundation.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import '../fakes/fake_app_config_manager.dart';
-import '../fakes/fake_global_managers.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   late FakeAppConfigManager config;
-  late FlutterExceptionHandler? initialFlutterHandler;
 
-  setUp(() => initialFlutterHandler = FlutterError.onError);
-
-  tearDown(() async {
-    FlutterError.onError = initialFlutterHandler;
-    await config.disposeLifeCycle();
-    FakeAssets.stop();
-  });
+  tearDown(() async => config.disposeLifeCycle());
 
   /// Registers the config manager of the application and the global manager the builder reads it
   /// through.
   Future<void> registerConfig() async {
-    FakeGlobalManager();
-    config = await FakeAppConfigManager.withContent("logs:\n  level: trace");
+    FakeGlobalManager.install();
+    config = await FakeAppConfigManager.withConfigs({
+      "logs": {"level": "trace"},
+    });
     globalGetIt().registerSingleton<FakeAppConfigManager>(config);
   }
 

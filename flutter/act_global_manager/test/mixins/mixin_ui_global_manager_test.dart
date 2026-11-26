@@ -66,6 +66,15 @@ void main() {
       expect(uiManager.initAfterViewContexts, isEmpty);
     });
 
+    testWidgets("reads the information of the package of the application", (tester) async {
+      final manager = FakeUiGlobalManager();
+
+      await manager.initLifeCycle();
+
+      expect(manager.packageInfo.version, "1.2.3");
+      expect(manager.packageInfo.appName, "an app");
+    });
+
     testWidgets("initializes the managers which depend on the UI only once", (tester) async {
       final uiManager = FakeUiManager();
       final manager = FakeUiGlobalManager(

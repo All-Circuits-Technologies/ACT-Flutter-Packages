@@ -2,14 +2,11 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:act_foundation/act_foundation.dart';
-import 'package:act_global_manager/act_global_manager.dart';
-import 'package:act_global_manager/src/types/global_manager_state.dart';
-import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
-import 'package:package_info_plus/package_info_plus.dart';
+import 'package:test/test.dart';
 
 import '../fakes/fake_global_managers.dart';
 import '../fakes/fake_managers.dart';
@@ -30,19 +27,13 @@ class _SlowManager extends FakeManager {
   }
 }
 
+/// A state which is not one of the states of the application.
+enum _OtherState {
+  /// The only state
+  other,
+}
+
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  setUp(
-    () => PackageInfo.setMockInitialValues(
-      appName: "an app",
-      packageName: "com.allcircuits.app",
-      version: "1.2.3",
-      buildNumber: "4",
-      buildSignature: "",
-    ),
-  );
-
   group("AbsGlobalManager", () {
     test("is a manager with a life cycle", () {
       expect(FakeGlobalManager(), isA<AbsWithLifeCycle>());
@@ -115,11 +106,11 @@ void main() {
 
     test("waits for every manager to be ready", () async {
       final first = FakeManager();
-      final second = FakeUiManager();
+      final second = FakeDependentManager();
       final manager = FakeGlobalManager(
         onRegisterManagers: (globalManager) async => globalManager
           ..register(FakeManagerBuilder(first))
-          ..register(FakeUiManagerBuilder(second)),
+          ..register(FakeDependentManagerBuilder(second)),
       );
 
       await manager.initLifeCycle();
@@ -127,15 +118,6 @@ void main() {
       expect(manager.managers.allReadySync(), isTrue);
       expect(first.initCount, 1);
       expect(second.initCount, 1);
-    });
-
-    test("reads the information of the package of the application", () async {
-      final manager = FakeGlobalManager();
-
-      await manager.initLifeCycle();
-
-      expect(manager.packageInfo.version, "1.2.3");
-      expect(manager.packageInfo.appName, "an app");
     });
 
     test("reaches its last state", () async {
@@ -168,11 +150,11 @@ void main() {
 
     test("initializes a manager after the ones it depends on", () async {
       final dependency = _SlowManager();
-      final dependent = FakeUiManager();
+      final dependent = FakeDependentManager();
       final manager = FakeGlobalManager(
         onRegisterManagers: (globalManager) async => globalManager
           ..register(FakeManagerBuilder(dependency))
-          ..register(FakeUiManagerBuilder(dependent, dependencies: [FakeManager])),
+          ..register(FakeDependentManagerBuilder(dependent, dependencies: [FakeManager])),
       );
 
       await manager.initLifeCycle();
@@ -182,12 +164,12 @@ void main() {
 
     test("registers a manager before the ones it depends on", () async {
       final dependency = FakeManager();
-      final dependent = FakeUiManager();
+      final dependent = FakeDependentManager();
       final manager = FakeGlobalManager(
         // The dependent is registered first, before the manager it depends on: the registration
         // order does not have to follow the dependencies.
         onRegisterManagers: (globalManager) async => globalManager
-          ..register(FakeUiManagerBuilder(dependent, dependencies: [FakeManager]))
+          ..register(FakeDependentManagerBuilder(dependent, dependencies: [FakeManager]))
           ..register(FakeManagerBuilder(dependency)),
       );
 
@@ -200,11 +182,11 @@ void main() {
     test("crashes when a manager depends on one which is never registered", () async {
       final manager = FakeGlobalManager(
         onRegisterManagers: (globalManager) async => globalManager.register(
-          FakeUiManagerBuilder(FakeUiManager(), dependencies: [FakeManager]),
+          FakeDependentManagerBuilder(FakeDependentManager(), dependencies: [FakeManager]),
         ),
       );
 
-      await expectLater(manager.initLifeCycle(), throwsAssertionError);
+      await expectLater(manager.initLifeCycle(), throwsA(isA<AssertionError>()));
     });
 
     test("crashes when the same manager is registered twice", () async {
@@ -214,7 +196,7 @@ void main() {
           ..register(FakeManagerBuilder(FakeManager())),
       );
 
-      await expectLater(manager.initLifeCycle(), throwsAssertionError);
+      await expectLater(manager.initLifeCycle(), throwsA(isA<AssertionError>()));
     });
   });
 
@@ -230,7 +212,7 @@ void main() {
       final manager = FakeGlobalManager();
       await manager.initLifeCycle();
 
-      expect(manager.advanceTo(GlobalManagerUiState.initForWidget), isFalse);
+      expect(manager.advanceTo(_OtherState.other), isFalse);
     });
   });
 

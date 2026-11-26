@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
 import 'package:act_global_manager/src/mixins/mixin_ui_global_manager.dart';
-import 'package:act_global_manager/src/services/abs_global_manager.dart';
 
 /// Abstract class for all the global managers and services which depends on UI
 ///

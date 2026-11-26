@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_global_manager/src/types/global_manager_state.dart';
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
 import 'package:act_global_manager/src/types/global_manager_ui_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 

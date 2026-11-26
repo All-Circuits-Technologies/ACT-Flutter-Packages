@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_global_manager/src/services/abs_global_manager.dart';
+import 'package:act_dart_global_manager/src/services/abs_global_manager.dart';
 import 'package:act_logger_manager/act_logger_manager.dart';
 
 /// This extends the [DefaultLoggerBuilder] to create a logger manager by getting the config
