@@ -29,7 +29,8 @@ abstract class AbsCoreConfigBuilder<T extends AbsCoreConfigManager> extends AbsL
 /// Each supported config variable is declared as a public member of the derived class (or of a
 /// mixin on this class), which provides a getter to read from the config variables.
 ///
-/// Use a derived class which knows how to load the configuration, like the
+/// Use a derived class which knows how to load the configuration: the `AbsFileConfigManager` class
+/// for a pure Dart application which reads its files from the file system, or the
 /// `AbstractConfigManager` class of `act_config_manager` for a Flutter application which reads
 /// them from its assets. This class is mainly the type the mixins which declare config variables
 /// target.

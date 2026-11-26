@@ -23,7 +23,8 @@ abstract class AbstractConfigBuilder<T extends AbstractConfigManager>
 /// to read from config variables.
 ///
 /// This is the config manager of the Flutter applications: the configuration files are assets of
-/// the application.
+/// the application. A pure Dart application (a server, a script) derives `AbsFileConfigManager`
+/// from `act_dart_config_manager` instead, which reads them from the file system.
 ///
 /// To choose the config environment in flutter run/build, use the parameter "--dart-define"
 /// Example : flutter run --dart-define="ENV=PROD".

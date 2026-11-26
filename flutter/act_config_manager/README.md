@@ -84,8 +84,10 @@ use:
 
 - a Flutter application derives `AbstractConfigManager` (or `AbsUsualConfigManager` of
   `act_global_manager`, which adds the config variables of the logger);
+- a pure Dart application (a server, a script) derives `AbsFileConfigManager`, which reads the
+  configuration from the file system;
 - `AbsCoreConfigManager` is the shared base: a package which declares its variables in a mixin
-  targets it, so the mixin works with every config manager.
+  targets it, so the mixin works with both managers.
 
 `ConfigStore` holds the merged configuration. The config variables read from it, rather than
 from the manager, because a variable is declared as a field of the derived manager and cannot reach
