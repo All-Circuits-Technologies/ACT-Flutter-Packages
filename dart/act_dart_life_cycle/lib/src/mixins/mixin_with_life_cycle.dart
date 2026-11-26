@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_foundation/act_foundation.dart';
-import 'package:flutter/foundation.dart';
+import 'package:meta/meta.dart';
 
 /// This mixin is used to add life cycle methods to services and managers
 mixin MixinWithLifeCycle on MixinWithLifeCycleDispose {

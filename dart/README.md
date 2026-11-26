@@ -12,6 +12,7 @@ explains the split with the [`flutter/`](../flutter/README.md) folder.
 
 | Package                                                       | Description                                                                                                                                              | Version |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| [act_dart_life_cycle](act_dart_life_cycle/)                   | This package contains a life cycle pattern implementation to manage the life cycle of classes and their dependencies, without any dependency on Flutter. |         |
 | [act_dart_result](act_dart_result/)                           | This package provides a way to represent the result of a request with a status and the actual value of the request.                                      |         |
 | [act_dart_test_utility](act_dart_test_utility/)               | This package contains shared fakes and helpers to write the unit tests of the pure Dart ACT packages, without a dependency on Flutter.                   |         |
 | [act_dart_timer](act_dart_timer/)                             | This package provides a way to create timers that can be restarted and that can have a progressing duration.                                             |         |
@@ -22,3 +23,4 @@ explains the split with the [`flutter/`](../flutter/README.md) folder.
 | [act_foundation](act_foundation/)                             | This package provides foundational classes and interfaces for the ACT packages, such as the logger interface and errors.                                 |         |
 | [act_http_core](act_http_core/)                               | This package contains the core HTTP functionalities                                                                                                      |         |
 | [act_launcher_icon](act_launcher_icon/)                       | Useful package to generate launcher icons for the apps                                                                                                   |         |
+| [act_tic_manager](act_tic_manager/)                           | This package contains a tic manager which helps to display HMI in pace                                                                                   |         |

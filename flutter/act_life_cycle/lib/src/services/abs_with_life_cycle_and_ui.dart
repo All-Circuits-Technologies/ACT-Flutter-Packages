@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:act_life_cycle/src/mixins/mixin_ui_life_cycle.dart';
-import 'package:act_life_cycle/src/services/abs_with_life_cycle.dart';
 
 /// Abstract class for all the application managers and services which depends on UI
 ///

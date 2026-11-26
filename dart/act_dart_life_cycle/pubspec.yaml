@@ -1,0 +1,25 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_dart_life_cycle
+description: This package contains a life cycle pattern implementation to manage
+  the life cycle of classes and their dependencies, without any dependency on Flutter.
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  meta: ^1.17.0
+
+  act_foundation:
+    path: ../act_foundation
+
+dev_dependencies:
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0

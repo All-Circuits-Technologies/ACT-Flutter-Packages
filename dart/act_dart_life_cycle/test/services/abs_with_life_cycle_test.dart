@@ -2,9 +2,9 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:act_foundation/act_foundation.dart';
-import 'package:act_life_cycle/act_life_cycle.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 /// A manager which takes the whole life cycle as it comes.
 class _PlainManager extends AbsWithLifeCycle {

@@ -4,11 +4,11 @@
 
 import 'dart:async';
 
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:act_tic_manager/act_tic_manager.dart';
 import 'package:fake_async/fake_async.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:rxdart/subjects.dart';
+import 'package:test/test.dart';
 
 const _interval = Duration(milliseconds: 500);
 
@@ -74,8 +74,8 @@ void main() {
     });
 
     test("refuses an interval which is not a duration to wait", () {
-      expect(() => TicGenerator(Duration.zero), throwsAssertionError);
-      expect(() => TicGenerator(-_interval), throwsAssertionError);
+      expect(() => TicGenerator(Duration.zero), throwsA(isA<AssertionError>()));
+      expect(() => TicGenerator(-_interval), throwsA(isA<AssertionError>()));
     });
   });
 
@@ -133,8 +133,8 @@ void main() {
     test("refuses a modulo which would divide nothing", () {
       final source = BehaviorSubject<int>.seeded(0);
 
-      expect(() => TicModulo(source.stream, 1), throwsAssertionError);
-      expect(() => TicModulo(source.stream, 0), throwsAssertionError);
+      expect(() => TicModulo(source.stream, 1), throwsA(isA<AssertionError>()));
+      expect(() => TicModulo(source.stream, 0), throwsA(isA<AssertionError>()));
 
       unawaited(source.close());
     });

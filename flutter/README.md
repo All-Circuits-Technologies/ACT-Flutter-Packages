@@ -69,7 +69,6 @@ explains the split.
 | [act_themes_manager](act_themes_manager/)                                 | This package contains the manager for the app themes                                                                     |         |
 | [act_thingsboard_client](act_thingsboard_client/)                         | Reaches a Thingsboard server, its devices and their telemetry                                                            |         |
 | [act_thingsboard_client_ui](act_thingsboard_client_ui/)                   | This package contains widgets, BLoCs and other classes useful to display information from thingsboard servers.           |         |
-| [act_tic_manager](act_tic_manager/)                                       | This package contains a tic manager which helps to display HMI in pace                                                   |         |
 | [act_web_local_storage_manager](act_web_local_storage_manager/)           | This package contains the web local storage manager                                                                      |         |
 | [act_websocket_client_manager](act_websocket_client_manager/)             | This package contains the WebSocket client manager                                                                       |         |
 | [act_websocket_core](act_websocket_core/)                                 | This package contains the shared WebSocket classes between server and client                                             |         |

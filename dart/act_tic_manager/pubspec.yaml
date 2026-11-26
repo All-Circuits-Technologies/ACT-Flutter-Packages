@@ -6,32 +6,21 @@ name: act_tic_manager
 description: This package contains a tic manager which helps to display HMI in pace
 publish_to: none
 
-# This package supports all platforms listed below.
-platforms:
-  android:
-  ios:
-  linux:
-  macos:
-  web:
-  windows:
-
 environment:
   sdk: ^3.13.0
-  flutter: ">=3.47.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-
   rxdart: ^0.28.0
 
-  act_life_cycle:
-    path: ../act_life_cycle
+  act_dart_life_cycle:
+    path: ../act_dart_life_cycle
 
 dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
   flutter_lints: ^6.0.0
 
   # Controls the time seen by the tests, so that they never wait on a real delay

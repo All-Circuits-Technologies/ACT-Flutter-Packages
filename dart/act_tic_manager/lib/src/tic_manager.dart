@@ -4,7 +4,7 @@
 
 import 'dart:async';
 
-import 'package:act_life_cycle/act_life_cycle.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:rxdart/streams.dart';
 import 'package:rxdart/subjects.dart';
 

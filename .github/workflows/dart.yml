@@ -10,6 +10,7 @@ on:
       - mono_repo.yaml
       - analysis_options.yaml
       - "**/mono_pkg.yaml"
+      - "dart/act_dart_life_cycle/**"
       - "dart/act_dart_result/**"
       - "dart/act_dart_test_utility/**"
       - "dart/act_dart_timer/**"
@@ -20,6 +21,7 @@ on:
       - "dart/act_foundation/**"
       - "dart/act_http_core/**"
       - "dart/act_launcher_icon/**"
+      - "dart/act_tic_manager/**"
       - "flutter/act_abs_peripherals_manager/**"
       - "flutter/act_amplify_api/**"
       - "flutter/act_amplify_cognito/**"
@@ -77,7 +79,6 @@ on:
       - "flutter/act_themes_manager/**"
       - "flutter/act_thingsboard_client/**"
       - "flutter/act_thingsboard_client_ui/**"
-      - "flutter/act_tic_manager/**"
       - "flutter/act_web_local_storage_manager/**"
       - "flutter/act_websocket_client_manager/**"
       - "flutter/act_websocket_core/**"
@@ -90,6 +91,7 @@ on:
       - mono_repo.yaml
       - analysis_options.yaml
       - "**/mono_pkg.yaml"
+      - "dart/act_dart_life_cycle/**"
       - "dart/act_dart_result/**"
       - "dart/act_dart_test_utility/**"
       - "dart/act_dart_timer/**"
@@ -100,6 +102,7 @@ on:
       - "dart/act_foundation/**"
       - "dart/act_http_core/**"
       - "dart/act_launcher_icon/**"
+      - "dart/act_tic_manager/**"
       - "flutter/act_abs_peripherals_manager/**"
       - "flutter/act_amplify_api/**"
       - "flutter/act_amplify_cognito/**"
@@ -157,7 +160,6 @@ on:
       - "flutter/act_themes_manager/**"
       - "flutter/act_thingsboard_client/**"
       - "flutter/act_thingsboard_client_ui/**"
-      - "flutter/act_tic_manager/**"
       - "flutter/act_web_local_storage_manager/**"
       - "flutter/act_websocket_client_manager/**"
       - "flutter/act_websocket_core/**"
@@ -204,16 +206,16 @@ jobs:
             exit 1
           fi
   job_002:
-    name: "analyze; Dart 3.13.7; PKGS: dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core, dart/act_launcher_icon; `dart analyze --fatal-infos .`"
+    name: "analyze; Dart 3.13.7; PKGS: dart/act_dart_life_cycle, dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core, dart/act_launcher_icon, dart/act_tic_manager; `dart analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon;commands:analyze_0"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_life_cycle-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon-dart/act_tic_manager;commands:analyze_0"
           restore-keys: |-
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_life_cycle-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_launcher_icon-dart/act_tic_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -226,6 +228,15 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+      - id: dart_act_dart_life_cycle_pub_upgrade
+        name: dart/act_dart_life_cycle; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_life_cycle
+      - name: "dart/act_dart_life_cycle; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_dart_life_cycle_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_life_cycle
       - id: dart_act_dart_result_pub_upgrade
         name: dart/act_dart_result; dart pub upgrade
         run: dart pub upgrade
@@ -316,17 +327,26 @@ jobs:
         run: dart analyze --fatal-infos .
         if: "always() && steps.dart_act_launcher_icon_pub_upgrade.conclusion == 'success'"
         working-directory: dart/act_launcher_icon
+      - id: dart_act_tic_manager_pub_upgrade
+        name: dart/act_tic_manager; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_tic_manager
+      - name: "dart/act_tic_manager; dart analyze --fatal-infos ."
+        run: dart analyze --fatal-infos .
+        if: "always() && steps.dart_act_tic_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_tic_manager
   job_003:
-    name: "analyze; Flutter 3.47.9; PKGS: flutter/act_abs_peripherals_manager, flutter/act_amplify_api, flutter/act_amplify_cognito, flutter/act_amplify_core, flutter/act_amplify_storage_s3, flutter/act_app_life_cycle_manager, flutter/act_aws_iot_core, flutter/act_barcode, flutter/act_ble_manager, flutter/act_ble_manager_ui, flutter/act_config_manager, flutter/act_consent_manager, flutter/act_contextual_views_manager, flutter/act_enable_service_utility, flutter/act_ffi_utility, flutter/act_file_transfer_manager, flutter/act_firebase_core, flutter/act_firebase_crash, flutter/act_flutter_utility, flutter/act_global_manager, flutter/act_halo_abstract, flutter/act_halo_ble_layer, flutter/act_halo_manager, flutter/act_http_client_jwt_auth, flutter/act_http_client_manager, flutter/act_http_logging_manager, flutter/act_http_server_manager, flutter/act_internet_connectivity_manager, flutter/act_intl, flutter/act_intl_ui, flutter/act_jwt_utilities, flutter/act_licenses_manager, flutter/act_life_cycle, flutter/act_local_storage_manager, flutter/act_location_manager, flutter/act_logger_manager, flutter/act_music_player_manager, flutter/act_oauth2_core, flutter/act_oauth2_google, flutter/act_oauth2_keycloak, flutter/act_ocsigen_halo_manager, flutter/act_permissions_manager, flutter/act_platform_manager, flutter/act_remote_local_vers_file_manager, flutter/act_remote_storage_manager, flutter/act_remote_storage_ui, flutter/act_router_manager, flutter/act_shared_auth, flutter/act_shared_auth_local_storage, flutter/act_shared_auth_ui, flutter/act_splash_screen_manager, flutter/act_tb_extender_auth, flutter/act_tb_extender_client, flutter/act_test_utility, flutter/act_themes_manager, flutter/act_thingsboard_client, flutter/act_thingsboard_client_ui, flutter/act_tic_manager, flutter/act_web_local_storage_manager, flutter/act_websocket_client_manager, flutter/act_websocket_core, flutter/act_websocket_server_manager, flutter/act_yaml_utility; `flutter analyze --fatal-infos .`"
+    name: "analyze; Flutter 3.47.9; PKGS: flutter/act_abs_peripherals_manager, flutter/act_amplify_api, flutter/act_amplify_cognito, flutter/act_amplify_core, flutter/act_amplify_storage_s3, flutter/act_app_life_cycle_manager, flutter/act_aws_iot_core, flutter/act_barcode, flutter/act_ble_manager, flutter/act_ble_manager_ui, flutter/act_config_manager, flutter/act_consent_manager, flutter/act_contextual_views_manager, flutter/act_enable_service_utility, flutter/act_ffi_utility, flutter/act_file_transfer_manager, flutter/act_firebase_core, flutter/act_firebase_crash, flutter/act_flutter_utility, flutter/act_global_manager, flutter/act_halo_abstract, flutter/act_halo_ble_layer, flutter/act_halo_manager, flutter/act_http_client_jwt_auth, flutter/act_http_client_manager, flutter/act_http_logging_manager, flutter/act_http_server_manager, flutter/act_internet_connectivity_manager, flutter/act_intl, flutter/act_intl_ui, flutter/act_jwt_utilities, flutter/act_licenses_manager, flutter/act_life_cycle, flutter/act_local_storage_manager, flutter/act_location_manager, flutter/act_logger_manager, flutter/act_music_player_manager, flutter/act_oauth2_core, flutter/act_oauth2_google, flutter/act_oauth2_keycloak, flutter/act_ocsigen_halo_manager, flutter/act_permissions_manager, flutter/act_platform_manager, flutter/act_remote_local_vers_file_manager, flutter/act_remote_storage_manager, flutter/act_remote_storage_ui, flutter/act_router_manager, flutter/act_shared_auth, flutter/act_shared_auth_local_storage, flutter/act_shared_auth_ui, flutter/act_splash_screen_manager, flutter/act_tb_extender_auth, flutter/act_tb_extender_client, flutter/act_test_utility, flutter/act_themes_manager, flutter/act_thingsboard_client, flutter/act_thingsboard_client_ui, flutter/act_web_local_storage_manager, flutter/act_websocket_client_manager, flutter/act_websocket_core, flutter/act_websocket_server_manager, flutter/act_yaml_utility; `flutter analyze --fatal-infos .`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1923-850677572"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flutte-!!too_long!!-1899-8653835"
           restore-keys: |-
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1904-674539958
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1880-736630348
             os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -852,15 +872,6 @@ jobs:
         run: flutter analyze --fatal-infos .
         if: "always() && steps.flutter_act_thingsboard_client_ui_pub_upgrade.conclusion == 'success'"
         working-directory: flutter/act_thingsboard_client_ui
-      - id: flutter_act_tic_manager_pub_upgrade
-        name: flutter/act_tic_manager; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: flutter/act_tic_manager
-      - name: "flutter/act_tic_manager; flutter analyze --fatal-infos ."
-        run: flutter analyze --fatal-infos .
-        if: "always() && steps.flutter_act_tic_manager_pub_upgrade.conclusion == 'success'"
-        working-directory: flutter/act_tic_manager
       - id: flutter_act_web_local_storage_manager_pub_upgrade
         name: flutter/act_web_local_storage_manager; flutter pub upgrade
         run: flutter pub upgrade
@@ -907,16 +918,16 @@ jobs:
         if: "always() && steps.flutter_act_yaml_utility_pub_upgrade.conclusion == 'success'"
         working-directory: flutter/act_yaml_utility
   job_004:
-    name: "test; Dart 3.13.7; PKGS: dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core; `dart test`"
+    name: "test; Dart 3.13.7; PKGS: dart/act_dart_life_cycle, dart/act_dart_result, dart/act_dart_test_utility, dart/act_dart_timer, dart/act_dart_utility, dart/act_dart_value_keeper, dart/act_dart_yaml_utility, dart/act_entity, dart/act_foundation, dart/act_http_core, dart/act_tic_manager; `dart test`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core;commands:test_0"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_life_cycle-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_tic_manager;commands:test_0"
           restore-keys: |-
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7;packages:dart/act_dart_life_cycle-dart/act_dart_result-dart/act_dart_test_utility-dart/act_dart_timer-dart/act_dart_utility-dart/act_dart_value_keeper-dart/act_dart_yaml_utility-dart/act_entity-dart/act_foundation-dart/act_http_core-dart/act_tic_manager
             os:ubuntu-latest;pub-cache-hosted;sdk:3.13.7
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -929,6 +940,15 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+      - id: dart_act_dart_life_cycle_pub_upgrade
+        name: dart/act_dart_life_cycle; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_dart_life_cycle
+      - name: dart/act_dart_life_cycle; dart test
+        run: dart test
+        if: "always() && steps.dart_act_dart_life_cycle_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_dart_life_cycle
       - id: dart_act_dart_result_pub_upgrade
         name: dart/act_dart_result; dart pub upgrade
         run: dart pub upgrade
@@ -1010,21 +1030,30 @@ jobs:
         run: dart test
         if: "always() && steps.dart_act_http_core_pub_upgrade.conclusion == 'success'"
         working-directory: dart/act_http_core
+      - id: dart_act_tic_manager_pub_upgrade
+        name: dart/act_tic_manager; dart pub upgrade
+        run: dart pub upgrade
+        if: "always() && steps.checkout.conclusion == 'success'"
+        working-directory: dart/act_tic_manager
+      - name: dart/act_tic_manager; dart test
+        run: dart test
+        if: "always() && steps.dart_act_tic_manager_pub_upgrade.conclusion == 'success'"
+        working-directory: dart/act_tic_manager
     needs:
       - job_001
       - job_002
       - job_003
   job_005:
-    name: "test; Flutter 3.47.9; PKGS: flutter/act_abs_peripherals_manager, flutter/act_amplify_api, flutter/act_amplify_cognito, flutter/act_amplify_core, flutter/act_amplify_storage_s3, flutter/act_app_life_cycle_manager, flutter/act_aws_iot_core, flutter/act_barcode, flutter/act_ble_manager, flutter/act_ble_manager_ui, flutter/act_config_manager, flutter/act_consent_manager, flutter/act_contextual_views_manager, flutter/act_enable_service_utility, flutter/act_ffi_utility, flutter/act_file_transfer_manager, flutter/act_firebase_core, flutter/act_firebase_crash, flutter/act_flutter_utility, flutter/act_global_manager, flutter/act_halo_abstract, flutter/act_halo_ble_layer, flutter/act_halo_manager, flutter/act_http_client_jwt_auth, flutter/act_http_client_manager, flutter/act_http_logging_manager, flutter/act_http_server_manager, flutter/act_internet_connectivity_manager, flutter/act_intl, flutter/act_intl_ui, flutter/act_jwt_utilities, flutter/act_licenses_manager, flutter/act_life_cycle, flutter/act_local_storage_manager, flutter/act_location_manager, flutter/act_logger_manager, flutter/act_music_player_manager, flutter/act_oauth2_core, flutter/act_oauth2_google, flutter/act_oauth2_keycloak, flutter/act_ocsigen_halo_manager, flutter/act_permissions_manager, flutter/act_platform_manager, flutter/act_remote_local_vers_file_manager, flutter/act_remote_storage_manager, flutter/act_remote_storage_ui, flutter/act_router_manager, flutter/act_shared_auth, flutter/act_shared_auth_local_storage, flutter/act_shared_auth_ui, flutter/act_splash_screen_manager, flutter/act_tb_extender_auth, flutter/act_tb_extender_client, flutter/act_test_utility, flutter/act_themes_manager, flutter/act_thingsboard_client, flutter/act_thingsboard_client_ui, flutter/act_tic_manager, flutter/act_websocket_client_manager, flutter/act_websocket_core, flutter/act_websocket_server_manager, flutter/act_yaml_utility; `flutter test`"
+    name: "test; Flutter 3.47.9; PKGS: flutter/act_abs_peripherals_manager, flutter/act_amplify_api, flutter/act_amplify_cognito, flutter/act_amplify_core, flutter/act_amplify_storage_s3, flutter/act_app_life_cycle_manager, flutter/act_aws_iot_core, flutter/act_barcode, flutter/act_ble_manager, flutter/act_ble_manager_ui, flutter/act_config_manager, flutter/act_consent_manager, flutter/act_contextual_views_manager, flutter/act_enable_service_utility, flutter/act_ffi_utility, flutter/act_file_transfer_manager, flutter/act_firebase_core, flutter/act_firebase_crash, flutter/act_flutter_utility, flutter/act_global_manager, flutter/act_halo_abstract, flutter/act_halo_ble_layer, flutter/act_halo_manager, flutter/act_http_client_jwt_auth, flutter/act_http_client_manager, flutter/act_http_logging_manager, flutter/act_http_server_manager, flutter/act_internet_connectivity_manager, flutter/act_intl, flutter/act_intl_ui, flutter/act_jwt_utilities, flutter/act_licenses_manager, flutter/act_life_cycle, flutter/act_local_storage_manager, flutter/act_location_manager, flutter/act_logger_manager, flutter/act_music_player_manager, flutter/act_oauth2_core, flutter/act_oauth2_google, flutter/act_oauth2_keycloak, flutter/act_ocsigen_halo_manager, flutter/act_permissions_manager, flutter/act_platform_manager, flutter/act_remote_local_vers_file_manager, flutter/act_remote_storage_manager, flutter/act_remote_storage_ui, flutter/act_router_manager, flutter/act_shared_auth, flutter/act_shared_auth_local_storage, flutter/act_shared_auth_ui, flutter/act_splash_screen_manager, flutter/act_tb_extender_auth, flutter/act_tb_extender_client, flutter/act_test_utility, flutter/act_themes_manager, flutter/act_thingsboard_client, flutter/act_thingsboard_client_ui, flutter/act_websocket_client_manager, flutter/act_websocket_core, flutter/act_websocket_server_manager, flutter/act_yaml_utility; `flutter test`"
     runs-on: ubuntu-latest
     steps:
       - name: Cache Pub hosted dependencies
         uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
           path: "~/.pub-cache/hosted"
-          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1882-450924042"
+          key: "os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flutt-!!too_long!!-1858-32128124"
           restore-keys: |-
-            os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1866-499892053
+            os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9;packages:flutter/act_abs_peripherals_manager-flutter/act_amplify_api-flutter/act_amplify_cognito-flutter/act_amplify_core-flutter/act_amplify_storage_s3-flutter/act_app_life_cycle_manager-flutter/act_aws_iot_core-flutter/act_barcode-flutter/act_ble_manager-flutter/act_ble_manager_ui-flutter/act_config_manager-flutter/act_consent_manager-flutter/act_contextual_views_manager-flutter/act_enable_service_utility-flutter/act_ffi_utility-flut-!!too_long!!-1842-190405801
             os:ubuntu-latest;pub-cache-hosted;sdk:3.47.9
             os:ubuntu-latest;pub-cache-hosted
             os:ubuntu-latest
@@ -1550,15 +1579,6 @@ jobs:
         run: flutter test
         if: "always() && steps.flutter_act_thingsboard_client_ui_pub_upgrade.conclusion == 'success'"
         working-directory: flutter/act_thingsboard_client_ui
-      - id: flutter_act_tic_manager_pub_upgrade
-        name: flutter/act_tic_manager; flutter pub upgrade
-        run: flutter pub upgrade
-        if: "always() && steps.checkout.conclusion == 'success'"
-        working-directory: flutter/act_tic_manager
-      - name: flutter/act_tic_manager; flutter test
-        run: flutter test
-        if: "always() && steps.flutter_act_tic_manager_pub_upgrade.conclusion == 'success'"
-        working-directory: flutter/act_tic_manager
       - id: flutter_act_websocket_client_manager_pub_upgrade
         name: flutter/act_websocket_client_manager; flutter pub upgrade
         run: flutter pub upgrade

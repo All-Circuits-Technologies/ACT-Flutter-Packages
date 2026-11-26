@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_life_cycle/src/services/abs_with_life_cycle.dart';
+import 'package:act_dart_life_cycle/act_dart_life_cycle.dart';
 import 'package:flutter/widgets.dart';
 
 /// This mixin is used to add methods to services and managers linked to the UI life cycle

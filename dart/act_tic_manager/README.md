@@ -76,12 +76,12 @@ Add the package to the `dependencies` of your package:
 ```yaml
 dependencies:
   act_tic_manager:
-    path: ../act_tic_manager
+    path: ../../dart/act_tic_manager
 ```
 
 ### Register the manager
 
-Register the manager in `registerManagers` of the [global manager of the application](../act_global_manager/README.md#write-the-global-manager-of-the-application):
+Register the manager in `registerManagers` of the [global manager of the application](../../flutter/act_global_manager/README.md#write-the-global-manager-of-the-application):
 
 ```dart
 registerManagerAsync(TicBuilder());
@@ -110,5 +110,5 @@ it drops, the modulos it refuses, and the fact that the slow tic of the manager 
 even fast one.
 
 ```console
-> flutter test
+> dart test
 ```

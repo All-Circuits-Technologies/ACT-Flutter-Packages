@@ -3,8 +3,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_life_cycle/src/services/abs_with_life_cycle.dart';
-import 'package:flutter/foundation.dart' show mustCallSuper;
+import 'package:act_dart_life_cycle/src/services/abs_with_life_cycle.dart';
+import 'package:meta/meta.dart' show mustCallSuper;
 
 /// Typedef for a class factory
 typedef ClassFactory<S> = S Function();
