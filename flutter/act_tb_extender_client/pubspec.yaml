@@ -49,7 +49,7 @@ dependencies:
 
   # The claims of the tokens: the user of a ThingsBoard token, the terms accepted on the account
   act_jwt_utilities:
-    path: ../act_jwt_utilities
+    path: ../../dart/act_jwt_utilities
 
   # Logger manager
   act_logger_manager:

@@ -37,7 +37,7 @@ dependencies:
     path: ../act_global_manager
 
   act_jwt_utilities:
-    path: ../act_jwt_utilities
+    path: ../../dart/act_jwt_utilities
 
   # Easily create managers
   act_life_cycle:

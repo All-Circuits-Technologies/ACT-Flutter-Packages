@@ -46,7 +46,7 @@ dependencies:
     path: ../act_global_manager
 
   act_halo_abstract:
-    path: ../act_halo_abstract
+    path: ../../dart/act_halo_abstract
 
   # Logger manager
   act_logger_manager:
