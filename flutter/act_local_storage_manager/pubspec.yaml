@@ -40,7 +40,7 @@ dependencies:
 
   # Extend Dart functionalities
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../../dart/act_dart_utility
 
   act_foundation:
     path: ../../dart/act_foundation

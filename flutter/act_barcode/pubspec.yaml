@@ -39,7 +39,7 @@ dependencies:
 
   # Dart utility functions used by this package
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../../dart/act_dart_utility
 
   # Bloc base classes, which the scanner state is built on
   act_flutter_utility:

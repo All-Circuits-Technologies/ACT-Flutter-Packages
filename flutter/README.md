@@ -25,7 +25,6 @@ explains the split.
 | [act_config_manager](act_config_manager/)                                 | This package contains methods to manage config variables.                                                                |         |
 | [act_consent_manager](act_consent_manager/)                               | This package contains useful methods and classes to manage user consents.                                                |         |
 | [act_contextual_views_manager](act_contextual_views_manager/)             | This package is useful to define a skeleton for contextual views                                                         |         |
-| [act_dart_utility](act_dart_utility/)                                     | This package contains useful methods and classes which extends dart functionality.                                       |         |
 | [act_enable_service_utility](act_enable_service_utility/)                 | The package contains utility classes to manage the enabling of services                                                  |         |
 | [act_ffi_utility](act_ffi_utility/)                                       | This package provides utility functions for working with FFI in Flutter.                                                 |         |
 | [act_file_transfer_manager](act_file_transfer_manager/)                   | A Flutter package for managing file transfers.                                                                           |         |
@@ -38,7 +37,6 @@ explains the split.
 | [act_halo_manager](act_halo_manager/)                                     | This is the manager for the HALO protocol                                                                                |         |
 | [act_http_client_jwt_auth](act_http_client_jwt_auth/)                     | Contains specific server authentication to work with JWT                                                                 |         |
 | [act_http_client_manager](act_http_client_manager/)                       | Useful to request third HTTP servers                                                                                     |         |
-| [act_http_core](act_http_core/)                                           | This package contains the core HTTP functionalities                                                                      |         |
 | [act_http_logging_manager](act_http_logging_manager/)                     | This package contains the HTTP logging manager                                                                           |         |
 | [act_http_server_manager](act_http_server_manager/)                       | This package contains the HTTP server manager                                                                            |         |
 | [act_internet_connectivity_manager](act_internet_connectivity_manager/)   | The package contains the internet connectivity manager to know when we are connected to internet, or not.                |         |

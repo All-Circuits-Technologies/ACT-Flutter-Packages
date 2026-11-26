@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_yaml_utility/src/utilities/yaml_to_standard_obj.dart';
 import 'package:yaml/yaml.dart' as yaml;
 
@@ -221,11 +221,11 @@ sealed class YamlFromAssets {
     // We don't need to test for all the file types, the developer has already chosen one
     final result = await AssetsBundleUtility.loadStringFromAssetBundle(key, cache: cache);
 
-    if (result.status != AssetsBundleResult.ok || result.data == null) {
+    if (result.status != AssetsBundleResult.ok || result.value == null) {
       // No need to go further
       return (status: result.status, data: null);
     }
 
-    return result;
+    return (status: result.status, data: result.value);
   }
 }

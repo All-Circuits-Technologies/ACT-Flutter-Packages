@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_licenses_manager/src/managers/mixin_licenses_config.dart';
 import 'package:act_licenses_manager/src/models/abs_license_packages.dart';
 import 'package:act_licenses_manager/src/models/asset_licence_packages.dart';
@@ -132,7 +132,7 @@ sealed class LicensesUtility {
         final licensePath = _buildAssetPath(folder: assetFolder, licenseKey: licenseKey);
 
         final assetBundle = await AssetsBundleUtility.loadStringFromAssetBundle(licensePath);
-        if (assetBundle.status != AssetsBundleResult.ok || assetBundle.data == null) {
+        if (assetBundle.status != AssetsBundleResult.ok || assetBundle.value == null) {
           // License file not found in this asset folder, skipping it
           continue;
         }

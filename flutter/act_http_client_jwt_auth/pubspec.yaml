@@ -36,7 +36,7 @@ dependencies:
     path: ../act_http_client_manager
 
   act_http_core:
-    path: ../act_http_core
+    path: ../../dart/act_http_core
 
   # Easily create managers
   act_life_cycle:

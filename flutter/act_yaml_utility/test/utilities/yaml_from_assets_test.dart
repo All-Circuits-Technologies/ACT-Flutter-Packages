@@ -5,7 +5,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';

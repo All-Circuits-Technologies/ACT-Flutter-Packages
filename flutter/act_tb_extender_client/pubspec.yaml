@@ -33,7 +33,7 @@ dependencies:
 
   # JSON parsing helpers
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../../dart/act_dart_utility
 
   # The exception thrown when the base URL of the broker isn't configured
   act_foundation:

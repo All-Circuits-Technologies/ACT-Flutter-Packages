@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_global_manager/act_global_manager.dart';
 import 'package:act_licenses_manager/src/models/abs_license_packages.dart';
 import 'package:flutter/foundation.dart';
@@ -30,12 +30,12 @@ class AssetLicensePackages extends AbsLicensePackages {
       logger: appLogger(),
     );
 
-    if (assetBundle.status != AssetsBundleResult.ok || assetBundle.data == null) {
+    if (assetBundle.status != AssetsBundleResult.ok || assetBundle.value == null) {
       appLogger().w("The license file at path $licensePath could not be loaded, skipping it.");
       return null;
     }
 
-    return LicenseEntryWithLineBreaks(packageNames, assetBundle.data!);
+    return LicenseEntryWithLineBreaks(packageNames, assetBundle.value!);
   }
 
   /// {@macro act_licenses_manager.AbsLicensePackages.props}

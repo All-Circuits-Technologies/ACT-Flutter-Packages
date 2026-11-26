@@ -6,6 +6,7 @@ import 'package:act_config_manager/act_config_manager.dart';
 import 'package:act_config_manager/src/errors/act_config_load_exception.dart';
 import 'package:act_config_manager/src/errors/act_config_mapping_format_exception.dart';
 import 'package:act_dart_utility/act_dart_utility.dart';
+import 'package:act_flutter_utility/act_flutter_utility.dart';
 import 'package:act_yaml_utility/act_yaml_utility.dart';
 
 /// This class contains useful methods to parse config variables from files and returns a structured

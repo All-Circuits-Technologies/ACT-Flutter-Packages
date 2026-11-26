@@ -30,7 +30,7 @@ dependencies:
 
   # Extend Dart functionalities
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../../dart/act_dart_utility
 
   act_foundation:
     path: ../../dart/act_foundation
@@ -40,7 +40,7 @@ dependencies:
     path: ../act_global_manager
 
   act_http_core:
-    path: ../act_http_core
+    path: ../../dart/act_http_core
 
   act_http_logging_manager:
     path: ../act_http_logging_manager

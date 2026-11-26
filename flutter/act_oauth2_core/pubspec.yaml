@@ -31,7 +31,7 @@ dependencies:
   mutex: ^3.1.0
 
   act_dart_utility:
-    path: ../act_dart_utility
+    path: ../../dart/act_dart_utility
 
   # Default global manager
   act_global_manager:
