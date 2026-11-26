@@ -30,7 +30,7 @@ dependencies:
     path: ../act_dart_utility
 
   act_dart_value_keeper:
-    path: ../act_dart_value_keeper
+    path: ../../dart/act_dart_value_keeper
 
   act_flutter_utility:
     path: ../act_flutter_utility

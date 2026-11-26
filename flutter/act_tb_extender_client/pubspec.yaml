@@ -29,7 +29,7 @@ dependencies:
 
   # The result the calls of the broker answer
   act_dart_result:
-    path: ../act_dart_result
+    path: ../../dart/act_dart_result
 
   # JSON parsing helpers
   act_dart_utility:

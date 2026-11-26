@@ -33,7 +33,7 @@ dependencies:
     path: ../act_life_cycle
 
   act_dart_result:
-    path: ../act_dart_result
+    path: ../../dart/act_dart_result
 
   act_dart_utility:
     path: ../act_dart_utility

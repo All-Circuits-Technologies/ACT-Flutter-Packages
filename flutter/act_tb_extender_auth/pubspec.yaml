@@ -81,7 +81,7 @@ dev_dependencies:
 
   # The results the broker client answers
   act_dart_result:
-    path: ../act_dart_result
+    path: ../../dart/act_dart_result
 
   # The exception the broker client throws when its URL isn't configured
   act_foundation:

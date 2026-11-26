@@ -12,4 +12,9 @@ explains the split with the [`flutter/`](../flutter/README.md) folder.
 
 | Package                                                       | Description                                                                                                                                              | Version |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| [act_dart_result](act_dart_result/)                           | This package provides a way to represent the result of a request with a status and the actual value of the request.                                      |         |
+| [act_dart_timer](act_dart_timer/)                             | This package provides a way to create timers that can be restarted and that can have a progressing duration.                                             |         |
+| [act_dart_value_keeper](act_dart_value_keeper/)               | This package provides a way to keep a value and update it based on a stream or an initialization function.                                               |         |
+| [act_entity](act_entity/)                                     | This package contains the entity base class for models.                                                                                                  |         |
 | [act_foundation](act_foundation/)                             | This package provides foundational classes and interfaces for the ACT packages, such as the logger interface and errors.                                 |         |
+| [act_launcher_icon](act_launcher_icon/)                       | Useful package to generate launcher icons for the apps                                                                                                   |         |
