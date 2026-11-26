@@ -61,7 +61,7 @@ sealed class ConfigFromYamlUtility {
       );
     }
 
-    final content = result.data;
+    final content = result.value;
     if (result.status == AssetsBundleResult.notFound || content == null) {
       return {};
     }

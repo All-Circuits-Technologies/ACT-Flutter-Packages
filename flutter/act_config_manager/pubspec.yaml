@@ -38,6 +38,10 @@ dependencies:
   act_dart_utility:
     path: ../../dart/act_dart_utility
 
+  # Pure Dart YAML parsing
+  act_dart_yaml_utility:
+    path: ../../dart/act_dart_yaml_utility
+
   # Contains utilities for Flutter
   act_flutter_utility:
     path: ../act_flutter_utility

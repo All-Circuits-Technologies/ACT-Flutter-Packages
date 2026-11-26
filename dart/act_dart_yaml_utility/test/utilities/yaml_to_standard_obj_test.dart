@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_yaml_utility/act_yaml_utility.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:act_dart_yaml_utility/act_dart_yaml_utility.dart';
+import 'package:test/test.dart';
 import 'package:yaml/yaml.dart';
 
 void main() {

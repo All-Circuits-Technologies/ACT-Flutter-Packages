@@ -26,7 +26,7 @@ sealed class EnvConfigMappingUtility {
       );
     }
 
-    final content = result.data;
+    final content = result.value;
     if (result.status == AssetsBundleResult.notFound || content == null) {
       // No need to go further
       return [];

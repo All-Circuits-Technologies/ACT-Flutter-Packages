@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
-import 'package:act_yaml_utility/src/utilities/yaml_to_standard_obj.dart';
+import 'package:act_dart_yaml_utility/src/utilities/yaml_to_standard_obj.dart';
 import 'package:yaml/yaml.dart';
 
 /// This class contains useful methods to load JSON objects from YAML file content
