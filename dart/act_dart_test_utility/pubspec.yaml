@@ -16,8 +16,16 @@ dependencies:
   # Equatable for value equality in Dart objects
   equatable: ^2.0.8
 
+  # Pure Dart life cycle of the managers, which the fake external logger follows
+  act_dart_life_cycle:
+    path: ../act_dart_life_cycle
+
   act_foundation:
     path: ../act_foundation
+
+  # The logger manager, whose external logger interface is faked here
+  act_logger_manager:
+    path: ../act_logger_manager
 
 # This package is only meant to be used as a dev dependency. Keep its dependencies limited to the
 # ACT packages whose interfaces are faked here. Those packages use this one in their own tests:

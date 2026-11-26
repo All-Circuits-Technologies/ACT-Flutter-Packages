@@ -55,7 +55,7 @@ dependencies:
 
   # Loggers
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
   # The routes and the redirection the terms guard is written on
   act_router_manager:

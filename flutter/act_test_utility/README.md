@@ -222,9 +222,8 @@ await globalManager.allReady();
 
 ## Testing
 
-The tests cover the contents served, replaced and stopped by the fake assets, the installation, the
-logger and the managers of the fake global manager, and the recording done by the fake external
-logger and by the helpers it builds. To run them:
+The tests cover the contents served, replaced and stopped by the fake assets, and the installation,
+the logger and the managers of the fake global manager. To run them:
 
 ```console
 > flutter test

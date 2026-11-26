@@ -51,7 +51,7 @@ dependencies:
 
   # Log the failures of the camera
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
   # Ask the camera permission
   act_permissions_manager:

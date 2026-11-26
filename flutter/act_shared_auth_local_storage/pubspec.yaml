@@ -45,7 +45,7 @@ dependencies:
 
   # Logger manager
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
   act_shared_auth:
     path: ../act_shared_auth

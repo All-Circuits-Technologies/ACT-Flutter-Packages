@@ -15,6 +15,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
   - [Installation](#installation)
   - [Assert on what was logged](#assert-on-what-was-logged)
   - [Silence the logs of a class under test](#silence-the-logs-of-a-class-under-test)
+  - [Give an external logger to a logs helper](#give-an-external-logger-to-a-logs-helper)
 - [Testing](#testing)
 
 ## Presentation
@@ -31,6 +32,10 @@ Flutter package still reaches every fake through a single import.
 It is only meant to be added as a `dev_dependency`: nothing here is intended to run in an
 application. It contains no test of its own for the other packages either; it only provides the
 tools they use to write theirs.
+
+This package depends on the ACT packages whose interfaces it fakes, and those packages use it in
+their own tests: pub resolves such a cycle between packages linked by a path, as long as this one
+is only ever a `dev_dependency`.
 
 ## Architecture
 
@@ -62,6 +67,7 @@ flowchart LR
     subgraph act_dart_test_utility
         FakeLogger --> FakeLogRecord
         SilentLogger
+        FakeExternalLogger --> FakeLogRecord
     end
 
     FakeLogger -.implements.-> MixinActLogger
@@ -123,10 +129,22 @@ shared without any set up or tear down:
 final manager = MyManager(logger: const SilentLogger());
 ```
 
+### Give an external logger to a logs helper
+
+A class which owns a `LogsHelper` of `act_logger_manager`, rather than a `MixinActLogger`, cannot be
+given a `FakeLogger`: what the helper writes to is an external logger. Build the helper from a
+`FakeExternalLogger`, which records the messages as `FakeLogRecord`s:
+
+```dart
+final external = FakeExternalLogger();
+final manager = MyManager(logsHelper: external.buildHelper(category: "myManager"));
+```
+
 ## Testing
 
 The tests cover the recording of the messages, the propagation of the categories and of the records
-to the sub loggers, the filtering done by the minimum level and the value equality of the records.
+to the sub loggers, the filtering done by the minimum level, the value equality of the records, and
+the recording done by the fake external logger and by the helpers it builds.
 To run them:
 
 ```console

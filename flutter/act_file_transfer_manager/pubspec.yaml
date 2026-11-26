@@ -42,7 +42,7 @@ dependencies:
     path: ../act_global_manager
 
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
 dev_dependencies:
   flutter_test:

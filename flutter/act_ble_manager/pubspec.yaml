@@ -63,7 +63,7 @@ dependencies:
     path: ../act_life_cycle
 
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
   act_permissions_manager:
     path: ../act_permissions_manager

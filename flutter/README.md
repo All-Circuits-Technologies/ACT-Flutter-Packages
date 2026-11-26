@@ -47,7 +47,6 @@ explains the split.
 | [act_life_cycle](act_life_cycle/)                                         | This package contains a life cycle pattern implementation to manage the life cycle of classes and their dependencies.    |         |
 | [act_local_storage_manager](act_local_storage_manager/)                   | This package contains two managers to store properties and secrets                                                       |         |
 | [act_location_manager](act_location_manager/)                             | This package is useful to get location from phones                                                                       |         |
-| [act_logger_manager](act_logger_manager/)                                 | This package contains a logger manager for your app                                                                      |         |
 | [act_music_player_manager](act_music_player_manager/)                     | This package contains a music player manager.                                                                            |         |
 | [act_oauth2_core](act_oauth2_core/)                                       | This package contains the common elements to connect to OAuth 2.0 client from Identity Providers.                        |         |
 | [act_oauth2_google](act_oauth2_google/)                                   | This package contains the needed elements to connect to a OAuth 2.0 Client through Google Identity Provider.             |         |

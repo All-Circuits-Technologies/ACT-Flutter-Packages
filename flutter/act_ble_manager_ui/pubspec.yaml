@@ -69,7 +69,7 @@ dev_dependencies:
     path: ../act_enable_service_utility
 
   act_logger_manager:
-    path: ../act_logger_manager
+    path: ../../dart/act_logger_manager
 
   act_permissions_manager:
     path: ../act_permissions_manager
