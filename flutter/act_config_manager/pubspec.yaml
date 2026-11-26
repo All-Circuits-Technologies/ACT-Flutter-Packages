@@ -1,0 +1,64 @@
+# SPDX-FileCopyrightText: 2020 - 2023 Sami Kouatli <sami.kouatli@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Anthony Loiseau <anthony.loiseau@allcircuits.com>
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_config_manager
+description: This package contains methods to manage config variables.
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.7
+
+  # Pure Dart core of the config manager: models, store, parsers and loader
+  act_dart_config_manager:
+    path: ../../dart/act_dart_config_manager
+
+  # Contains utilities for Flutter
+  act_flutter_utility:
+    path: ../act_flutter_utility
+
+  act_platform_manager:
+    path: ../act_platform_manager
+
+# Dependencies used by developer
+dev_dependencies:
+  # API to test Flutter applications
+  flutter_test:
+    sdk: flutter
+
+  # Recommended lints for Flutter apps
+  flutter_lints: ^6.0.0
+
+  # Logger interface the tests give to the manager
+  act_foundation:
+    path: ../../dart/act_foundation
+
+  # Life cycle base class the tests check the manager against
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # Fakes and helpers shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility

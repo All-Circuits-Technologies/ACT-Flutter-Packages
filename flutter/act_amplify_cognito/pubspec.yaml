@@ -1,0 +1,72 @@
+# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_amplify_cognito
+description: This is the package used to add cognito support to the mobile app
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # TODO(brolandeau): when updating the lib, verify if we still need to override `web`
+  amplify_auth_cognito: ^2.6.4
+
+  amplify_flutter: ^2.6.4
+
+  aws_signature_v4: ^0.6.6
+
+  equatable: ^2.0.7
+
+  # This contains the amplify core library
+  act_amplify_core:
+    path: ../act_amplify_core
+
+  # Extend Dart functionalities
+  act_dart_utility:
+    path: ../../dart/act_dart_utility
+
+  # Default global manager
+  act_global_manager:
+    path: ../act_global_manager
+
+  # The abstract manager
+  act_life_cycle:
+    path: ../act_life_cycle
+
+  # This is the logger manager
+  act_logger_manager:
+    path: ../../dart/act_logger_manager
+
+  # Contains the shared authentication services, models, types, etc. to abstract authentication in
+  # app
+  act_shared_auth:
+    path: ../../dart/act_shared_auth
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  # For now, Amplify cognito depends on libs which depends of web: ^0.5.0 and firebase crashlytics
+  # depends on web: ^1.0.0, we force the version of the web dependency
+  web: 1.0.0

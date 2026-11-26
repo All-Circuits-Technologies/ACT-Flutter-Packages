@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_test_utility
+description: This package contains shared fakes and helpers to write the unit
+  tests of the ACT packages.
+
+# Project configuration
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+# Project dependencies
+dependencies:
+  # Flutter framework
+  flutter:
+    sdk: flutter
+
+  # API to test Flutter applications: this package only exists to be used from a test, so the
+  # test API belongs to its public interface
+  flutter_test:
+    sdk: flutter
+
+  # The fakes which do not need Flutter, re-exported by this package
+  act_dart_test_utility:
+    path: ../../dart/act_dart_test_utility
+
+# This package is only meant to be used as a dev dependency. Keep its dependencies limited to the
+# ACT packages whose interfaces are faked here. Those packages use this one in their own tests:
+# pub resolves this cycle because this package is only ever a dev dependency.
+
+# Dependencies used by developer
+dev_dependencies:
+  # Recommended lints for Flutter apps
+  flutter_lints: ^6.0.0

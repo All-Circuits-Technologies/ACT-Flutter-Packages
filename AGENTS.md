@@ -13,6 +13,15 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 This repository is a mono repository of Dart and Flutter packages. They are not published on
 pub.dev: applications use them through `path` dependencies.
 
+## Repository layout
+
+- `dart/` holds the pure Dart packages: they do not depend on Flutter, and run on the Dart VM (a
+  script, a server, tests) as well as in a Flutter application.
+- `flutter/` holds the packages which depend on Flutter.
+- A Flutter application uses the packages of both folders: look for the code a Flutter change needs
+  in `dart/` too.
+- A new package which does not depend on Flutter goes in `dart/`; the other ones go in `flutter/`.
+
 ## Coding standards
 
 Before writing code, read
@@ -31,7 +40,8 @@ live, how deep they go, how they are written, and which fakes are shared.
 ## Checks before pushing
 
 - In each package the change touches, run `flutter analyze --fatal-infos .`, then `flutter test`
-  when the package has a `test` folder.
+  when the package has a `test` folder. In a package of `dart/`, run `dart analyze --fatal-infos .`
+  and `dart test` instead.
 - After a change of a `mono_pkg.yaml` file, run `tool/mono_repo_generate.sh` from the repository
   root and commit the files it generates.
 - Change `.github/workflows/dart.yml` and `tool/ci.sh` only through `tool/mono_repo_generate.sh`:

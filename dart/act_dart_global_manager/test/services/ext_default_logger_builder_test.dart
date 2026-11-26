@@ -1,0 +1,46 @@
+// SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+//
+// SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+import 'package:act_dart_global_manager/act_dart_global_manager.dart';
+import 'package:act_dart_test_utility/act_dart_test_utility.dart';
+import 'package:act_logger_manager/act_logger_manager.dart';
+import 'package:test/test.dart';
+
+import '../fakes/fake_app_config_manager.dart';
+
+void main() {
+  late FakeAppConfigManager config;
+
+  tearDown(() async => config.disposeLifeCycle());
+
+  /// Registers the config manager of the application and the global manager the builder reads it
+  /// through.
+  Future<void> registerConfig() async {
+    FakeGlobalManager.install();
+    config = await FakeAppConfigManager.withConfigs({
+      "logs": {"level": "trace"},
+    });
+    globalGetIt().registerSingleton<FakeAppConfigManager>(config);
+  }
+
+  group("ExtDefaultLoggerBuilder", () {
+    test("depends on the config manager it reads the level of the logs from", () async {
+      await registerConfig();
+
+      final builder = ExtDefaultLoggerBuilder<FakeAppConfigManager>();
+
+      expect(builder.dependsOn(), [FakeAppConfigManager]);
+    });
+
+    test("builds a logger manager which reads the configuration of the application", () async {
+      await registerConfig();
+
+      final manager = await ExtDefaultLoggerBuilder<FakeAppConfigManager>().asyncFactory();
+
+      expect(manager, isA<DefaultLoggerManager>());
+
+      await manager.disposeLifeCycle();
+    });
+  });
+}

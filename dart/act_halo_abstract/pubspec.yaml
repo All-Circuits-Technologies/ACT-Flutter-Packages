@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2023 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_halo_abstract
+description: Contains the abstract and shared elements to manager the HALO protocol
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  # Help to implement value based equality without explicit override
+  equatable: ^2.0.7
+
+  meta: ^1.17.0
+
+  # Default global manager
+  act_dart_global_manager:
+    path: ../act_dart_global_manager
+
+  # Contains dart result class to return status and value of a request
+  act_dart_result:
+    path: ../act_dart_result
+
+  # Extend Dart functionalities
+  act_dart_utility:
+    path: ../act_dart_utility
+
+dev_dependencies:
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0
+
+  # Fakes shared by the tests of the ACT packages
+  act_dart_test_utility:
+    path: ../act_dart_test_utility
+
+  # Log levels the tests assert on
+  act_foundation:
+    path: ../act_foundation

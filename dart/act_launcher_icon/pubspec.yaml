@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_launcher_icon
+description: Useful package to generate launcher icons for the apps
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  icons_launcher: ^3.0.1
+
+dev_dependencies:
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0

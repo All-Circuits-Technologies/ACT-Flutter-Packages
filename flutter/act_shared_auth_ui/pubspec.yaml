@@ -1,0 +1,48 @@
+# SPDX-FileCopyrightText: 2024 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+name: act_shared_auth_ui
+description: This package completes the act_shared_auth and offers widgets, blocs, page, etc.
+publish_to: none
+
+# This package supports all platforms listed below.
+platforms:
+  android:
+  ios:
+  linux:
+  macos:
+  web:
+  windows:
+
+environment:
+  sdk: ^3.13.0
+  flutter: ">=3.47.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  equatable: ^2.0.7
+
+  # This is the router manager
+  act_router_manager:
+    path: ../act_router_manager
+
+  # This is the shared authentication package
+  act_shared_auth:
+    path: ../../dart/act_shared_auth
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # The logger a router of a test is asked for its routes with
+  act_logger_manager:
+    path: ../../dart/act_logger_manager
+
+  # Fakes shared by the tests of the ACT packages
+  act_test_utility:
+    path: ../act_test_utility
+
+  flutter_lints: ^6.0.0

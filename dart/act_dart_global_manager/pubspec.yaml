@@ -1,0 +1,53 @@
+# SPDX-FileCopyrightText: 2026 Benoit Rolandeau <benoit.rolandeau@allcircuits.com>
+#
+# SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
+
+# Project definition
+name: act_dart_global_manager
+description: This package contains the default global manager which has to be
+  extended in the app, without any dependency on Flutter.
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+# Project dependencies
+dependencies:
+  # Decouple the interface from concrete implementation and
+  # access the concrete implementation from everywhere in your App
+  get_it: ^8.0.3
+
+  # Annotations for the Dart analyzer
+  meta: ^1.17.0
+
+  # Config manager, and the file config manager the usual config manager is built on
+  act_dart_config_manager:
+    path: ../act_dart_config_manager
+
+  # Easily create managers
+  act_dart_life_cycle:
+    path: ../act_dart_life_cycle
+
+  # Contains utilities for Dart
+  act_dart_utility:
+    path: ../act_dart_utility
+
+  act_foundation:
+    path: ../act_foundation
+
+  # Logger manager
+  act_logger_manager:
+    path: ../act_logger_manager
+
+# Dependencies used by developer
+dev_dependencies:
+  test: ^1.32.0
+  # flutter_lints rather than lints: the root analysis_options.yaml includes
+  # package:flutter_lints/flutter.yaml, and when this include does not resolve, `dart format`
+  # ignores the root options (line length of 100). flutter_lints is pure Dart (it only depends on
+  # lints), so it brings no Flutter dependency.
+  flutter_lints: ^6.0.0
+
+  # Fakes and helpers shared by the tests of the pure Dart ACT packages
+  act_dart_test_utility:
+    path: ../act_dart_test_utility

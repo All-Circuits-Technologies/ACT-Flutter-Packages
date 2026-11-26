@@ -11,7 +11,7 @@ name: Desktop native
 on:
   push:
     paths:
-      - "act_splash_screen_manager/**"
+      - "flutter/act_splash_screen_manager/**"
       - ".github/workflows/desktop_native.yml"
 
 jobs:
@@ -32,7 +32,7 @@ jobs:
           flutter-version: "3.47.9"
 
       - name: Build the example and the unit tests
-        working-directory: act_splash_screen_manager/example
+        working-directory: flutter/act_splash_screen_manager/example
         env:
           ACT_SPLASH_BUILD_TESTS: 1
         run: |
@@ -40,7 +40,7 @@ jobs:
           flutter build linux --debug
 
       - name: Run the unit tests
-        working-directory: act_splash_screen_manager/example
+        working-directory: flutter/act_splash_screen_manager/example
         run: >
           ./build/linux/x64/debug/plugins/act_splash_screen_manager/act_splash_screen_manager_test
 
@@ -65,7 +65,7 @@ jobs:
           subst W: "${{ github.workspace }}"
 
       - name: Build the example and the unit tests
-        working-directory: 'W:\act_splash_screen_manager\example'
+        working-directory: 'W:\flutter\act_splash_screen_manager\example'
         env:
           ACT_SPLASH_BUILD_TESTS: 1
         run: |
@@ -75,7 +75,7 @@ jobs:
       # The layout of the build directory is not the same as the one of Linux, and the tests have
       # not been run on Windows yet: the binary is looked for rather than named.
       - name: Run the unit tests
-        working-directory: 'W:\act_splash_screen_manager\example'
+        working-directory: 'W:\flutter\act_splash_screen_manager\example'
         run: |
           $test = Get-ChildItem -Path build\windows -Recurse -Filter act_splash_screen_manager_test.exe |
             Select-Object -First 1
