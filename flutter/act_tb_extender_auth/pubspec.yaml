@@ -59,7 +59,7 @@ dependencies:
 
   # Generic and shared elements for the authentication services
   act_shared_auth:
-    path: ../act_shared_auth
+    path: ../../dart/act_shared_auth
 
   # The secure storage the two sets of tokens are kept in
   act_shared_auth_local_storage:

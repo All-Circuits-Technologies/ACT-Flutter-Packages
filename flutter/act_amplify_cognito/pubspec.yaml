@@ -55,7 +55,7 @@ dependencies:
   # Contains the shared authentication services, models, types, etc. to abstract authentication in
   # app
   act_shared_auth:
-    path: ../act_shared_auth
+    path: ../../dart/act_shared_auth
 
 dev_dependencies:
   flutter_test:
