@@ -3,11 +3,9 @@
 // SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 
 import 'package:act_config_manager/act_config_manager.dart';
-import 'package:act_config_manager/src/services/config_singleton.dart';
 import 'package:act_foundation/act_foundation.dart';
 import 'package:act_life_cycle/act_life_cycle.dart';
 import 'package:act_test_utility/act_test_utility.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// A configuration manager which declares the variables the tests read.
@@ -36,13 +34,16 @@ void main() {
 
   tearDown(() async {
     FakeAssets.stop();
-    dotenv.clean();
-    await ConfigSingleton.instanceOrNull?.disposeLifeCycle();
+    ConfigStore.instanceOrNull?.dispose();
   });
 
   group("AbstractConfigManager", () {
     test("is a manager with a life cycle", () {
       expect(_TestConfigManager(logger: const SilentLogger()), isA<AbsWithLifeCycle>());
+    });
+
+    test("is a core config manager", () {
+      expect(_TestConfigManager(logger: const SilentLogger()), isA<AbsCoreConfigManager>());
     });
 
     test("reads the configuration from the assets folder by default", () {

@@ -25,11 +25,6 @@ class FakeLocaleConfig extends AbstractConfigManager with MixinLocaleConfig {
   @override
   Environment get env => _env;
 
-  @override
-  set env(Environment value) {
-    // The environment of the build is dropped: the test decides which one the application runs in.
-  }
-
   /// Class constructor
   FakeLocaleConfig({this._env = Environment.development}) : super(logger: const SilentLogger());
 }

@@ -12,6 +12,7 @@ explains the split with the [`flutter/`](../flutter/README.md) folder.
 
 | Package                                                       | Description                                                                                                                                              | Version |
 | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
+| [act_dart_config_manager](act_dart_config_manager/)           | This package contains pure Dart helpers to manage config variables from their content and, optionally, from the file system.                             |         |
 | [act_dart_life_cycle](act_dart_life_cycle/)                   | This package contains a life cycle pattern implementation to manage the life cycle of classes and their dependencies, without any dependency on Flutter. |         |
 | [act_dart_result](act_dart_result/)                           | This package provides a way to represent the result of a request with a status and the actual value of the request.                                      |         |
 | [act_dart_test_utility](act_dart_test_utility/)               | This package contains shared fakes and helpers to write the unit tests of the pure Dart ACT packages, without a dependency on Flutter.                   |         |

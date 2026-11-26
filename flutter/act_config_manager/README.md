@@ -13,7 +13,7 @@ SPDX-License-Identifier: LicenseRef-ALLCircuits-ACT-1.1
 - [Presentation](#presentation)
 - [Architecture](#architecture)
   - [Where the values come from](#where-the-values-come-from)
-  - [The manager and the singleton](#the-manager-and-the-singleton)
+  - [The manager and the store](#the-manager-and-the-store)
   - [The config variables](#the-config-variables)
 - [How to use](#how-to-use)
   - [Installation](#installation)
@@ -48,35 +48,48 @@ and it holds no value which the application computes at runtime.
 ### Where the values come from
 
 The manager reads the files and the environment variables at initialization, merges them, and hands
-the result to a singleton the config variables read from.
+the result to a store the config variables read from.
 
 ```mermaid
 flowchart LR
     default[default.yaml] --> yamlMerge
     env[environment file] --> yamlMerge
     local[local.yaml] --> yamlMerge
-    yamlMerge[ConfigFromYamlUtility] --> merge
+    yamlMerge[config files] --> merge
     mapping[env_config_mapping.yaml] --> envMerge
     os[process environment] --> envMerge
     dotEnv[.env] --> envMerge
-    envMerge[ConfigFromEnvUtility] --> merge
-    merge[AbstractConfigManager] --> ConfigSingleton
-    ConfigSingleton --> AbsConfigVar
+    envMerge[environment variables] --> merge
+    merge[ConfigLoader] --> ConfigStore
+    ConfigStore --> AbsConfigVar
 ```
 
-`ConfigFromYamlUtility` reads the configuration files, `EnvConfigMappingUtility` reads the file
-which maps the environment variables to the configuration structure, and `ConfigFromEnvUtility`
-builds a configuration out of the environment variables that mapping names. A value found on the
-right of the flow overrides the one found on its left.
+`ConfigLoader`, from [`act_dart_config_manager`](../../dart/act_dart_config_manager/README.md), reads
+the configuration files, builds a configuration out of the environment variables the mapping file
+names, and merges them. A value found on the right of the flow overrides the one found on its left.
+`AbstractConfigManager` gives it an `AssetsConfigReader`, which reads the files from the assets of
+the application.
 
-### The manager and the singleton
+### The manager and the store
 
-`AbstractConfigManager` is the manager an application derives from to declare its variables. It is
-registered like any other manager, with an `AbstractConfigBuilder`, and it depends on none of them.
+`AbstractConfigManager` is the manager a Flutter application derives from to declare its variables.
+It is registered like any other manager, with an `AbstractConfigBuilder`, and it depends on none of
+them.
 
-`ConfigSingleton` holds the merged configuration. The config variables read from it, rather than
+It derives from `AbsCoreConfigManager`, the pure Dart base class of the
+[`act_dart_config_manager`](../../dart/act_dart_config_manager/README.md) package, which holds the
+environment, creates the store from the configuration the derived class loads, and releases it.
+`AbstractConfigManager` loads that configuration from the assets of the application. Which class to
+use:
+
+- a Flutter application derives `AbstractConfigManager` (or `AbsUsualConfigManager` of
+  `act_global_manager`, which adds the config variables of the logger);
+- `AbsCoreConfigManager` is the shared base: a package which declares its variables in a mixin
+  targets it, so the mixin works with every config manager.
+
+`ConfigStore` holds the merged configuration. The config variables read from it, rather than
 from the manager, because a variable is declared as a field of the derived manager and cannot reach
-that manager through the `GlobalManager` without knowing its concrete type. The singleton is created
+that manager through the `GlobalManager` without knowing its concrete type. The store is created
 when the manager is initialized and released when it is disposed, so a manager may be initialized
 again afterwards.
 
@@ -135,8 +148,9 @@ class AppConfigManager extends AbstractConfigManager {
 }
 ```
 
-A package which needs its own variables declares them in a mixin on `AbstractConfigManager`, and the
-application mixes it into its manager. That way the package says what it reads without knowing the
+A package which needs its own variables declares them in a mixin on `AbsCoreConfigManager` (or on
+`AbstractConfigManager` when it is a Flutter package), and the application mixes it into its
+manager. That way the package says what it reads without knowing the
 manager of the application.
 
 ### Register the manager
@@ -241,14 +255,17 @@ The mapping file cannot contain a list, and the name of a variable has to be a s
 
 ### The dot env file
 
-`.env` holds the environment variables of a developer machine, as a property file, and is not meant
-to be committed:
+`.env` holds the environment variables of a developer machine and is not meant to be committed:
 
 ```ini
 LOGS_LEVEL=warning
 LOGS_ENABLE=true
 LOGS_NB=4
 ```
+
+Each line is a `NAME=value` pair, which may start with `export `. The quotes around a value are
+removed. The empty lines and the lines starting with `#` are ignored; a `#` after a value is part of
+the value.
 
 ### Choosing the environment
 
@@ -281,17 +298,12 @@ variable which is shared with the other applications of their machine.
 ## Testing
 
 The tests read the configuration through the asset bundle of the tests, so they cover the whole path
-an application goes through, from the files to the value a variable returns.
+an application goes through, from the asset files to the value a variable returns.
 
-They cover the merge order of the files, the ones which are missing, empty, unparsable or not an
-object, the structure the mapping file builds out of the environment variables, every format a
-mapped variable may declare and what happens when a value does not match it, the precedence of the
-`.env` file over the environment of the process, the keys the singleton finds and the ones it
-refuses, what each config variable returns when its value is missing or of another type, and the
-release of the singleton when the manager is disposed.
-
-The environment of a process cannot be changed from inside it, so the tests which need a variable
-coming from the operating system use one which is already set.
+They cover the reading of the assets, the override of the files by the `.env` file, the default
+values of the variables when no file exists, and the release of the store when the manager is
+disposed. The merge order of the files, the parsers and the config variables are tested in
+`act_dart_config_manager`.
 
 ```console
 > flutter test
