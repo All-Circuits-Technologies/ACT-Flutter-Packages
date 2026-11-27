@@ -47,6 +47,9 @@ sealed class PermissionElementHelper {
       case PermissionElement.locationWhenInUse:
         return _getLocWhenInUsePerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
+      case PermissionElement.notification:
+        return _getNotificationPerms(isAndroid: isAndroid, isIos: isIos, version: version);
+
       case PermissionElement.trackingAuthorization:
         return _getTrackingPerms(isAndroid: isAndroid, isIos: isIos, version: version);
 
@@ -129,6 +132,21 @@ sealed class PermissionElementHelper {
 
     return [
       permission_handler.Permission.camera,
+    ];
+  }
+
+  /// Get the list of permissions linked to the notifications
+  static List<permission_handler.Permission> _getNotificationPerms({
+    required bool isAndroid,
+    required bool isIos,
+    required int? version,
+  }) {
+    if (!isAndroid && !isIos) {
+      return const [];
+    }
+
+    return [
+      permission_handler.Permission.notification,
     ];
   }
 

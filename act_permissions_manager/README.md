@@ -55,6 +55,7 @@ A `PermissionElement` is a feature of the application, not a permission of the d
 | `camera`                | the camera                                         | the camera                |
 | `locationAlways`        | the location at all times                          | the location at all times |
 | `locationWhenInUse`     | the location while in use                          | the location while in use |
+| `notification`          | the notifications                                  | the notifications         |
 | `trackingAuthorization` | nothing                                            | the tracking of the user  |
 | `wifi`                  | nothing                                            | nothing                   |
 

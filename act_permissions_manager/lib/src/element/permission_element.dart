@@ -23,6 +23,9 @@ enum PermissionElement {
   /// This groups all the permissions linked to the location getting when the app is used
   locationWhenInUse,
 
+  /// This groups all the permissions linked to the notifications shown to the user
+  notification,
+
   /// This groups all the permissions linked to the tracking authorization service
   trackingAuthorization,
 
